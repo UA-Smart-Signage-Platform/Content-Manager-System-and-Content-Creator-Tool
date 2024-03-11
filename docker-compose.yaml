@@ -1,0 +1,24 @@
+version: '3.9'
+services:
+    # postgres:
+    #     (...)
+    # mongodb:
+    #     (...)
+    # springboot:
+    #     (...)
+    frontend:
+        # depends_on:
+        #     - postgres
+        #     - mongodb
+        #     - springboot
+        build:
+          context: ./frontend
+          dockerfile: .docker/Dockerfile
+        restart: unless-stopped
+        volumes:
+          - "./frontend/:/app"
+        ports:
+          - 3000:3000
+        command: >
+          bash -c "cp -rfu /cache/node_modules/. /app/node_modules/  
+          && npm start"
