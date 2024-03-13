@@ -13,19 +13,20 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "screen")
+@Table(name = "Screens")
 public class Screen {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String location;
 
     @Column(nullable = false)
     private Boolean status;
 
-    @Column(nullable = true)
-    private Long group;
+    private Long groupID;
 
+    private String templateName;
 }

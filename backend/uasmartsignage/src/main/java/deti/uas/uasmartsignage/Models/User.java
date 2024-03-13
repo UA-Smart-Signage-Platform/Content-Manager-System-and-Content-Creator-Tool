@@ -17,7 +17,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "user")
+@Table(name = "Users")
 public class User{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,6 @@ public class User{
 
     @Column(unique = true,nullable = false)
     private String username;
-
 
     @Column(nullable = false)
     private Integer role;

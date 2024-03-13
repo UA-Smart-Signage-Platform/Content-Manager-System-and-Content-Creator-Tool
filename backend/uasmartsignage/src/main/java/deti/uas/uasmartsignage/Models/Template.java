@@ -1,25 +1,26 @@
 package deti.uas.uasmartsignage.Models;
 
-
-import jakarta.persistence.*;
-import lombok.*;
-import deti.uas.uasmartsignage.Models.Widget;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collection = "template")
+@Document(collection = "Templates")
 @Data
 public class Template {
 
     @Id
-    private Long id;
+    private String id;
 
     private String path;
 
-    
+    @Indexed(unique = true)
+    private String name;
+
     private List<Widget> widgets;
 
-    
-
 }
+
+

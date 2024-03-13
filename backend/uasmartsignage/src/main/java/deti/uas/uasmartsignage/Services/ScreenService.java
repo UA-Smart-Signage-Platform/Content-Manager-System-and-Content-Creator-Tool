@@ -26,16 +26,23 @@ public class ScreenService {
         screenRepository.deleteById(id);
     }
     
-    public Screen updateScreen(Screen screen) {
-        return screenRepository.save(screen);
+    public Screen updateScreen(Long id,Screen screen) {
+        Screen screenById = screenRepository.findById(id).orElse(null);
+        if (screenById == null) {
+            return null;
+        }
+        screenById.setLocation(screen.getLocation());
+        screenById.setStatus(screen.getStatus());
+        screenById.setGroupID(screen.getGroupID());
+        return screenRepository.save(screenById);
     }
     
     public Iterable<Screen> getAllScreens() {
         return screenRepository.findAll();
     }
 
-    public List<Screen> getScreensByGroup(Long group) {
-        return screenRepository.findByGroup(group);
+    public List<Screen> getScreensByGroupID(Long group) {
+        return screenRepository.findByGroupID(group);
     }
 
     

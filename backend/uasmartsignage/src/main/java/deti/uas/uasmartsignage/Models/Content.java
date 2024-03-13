@@ -1,34 +1,30 @@
 package deti.uas.uasmartsignage.Models;
 
-import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
+;
 
-import java.sql.Timestamp;
-import java.util.List;
+import lombok.Data;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "content")
+
+@Document(collection = "Contents")
+@Data
 public class Content {
 
     @Id
     private Long id;
 
-    @Column(nullable = false)
+    @Indexed(unique = true)
+    private String name;
+
     private String path;
 
-   
+    private String type;
 
-    private Timestamp start_date;
+    private String description;
 
-    private Timestamp end_date;
+    private String duration;
 
-
+    private String size;
 }

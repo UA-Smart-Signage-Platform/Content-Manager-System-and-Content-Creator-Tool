@@ -1,27 +1,28 @@
 package deti.uas.uasmartsignage.Models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "widget")
+
+@Document(collection = "Widgets")
+@Data
 public class Widget {
 
     @Id
     private Long id;
 
-    @Column(nullable = false)
-    private String path;
+    private String name;
 
-    
+    private Long top;
 
+    private Long left;
+
+    private Long width;
+
+    private Long height;
+
+    private List<Playlist> playlists;
 }
