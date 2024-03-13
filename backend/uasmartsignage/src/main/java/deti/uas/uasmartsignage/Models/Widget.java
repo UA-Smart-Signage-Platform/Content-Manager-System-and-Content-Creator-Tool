@@ -22,5 +22,6 @@ public class Widget {
     @Column(nullable = false)
     private String path;
 
+    
 
 }

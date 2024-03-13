@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  mysql_db:
+    image: mysql/mysql-server:5.7
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'rootpass'
+      MYSQL_DATABASE: 'uas'
+      MYSQL_USER: 'spring'
+      MYSQL_PASSWORD: 'springpass'
+    ports:
+      - "3306:3306"
+    networks:
+      - default
+
+  mongodb:
+    image: mongo:latest
+    restart: always
+    environment:
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: rootpass
+        MONGO_INITDB_DATABASE: admin
+    ports:
+        - 27017:27017
+    volumes:
+        - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - default
+
+  spring:
+    build: .
+    container_name: spring
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    image: uas
+    expose:
+      - 8080
+    networks:
+      - default

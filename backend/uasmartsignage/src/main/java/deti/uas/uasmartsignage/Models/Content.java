@@ -22,14 +22,9 @@ public class Content {
     private Long id;
 
     @Column(nullable = false)
-    private String url;
+    private String path;
 
-    @ManyToMany
-    @JoinTable(name="content_playlist",
-            joinColumns = @JoinColumn(name="content_id"),
-            inverseJoinColumns = @JoinColumn(name="playlist_id")
-    )
-    private List<Playlist> playlist;
+   
 
     private Timestamp start_date;
 

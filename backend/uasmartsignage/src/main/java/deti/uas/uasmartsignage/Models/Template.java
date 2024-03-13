@@ -15,7 +15,11 @@ public class Template {
     @Id
     private Long id;
 
-    @Column(nullable = false)
     private String path;
+
+    
+    private List<Widget> widgets;
+
+    
 
 }

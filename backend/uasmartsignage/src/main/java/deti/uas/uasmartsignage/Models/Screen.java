@@ -20,12 +20,12 @@ public class Screen {
     private Long id;
 
     @Column(nullable = false)
-    private String localização;
+    private String location;
 
     @Column(nullable = false)
     private Boolean status;
 
-    @Column(nullable = false)
-    private Long group_id;
+    @Column(nullable = true)
+    private Long group;
 
 }

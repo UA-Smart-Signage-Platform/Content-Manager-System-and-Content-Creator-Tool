@@ -3,35 +3,30 @@ package deti.uas.uasmartsignage.Models;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
-@Table(name = "playlist")
-public class Playlist {
+import org.springframework.data.mongodb.core.mapping.Document;
 
-    @Id
+@Document(collection = "Playlist")
+@Data
+public class Playlist implements Serializable{
+
+    
     private Long id;
 
-
-    @ManyToMany
-    @JoinTable(name="playlist_content",
-            joinColumns = @JoinColumn(name="playlist_id"),
-            inverseJoinColumns = @JoinColumn(name="content_id")
-    )
-    private List<Content> content;
 
     private Timestamp start_date;
 
     private Timestamp end_date;
+
+    
 
 
 
