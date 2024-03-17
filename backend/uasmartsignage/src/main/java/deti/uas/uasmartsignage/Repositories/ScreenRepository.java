@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 public interface ScreenRepository extends JpaRepository<Screen, Long> {
     Screen findByLocation(String location);
 
-    List<Screen> findByGroupID(Long group);
+    List<Screen> findByGroup(Long group);
     
 }

@@ -11,7 +11,6 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api")
 public class ScreenController {
 
     private ScreenService screenService;
@@ -23,18 +22,18 @@ public class ScreenController {
     }
 
     @GetMapping("/screens/{id}")
-    public String getScreenById(Long id) {
-        return "screen";
+    public ResponseEntity<?> getScreenById(@PathVariable("id") Long id) {
+        Screen screen = screenService.getScreenById(id);
+        if (screen == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(screen, HttpStatus.OK);
     }
 
-    @GetMapping("/screens/{id}/templates")
-    public String getScreenTemplates(Long id) {
-        return "templates";
-    }
-
-    @GetMapping("/screens/{id}/templates/{t_id}")
-    public String getScreenTemplateById(Long id) {
-        return "template";
+    @GetMapping("/screens/group/{group}")
+    public ResponseEntity<?> getScreensByGroup(@PathVariable("group") Long group) {
+        List<Screen> screens = screenService.getScreensByGroup(group);
+        return new ResponseEntity<>(screens, HttpStatus.OK);
     }
 
     @PostMapping("/screens")

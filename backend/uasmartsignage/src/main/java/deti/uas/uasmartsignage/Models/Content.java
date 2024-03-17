@@ -1,30 +1,41 @@
 package deti.uas.uasmartsignage.Models;
 
-;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
+import javax.persistence.ManyToMany;
 
-@Document(collection = "Contents")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "Content")
 public class Content {
 
     @Id
     private Long id;
 
-    @Indexed(unique = true)
+    @Column(nullable = false, unique = true)
     private String name;
-
-    private String path;
 
     private String type;
 
     private String description;
 
-    private String duration;
+    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Widget> widgets;
 
-    private String size;
+    //options, n me lembro doq é
+
 }

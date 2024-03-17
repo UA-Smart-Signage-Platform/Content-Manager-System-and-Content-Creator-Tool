@@ -33,7 +33,7 @@ public class ScreenService {
         }
         screenById.setLocation(screen.getLocation());
         screenById.setStatus(screen.getStatus());
-        screenById.setGroupID(screen.getGroupID());
+        //screenById.setGroupID(screen.getGroupID());
         return screenRepository.save(screenById);
     }
     
@@ -41,8 +41,8 @@ public class ScreenService {
         return screenRepository.findAll();
     }
 
-    public List<Screen> getScreensByGroupID(Long group) {
-        return screenRepository.findByGroupID(group);
+    public List<Screen> getScreensByGroup(Long group) {
+        return screenRepository.findByGroup(group);
     }
 
     

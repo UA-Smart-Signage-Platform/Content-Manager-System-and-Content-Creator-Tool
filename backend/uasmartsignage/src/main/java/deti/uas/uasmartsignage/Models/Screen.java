@@ -26,7 +26,8 @@ public class Screen {
     @Column(nullable = false)
     private Boolean status;
 
-    private Long groupID;
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    private Group group;
 
-    private String templateName;
 }

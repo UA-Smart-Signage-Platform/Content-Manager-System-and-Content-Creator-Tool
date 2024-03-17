@@ -1,16 +1,15 @@
 version: '3.9'
 
 services:
-  mysql_db:
-    image: mysql/mysql-server:5.7
+  postgres_db:  # Renamed the service to postgres_db
+    image: postgres:latest  # Using the PostgreSQL image
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: 'rootpass'
-      MYSQL_DATABASE: 'uas'
-      MYSQL_USER: 'spring'
-      MYSQL_PASSWORD: 'springpass'
+      POSTGRES_DB: uas
+      POSTGRES_USER: spring
+      POSTGRES_PASSWORD: springpass
     ports:
-      - "3306:3306"
+      - "5432:5432"
     networks:
       - default
 

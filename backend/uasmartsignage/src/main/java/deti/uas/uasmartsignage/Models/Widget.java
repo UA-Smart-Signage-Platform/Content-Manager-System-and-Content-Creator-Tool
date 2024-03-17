@@ -1,14 +1,25 @@
 package deti.uas.uasmartsignage.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
+import javax.persistence.ManyToMany;
 
-@Document(collection = "Widgets")
-@Data
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "Widgets")
 public class Widget {
 
     @Id
@@ -16,13 +27,15 @@ public class Widget {
 
     private String name;
 
-    private Long top;
+    private String path;
 
-    private Long left;
+    @ManyToOne
+    @JoinColumn(name = "content_id", nullable = false)
+    @JsonIgnore
+    private Content content;
 
-    private Long width;
+    @ManyToMany(mappedBy = "widgets")
+    @JsonIgnore
+    private List<Template_Widget> template_widgets;
 
-    private Long height;
-
-    private List<Playlist> playlists;
 }

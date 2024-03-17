@@ -19,23 +19,24 @@ import javax.persistence.ManyToMany;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Templates")
-public class Template {
+@Table(name = "Template_Groups")
+public class Template_Group {
 
     @Id
-    private String id;
+    private Long id;
 
-    private String path;
-
-    @Column(nullable = false, unique = true)
-    private String name;
-
-    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "template_id", nullable = false)
     @JsonIgnore
-    private List<Template_Widget> template_widgets;
+    private Template template;
 
+    @OneToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    @JsonIgnore
+    private Group group;
 
+    //map content e value, idk
 
+    
+    
 }
-
-
