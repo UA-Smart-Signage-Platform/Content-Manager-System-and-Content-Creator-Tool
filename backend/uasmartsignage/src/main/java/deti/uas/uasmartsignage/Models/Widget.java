@@ -32,12 +32,12 @@ public class Widget {
 
     @ManyToOne
     @JoinColumn(name = "contentId", nullable = false)
-    @JsonIgnore
     private Content content;
 
     //notworking
     /*
     @ManyToMany(mappedBy = "widgets")
+
     @JsonIgnore
     private List<TemplateWidget> templateWidgets;
 
