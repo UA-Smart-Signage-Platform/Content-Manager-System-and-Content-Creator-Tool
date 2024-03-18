@@ -2,61 +2,61 @@ package deti.uas.uasmartsignage.Controllers;
 
 import java.util.List;
 
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import deti.uas.uasmartsignage.Models.Group;
-import deti.uas.uasmartsignage.Services.GroupService;
+import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-public class GroupController {
+public class MonitorGroupController {
 
-    private GroupService groupService;
+    private MonitorGroupService monitorGroupService;
 
     @GetMapping("/groups")
     public ResponseEntity<?> getAllGroups() {
-        List<Group> groups = (List<Group>) groupService.getAllGroups();
-        return new ResponseEntity<>(groups, HttpStatus.OK);
+        List<MonitorsGroup> monitorsGroups = (List<MonitorsGroup>) monitorGroupService.getAllGroups();
+        return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
     }
 
     @GetMapping("/groups/{id}")
     public ResponseEntity<?> getGroupById(Long id) {
-        Group group = groupService.getGroupById(id);
-        if (group == null) {
+        MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
+        if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(group, HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroup, HttpStatus.OK);
     }
 
     @GetMapping("/groups/name/{name}")
     public ResponseEntity<?> getGroupByName(String name) {
-        Group group = groupService.getGroupByName(name);
-        if (group == null) {
+        MonitorsGroup monitorsGroup = monitorGroupService.getGroupByName(name);
+        if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(group, HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroup, HttpStatus.OK);
     }
 
     @GetMapping("/groups/{id}/screens")
     public ResponseEntity<?> getScreensByGroup(Long id) {
-        Group group = groupService.getGroupById(id);
-        if (group == null) {
+        MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
+        if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(group.getScreens(), HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroup.getScreens(), HttpStatus.OK);
     }
 
     @GetMapping("/groups/{id}/template")
     public ResponseEntity<?> getTemplateByGroup(Long id) {
-        Group group = groupService.getGroupById(id);
-        if (group == null) {
+        MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
+        if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(group.getTemplate_group(), HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroup.getTemplateGroup(), HttpStatus.OK);
     }
     
 }

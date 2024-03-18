@@ -23,6 +23,7 @@ import javax.persistence.ManyToMany;
 public class Widget {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -30,12 +31,16 @@ public class Widget {
     private String path;
 
     @ManyToOne
-    @JoinColumn(name = "content_id", nullable = false)
+    @JoinColumn(name = "contentId", nullable = false)
     @JsonIgnore
     private Content content;
 
+    //notworking
+    /*
     @ManyToMany(mappedBy = "widgets")
     @JsonIgnore
-    private List<Template_Widget> template_widgets;
+    private List<TemplateWidget> templateWidgets;
+
+     */
 
 }

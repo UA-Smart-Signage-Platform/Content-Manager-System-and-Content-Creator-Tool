@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Controllers;
 
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Screen;
 import deti.uas.uasmartsignage.Services.ScreenService;
 import lombok.AllArgsConstructor;
@@ -31,8 +32,8 @@ public class ScreenController {
     }
 
     @GetMapping("/screens/group/{group}")
-    public ResponseEntity<?> getScreensByGroup(@PathVariable("group") Long group) {
-        List<Screen> screens = screenService.getScreensByGroup(group);
+    public ResponseEntity<?> getScreensByGroup(@PathVariable("group") MonitorsGroup monitorsGroup) {
+        List<Screen> screens = screenService.getScreensByGroup(monitorsGroup);
         return new ResponseEntity<>(screens, HttpStatus.OK);
     }
 

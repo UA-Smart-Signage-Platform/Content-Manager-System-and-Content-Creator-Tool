@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Services;
 
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,8 +42,8 @@ public class ScreenService {
         return screenRepository.findAll();
     }
 
-    public List<Screen> getScreensByGroup(Long group) {
-        return screenRepository.findByGroup(group);
+    public List<Screen> getScreensByGroup(MonitorsGroup monitorsGroup) {
+        return screenRepository.findByMonitorsGroupForScreens(monitorsGroup);
     }
 
     

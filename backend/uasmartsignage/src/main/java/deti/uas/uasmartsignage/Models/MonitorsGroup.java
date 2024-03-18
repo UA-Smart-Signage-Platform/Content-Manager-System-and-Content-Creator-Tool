@@ -9,8 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Group")
-public class Group {
+@Table(name = "MonitorsGroup")
+public class MonitorsGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,12 +19,10 @@ public class Group {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "monitorsGroupForScreens", cascade = CascadeType.ALL)
     private List<Screen> screens;
 
-    @OneToOne(mappedBy = "group", cascade = CascadeType.ALL)
-    private Template_Group template_group;
+    @OneToOne(mappedBy = "monitorsGroupForTemplate", cascade = CascadeType.ALL)
+    private TemplateGroup templateGroup;
 
-    
-    
 }

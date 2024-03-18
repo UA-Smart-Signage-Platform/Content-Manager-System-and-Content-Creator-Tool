@@ -6,8 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,7 +25,7 @@ public class Screen {
     private Boolean status;
 
     @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    private Group group;
+    @JoinColumn(name = "groupId", nullable = false)
+    private MonitorsGroup monitorsGroupForScreens;
 
 }

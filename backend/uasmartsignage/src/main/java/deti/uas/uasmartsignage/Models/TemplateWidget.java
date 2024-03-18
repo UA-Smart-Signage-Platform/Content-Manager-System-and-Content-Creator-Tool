@@ -1,27 +1,22 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
-
-import javax.persistence.ManyToMany;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Template_Widgets")
-public class Template_Widget {
-    
+@Table(name = "TemplateWidgets")
+public class TemplateWidget {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,8 +27,9 @@ public class Template_Widget {
     @Column(nullable = false)
     private Long top;
 
+    //left conflict with sql
     @Column(nullable = false)
-    private Long left;
+    private Long leftPosition;
 
     @Column(nullable = false)
     private Long width;
@@ -42,15 +38,19 @@ public class Template_Widget {
     private Long height;
 
     @ManyToOne
-    @JoinColumn(name = "template_id", nullable = false)
+    @JoinColumn(name = "templateId", nullable = false)
     @JsonIgnore
     private Template template;
 
+
+    //not working
+    /*
     @ManyToMany
     @JoinTable(
-            name = "Template_Widget_Widgets",
-            joinColumns = @JoinColumn(name = "template_widget_id"),
-            inverseJoinColumns = @JoinColumn(name = "widget_id")
+            name = "templateWidgetWidgets",
+            joinColumns = @JoinColumn(name = "templateWidgetId"),
+            inverseJoinColumns = @JoinColumn(name = "widgetId")
     )
     private List<Widget> widgets;
+    */
 }
