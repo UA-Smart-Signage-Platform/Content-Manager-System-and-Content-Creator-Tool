@@ -20,7 +20,7 @@ public class MonitorsGroup {
     private String name;
 
     @OneToMany(mappedBy = "monitorsGroupForScreens", cascade = CascadeType.ALL)
-    private List<Screen> screens;
+    private List<Monitor> monitors;
 
     @OneToOne(mappedBy = "monitorsGroupForTemplate", cascade = CascadeType.ALL)
     private TemplateGroup templateGroup;

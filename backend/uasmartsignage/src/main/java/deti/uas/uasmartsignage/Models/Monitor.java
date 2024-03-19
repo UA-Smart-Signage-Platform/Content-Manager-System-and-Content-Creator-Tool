@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "Screens")
-public class Screen {
+public class Monitor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

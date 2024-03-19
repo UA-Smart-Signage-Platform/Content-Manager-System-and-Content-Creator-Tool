@@ -11,23 +11,24 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/content")
 public class ContentController {
 
     private ContentService contentService;
 
-    @PostMapping("/content")
+    @PostMapping
     public ResponseEntity<?> saveContent(@RequestBody Content content) {
         Content savedContent = contentService.saveContent(content);
         return new ResponseEntity<>(savedContent, HttpStatus.CREATED);
     }
 
-    @GetMapping("/content")
+    @GetMapping
     public ResponseEntity<?> getAllContents() {
         List<Content> contents = (List<Content>) contentService.getAllContents();
         return new ResponseEntity<>(contents, HttpStatus.OK);
     }
 
-    @GetMapping("/content/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getContentById(@PathVariable("id") Long id) {
         Content content = contentService.getContentById(id);
         if (content == null) {

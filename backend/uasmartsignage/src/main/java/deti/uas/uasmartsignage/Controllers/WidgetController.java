@@ -14,19 +14,20 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/widgets")
 public class WidgetController {
 
     private WidgetService widgetService;
 
     private ContentService contentService;
 
-    @GetMapping("/widgets")
+    @GetMapping
     public ResponseEntity<?> getAllWidgets() {
         List<Widget> widgets = (List<Widget>) widgetService.getAllWidgets();
         return new ResponseEntity<>(widgets, HttpStatus.OK);
     }
 
-    @GetMapping("/widgets/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getWidgetById(@PathVariable("id") Long id) {
         Widget widget = widgetService.getWidgetById(id);
         if (widget == null) {
@@ -35,7 +36,7 @@ public class WidgetController {
         return new ResponseEntity<>(widget, HttpStatus.OK);
     }
 
-    @PostMapping("/widgets")
+    @PostMapping
     public ResponseEntity<?> saveWidget(@RequestBody Widget widget) {
         Long contentId = widget.getContent().getId();
         Content content = contentService.getContentById(contentId);
@@ -44,7 +45,7 @@ public class WidgetController {
         return new ResponseEntity<>(savedWidget, HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/widgets/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteWidget(@PathVariable("id") Long id) {
         widgetService.deleteWidget(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);

@@ -4,6 +4,8 @@ import deti.uas.uasmartsignage.Models.File;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +18,22 @@ public class FileService {
     public FileService(FileRepository fileRepository) {
         this.fileRepository = fileRepository;
     }
+
+    public static String getUploadDir(File file) {
+        StringBuilder pathBuilder = new StringBuilder();
+
+        // Traverse the parent hierarchy until it becomes null (reaching the root directory)
+        while (file.getParent() != null) {
+            pathBuilder.insert(0, file.getParent().getName() + "/");
+            file = file.getParent();
+        }
+
+        // Append a file separator for the root directory
+        pathBuilder.insert(0, "/");
+
+        return pathBuilder.toString();
+    }
+
 
     public List<File> getAllFiles() {
         return fileRepository.findAll();
@@ -53,4 +71,7 @@ public class FileService {
             throw new RuntimeException("File not found with id " + id);
         }
     }
+
+
+
 }

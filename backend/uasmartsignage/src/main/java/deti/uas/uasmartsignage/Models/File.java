@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 @Getter
@@ -28,7 +30,24 @@ public class File {
     @JoinColumn(name = "parentId")
     private File parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference
     private List<File> subDirectories;
+
+    public File(String name, String type, File parent, List<File> subDirectories) {
+        this.name = name;
+        this.type = type;
+        this.parent = parent;
+        this.subDirectories = subDirectories;
+    }
+
+    public String toString() {
+        return "File{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
+                ", parent=" + parent +
+                ", subDirectories=" + subDirectories +
+                '}';
+    }
 }
