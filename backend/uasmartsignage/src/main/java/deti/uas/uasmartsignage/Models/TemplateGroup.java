@@ -1,5 +1,7 @@
 package deti.uas.uasmartsignage.Models;
 
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,5 +31,11 @@ public class TemplateGroup {
     @JsonIgnore
     private MonitorsGroup monitorsGroupForTemplate;
 
-    //map content e value, idk
+    @ElementCollection
+    @CollectionTable(name = "TemplateGroup_Content", joinColumns = @JoinColumn(name = "template_group_id"))
+    @MapKeyColumn(name = "content_key")
+    @Column(name = "content_value")
+    Map<Integer, String> content;
+
+
 }

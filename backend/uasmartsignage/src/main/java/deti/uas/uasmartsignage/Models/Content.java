@@ -37,6 +37,10 @@ public class Content {
     @JsonIgnore
     private List<Widget> widgets;
 
-    //options, n me lembro doq é
+    
+    @ElementCollection
+    @CollectionTable(name = "Content_Options", joinColumns = @JoinColumn(name = "content_id"))
+    @Column(name = "option")
+    private List<String> options;
 
 }

@@ -34,13 +34,11 @@ public class Widget {
     @JoinColumn(name = "contentId", nullable = false)
     private Content content;
 
-    //notworking
-    /*
-    @ManyToMany(mappedBy = "widgets")
-
+    
+    @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<TemplateWidget> templateWidgets;
 
-     */
+    
 
 }
