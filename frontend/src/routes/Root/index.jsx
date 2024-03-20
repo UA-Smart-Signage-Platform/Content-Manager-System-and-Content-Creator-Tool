@@ -1,7 +1,10 @@
 import { NavBar, PageTitle } from "../../components";
 import { Outlet } from "react-router";
+import { useThemeStore } from "../../stores/useThemeStore";
 
 function Root(){
+    const theme = useThemeStore((state) =>state.theme)
+    console.log(theme)
 
     return(
         <div className="flex">
@@ -11,12 +14,12 @@ function Root(){
                     <div id="title" className="mt-6 h-[8%]">
                         <PageTitle/>
                     </div>
-                    <div id="content" className="h-[100vh]">
+                    <div id="content" className="h-[100vh] ${theme}">
                         <Outlet/>
                     </div>
                 </div>
             </div>
-        </div>
+        </>
     )
 }
 

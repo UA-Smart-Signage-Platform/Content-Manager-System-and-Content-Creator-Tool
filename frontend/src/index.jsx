@@ -13,7 +13,7 @@ const router = createBrowserRouter([
     children:[
       {
         path: "dashboard",
-        element:<div>test</div>,
+        element:<div className=' bg-background text-textcolor h-[100vh]'>test</div>,
       },
       {
         path: "media/:path",
