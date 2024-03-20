@@ -38,9 +38,9 @@ public class ScreenService {
         return screenRepository.save(screenById);
     }
     
-    public Iterable<Screen> getAllScreens() {
-        return screenRepository.findAll();
-    }
+        public Iterable<Screen> getAllScreens() {
+            return screenRepository.findAll();
+        }
 
     public List<Screen> getScreensByGroup(MonitorsGroup monitorsGroup) {
         return screenRepository.findByMonitorsGroupForScreens(monitorsGroup);

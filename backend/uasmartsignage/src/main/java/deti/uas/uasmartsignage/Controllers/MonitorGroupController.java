@@ -6,6 +6,8 @@ import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
@@ -58,5 +60,11 @@ public class MonitorGroupController {
         }
         return new ResponseEntity<>(monitorsGroup.getTemplateGroup(), HttpStatus.OK);
     }
-    
+
+    @PostMapping("/groups")
+    public ResponseEntity<?> saveGroup(@RequestBody MonitorsGroup monitorsGroup) {
+        MonitorsGroup savedGroup = monitorGroupService.saveGroup(monitorsGroup);
+        return new ResponseEntity<>(savedGroup, HttpStatus.CREATED);
+    }
+
 }
