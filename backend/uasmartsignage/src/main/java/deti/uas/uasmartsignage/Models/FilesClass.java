@@ -15,21 +15,15 @@ import java.util.List;
 @NoArgsConstructor
 public class FilesClass {
 
-    private String name;
+    private CustomFile parent;
 
-    private String type;
-
-    private File parent;
-
-    private List<File> subDirectories;
+    private List<CustomFile> subDirectories;
 
     private MultipartFile file;
 
     @Override
     public String toString() {
         return "FilesClass{" +
-                "name='" + name + '\'' +
-                ", type='" + type + '\'' +
                 ", parent=" + parent +
                 ", subDirectories=" + subDirectories +
                 ", file=" + file +

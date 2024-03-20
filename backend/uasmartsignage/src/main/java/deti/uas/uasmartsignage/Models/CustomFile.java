@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "File")
-public class File {
+public class CustomFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,16 +24,19 @@ public class File {
     @Column(nullable = false)
     private String type;
 
+    @Column
+    private String path;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     @JoinColumn(name = "parentId")
-    private File parent;
+    private CustomFile parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonManagedReference
-    private List<File> subDirectories;
+    private List<CustomFile> subDirectories;
 
-    public File(String name, String type, File parent, List<File> subDirectories) {
+    public CustomFile(String name, String type, CustomFile parent, List<CustomFile> subDirectories) {
         this.name = name;
         this.type = type;
         this.parent = parent;
