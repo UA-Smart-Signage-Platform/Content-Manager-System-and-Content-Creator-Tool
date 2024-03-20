@@ -9,7 +9,33 @@ import { Root } from './routes';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Root/>
+    element: <Root/>,
+    children:[
+      {
+        path: "dashboard",
+        element:<div>test</div>,
+      },
+      {
+        path: "media/:path",
+        element:<div>test2</div>,
+      },
+      {
+        path: "schedule",
+        element:<div>test3</div>,
+      },
+      {
+        path: "monitors",
+        element:<div>test6</div>,
+      },
+      {
+        path: "monitor/:id",
+        element:<div>test5</div>,
+      },
+      {
+        path: "contentcreator",
+        element:<div>test4</div>,
+      },
+    ]
   },
 ])
 
