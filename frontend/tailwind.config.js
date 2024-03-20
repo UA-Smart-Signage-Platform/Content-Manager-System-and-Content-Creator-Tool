@@ -14,23 +14,25 @@ module.exports = {
   },
   plugins: [
     createThemes({
-      ligth:{
+      light:{
         'primary':'#96d600',
         'accent':'#57e574',
         'secondary':'#a7a8a9',
-        'secondaryLigth':"#E9E9E9",
+        'secondaryLight':"#E9E9E9",
         'red':"#D12E2E",
         'textcolor':'#101604',
-        'background':'#fafdf7',
+        'backgroundcolor':'#fafdf7',
+        'searchButton':'#AFAFAF'
       },
       dark:{
         'primary':'#bfff29',
         'accent':'#1aa836',
         'secondary':'#5B5C5C',
-        'secondaryLigth':"#3D3D3E",
+        'secondaryLight':"#3D3D3E",
         'red':'#9D2929',
         'textcolor':'#f5fbe9',
         'background':'#1C1D1F',
+        'searchButton':'#00000' // TODO - to be changed
       }
     })
   ],
