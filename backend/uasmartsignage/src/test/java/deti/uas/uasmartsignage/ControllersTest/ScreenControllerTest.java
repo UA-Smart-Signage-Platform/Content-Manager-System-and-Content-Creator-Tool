@@ -4,6 +4,7 @@ import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,6 @@ public class ScreenControllerTest {
         groupRepo.saveAndFlush(monitorsGroup1);
         createTestScreen("Porto", false, monitorsGroup1);
         ResponseEntity<List<Monitor>> response = restTemplate.exchange("/monitors", HttpMethod.GET,null,new ParameterizedTypeReference<List<Monitor>>() {});
-        //System.out.println("111111111111111111111111fueuhfu"+ response.getBody());
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).extracting(Monitor::getLocation).containsExactly("Aveiro", "Porto");
     }
@@ -97,6 +97,41 @@ public class ScreenControllerTest {
         ResponseEntity<Monitor> response = restTemplate.getForEntity("/monitors/1", Monitor.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getLocation()).isEqualTo("Aveiro");
+    }
+
+    @Test
+    @Disabled
+    public void whenValid_getScreensByGroup(){
+        MonitorsGroup monitorsGroup = new MonitorsGroup();
+        monitorsGroup.setName("Group1");
+        MonitorsGroup monitorsGroup2 = new MonitorsGroup();
+        monitorsGroup2.setName("Group2");
+        groupRepo.saveAndFlush(monitorsGroup);
+        groupRepo.saveAndFlush(monitorsGroup2);
+        createTestScreen("Aveiro", true, monitorsGroup);
+        createTestScreen("Porto", false, monitorsGroup);
+        createTestScreen("Lisboa", true, monitorsGroup2);
+        ResponseEntity<List<Monitor>> response = restTemplate.exchange("/monitors/group/1", HttpMethod.GET,null,new ParameterizedTypeReference<List<Monitor>>() {});
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).extracting(Monitor::getLocation).containsExactly("Aveiro", "Porto");
+    }
+
+    @Test
+    @Transactional
+    public void whenValid_updateScreen(){
+        Monitor screen = new Monitor();
+        screen.setLocation("Aveiro");
+        screen.setStatus(false);
+        MonitorsGroup monitorsGroup = new MonitorsGroup();
+        monitorsGroup.setName("Group1");
+        groupRepo.saveAndFlush(monitorsGroup);
+        screen.setMonitorsGroupForScreens(monitorsGroup);
+        screenRepo.saveAndFlush(screen);
+        screen.setLocation("Porto");
+        restTemplate.put("/monitors/1", screen);
+        List<Monitor> found = screenRepo.findAll();
+        System.out.println("Location: " + found.get(0).getLocation());
+        assertThat(found).extracting(Monitor::getLocation).containsOnly("Porto");
     }
 
     private void createTestScreen(String location, Boolean status, MonitorsGroup monitorsGroup) {
