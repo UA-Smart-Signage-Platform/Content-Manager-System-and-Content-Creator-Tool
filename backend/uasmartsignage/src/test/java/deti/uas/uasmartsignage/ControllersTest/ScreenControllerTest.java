@@ -63,6 +63,8 @@ public class ScreenControllerTest {
 
         ResponseEntity<Screen> response = restTemplate.postForEntity("/screens", screen, Screen.class);
 
+        System.out.println("RESPONSE RECEIVED");
+
         List<Screen> found = screenRepo.findAll();
         System.out.println("huehiehfeio" + found);
 

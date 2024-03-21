@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class Screen {
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
+    @JsonIgnore
     private MonitorsGroup monitorsGroupForScreens;
 
 }
