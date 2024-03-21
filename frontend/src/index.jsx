@@ -17,7 +17,7 @@ const router = createBrowserRouter([
         element:<Dashboard/>
       },
       {
-        path: "media",
+        path: "media/:path",
         element:<div>test2</div>,
       },
       {
