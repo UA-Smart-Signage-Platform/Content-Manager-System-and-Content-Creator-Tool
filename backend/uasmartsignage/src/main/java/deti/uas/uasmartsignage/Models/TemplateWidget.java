@@ -42,15 +42,9 @@ public class TemplateWidget {
     @JsonIgnore
     private Template template;
 
-
-    //not working
-    /*
-    @ManyToMany
-    @JoinTable(
-            name = "templateWidgetWidgets",
-            joinColumns = @JoinColumn(name = "templateWidgetId"),
-            inverseJoinColumns = @JoinColumn(name = "widgetId")
-    )
-    private List<Widget> widgets;
-    */
+    @ManyToOne
+    @JoinColumn(name = "widgetId", nullable = false)
+    @JsonIgnore
+    private Widget widget;
+   
 }

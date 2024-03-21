@@ -6,26 +6,28 @@ import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/groups")
 public class MonitorGroupController {
 
     private MonitorGroupService monitorGroupService;
 
-    @GetMapping("/groups")
+    @GetMapping
     public ResponseEntity<?> getAllGroups() {
         List<MonitorsGroup> monitorsGroups = (List<MonitorsGroup>) monitorGroupService.getAllGroups();
         return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
     }
 
-    @GetMapping("/groups/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> getGroupById(Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
@@ -34,7 +36,7 @@ public class MonitorGroupController {
         return new ResponseEntity<>(monitorsGroup, HttpStatus.OK);
     }
 
-    @GetMapping("/groups/name/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<?> getGroupByName(String name) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupByName(name);
         if (monitorsGroup == null) {
@@ -43,16 +45,16 @@ public class MonitorGroupController {
         return new ResponseEntity<>(monitorsGroup, HttpStatus.OK);
     }
 
-    @GetMapping("/groups/{id}/screens")
+    @GetMapping("/{id}/screens")
     public ResponseEntity<?> getScreensByGroup(Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(monitorsGroup.getScreens(), HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroup.getMonitors(), HttpStatus.OK);
     }
 
-    @GetMapping("/groups/{id}/template")
+    @GetMapping("/{id}/template")
     public ResponseEntity<?> getTemplateByGroup(Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
@@ -61,7 +63,7 @@ public class MonitorGroupController {
         return new ResponseEntity<>(monitorsGroup.getTemplateGroup(), HttpStatus.OK);
     }
 
-    @PostMapping("/groups")
+    @PostMapping
     public ResponseEntity<?> saveGroup(@RequestBody MonitorsGroup monitorsGroup) {
         MonitorsGroup savedGroup = monitorGroupService.saveGroup(monitorsGroup);
         return new ResponseEntity<>(savedGroup, HttpStatus.CREATED);

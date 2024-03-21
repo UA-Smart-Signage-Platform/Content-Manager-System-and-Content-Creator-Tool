@@ -6,12 +6,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import deti.uas.uasmartsignage.Repositories.ScreenRepository;
+import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Models.Screen;
+import deti.uas.uasmartsignage.Models.Monitor;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class RepositoriesTest {
         private TestEntityManager entityManager;
 
         @Autowired
-        private ScreenRepository screenRepository;
+        private MonitorRepository screenRepository;
 
         @Autowired
         private MonitorGroupRepository monitorGroupRepository;
@@ -36,7 +36,7 @@ public class RepositoriesTest {
         @Test
         public void whenFindById_thenReturnScreen() {
             String location = "Aveiro";
-            Screen screen = new Screen();
+            Monitor screen = new Monitor();
             screen.setLocation(location);
             screen.setStatus(true);
             MonitorsGroup monitorsGroup = new MonitorsGroup();
@@ -45,7 +45,7 @@ public class RepositoriesTest {
             screen.setMonitorsGroupForScreens(monitorsGroup);
             entityManager.persistAndFlush(screen);
 
-            Screen found = screenRepository.findById(screen.getId()).orElse(null);
+            Monitor found = screenRepository.findById(screen.getId()).orElse(null);
 
             assertThat(found.getLocation())
                     .isEqualTo("Aveiro");
@@ -54,7 +54,7 @@ public class RepositoriesTest {
         @Test
         public void whenFindByMonitorsGroupForScreens_thenReturnScreens() {
             String location = "Aveiro";
-            Screen screen = new Screen();
+            Monitor screen = new Monitor();
             screen.setLocation(location);
             screen.setStatus(true);
             MonitorsGroup monitorsGroup = new MonitorsGroup();
@@ -63,7 +63,7 @@ public class RepositoriesTest {
             screen.setMonitorsGroupForScreens(monitorsGroup);
             entityManager.persistAndFlush(screen);
 
-            List<Screen> found = screenRepository.findByMonitorsGroupForScreens(monitorsGroup);
+            List<Monitor> found = screenRepository.findByMonitorsGroupForScreens(monitorsGroup);
 
             assertThat(found.get(0).getLocation())
                     .isEqualTo("Aveiro");

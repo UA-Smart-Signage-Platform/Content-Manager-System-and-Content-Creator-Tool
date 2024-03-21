@@ -17,6 +17,7 @@ public class MonitorGroupService {
     }
 
     public MonitorsGroup saveGroup(MonitorsGroup monitorsGroup) {
+
         return monitorGroupRepository.save(monitorsGroup);
     }
 

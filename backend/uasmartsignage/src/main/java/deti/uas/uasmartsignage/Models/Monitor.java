@@ -1,6 +1,8 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "Screens")
-public class Screen {
+public class Monitor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +29,7 @@ public class Screen {
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties({"monitors", "templateGroup"})
     private MonitorsGroup monitorsGroupForScreens;
 
 }

@@ -12,24 +12,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api")
+
 @RestController
+@RequestMapping("/templates")
 public class TemplateController {
 
     @Autowired
     private TemplateRepository templateRepository;
 
-    @GetMapping("/templates")
+    @GetMapping
     public Iterable<Template> getAllTemplates() {
         return templateRepository.findAll();
     }
 
-    @PostMapping("/templates")
+    @PostMapping
     public Template saveTemplate(Template template) {
         return templateRepository.save(template);
     }
 
-    @GetMapping("/templates/{id}")
+    @GetMapping("/{id}")
     public Template getTemplateById(Long id) {
         return templateRepository.findById(id).orElse(null);
     }

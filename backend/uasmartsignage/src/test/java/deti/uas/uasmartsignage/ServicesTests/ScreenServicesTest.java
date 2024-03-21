@@ -10,9 +10,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
-import deti.uas.uasmartsignage.Models.Screen;
-import deti.uas.uasmartsignage.Repositories.ScreenRepository;
-import deti.uas.uasmartsignage.Services.ScreenService;
+import deti.uas.uasmartsignage.Models.Monitor;
+import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Services.MonitorService;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,23 +24,23 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ScreenServicesTest {
 
     @Mock( lenient = true)
-    private ScreenRepository screenRepository;
+    private MonitorRepository screenRepository;
 
     @InjectMocks
-    private ScreenService screenService;
+    private MonitorService screenService;
 
     @BeforeEach
     public void setUp(){
         MonitorsGroup monitorsGroup = new MonitorsGroup();
-        Screen screen = new Screen();
+        Monitor screen = new Monitor();
         screen.setLocation("Aveiro");
         screen.setStatus(true);
         screen.setMonitorsGroupForScreens(monitorsGroup);
-        Screen screen2 = new Screen();
+        Monitor screen2 = new Monitor();
         screen2.setLocation("Porto");
         screen2.setStatus(false);
         screen2.setMonitorsGroupForScreens(monitorsGroup);
-        List<Screen> allScreens = Arrays.asList(screen, screen2);
+        List<Monitor> allScreens = Arrays.asList(screen, screen2);
         Mockito.when(screenRepository.findByLocation(screen.getLocation())).thenReturn(screen);
         Mockito.when(screenRepository.findById(1L)).thenReturn(Optional.of(screen));
         Mockito.when(screenRepository.findAll()).thenReturn(allScreens);
@@ -51,23 +51,23 @@ public class ScreenServicesTest {
     @Test
     public void whenValidGroup_thenScreenShouldBeFound() {
         MonitorsGroup monitorsGroup = new MonitorsGroup();
-        Screen screen = new Screen();
+        Monitor screen = new Monitor();
         screen.setLocation("Aveiro");
         screen.setStatus(true);
         screen.setMonitorsGroupForScreens(monitorsGroup);
-        Screen screen2 = new Screen();
+        Monitor screen2 = new Monitor();
         screen2.setLocation("Porto");
         screen2.setStatus(false);
         screen2.setMonitorsGroupForScreens(monitorsGroup);
-        List<Screen> allScreens = Arrays.asList(screen, screen2);
+        List<Monitor> allScreens = Arrays.asList(screen, screen2);
         Mockito.when(screenRepository.findByMonitorsGroupForScreens(monitorsGroup)).thenReturn(allScreens);
-        List<Screen> found = screenService.getScreensByGroup(monitorsGroup);
+        List<Monitor> found = screenService.getScreensByGroup(monitorsGroup);
         assertThat(found.size()).isEqualTo(2);
     }
 
     @Test
     public void whenValidId_thenScreenShouldBeFound() {
-        Screen found = screenService.getScreenById(1L);
+        Monitor found = screenService.getScreenById(1L);
         assertThat(found.getLocation()).isEqualTo("Aveiro");
     }
 

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Form</title>
+</head>
+<body>
+<h1>File Upload Form</h1>
+<form id="uploadForm" enctype="multipart/form-data">
+    <label for="parentId">Parent Folder ID:</label>
+    <input type="text" id="parentId" name="parent.id"><br><br>
+
+    <label for="file">Select File:</label>
+    <input type="file" id="file" name="file"><br><br>
+
+    <button type="submit">Upload File</button>
+</form>
+
+<script>
+    document.getElementById("uploadForm").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+
+        // Get form data
+        let formData = new FormData();
+        if (document.getElementById("parentId").value) {
+            formData.append("parent.id", document.getElementById("parentId").value);
+        }
+        formData.append("file", document.getElementById("file").files[0]); // 'files' should be lowercase
+
+        // Send POST request using fetch API
+        fetch("/files", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to upload file");
+                }
+                return response.text();
+            })
+            .then(data => {
+                console.log("File uploaded successfully:", data);
+                // Optionally, display a success message or redirect the user
+            })
+            .catch(error => {
+                console.error("Error uploading file:", error);
+                // Optionally, display an error message to the user
+            });
+    });
+</script>
+</body>
+</html>

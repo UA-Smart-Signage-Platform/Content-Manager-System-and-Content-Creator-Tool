@@ -11,7 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
-import deti.uas.uasmartsignage.Models.Screen;
+import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 
 
@@ -33,17 +33,17 @@ public class MonitorGroupServicesTest {
     @BeforeEach
     public void setUp(){
 
-        Screen screen = new Screen();
+        Monitor screen = new Monitor();
         screen.setLocation("Aveiro");
         TemplateGroup templateGroup = new TemplateGroup();
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("Group1");
-        monitorsGroup.setScreens(List.of(screen));
+        monitorsGroup.setMonitors(List.of(screen));
         monitorsGroup.setTemplateGroup(templateGroup);
 
         MonitorsGroup monitorsGroup2 = new MonitorsGroup();
         monitorsGroup2.setName("Group2");
-        monitorsGroup2.setScreens(List.of(screen));
+        monitorsGroup2.setMonitors(List.of(screen));
 
         List<MonitorsGroup> allGroups = Arrays.asList(monitorsGroup, monitorsGroup2);
 
@@ -64,12 +64,12 @@ public class MonitorGroupServicesTest {
 
     @Test
     public void whenValidObject_saveGroup() {
-        Screen screen = new Screen();
+        Monitor screen = new Monitor();
         screen.setLocation("Aveiro");
         TemplateGroup templateGroup = new TemplateGroup();
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("Group2");
-        monitorsGroup.setScreens(List.of(screen));
+        monitorsGroup.setMonitors(List.of(screen));
         monitorsGroup.setTemplateGroup(templateGroup);
         Mockito.when(monitorGroupRepository.save(monitorsGroup)).thenReturn(monitorsGroup);
         MonitorsGroup saved = monitorGroupService.saveGroup(monitorsGroup);
@@ -92,17 +92,17 @@ public class MonitorGroupServicesTest {
 
     @Test
     public void getAllGroups() {
-        Screen screen = new Screen();
+        Monitor screen = new Monitor();
         screen.setLocation("Aveiro");
         TemplateGroup templateGroup = new TemplateGroup();
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("Group1");
-        monitorsGroup.setScreens(List.of(screen));
+        monitorsGroup.setMonitors(List.of(screen));
         monitorsGroup.setTemplateGroup(templateGroup);
 
         MonitorsGroup monitorsGroup2 = new MonitorsGroup();
         monitorsGroup2.setName("Group2");
-        monitorsGroup2.setScreens(List.of(screen));
+        monitorsGroup2.setMonitors(List.of(screen));
 
         List<MonitorsGroup> allGroups = Arrays.asList(monitorsGroup, monitorsGroup2);
         assertThat(allGroups).hasSize(2).extracting(MonitorsGroup::getName).contains(monitorsGroup.getName(), monitorsGroup2.getName());
