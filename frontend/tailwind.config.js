@@ -22,7 +22,9 @@ module.exports = {
         'red':"#D12E2E",
         'textcolor':'#101604',
         'backgroundcolor':'#fafdf7',
-        'searchButton':'#AFAFAF'
+        'searchButton':'#AFAFAF',
+        'selectedGroup':'#C7C7C7',
+        'textcolorNotSelected':'#4D5146',
       },
       dark:{
         'primary':'#bfff29',
@@ -31,8 +33,11 @@ module.exports = {
         'secondaryLight':"#3D3D3E",
         'red':'#9D2929',
         'textcolor':'#f5fbe9',
-        'background':'#1C1D1F',
-        'searchButton':'#00000' // TODO - to be changed
+        'backgroundcolor':'#1C1D1F',
+        // TODO - to be changed
+        'searchButton':'#AFAFAF', 
+        'selectedGroup':'#C7C7C7',
+        'textcolorNotSelected':'#4D5146',
       }
     })
   ],

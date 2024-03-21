@@ -4,6 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
+import { Dashboard } from './pages';
 
 
 const router = createBrowserRouter([
@@ -13,10 +14,10 @@ const router = createBrowserRouter([
     children:[
       {
         path: "dashboard",
-        element:<div className=' bg-background text-textcolor h-[100vh]'>test</div>,
+        element:<Dashboard/>
       },
       {
-        path: "media/:path",
+        path: "media",
         element:<div>test2</div>,
       },
       {
