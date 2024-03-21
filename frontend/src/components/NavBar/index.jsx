@@ -16,7 +16,7 @@ function NavBar() {
 
     return(
         <> 
-        <div className=" flex flex-col w-[65px] bg-black h-[100vh] gap-10 z-10 text-white"
+        <div className=" flex flex-col w-[65px] bg-black h-[100vh] gap-10 z-10 text-white fixed"
              onMouseEnter={()=>{setIsShow(true);}}
              onMouseLeave={()=>{setIsShow(false)}}>
             <div className="w-full h-[16%]">

@@ -9,7 +9,7 @@ function Root(){
         <div className={`h-screen flex ${theme} text-textcolor bg-backgroundcolor`}>
             <NavBar/>
             <div id="body" className="h-[100vh] w-full">
-                <div id="border" className="p-4 pr-20 h-full">
+                <div id="page-content" className="ml-[65px] p-4 pr-20 h-full">
                     <Outlet/>
                 </div>
             </div>

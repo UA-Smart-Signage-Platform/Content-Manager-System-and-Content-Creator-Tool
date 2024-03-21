@@ -4,7 +4,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 export const useThemeStore = create(
   persist(
     (set, get) => ({
-      theme: "dark",
+      theme: "light",
 
       changeTheme: (theme) =>{
         set(()=>({
