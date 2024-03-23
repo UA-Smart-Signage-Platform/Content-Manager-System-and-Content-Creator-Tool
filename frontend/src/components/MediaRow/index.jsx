@@ -14,8 +14,8 @@ function MediaRow( { type } ) {
     }
     
     return(
-        <div id="row" className="flex flex-col mb-[2%] mr-[2%]">
-            <div id="rowInfo" className="flex flex-row mb-[2%]">
+        <div id="row" className="flex flex-col mr-[2%] hover:bg-secondaryLight h-full cursor-pointer">
+            <div id="rowInfo" className="flex flex-row h-full mt-[2%] mb-[2%] items-center">
                 <span className="flex items-center w-[25%]">
                     <span className="h-full w-[13%] ml-1">{icon}</span>
                     <span className="ml-4">Image.png</span>

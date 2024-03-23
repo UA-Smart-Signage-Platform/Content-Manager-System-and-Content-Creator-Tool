@@ -4,7 +4,7 @@ import { MdOutlineInsertDriveFile, MdAdd, MdKeyboardArrowDown } from "react-icon
 
 function Media() {
     return (
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col overflow-hidden">
             <div id="title" className="mt-4 h-[8%]">
                 <PageTitle startTitle={"media"} 
                             middleTitle={"dashboard"}
@@ -12,8 +12,8 @@ function Media() {
             </div>
             <div id="divider" className="flex flex-col h-full mr-3 ml-3 ">
                 <div id="mediaHeader" className="h-[6%] w-full text-xl flex">
-                    <span className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3">
-                        <span className="h-full w-[60%]"><MdAdd className="h-full w-full" style={{ fontSize: '100px'}}/></span>
+                    <span className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
+                        <span className="h-full w-[60%]"><MdAdd className="h-full w-full"/></span>
                         <span id="headerDividerHr" className="h-full border-[1px] border-secondary ml-auto"/>
                         <span className="h-full"><MdKeyboardArrowDown className="h-full"/></span>
                     </span>
@@ -26,16 +26,32 @@ function Media() {
                     <span className="w-[35%]"></span>
                 </div>
                 <div id="dividerHr" className="border-[1px] border-secondary"/>
-                <div className="h-full w-full flex flex-row">
-                    <div id="mediaContent" className="flex flex-col w-[50%] ml-[4%] mt-[1%]">
+                <div className="h-full flex flex-row">
+                    <div id="mediaContent" className="flex flex-col w-[50%] ml-[4%] overflow-scroll max-h-[760px]">
                         <MediaRow type="folder"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
+                        <MediaRow type="image"/>
                         <MediaRow type="image"/>
                         <MediaRow type="image"/>
                         <MediaRow type="image"/>
                     </div>
                     <div id="mediaDividerHr" className=" w-[1px] h-full border-[1px] border-secondary"/>
-                    <div id="mediaImage">
-                        Image preview
+                    <div id="mediaImage" className="flex h-full w-[45%]">
+                        <div id="mediaImagePreview" className="m-auto mt-[25%] text-2xl font-light">
+                            <span>Select an image to preview it here</span>
+                        </div>
                     </div>
                 </div>
             </div>
