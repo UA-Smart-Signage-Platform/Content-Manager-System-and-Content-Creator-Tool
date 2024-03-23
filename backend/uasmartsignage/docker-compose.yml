@@ -10,6 +10,16 @@ services:
       - "5432:5432"
     networks:
       - default
+      
+
+  influxdb:
+    image: influxdb:latest
+    volumes:
+        - influxdb_data:/var/lib/influxdb
+    env_file:
+      - credentials.env
+    ports:
+        - "8086:8086"
 
   api:
     build:
@@ -24,3 +34,6 @@ services:
       - 8080:8080
       - 35729:35729
       - 5005:5005
+
+volumes:
+  influxdb_data:
