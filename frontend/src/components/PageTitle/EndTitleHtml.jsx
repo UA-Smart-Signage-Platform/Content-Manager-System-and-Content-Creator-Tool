@@ -2,7 +2,7 @@ import { MdOutlineSearch } from "react-icons/md";
 
 
 function EndTitleHtml( {page} ){
-    if (page === "dashboard")
+    if (page === "default")
         return (
             <div className="flex border-2 border-searchButton rounded-md drop-shadow-md">
                 <input className="z-10 bg-secondaryLight rounded-l-sm pl-2 pr-2 text-textcolor"

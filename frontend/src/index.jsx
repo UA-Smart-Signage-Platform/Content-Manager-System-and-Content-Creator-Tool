@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
-import { Dashboard } from './pages';
+import { Dashboard, Media } from './pages';
 
 
 const router = createBrowserRouter([
@@ -18,7 +18,7 @@ const router = createBrowserRouter([
       },
       {
         path: "media/:path",
-        element:<div>test2</div>,
+        element:<Media/>,
       },
       {
         path: "schedule",

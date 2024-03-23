@@ -16,7 +16,7 @@ function PageTitle({ startTitle, middleTitle, endTitle }) {
                     < EndTitleHtml page={endTitle} />
                 </div>
             </div>
-            <div id="divider" className="border-[1px] border-secondary flex-col"/>
+            <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
         </div>
     )
 }
