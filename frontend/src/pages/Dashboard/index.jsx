@@ -4,7 +4,6 @@ function Dashboard() {
     return (
         <div className="h-full flex flex-col">
             <div id="title" className="mt-4 h-[8%]">
-            <startTitleHtml/>
                 <PageTitle startTitle={"dashboard"} 
                             middleTitle={"dashboard"}
                             endTitle={"dashboard"}/>

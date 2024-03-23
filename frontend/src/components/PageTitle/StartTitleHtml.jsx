@@ -1,4 +1,4 @@
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle,MdSettings } from "react-icons/md";
 
 
 function StartTitleHtml( {page} ){
@@ -11,9 +11,9 @@ function StartTitleHtml( {page} ){
             </span>
         </div>
         )
-    if (page === "")
+    if (page === "monitors")
         return(
-            <div></div>
+                <span className="font-bold text-4xl">Monitors</span>
         )
     if (page === "...")
         return(
