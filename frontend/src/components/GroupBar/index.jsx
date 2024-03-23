@@ -12,7 +12,7 @@ function GroupBar() {
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col mt-5">
+                <div className="flex flex-col mt-5 overflow-scroll">
                     <span className="mb-1 font-medium text-2xl">Groups</span>
                     <div className="bg-secondaryLight text-textcolorNotSelected rounded-[4px] mb-4 mr-4">
                         <div className="flex flex-col mt-1 mb-1 ml-4">

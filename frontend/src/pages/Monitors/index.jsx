@@ -4,19 +4,17 @@ import {ReactComponent as MonitorsIcon} from "../../static/monitors.svg"
 function Monitors(){
     
     return(
-        <div className="flex flex-col flex-1 max-h-full">
-            <div id="title" className="mt-4 h-[8%]">
+        <div className="flex flex-col h-full">
+            <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"monitors"} 
                             middleTitle={"dashboard"}
                             endTitle={"dashboard"}/>
             </div>
-            <div id="divider" className="flex flex-row overflow-hidden">
+            <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                 <div className="w-[30%] flex flex-col">
-                    <div className=" grow min-h-0">
                         <GroupBar/>
-                    </div>
                 </div>
-                <div id="content" className="w-full pr-3 pl-3 flex flex-col flex-1">
+                <div id="content" className="w-full pr-3 pl-3 flex flex-col">
                     <div id="Title_Row" className="text-2xl flex px-3 pt-3 justify-items-center text-center">
                         <span className="flex gap-2 items-center w-[40%]"><MonitorsIcon className="size-8"/>All Monitors</span>
                         <span className="text-center">Group</span>
@@ -25,18 +23,6 @@ function Monitors(){
                         <span className="w-[10%] text-right">IP</span>
                     </div>
                     <div className="overflow-scroll">
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
                         <MonitorRow/>
                         <MonitorRow/>
                         <MonitorRow/>
