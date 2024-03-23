@@ -2,7 +2,7 @@ import { MdAccountCircle } from "react-icons/md";
 
 
 function StartTitleHtml( {page} ){
-    if (page === "dashboard")
+    if (page === "default")
         return (
         <div className="flex">
             <MdAccountCircle className="h-6 w-6"/>
@@ -11,9 +11,11 @@ function StartTitleHtml( {page} ){
             </span>
         </div>
         )
-    if (page === "")
+    if (page === "media")
         return(
-            <div></div>
+            <div className="flex ml-2 font-medium">
+                <span className="text-2xl">Media Images</span>
+            </div>
         )
     if (page === "...")
         return(
