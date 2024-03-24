@@ -1,15 +1,9 @@
-version: "9.3"
+version: "3.9"
 services:
   sonarqube:
-    image: "sonarqube:9.9.4-community"
-    volumes:
-      - ./sonarqube/extensions:/opt/sonarqube/extensions
-      - ./sonarqube/logs:/opt/sonarqube/logs
-      - ./sonarqube/data:/opt/sonarqube/data
+    image: "sonarqube:latest"
     environment:
-      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLED=true
-    expose:
-      - "9000"
+      - SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true
     ports:
       - 9000:9000
 
@@ -26,4 +20,4 @@ services:
       - 3000:3000
     command: >
       bash -c "cp -rfu /cache/node_modules/. /app/node_modules/  
-      && npm scan"
+      && node sonarqube/sonarscan.js"
