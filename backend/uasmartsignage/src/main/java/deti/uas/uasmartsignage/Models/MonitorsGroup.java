@@ -2,10 +2,13 @@ package deti.uas.uasmartsignage.Models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -20,6 +23,7 @@ public class MonitorsGroup {
     private String name;
 
     @OneToMany(mappedBy = "monitorsGroupForScreens", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("monitorsGroupForScreens")
     private List<Monitor> monitors;
 
     @OneToOne(mappedBy = "monitorsGroupForTemplate", cascade = CascadeType.ALL)

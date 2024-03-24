@@ -33,7 +33,6 @@ public class MonitorService {
             return null;
         }
         monitorById.setLocation(monitor.getLocation());
-        monitorById.setStatus(monitor.getStatus());
         //screenById.setGroupID(screen.getGroupID());
         return monitorRepository.save(monitorById);
     }

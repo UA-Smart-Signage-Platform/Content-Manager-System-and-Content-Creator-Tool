@@ -21,9 +21,6 @@ public class Monitor {
     @Column(nullable = false, unique = true)
     private String location;
 
-    @Column(nullable = false)
-    private Boolean status;
-
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
     private MonitorsGroup monitorsGroupForScreens;

@@ -18,8 +18,10 @@ import java.util.List;
 public class Template {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
+    @Column(nullable = false)
     private String path;
 
     @Column(nullable = false, unique = true)
