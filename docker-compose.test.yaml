@@ -13,11 +13,11 @@ services:
     build:
       context: ./frontend
       dockerfile: .docker/Dockerfile
-    restart: unless-stopped
     volumes:
       - "./frontend/:/app"
     ports:
       - 3000:3000
     command: >
       bash -c "cp -rfu /cache/node_modules/. /app/node_modules/  
+      && sleep 25
       && node sonarqube/sonarscan.js"
