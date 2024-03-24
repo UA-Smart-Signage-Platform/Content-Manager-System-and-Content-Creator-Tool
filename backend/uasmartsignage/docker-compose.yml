@@ -9,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - default
+      - mqttnet
 
   api:
     build:
@@ -24,3 +24,29 @@ services:
       - 8080:8080
       - 35729:35729
       - 5005:5005
+    depends_on:
+      - postgres_db
+      - mqtt
+    networks:
+      - mqttnet #default
+
+  mqtt:
+    image: eclipse-mosquitto:1.6.13
+    volumes:
+        - mosquitto_conf:/mosquitto/config 
+        - mosquitto_data:/mosquitto/data
+        - mosquitto_log:/mosquitto/log
+    networks:
+        - mqttnet
+    ports:
+        - 9001:9001
+        - 1883:1883
+
+volumes:
+    mosquitto_conf:
+    mosquitto_data:
+    mosquitto_log:
+
+networks:
+  mqttnet:
+    driver: bridge

@@ -1,12 +1,20 @@
 package deti.uas.uasmartsignage.Controllers;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Mqtt.MqttPublish;
+import deti.uas.uasmartsignage.Configuration.MqttConfig;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
 
 import java.util.List;
 
