@@ -13,6 +13,9 @@ services:
     build:
       context: ./frontend
       dockerfile: .docker/Dockerfile
+    environment:
+      - TOKEN=${TOKEN}
+      - PROJECT=${PROJECT}
     volumes:
       - "./frontend/:/app"
     ports:
