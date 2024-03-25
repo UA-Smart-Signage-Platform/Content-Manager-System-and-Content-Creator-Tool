@@ -26,16 +26,49 @@ function Monitor(){
                                     <div className="h-[10%]">Memory</div>
                                     <MemorySvg className=" h-[90%]" usado={"120"} max={"500"} full={0.5}/>
                                 </div>
-                                <div className=" bg-[#d7dad6] rounded-[10px] basis-1/3 p-2"> IP</div>
+                                <div className=" bg-[#d7dad6] rounded-[10px] basis-1/3 p-2"> 
+                                    <div className="h-[20%]">
+                                        <span>IP</span>
+                                    </div>
+                                    <div className="h-[80%] flex items-center w-full pb-[20%]">
+                                        <span className="text-xl text-center w-full">127.0.0.1</span>
+                                    </div>
+                                </div>
                                 <div className=" bg-[#d7dad6] rounded-[10px] rounded-tr-[30px] basis-1/3 p-2"> 
-                                    <span className="flex flex-row gap-2 justify-center items-center">Group<MdCreate/></span>
+                                    <div className="h-[20%]">
+                                        <span className="flex flex-row gap-2 justify-center items-center">Group<MdCreate/></span>
+                                    </div>
+                                    <div className="h-[80%] flex items-center w-full pb-[20%]">
+                                        <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                    </div>
                                 </div>
 
                             </div>
                             <div className="flex w-full gap-3 h-[49%] justify-around">
-                                <div className=" bg-[#d7dad6] rounded-[10px] rounded-bl-[30px] basis-1/3 p-2"> Updated</div>
-                                <div className=" bg-[#d7dad6] rounded-[10px] basis-1/3 p-2"> Errors</div>
-                                <div className=" bg-[#d7dad6] rounded-[10px] rounded-br-[30px] basis-1/3 p-2"> Last Update</div>
+                                <div className=" bg-[#d7dad6] rounded-[10px] rounded-bl-[30px] basis-1/3 p-2"> 
+                                    <div className="h-[20%]">
+                                        <span>Updated</span>
+                                    </div>
+                                    <div className="h-[80%] flex items-center w-full pb-[20%]">
+                                        <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                    </div>
+                                </div>
+                                <div className=" bg-[#d7dad6] rounded-[10px] basis-1/3 p-2"> 
+                                    <div className="h-[20%]">
+                                        <span>Errors</span>
+                                    </div>
+                                    <div className="h-[80%] flex items-center w-full pb-[20%]">
+                                        <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                    </div>
+                                </div>
+                                <div className=" bg-[#d7dad6] rounded-[10px] rounded-br-[30px] basis-1/3 p-2"> 
+                                    <div className="h-[20%]">
+                                        <span>Last Update</span>
+                                    </div>
+                                    <div className="h-[80%] flex items-center w-full pb-[20%]">
+                                        <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
