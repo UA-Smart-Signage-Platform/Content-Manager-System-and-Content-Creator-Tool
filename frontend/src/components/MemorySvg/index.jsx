@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
+import { useThemeStore } from "../../stores/useThemeStore";
 
 function MemorySvg({className,usado,max,full}){
+    const theme = useThemeStore((state) =>state.theme)
+    const primary = theme === "light" ? "#96d600" : "#bfff29";
+    const accent = theme === "light" ? "#57e574" : "#1aa836";
+    const text = theme === "light" ? "#101604" : "#f5fbe9";
 
     const draw = {
         hidden: { pathLength: 0, opacity: 0 },
@@ -47,7 +52,7 @@ function MemorySvg({className,usado,max,full}){
               cy="50"
               r="40"
               fill="none" // No fill
-              stroke="#57E574" // Border color
+              stroke={accent} // Border color
               strokeWidth="1.5" // Border width
               variants={draw}
             />
@@ -56,11 +61,11 @@ function MemorySvg({className,usado,max,full}){
               cy="50"
               r="40"
               fill="none" // No fill
-              stroke="#97D700" // Border color
+              stroke={primary} // Border color
               strokeWidth="5" // Border width
               variants={draw2}
             />
-            <motion.text textAnchor="middle" x="50" y="-45" fontSize="13" transform="rotate(90)"
+            <motion.text fill={text} textAnchor="middle" x="50" y="-45" fontSize="13" transform="rotate(90)"
                 initial={{opacity:0}}
                 animate={{opacity:1}}
                 transition={{duration:1.5}}
