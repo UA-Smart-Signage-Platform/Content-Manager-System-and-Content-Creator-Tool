@@ -1,7 +1,7 @@
 
 
 function MiddleTitleHtml( {page} ){
-    if (page === "dashboard")
+    if (page === "default")
         return (
             <div></div>
         )

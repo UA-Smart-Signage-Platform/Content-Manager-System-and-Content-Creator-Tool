@@ -4,10 +4,9 @@ function Dashboard() {
     return (
         <div className="h-full flex flex-col">
             <div id="title" className="mt-4 h-[8%]">
-            <startTitleHtml/>
-                <PageTitle startTitle={"dashboard"} 
-                            middleTitle={"dashboard"}
-                            endTitle={"dashboard"}/>
+                <PageTitle startTitle={"default"} 
+                            middleTitle={"default"}
+                            endTitle={"default"}/>
             </div>
             <div id="divider" className="flex flex-row h-full">
                 <div className="w-[30%]">
