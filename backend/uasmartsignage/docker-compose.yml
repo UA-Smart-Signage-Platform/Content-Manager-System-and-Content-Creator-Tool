@@ -1,8 +1,8 @@
 version: '3.9'
 
 services:
-  postgres_db:  # Renamed the service to postgres_db
-    image: postgres:latest  # Using the PostgreSQL image
+  postgres_db:
+    image: postgres:latest
     restart: unless-stopped
     env_file:
       - credentials.env
@@ -28,7 +28,7 @@ services:
       - postgres_db
       - mqtt
     networks:
-      - mqttnet #default
+      - mqttnet
 
   mqtt:
     image: eclipse-mosquitto:1.6.13
