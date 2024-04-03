@@ -9,10 +9,6 @@ const monitorService = {
         return await client.get(`/monitors/${id}`)
     },
 
-    async getMonitorsByGroup(group) {
-        return await client.get(`/monitors/group/${group}`)
-    },
-
     async acceptMonitor() {
         return await client.post("/monitors")
     }

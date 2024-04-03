@@ -1,8 +1,18 @@
+import { useEffect, useState } from "react";
 import { PageTitle,GroupBar,MonitorRow } from "../../components";
-import {ReactComponent as MonitorsIcon} from "../../static/monitors.svg"
+import { ReactComponent as MonitorsIcon } from "../../static/monitors.svg"
+import monitorService from "../../services/monitorService"
 
 function Monitors(){
-    
+    const [dataLoaded, setDataLoaded] = useState(false);
+    const [monitors, setMonitors] = useState({});
+
+    useEffect(() => {
+        monitorService.getMonitors().then((monitorsData) => {
+            setMonitors(monitorsData.data);
+        })
+    }, []);
+
     return(
         <div className="flex flex-col h-full">
             <div id="title" className="pt-4 h-[8%]">

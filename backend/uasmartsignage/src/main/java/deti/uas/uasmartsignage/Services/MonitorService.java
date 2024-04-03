@@ -32,7 +32,7 @@ public class MonitorService {
         if (monitorById == null) {
             return null;
         }
-        monitorById.setLocation(monitor.getLocation());
+        monitorById.setName(monitor.getName());
         //screenById.setGroupID(screen.getGroupID());
         return monitorRepository.save(monitorById);
     }
@@ -40,11 +40,4 @@ public class MonitorService {
     public Iterable<Monitor> getAllScreens() {
         return monitorRepository.findAll();
     }
-
-    public List<Monitor> getScreensByGroup(MonitorsGroup monitorsGroup) {
-        return monitorRepository.findByMonitorsGroupForScreens(monitorsGroup);
-    }
-
-    
-    
 }

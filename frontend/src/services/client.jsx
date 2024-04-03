@@ -5,33 +5,4 @@ const client = axios.create({
     timeout:5000,
 })
 
-client.interceptors.request.use(  
-    (config) => {
-    if(useUserStore.getState().logged){
-      config.headers.Authorization = `Bearer ${useUserStore.getState().token}`;
-    }
-    return config
-  },
-  (error) =>{
-    return Promise.reject(error);
-  }
-)
-
-client.interceptors.response.use(
-  function (response){
-    return response.data; 
-  }, 
-  
-  function(error){
-    const { response, config } = error;
-    const logout = useUserStore.getState().logout
-
-    if (response.data.message === "User not found"){
-      logout()
-    }
-
-    return Promise.reject(error);
-  }
-)
-
 export default client;

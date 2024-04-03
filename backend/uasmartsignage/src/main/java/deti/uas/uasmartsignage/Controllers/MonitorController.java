@@ -21,6 +21,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/monitors")
+@CrossOrigin(origins = "http://localhost:3000")
 public class MonitorController {
 
     private MonitorService monitorService;
@@ -38,12 +39,6 @@ public class MonitorController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(monitor, HttpStatus.OK);
-    }
-
-    @GetMapping("/group/{group}")
-    public ResponseEntity<?> getScreensByGroup(@PathVariable("group") MonitorsGroup monitorsGroup) {
-        List<Monitor> monitors = monitorService.getScreensByGroup(monitorsGroup);
-        return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
 
     @PostMapping
