@@ -5,8 +5,8 @@ const monitorsGroupService = {
         return await client.get("/groups");
     },
 
-    async getGroupById(id){
-        return await client.get(`/groups/${id}`)
+    async getMonitorsByGroup(id){
+        return await client.get(`/groups/${id}/screens`)
     }
 }
 

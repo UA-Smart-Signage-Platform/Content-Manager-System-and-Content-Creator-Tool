@@ -2,16 +2,31 @@ import { useEffect, useState } from "react";
 import { PageTitle,GroupBar,MonitorRow } from "../../components";
 import { ReactComponent as MonitorsIcon } from "../../static/monitors.svg"
 import monitorService from "../../services/monitorService"
+import monitorsGroupService from "../../services/monitorsGroupService"
 
 function Monitors(){
-    const [dataLoaded, setDataLoaded] = useState(false);
+
     const [monitors, setMonitors] = useState({});
+    let groupId = document.getElementById("selected").getAttribute("group-id");
+
 
     useEffect(() => {
-        monitorService.getMonitors().then((monitorsData) => {
-            setMonitors(monitorsData.data);
-        })
-    }, []);
+        if (groupId == 0){
+            monitorService.getMonitors().then((monitorsData) => {
+                setMonitors(monitorsData.data);
+
+            })
+        }
+        else{
+            monitorsGroupService.getMonitorsByGroup(groupId).then((monitorsData) => {
+                setMonitors(monitorsData.data);
+
+            })
+        }
+
+    }, [groupId]);
+
+    console.log(monitors);
 
     return(
         <div className="flex flex-col h-full">

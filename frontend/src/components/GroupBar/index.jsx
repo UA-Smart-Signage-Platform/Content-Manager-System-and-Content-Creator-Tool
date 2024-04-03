@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import monitorsGroupService from "../../services/monitorsGroupService"
-import monitorService from "../../services/monitorService"
 
 function GroupBar() {
     const [dataLoaded, setDataLoaded] = useState(false);
@@ -15,8 +14,8 @@ function GroupBar() {
 
     const changeGroup = (event) => {
         let currentElement = event.target;
-
-        while(!currentElement.id === "selected"){
+        
+        while(currentElement.getAttribute('group-id') === null){
             currentElement = currentElement.parentNode;
             if (!currentElement) break;
         }
@@ -41,7 +40,7 @@ function GroupBar() {
             <div className="mt-4 ml-3 flex-col w-full">
                 <div className="flex flex-col">
                     <span className="ml-3 mb-1 font-medium text-2xl">Overview</span>
-                    <div id="selected" value="0" onClick={changeGroup} className="bg-selectedGroup rounded-[4px] mb-4 mr-4">
+                    <div id="selected" group-id="0" onClick={changeGroup} className="bg-selectedGroup rounded-[4px] mb-4 mr-4">
                         <div className="flex flex-col mt-1 mb-1 ml-4">
                             <span className="text-2xl">All monitors</span>
                             <span className="text-sm">All monitors in a single place</span>
@@ -51,7 +50,7 @@ function GroupBar() {
                 <div className="flex flex-col mt-5 overflow-scroll">
                     <span className="mb-1 font-medium text-2xl">Groups</span>
                     { dataLoaded && groups.map((group, index) => (
-                    <div id="" value={group.id} onClick={changeGroup} className="bg-secondaryLight text-textcolorNotSelected rounded-[4px] mb-4 mr-4">
+                    <div id="" group-id={group.id} onClick={changeGroup} className="bg-secondaryLight text-textcolorNotSelected rounded-[4px] mb-4 mr-4">
                         <div className="flex flex-col mt-1 mb-1 ml-4">
                             <span className="text-2xl">{group.name}</span>
                             <span className="text-sm">{group.description}</span>
