@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,7 @@ public class MonitorGroupController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getGroupById(Long id) {
+    public ResponseEntity<?> getGroupById(@PathVariable Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -37,7 +38,7 @@ public class MonitorGroupController {
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<?> getGroupByName(String name) {
+    public ResponseEntity<?> getGroupByName(@PathVariable String name) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupByName(name);
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -46,7 +47,7 @@ public class MonitorGroupController {
     }
 
     @GetMapping("/{id}/screens")
-    public ResponseEntity<?> getScreensByGroup(Long id) {
+    public ResponseEntity<?> getScreensByGroup(@PathVariable Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -55,7 +56,7 @@ public class MonitorGroupController {
     }
 
     @GetMapping("/{id}/template")
-    public ResponseEntity<?> getTemplateByGroup(Long id) {
+    public ResponseEntity<?> getTemplateByGroup(@PathVariable Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
