@@ -6,25 +6,25 @@ import monitorsGroupService from "../../services/monitorsGroupService"
 
 function Monitors(){
 
-    const [monitors, setMonitors] = useState({});
-    let groupId = document.getElementById("selected").getAttribute("group-id");
-
+    const [monitors, setMonitors] = useState([]);
+    const [idChange,setIdChange] = useState(null);
+    console.log("idGroup " + idChange)
 
     useEffect(() => {
-        if (groupId == 0){
+        if (idChange === null){
             monitorService.getMonitors().then((monitorsData) => {
                 setMonitors(monitorsData.data);
 
             })
         }
         else{
-            monitorsGroupService.getMonitorsByGroup(groupId).then((monitorsData) => {
+            monitorsGroupService.getMonitorsByGroup(idChange).then((monitorsData) => {
                 setMonitors(monitorsData.data);
 
             })
         }
 
-    }, [groupId]);
+    }, [idChange]);
 
     console.log(monitors);
 
@@ -37,7 +37,7 @@ function Monitors(){
             </div>
             <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                 <div className="w-[30%] flex flex-col">
-                        <GroupBar/>
+                        <GroupBar id={idChange} changeId={setIdChange}/>
                 </div>
                 <div id="content" className="w-full pr-3 pl-3 flex flex-col">
                     <div id="Title_Row" className="text-2xl flex px-3 pt-3 justify-items-center text-center">
@@ -48,9 +48,9 @@ function Monitors(){
                         <span className="w-[10%] text-right">IP</span>
                     </div>
                     <div className="overflow-scroll">
-                        <MonitorRow/>
-                        <MonitorRow/>
-                        <MonitorRow/>
+                        {monitors != [] && monitors.map((sus,index)=>
+                            <MonitorRow monitor={sus} index={index}/>
+                        )}
                     </div>
                 </div>
             </div>
