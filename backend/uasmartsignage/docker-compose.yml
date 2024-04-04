@@ -8,6 +8,8 @@ services:
       - credentials.env
     ports:
       - "5432:5432"
+    networks:
+      - mqttnet
 
   api:
     build:
@@ -24,4 +26,27 @@ services:
       - 5005:5005
     depends_on:
       - postgres_db
- 
+      - mqtt
+    networks:
+      - mqttnet
+
+  mqtt:
+    image: eclipse-mosquitto:1.6.13
+    volumes:
+        - mosquitto_conf:/mosquitto/config 
+        - mosquitto_data:/mosquitto/data
+        - mosquitto_log:/mosquitto/log
+    networks:
+        - mqttnet
+    ports:
+        - 9001:9001
+        - 1883:1883
+
+volumes:
+    mosquitto_conf:
+    mosquitto_data:
+    mosquitto_log:
+
+networks:
+  mqttnet:
+    driver: bridge
