@@ -10,8 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -26,14 +30,22 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    // Get all files
+    @Operation(summary = "Get all files")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of all files", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "No files found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @GetMapping
     public ResponseEntity<List<CustomFile>> getAllFiles() {
         List<CustomFile> customFiles = fileService.getAllFiles();
         return new ResponseEntity<>(customFiles, HttpStatus.OK);
     }
 
-    // Get file by id
+    @Operation(summary = "Get file by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @GetMapping("/{id}")
     public ResponseEntity<CustomFile> getFileById(@PathVariable Long id) {
         CustomFile customFile = fileService.getFileById(id);
@@ -43,6 +55,11 @@ public class FileController {
     // Create a new file (nao pode ser um diretorio)
     //isto é para testar o upload de ficheiros
     //para dar upload é preciso usar forms ou equivalente com os argumentos em FilesClass (exemplo no html em resources/static)
+    @Operation(summary = "Create a new file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "File created", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @PostMapping
     public ResponseEntity<?> createFile(@ModelAttribute FilesClass file) {
         CustomFile savedFile = fileService.createAndSaveFile(file);
@@ -52,7 +69,11 @@ public class FileController {
         return new ResponseEntity<>(savedFile, HttpStatus.CREATED);
     }
 
-    // Create a new directory (nao pode ser um ficheiro)
+    @Operation(summary = "Create a new directory")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Directory created", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @PostMapping("/directory")
     public ResponseEntity<CustomFile> createFile(@RequestBody CustomFile customFile) {
         CustomFile newCustomFile = fileService.createFile(customFile);
@@ -62,6 +83,11 @@ public class FileController {
 
     // Update an existing file
     //falta apagar o ficheiro do disco
+    @Operation(summary = "Update a file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File updated", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @PutMapping("/{id}")
     public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
         CustomFile updatedCustomFile = fileService.updateFile(id, customFile);
@@ -70,6 +96,11 @@ public class FileController {
 
     // Delete a file
     //falta apagar o ficheiro do disco
+    @Operation(summary = "Delete a file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "File deleted", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
         fileService.deleteFile(id);
@@ -77,7 +108,11 @@ public class FileController {
     }
 
     // Download file
-    // not working needs fix
+    @Operation(summary = "Download a file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File downloaded", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
         // Define the path to the directory containing the files
@@ -105,6 +140,35 @@ public class FileController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    /* @GetMapping("/download/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
+        CustomFile file = fileService.getFileById(fileId);
+
+        if (file == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Path filePath = Paths.get(file.getPath());
+        if (!Files.exists(filePath)) {
+            return ResponseEntity.notFound().build(); 
+        }
+
+        try {
+            Resource resource = new UrlResource(filePath.toUri()); 
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(Files.size(filePath)) 
+                    .body(resource);
+        } catch (IOException ex) {
+            // Log the error 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    } */
 
     //specific directory files (maybe useless ask frontend team)
 

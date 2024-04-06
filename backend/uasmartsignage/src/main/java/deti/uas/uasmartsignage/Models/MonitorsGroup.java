@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.Models;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -10,6 +9,7 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "MonitorsGroup")
@@ -25,16 +25,13 @@ public class MonitorsGroup {
     @Column(nullable = false)
     private String description;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("group")
-    private List<Monitor> monitors;
-
     @OneToOne(mappedBy = "monitorsGroupForTemplate", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("monitorsGroupForTemplate")
     private TemplateGroup templateGroup;
 
-    public MonitorsGroup(String name, String description){
-        this.name = name;
-        this.description = description;
-        this.monitors = new ArrayList<>();
+    @Override
+    public String toString() {
+        return "MonitorsGroup [id=" + id + ", name=" + name
+                + "]";
     }
 }

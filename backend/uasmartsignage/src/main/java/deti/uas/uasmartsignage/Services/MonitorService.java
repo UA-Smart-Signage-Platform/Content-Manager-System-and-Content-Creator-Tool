@@ -15,29 +15,36 @@ public class MonitorService {
     @Autowired
     private MonitorRepository monitorRepository;
 
-    public Monitor getScreenById(Long id) {
+    public Monitor getMonitorById(Long id) {
         return monitorRepository.findById(id).orElse(null);
     }
 
-    public Monitor saveScreen(Monitor monitor) {
+    public Monitor saveMonitor(Monitor monitor) {
         return monitorRepository.save(monitor);
     }
 
-    public void deleteScreen(Long id) {
+    public void deleteMonitor(Long id) {
         monitorRepository.deleteById(id);
     }
     
-    public Monitor updateScreen(Long id, Monitor monitor) {
+    public Monitor updateMonitor(Long id, Monitor monitor) {
         Monitor monitorById = monitorRepository.findById(id).orElse(null);
         if (monitorById == null) {
             return null;
         }
-        monitorById.setName(monitor.getName());
-        //screenById.setGroupID(screen.getGroupID());
+        monitorById.setLocation(monitor.getLocation());
+        monitorById.setMonitorsGroupForScreens(monitor.getMonitorsGroupForScreens());
         return monitorRepository.save(monitorById);
     }
     
-    public Iterable<Monitor> getAllScreens() {
+    public Iterable<Monitor> getAllMonitors() {
         return monitorRepository.findAll();
     }
+
+    public List<Monitor> getMonitorsByGroup(MonitorsGroup monitorsGroup) {
+        return monitorRepository.findByMonitorsGroupForScreens(monitorsGroup);
+    }
+
+    
+    
 }

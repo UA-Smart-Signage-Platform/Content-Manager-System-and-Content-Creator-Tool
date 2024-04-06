@@ -27,8 +27,17 @@ public class ContentService {
         contentRepository.deleteById(id);
     }
 
-    public Content updateContent(Content content) {
-        return contentRepository.save(content);
+    public Content updateContent(Long id, Content content) {
+        Content contentById = contentRepository.findById(id).orElse(null);
+        if (contentById == null) {
+            return null;
+        }
+        contentById.setName(content.getName());
+        contentById.setType(content.getType());
+        contentById.setDescription(content.getDescription());
+        contentById.setOptions(content.getOptions());
+
+        return contentRepository.save(contentById);
     }
 
     public Iterable<Content> getAllContents() {

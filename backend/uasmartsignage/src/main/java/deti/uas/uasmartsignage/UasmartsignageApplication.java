@@ -68,27 +68,18 @@ public class UasmartsignageApplication {
 
 		// Create MonitorsGroup
 
-		MonitorsGroup monitorsGroup = new MonitorsGroup("DETI", "Monitors from first floor, second and third");
+		MonitorsGroup monitorsGroup = new MonitorsGroup();
+		monitorsGroup.setName("MonitorsGroup");
+		monitorsGroup.setMonitors(List.of());
 		monitorsGroup.setTemplateGroup(null);
 		monitorGroupService.saveGroup(monitorsGroup);
 
-		MonitorsGroup monitorsGroup2 = new MonitorsGroup("DETI Group 2", "Monitors from amphitheater IV");
-		monitorsGroup2.setTemplateGroup(null);
-		monitorGroupService.saveGroup(monitorsGroup2);
-
 		//Create Monitor
 
-		Monitor monitor = new Monitor("127.0.0.1", "Room 4.02.13", 250);
-		monitor.setGroup(monitorsGroup);
-		monitorService.saveScreen(monitor);
-
-		Monitor monitor2 = new Monitor("127.0.0.2", "Room 4.01.14", 150);
-		monitor2.setGroup(monitorsGroup);
-		monitorService.saveScreen(monitor2);
-
-		Monitor monitor3 = new Monitor("127.0.0.3", "Amphitheater IV", 500);
-		monitor3.setGroup(monitorsGroup2);
-		monitorService.saveScreen(monitor3);
+		Monitor monitor = new Monitor();
+		monitor.setLocation("Aveiro");
+		monitor.setMonitorsGroupForScreens(monitorsGroup);
+		monitorService.saveMonitor(monitor);
 
 		//Create Content
 

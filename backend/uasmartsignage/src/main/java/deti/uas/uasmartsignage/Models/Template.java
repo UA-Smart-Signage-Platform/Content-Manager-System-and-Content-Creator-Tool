@@ -1,6 +1,8 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +30,7 @@ public class Template {
     private String name;
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties("template")
     private List<TemplateWidget> templateWidgets;
 
 }

@@ -34,7 +34,7 @@ public class Content {
     private String description;
 
     @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
-    @JsonIgnore
+    @JsonIgnoreProperties("content")
     private List<Widget> widgets;
 
     

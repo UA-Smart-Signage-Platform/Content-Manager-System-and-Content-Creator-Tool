@@ -1,6 +1,8 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,12 +41,12 @@ public class TemplateWidget {
 
     @ManyToOne
     @JoinColumn(name = "templateId", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties("templateWidgets")
     private Template template;
 
     @ManyToOne
     @JoinColumn(name = "widgetId", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties("templateWidgets")
     private Widget widget;
    
 }

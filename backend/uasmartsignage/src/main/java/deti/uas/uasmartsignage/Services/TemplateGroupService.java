@@ -29,6 +29,17 @@ public class TemplateGroupService {
         return templateGroupRepository.findAll();
     }
 
+    public TemplateGroup updateTemplateGroup(Long id, TemplateGroup templateGroup) {
+        TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
+        if (templateGroupById == null) {
+            return null;
+        }
+        templateGroupById.setTemplate(templateGroup.getTemplate());
+        templateGroupById.setMonitorsGroupForTemplate(templateGroup.getMonitorsGroupForTemplate());
+        templateGroupById.setContent(templateGroup.getContent());
+        return templateGroupRepository.save(templateGroupById);
+    }
+
     
     
 }

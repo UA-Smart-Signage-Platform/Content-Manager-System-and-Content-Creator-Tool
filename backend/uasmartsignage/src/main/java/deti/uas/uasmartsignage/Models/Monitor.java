@@ -1,15 +1,19 @@
 package deti.uas.uasmartsignage.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Screens")
+@Table(name = "Monitors")
 public class Monitor {
 
     @Id
@@ -17,26 +21,11 @@ public class Monitor {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String ip;
-
-    @Column(nullable = false, unique = true)
-    private String name;
-
-    @Column(nullable = false)
-    private int size;
-
-    @Column(nullable = false)
-    private boolean pending;
+    private String location;
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
-    private MonitorsGroup group;
-
-    public Monitor(String ip, String name, int size){
-        this.ip = ip;
-        this.name = name;
-        this.size = size;
-        this.pending = true;
-    }
+    @JsonIgnoreProperties("monitors")
+    private MonitorsGroup monitorsGroupForScreens;
 
 }

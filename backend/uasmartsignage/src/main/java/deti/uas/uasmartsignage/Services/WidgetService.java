@@ -30,8 +30,15 @@ public class WidgetService {
         widgetRepository.deleteById(id);
     }
 
-    public Widget updateWidget(Widget widget) {
-        return widgetRepository.save(widget);
+    public Widget updateWidget(Long id, Widget widget) {
+        Widget widgetById = widgetRepository.findById(id).orElse(null);
+        if (widgetById == null) {
+            return null;
+        }
+        widgetById.setName(widget.getName());
+        widgetById.setPath(widget.getPath());
+        widgetById.setContent(widget.getContent());
+        return widgetRepository.save(widgetById);
     }
 
     public Iterable<Widget> getAllWidgets() {
