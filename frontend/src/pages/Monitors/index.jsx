@@ -1,46 +1,41 @@
 import { useEffect, useState } from "react";
-import { PageTitle,GroupBar,MonitorRow } from "../../components";
+import { PageTitle, GroupBar, MonitorRow } from "../../components";
 import { ReactComponent as MonitorsIcon } from "../../static/monitors.svg"
 import monitorService from "../../services/monitorService"
 import monitorsGroupService from "../../services/monitorsGroupService"
+import { Link } from "react-router-dom";
 
 function Monitors(){
-
     const [monitors, setMonitors] = useState([]);
-    const [idChange,setIdChange] = useState(null);
-    console.log("idGroup " + idChange)
+    const [groupId, setGroupId] = useState(null);
 
     useEffect(() => {
-        if (idChange === null){
-            monitorService.getMonitors().then((monitorsData) => {
-                setMonitors(monitorsData.data);
-
+        if (groupId === null){
+            monitorService.getMonitors().then((response) => {
+                setMonitors(response.data);
             })
         }
         else{
-            monitorsGroupService.getMonitorsByGroup(idChange).then((monitorsData) => {
-                setMonitors(monitorsData.data);
-
+            monitorsGroupService.getMonitorsByGroup(groupId).then((response) => {
+                setMonitors(response.data);
             })
         }
 
-    }, [idChange]);
-
-    console.log(monitors);
+    }, [groupId]);
 
     return(
         <div className="flex flex-col h-full">
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"monitors"} 
                             middleTitle={"dashboard"}
-                            endTitle={"dashboard"}/>
+                            endTitle={"monitors"}/>
             </div>
             <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                 <div className="w-[30%] flex flex-col">
-                        <GroupBar id={idChange} changeId={setIdChange}/>
+                        <GroupBar id={groupId} changeId={setGroupId} page={"monitors"}/>
                 </div>
                 <div id="content" className="w-full pr-3 pl-3 flex flex-col">
-                    <div id="Title_Row" className="text-2xl flex px-3 pt-3 justify-items-center text-center">
+                    <div id="Title_Row" className="text-2xl flex px-3 pt-3 justify-items-center text-center mt-1 mb-2">
                         <span className="flex gap-2 items-center w-[40%]"><MonitorsIcon className="size-8"/>All Monitors</span>
                         <span className="text-center">Group</span>
                         <span className="ml-auto w-[10%]">Warnings</span>
@@ -48,8 +43,10 @@ function Monitors(){
                         <span className="w-[10%] text-right">IP</span>
                     </div>
                     <div className="overflow-scroll">
-                        {monitors != [] && monitors.map((sus,index)=>
-                            <MonitorRow monitor={sus} index={index}/>
+                        {monitors != [] && monitors.map((monitor,index)=>
+                            <Link to={`/monitor/${monitor.id}`} state={{ monitor:monitor}}>
+                                <MonitorRow monitor={monitor} index={index}/>
+                            </Link>
                         )}
                     </div>
                 </div>

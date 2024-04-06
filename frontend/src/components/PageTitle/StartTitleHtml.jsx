@@ -13,12 +13,12 @@ function StartTitleHtml( {page} ){
         )
     if (page === "monitors")
         return(
-                <span className="font-bold text-4xl">Monitors</span>
+                <span className="font-bold text-3xl">Monitors</span>
         )
     if (page === "media")
         return(
-            <div className="flex ml-2 font-medium">
-                <span className="text-2xl">Media Images</span>
+            <div className="flex ml-2 font-bold">
+                <span className="text-3xl">Media</span>
             </div>
         )
 }
