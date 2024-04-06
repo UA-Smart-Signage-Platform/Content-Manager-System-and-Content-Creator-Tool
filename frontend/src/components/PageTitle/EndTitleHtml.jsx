@@ -1,7 +1,10 @@
-import { MdOutlineSearch } from "react-icons/md";
+import { MdOutlineSearch, MdAdd } from "react-icons/md";
+import Portals from "../Portals"
+import { useState } from "react";
 
-
-function EndTitleHtml( {page} ){
+function EndTitleHtml( { page } ) {
+    const [showPortal, setShowPortal] = useState(false);
+    
     if (page === "default")
         return (
             <div className="flex border-2 border-searchButton rounded-md drop-shadow-md">
@@ -13,9 +16,15 @@ function EndTitleHtml( {page} ){
                 </button>
             </div>
         )
-    if (page === "")
+    if (page === "monitors")
         return(
-            <div></div>
+            <div className="flex border-searchButton rounded-md drop-shadow-md mr-2">
+                <button onClick={() => setShowPortal(true)} className="rounded-md bg-secondaryLight flex flex-row p-1 pr-2">
+                    <MdAdd className="h-6 w-6 mr-1 ml-1"/>
+                    <span>Pending Monitors</span>
+                </button>
+                <Portals page="monitors" showPortal={showPortal} setShowPortal={setShowPortal}/>
+            </div>
         )
     if (page === "...")
         return(

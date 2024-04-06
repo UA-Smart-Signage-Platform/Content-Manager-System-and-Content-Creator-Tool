@@ -13,7 +13,6 @@ public class TemplateGroupService {
     @Autowired
     private TemplateGroupRepository templateGroupRepository;
 
-
     public TemplateGroup getGroupById(Long id) {
         return templateGroupRepository.findById(id).orElse(null);
     }

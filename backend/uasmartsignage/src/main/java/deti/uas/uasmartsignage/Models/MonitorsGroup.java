@@ -22,9 +22,8 @@ public class MonitorsGroup {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "monitorsGroupForScreens", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("monitorsGroupForScreens")
-    private List<Monitor> monitors;
+    @Column(nullable = false)
+    private String description;
 
     @OneToOne(mappedBy = "monitorsGroupForTemplate", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("monitorsGroupForTemplate")
@@ -35,5 +34,4 @@ public class MonitorsGroup {
         return "MonitorsGroup [id=" + id + ", name=" + name
                 + "]";
     }
-
 }
