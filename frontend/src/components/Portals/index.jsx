@@ -1,7 +1,63 @@
 import { createPortal } from 'react-dom';
-import { MdArrowBack, MdMonitor } from "react-icons/md";
+import { MdArrowBack, MdMonitor, MdCheck } from "react-icons/md";
+import DataTable, { createTheme } from 'react-data-table-component';
 
 function Portals( { page, showPortal, setShowPortal } ) {
+    /*
+
+    <div className="h-[14%] flex flex-col">
+                                        <div className="flex flex-row">
+                                            <div className="mr-auto flex flex-row text-xl items-center">
+                                                <MdMonitor className="w-7 h-7 mr-2"/>
+                                                192.0.168.172
+                                            </div>
+                                            <div className="ml-auto">
+                                                <button className="bg-[#97D700] size-8 mr-3 rounded-sm"><MdCheck/></button>
+                                                <button className="bg-[#D12E2E] size-8 rounded-sm">X</button>
+                                            </div>
+                                        </div>
+                                        <div id="dividerHr" className="border-[1px] border-secondary mt-auto flex-col"/>
+                                    </div>
+
+    */
+
+
+    const columns = [
+        {
+            name: 'IP',
+            selector: row => row.ip,
+        },
+        {
+            name: 'accept',
+            cell: (row) => <button className="bg-[#97D700] size-8 mr-3 rounded-sm"><MdCheck/></button>
+        },
+        {
+            name: 'decline',
+            cell: (row) => <button className="bg-[#D12E2E] size-8 rounded-sm">{row.id}</button>
+        },
+    ];
+    
+    const data = [
+            {
+            id: 1,
+            ip: '192.0.168.172'
+        },
+        {
+            id: 2,
+            ip: '192.0.168.172',
+        },
+        {
+            id: 3,
+            ip: '192.0.168.172',
+        },
+        {
+            id: 4,
+            ip: '192.0.168.172',
+        },
+    ]
+                                
+                        
+
     if (page === "monitors")
         return (
         <>
@@ -21,19 +77,12 @@ function Portals( { page, showPortal, setShowPortal } ) {
                                     Pending Monitors
                                 </div>
                                 <div className="h-[80%] p-[2%] text-lg flex flex-col">
-                                    <div className="h-[14%] flex flex-col">
-                                        <div className="flex flex-row">
-                                            <div className="mr-auto flex flex-row text-xl items-center">
-                                                <MdMonitor className="w-7 h-7 mr-2"/>
-                                                192.0.168.172
-                                            </div>
-                                            <div className="ml-auto">
-                                                <button className="bg-[#97D700] size-8 mr-3 rounded-sm">V</button>
-                                                <button className="bg-[#D12E2E] size-8 rounded-sm">X</button>
-                                            </div>
-                                        </div>
-                                        <div id="dividerHr" className="border-[1px] border-secondary mt-auto flex-col"/>
-                                    </div>
+                                <DataTable className="p-3" 
+                                    noTableHead
+                                    columns={columns}
+                                    data={data}
+                                />
+                                    
                                 </div>
                             </div>
                         </div>

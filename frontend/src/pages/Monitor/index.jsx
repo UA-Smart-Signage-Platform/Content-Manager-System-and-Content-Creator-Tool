@@ -5,8 +5,7 @@ import { useLocation } from "react-router";
 
 function Monitor(){
     const { state } = useLocation();
-    const monitor = state.monitor;
-    console.log(monitor);
+    const monitor = state;
 
     return(
         <div className="h-full flex flex-col">
