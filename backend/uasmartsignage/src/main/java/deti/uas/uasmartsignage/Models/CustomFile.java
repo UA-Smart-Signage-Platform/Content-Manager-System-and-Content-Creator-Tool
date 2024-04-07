@@ -40,7 +40,7 @@ public class CustomFile {
         this.name = name;
         this.type = type;
         this.parent = parent;
-        this.subDirectories = subDirectories;
+        this.subDirectories = List.of();
     }
 
     public String toString() {

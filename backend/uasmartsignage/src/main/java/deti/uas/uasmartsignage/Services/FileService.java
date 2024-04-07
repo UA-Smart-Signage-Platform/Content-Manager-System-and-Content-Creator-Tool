@@ -113,11 +113,15 @@ public class FileService {
     public CustomFile createAndSaveFile(FilesClass file) {
         CustomFile newCustomFile;
 
+        System.out.println(file);
+
         if (file.getFile().isEmpty()) {
             return null;
         }
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
         String fileType = file.getFile().getContentType();
+
+        
 
         if (file.getParent() != null) {
             Long parentId = file.getParent().getId();
