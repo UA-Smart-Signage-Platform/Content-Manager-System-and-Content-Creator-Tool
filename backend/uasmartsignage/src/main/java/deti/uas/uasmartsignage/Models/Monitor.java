@@ -23,6 +23,15 @@ public class Monitor {
     @Column(nullable = false, unique = true)
     private String location;
 
+    @Column(nullable = true)
+    private int width;
+
+    @Column(nullable = true)
+    private int height;
+
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    private Boolean pending;
+
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
     @JsonIgnoreProperties("monitors")

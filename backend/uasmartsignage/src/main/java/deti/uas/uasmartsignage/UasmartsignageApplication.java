@@ -78,7 +78,10 @@ public class UasmartsignageApplication {
 
 		Monitor monitor = new Monitor();
 		monitor.setLocation("Aveiro");
+		monitor.setWidth(1920);
+		monitor.setHeight(1080);
 		monitor.setMonitorsGroupForScreens(monitorsGroup);
+		monitor.setPending(false);
 		monitorService.saveMonitor(monitor);
 
 		//Create Content
