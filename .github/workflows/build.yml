@@ -3,7 +3,8 @@ name: Frontend
 on:
   push:
     branches:
-      - 38-test-sonarqube
+      - main
+      - dev
   pull_request:
     types: [opened, synchronize, reopened]
 
