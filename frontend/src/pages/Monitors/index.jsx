@@ -63,12 +63,12 @@ function Monitors(){
     const columns = [
         {
             name: 'Name',
-            selector: row => row.name,
+            selector: row => row.location,
             sortable: true,
         },
         {
             name: 'Group',
-            selector: row => row.group.name,
+            selector: row => row.monitorsGroupForScreens.name,
             sortable: true,
         },
         {

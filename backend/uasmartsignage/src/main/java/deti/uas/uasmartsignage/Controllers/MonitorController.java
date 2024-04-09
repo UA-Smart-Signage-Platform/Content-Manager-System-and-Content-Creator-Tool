@@ -25,6 +25,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/monitors")
 public class MonitorController {
 

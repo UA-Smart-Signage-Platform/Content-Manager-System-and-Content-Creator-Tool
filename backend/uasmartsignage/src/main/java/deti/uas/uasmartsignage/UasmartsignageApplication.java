@@ -69,17 +69,51 @@ public class UasmartsignageApplication {
 		// Create MonitorsGroup
 
 		MonitorsGroup monitorsGroup = new MonitorsGroup();
-		monitorsGroup.setName("MonitorsGroup");
-		monitorsGroup.setMonitors(List.of());
+		monitorsGroup.setName("BOMBA");
 		monitorsGroup.setTemplateGroup(null);
 		monitorGroupService.saveGroup(monitorsGroup);
+
+		MonitorsGroup monitorsGroup2 = new MonitorsGroup();
+		monitorsGroup2.setName("DETI");
+		monitorsGroup2.setTemplateGroup(null);
+		monitorGroupService.saveGroup(monitorsGroup2);
+
+		MonitorsGroup monitorsGroup3 = new MonitorsGroup();
+		monitorsGroup3.setName("WOOF");
+		monitorsGroup3.setTemplateGroup(null);
+		monitorGroupService.saveGroup(monitorsGroup3);
 
 		//Create Monitor
 
 		Monitor monitor = new Monitor();
-		monitor.setLocation("Aveiro");
+		monitor.setLocation("Rot");
 		monitor.setMonitorsGroupForScreens(monitorsGroup);
 		monitorService.saveMonitor(monitor);
+
+		Monitor monitor2 = new Monitor();
+		monitor2.setLocation("Aviao");
+		monitor2.setMonitorsGroupForScreens(monitorsGroup2);
+		monitorService.saveMonitor(monitor2);
+
+		Monitor monitor3 = new Monitor();
+		monitor3.setLocation("casadebanho");
+		monitor3.setMonitorsGroupForScreens(monitorsGroup2);
+		monitorService.saveMonitor(monitor3);
+
+		Monitor monitor4 = new Monitor();
+		monitor4.setLocation("hall");
+		monitor4.setMonitorsGroupForScreens(monitorsGroup3);
+		monitorService.saveMonitor(monitor4);
+
+		Monitor monitor5 = new Monitor();
+		monitor5.setLocation("dead");
+		monitor5.setMonitorsGroupForScreens(monitorsGroup3);
+		monitorService.saveMonitor(monitor5);
+
+		Monitor monitor6 = new Monitor();
+		monitor6.setLocation("lima");
+		monitor6.setMonitorsGroupForScreens(monitorsGroup3);
+		monitorService.saveMonitor(monitor6);
 
 		//Create Content
 
