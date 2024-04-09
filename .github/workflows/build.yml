@@ -1,4 +1,4 @@
-name: Frontend sonarcloud analysis
+name: Frontend analysis
 
 on:
   push:
