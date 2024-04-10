@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.io.File;
 
@@ -33,47 +32,21 @@ public class FileService {
 
 
     /**
-     * Constructs and returns the parent directory path for the provided CustomFile.
-     * The directory path is determined by traversing the parent directories of the CustomFile.
-     * If the root directory for uploads does not exist, it will be created.
-     *
-     * @param customFile The CustomFile for which the parent directory path is generated.
-     * @return The parent directory path for the given CustomFile.
-     */
-    public static String getParentDirectoryPath(CustomFile customFile) {
-        StringBuilder pathBuilder = new StringBuilder();
-
-        while (customFile.getParent() != null) {
-            pathBuilder.insert(0, customFile.getParent().getName() + "/");
-            customFile = customFile.getParent();
-        }
-
-        String rootPath = System.getProperty("user.dir");
-        File rootDirectory = new File(rootPath + File.separator + "uploads");
-        if (!rootDirectory.exists()) {
-            if (rootDirectory.mkdir()) {
-                logger.info("Directory created: {}", rootDirectory.getAbsolutePath());
-            } 
-            else {
-                logger.error("Failed to create directory: {}", rootDirectory.getAbsolutePath());
-            }
-        }
-
-        pathBuilder.insert(0, rootDirectory + File.separator);
-        return pathBuilder.toString();
-    }
-
-
-    /**
-     * Retrieves and returns a list of all CustomFile stored in the file repository.
+     * Retrieves and returns a list of all CustomFile stored inside the CustomFile (folder).
      * 
-     * @return A list of all CustomFile stored in the file repository.
+     * @return A list of all CustomFile stored inside the CustomFile (folder).
      */
-    public List<CustomFile> getAllFiles() {
-        logger.info("Retrieving all files from the repository.");
-        List<CustomFile> files = fileRepository.findAll();
-        logger.debug("Retrieved {} files from the repository.", files.size());
-        return files;
+    public List<CustomFile> getFilesInsideFolder(Long id) {
+        Optional<CustomFile> folder = fileRepository.findById(id);
+        if (folder.isPresent()) {
+            List<CustomFile> files = folder.get().getSubDirectories();
+            logger.debug("Retrieved {} files and folders from the folder.", files.size());
+            return files;
+        } 
+        else {
+            logger.error("Folder with ID {} not found in the repository.", id);
+            return List.of();
+        }
     }
 
 
@@ -145,6 +118,38 @@ public class FileService {
 
 
     /**
+     * Constructs and returns the parent directory path for the provided CustomFile.
+     * The directory path is determined by traversing the parent directories of the CustomFile.
+     * If the root directory for uploads does not exist, it will be created.
+     *
+     * @param customFile The CustomFile for which the parent directory path is generated.
+     * @return The parent directory path for the given CustomFile.
+     */
+    public static String getParentDirectoryPath(CustomFile customFile) {
+        StringBuilder pathBuilder = new StringBuilder();
+
+        while (customFile.getParent() != null) {
+            pathBuilder.insert(0, customFile.getParent().getName() + "/");
+            customFile = customFile.getParent();
+        }
+
+        String rootPath = System.getProperty("user.dir");
+        File rootDirectory = new File(rootPath + File.separator + "uploads");
+        if (!rootDirectory.exists()) {
+            if (rootDirectory.mkdir()) {
+                logger.info("Directory created: {}", rootDirectory.getAbsolutePath());
+            } 
+            else {
+                logger.error("Failed to create directory: {}", rootDirectory.getAbsolutePath());
+            }
+        }
+
+        pathBuilder.insert(0, rootDirectory + File.separator);
+        return pathBuilder.toString();
+    }
+
+
+    /**
      * Creates a new CustomFile from the provided FilesClass and saves it to the repository.
      * 
      * @param file The FilesClass containing information about the file to create (normally an image or video).
@@ -152,6 +157,7 @@ public class FileService {
      */
     public CustomFile createFile(FilesClass file) {
         if (file.getFile().isEmpty()) {
+            logger.info("Provided file is empty.");
             return null;
         }
         

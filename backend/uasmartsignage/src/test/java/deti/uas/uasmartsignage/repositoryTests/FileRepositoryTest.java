@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.File;
+package deti.uas.uasmartsignage.repositoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

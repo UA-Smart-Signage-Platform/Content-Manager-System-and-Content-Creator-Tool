@@ -31,26 +31,26 @@ public class FileController {
         this.fileService = fileService;
     }
 
-    @Operation(summary = "Get all files")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all files", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "No files found", content = @Content(mediaType = "application/json"))
-    })
-    @GetMapping("/files")
-    public ResponseEntity<List<CustomFile>> getAllFiles() {
-        List<CustomFile> customFiles = fileService.getAllFiles();
-        return new ResponseEntity<>(customFiles, HttpStatus.OK);
-    }
-
     @Operation(summary = "Get file by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "File found", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/{id}")
-    public ResponseEntity<CustomFile> getFileById(@PathVariable Long id) {
+    public ResponseEntity<CustomFile> getFileOrFolderById(@PathVariable Long id) {
         CustomFile customFile = fileService.getFileById(id);
         return new ResponseEntity<>(customFile, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Get all files and folders inside a folder")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "List of all files and folders inside a folder", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "No files or folders found", content = @Content(mediaType = "application/json"))
+    })
+    @GetMapping("/files/directory/{id}")
+    public ResponseEntity<List<CustomFile>> getFilesByFolder(@PathVariable Long id) {
+        List<CustomFile> customFiles = fileService.getFilesInsideFolder(id);
+        return new ResponseEntity<>(customFiles, HttpStatus.OK);
     }
 
     @Operation(summary = "Create a new file")
@@ -78,6 +78,13 @@ public class FileController {
         if (newCustomFile == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);
     }
+
+
+
+
+
+
+    // TODO - need to revise logic and alike...
 
     //falta apagar o ficheiro do disco
     @Operation(summary = "Update a file")
