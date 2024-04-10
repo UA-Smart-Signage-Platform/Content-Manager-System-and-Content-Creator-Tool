@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.Services;
 
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +11,12 @@ import java.util.List;
 @Service 
 public class MonitorService {
 
-    @Autowired
     private MonitorRepository monitorRepository;
+    
+    @Autowired
+    public MonitorService(MonitorRepository monitorRepository){
+        this.monitorRepository = monitorRepository;
+    }
 
     public Monitor getMonitorById(Long id) {
         return monitorRepository.findById(id).orElse(null);
@@ -28,21 +31,30 @@ public class MonitorService {
     }
     
     public Monitor updateMonitor(Long id, Monitor monitor) {
-        Monitor monitorById = monitorRepository.findById(id).orElse(null);
+        Monitor monitorById = monitorRepository.getReferenceById(id);
         if (monitorById == null) {
             return null;
         }
-        monitorById.setLocation(monitor.getLocation());
-        monitorById.setMonitorsGroupForScreens(monitor.getMonitorsGroupForScreens());
+        monitorById.setName(monitor.getName());
+        monitorById.setGroup(monitor.getGroup());
+        return monitorRepository.save(monitorById);
+    }
+
+    public Monitor updatePending(Long id,boolean pending){
+        Monitor monitorById = monitorRepository.getReferenceById(id);
+        if (monitorById == null){
+            return null;
+        }
+        monitorById.setPending(pending);
         return monitorRepository.save(monitorById);
     }
     
-    public Iterable<Monitor> getAllMonitors() {
-        return monitorRepository.findAll();
+    public List<Monitor> getAllMonitorsByPending(boolean pending) {
+        return monitorRepository.findByPending(pending);
     }
 
-    public List<Monitor> getMonitorsByGroup(MonitorsGroup monitorsGroup) {
-        return monitorRepository.findByMonitorsGroupForScreens(monitorsGroup);
+    public List<Monitor> getMonitorsByGroup(long groupId) {
+        return monitorRepository.findByPendingAndGroup_Id(false,groupId);
     }
 
     
