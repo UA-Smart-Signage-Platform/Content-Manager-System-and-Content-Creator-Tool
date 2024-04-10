@@ -24,6 +24,9 @@ public class CustomFile {
     @Column(nullable = false)
     private String type;
 
+    @Column(nullable = false)
+    private Long size;
+
     @Column
     private String path;
 
@@ -32,13 +35,14 @@ public class CustomFile {
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<CustomFile> subDirectories;
 
-    public CustomFile(String name, String type, CustomFile parent, List<CustomFile> subDirectories) {
+    public CustomFile(String name, String type, Long size, CustomFile parent, List<CustomFile> subDirectories) {
         this.name = name;
         this.type = type;
+        this.size = size;
         this.parent = parent;
         this.subDirectories = subDirectories;
     }

@@ -27,6 +27,7 @@ import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class UasmartsignageApplication {
+	/*
 	private final FileService fileService;
 	private final MonitorService monitorService;
 	private final UserService userService;
@@ -50,6 +51,7 @@ public class UasmartsignageApplication {
 		this.monitorGroupService = monitorGroupService;
     }
 
+	
 	@PostConstruct
     public void initialize() throws Exception {
         System.out.println("Creating mock directory");
@@ -133,6 +135,8 @@ public class UasmartsignageApplication {
 		templateGroup.setContent(null);
 		templateGroupService.saveGroup(templateGroup);
     }
+	*/
+
     public static void main(String[] args) {
         SpringApplication.run(UasmartsignageApplication.class, args);
     }
