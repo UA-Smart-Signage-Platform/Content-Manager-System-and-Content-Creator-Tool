@@ -107,6 +107,15 @@ public class FileService {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             fileRepository.save(customFile);
             logger.info("Directory created: " + directory.getAbsolutePath());
+
+            CustomFile parent = customFile.getParent();
+            if (parent != null){
+                logger.info("Adding folder to parent with path: " + customFile.getPath());
+                List<CustomFile> subDirectories = parent.getSubDirectories();
+                subDirectories.add(customFile);
+                parent.setSubDirectories(subDirectories);
+            }
+
             return customFile;
         } 
         else {
@@ -160,7 +169,7 @@ public class FileService {
             logger.info("Provided file is empty.");
             return null;
         }
-        
+
         // Get information from sent file
         String fileName = StringUtils.cleanPath(file.getFile().getOriginalFilename());
         String fileType = file.getFile().getContentType();
@@ -175,6 +184,14 @@ public class FileService {
         customFile.setPath(path.toString());
         logger.info("Creating file with type: " + customFile.getType() + " and name: " + customFile.getName());
         fileRepository.save(customFile);
+
+        // Add file to parent's list
+        if (parent != null){
+            logger.info("Adding file to parent with path: " + customFile.getPath());
+            List<CustomFile> subDirectories = parent.getSubDirectories();
+            subDirectories.add(customFile);
+            parent.setSubDirectories(subDirectories);
+        }
 
         try {
             Files.copy(file.getFile().getInputStream(), path);

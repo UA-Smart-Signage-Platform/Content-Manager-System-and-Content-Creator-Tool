@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.Models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,12 +30,12 @@ public class CustomFile {
     private String path;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnoreProperties("subDirectories")
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnoreProperties("parent")
     private List<CustomFile> subDirectories;
 
     public CustomFile(String name, String type, Long size, CustomFile parent, List<CustomFile> subDirectories) {
@@ -52,7 +51,7 @@ public class CustomFile {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", parent=" + parent +
+                ", parent=" + (parent != null ? parent : "null") +
                 ", subDirectories=" + subDirectories +
                 '}';
     }
