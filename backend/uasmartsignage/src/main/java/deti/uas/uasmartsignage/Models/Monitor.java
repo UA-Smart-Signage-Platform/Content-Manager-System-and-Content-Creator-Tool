@@ -20,7 +20,7 @@ public class Monitor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String location;
 
     @Column(nullable = true)
@@ -28,6 +28,9 @@ public class Monitor {
 
     @Column(nullable = true)
     private int height;
+
+    @Column(nullable = false, unique = true)
+    private String uuid;
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean pending;

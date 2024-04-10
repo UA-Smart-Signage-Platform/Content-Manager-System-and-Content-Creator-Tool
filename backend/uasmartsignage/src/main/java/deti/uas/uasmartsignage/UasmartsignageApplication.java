@@ -81,6 +81,7 @@ public class UasmartsignageApplication {
 		monitor.setWidth(1920);
 		monitor.setHeight(1080);
 		monitor.setMonitorsGroupForScreens(monitorsGroup);
+		monitor.setUuid("uuid");
 		monitor.setPending(false);
 		monitorService.saveMonitor(monitor);
 

@@ -46,13 +46,13 @@ public class TemplateGroupService {
         try {
             TemplateMessage confirmMessage = new TemplateMessage();
             confirmMessage.setMethod("TEMPLATE");
-            confirmMessage.setHtml(templateGroup.getTemplate().getPath());
+            //confirmMessage.setHtml(templateGroup.getTemplate().getPath());
             confirmMessage.setFiles(files);
             
 
             String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
 
-            String topic = "group/" + String.valueOf(templateGroup.getMonitorsGroupForTemplate().getName());
+            String topic = "group/" + String.valueOf(templateGroup.getMonitorsGroupForTemplate().getId());
 
             MqttConfig.getInstance().publish(topic, new MqttMessage(confirmMessageJson.getBytes()));
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
@@ -84,14 +84,14 @@ public class TemplateGroupService {
             try {
                 TemplateMessage confirmMessage = new TemplateMessage();
                 confirmMessage.setMethod("TEMPLATE");
-                confirmMessage.setHtml(templateGroupAfter.getTemplate().getPath());
+                //confirmMessage.setHtml(templateGroupAfter.getTemplate().getPath());
                 confirmMessage.setFiles(files);
                 
     
                 String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                 System.out.println("Sending confirm message: " + confirmMessageJson);
 
-                String topic = "group/" + String.valueOf(templateGroup.getMonitorsGroupForTemplate().getName());
+                String topic = "group/" + String.valueOf(templateGroup.getMonitorsGroupForTemplate().getId());
     
                 MqttConfig.getInstance().publish(topic, new MqttMessage(confirmMessageJson.getBytes()));
             } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {

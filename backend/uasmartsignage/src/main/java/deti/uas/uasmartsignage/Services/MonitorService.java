@@ -61,7 +61,7 @@ public class MonitorService {
                 String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                 System.out.println("Sending confirm message: " + confirmMessageJson);
     
-                MqttConfig.getInstance().publish(monitor.getLocation(), new MqttMessage(confirmMessageJson.getBytes()));
+                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
             } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
                 e.printStackTrace();
             }

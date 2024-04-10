@@ -63,7 +63,7 @@ public class MqttSubscriberService {
         System.out.println("Height: " + registrationMessage.getHeight());
         System.out.println("UUID: " + registrationMessage.getUuid());
 
-        if (monitorService.getMonitorByLocation(registrationMessage.getName()) != null) {
+        /* if (monitorService.getMonitorByLocation(registrationMessage.getName()) != null) {
             System.out.println("Monitor with name " + registrationMessage.getName() + " already exists");
             try {
                 SameNameMessage confirmMessage = new SameNameMessage();
@@ -76,7 +76,7 @@ public class MqttSubscriberService {
                 e.printStackTrace();
             }
             return;
-        }
+        } */
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName(registrationMessage.getName());
@@ -87,6 +87,7 @@ public class MqttSubscriberService {
         monitor.setMonitorsGroupForScreens(monitorsGroup);
         monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
         monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
+        monitor.setUuid(registrationMessage.getUuid());
         monitor.setPending(true);
 
         monitorService.saveMonitor(monitor);
@@ -95,7 +96,7 @@ public class MqttSubscriberService {
         try {
             ConfirmRegistrationMessage confirmMessage = new ConfirmRegistrationMessage();
             confirmMessage.setMethod("CONFIRM_REGISTER");
-            confirmMessage.setGroup(monitorsGroup.getName());
+            confirmMessage.setGroup(String.valueOf(monitorsGroup.getId()));
 
             String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
 
