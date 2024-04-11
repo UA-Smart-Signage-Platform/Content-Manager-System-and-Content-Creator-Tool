@@ -41,7 +41,7 @@ public class MonitorController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of all pendign monitors", content = @Content(mediaType = "application/json")),
     })
-    @GetMapping
+    @GetMapping("/pending")
     public ResponseEntity<?> getPendingMonitors(){
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(true);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
