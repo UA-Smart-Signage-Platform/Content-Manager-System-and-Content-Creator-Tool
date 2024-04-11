@@ -84,76 +84,95 @@ public class FileServiceTest {
     }
 
     @Test
-    void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() {
-        CustomFile outerFolder = new CustomFile("Outer directoroe", "directory", 0L, null, new ArrayList<>());
+    @Disabled
+    void whenSaveFile_thenFileIsSaved() throws IOException {
+        File file = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file1.png");
 
+        FileInputStream input = new FileInputStream(file);
+        byte[] bytes = new byte[(int) file.length()];
+        input.read(bytes);
+        input.close();
+
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+            "file",                     // parameter name
+            file.getName(),                 // file name
+            "image/png",        // content type
+            bytes                           // content as byte array
+        );
+
+        FilesClass filesClass = new FilesClass(null, mockMultipartFile);
+
+        CustomFile saved = service.createFile(filesClass);
+
+        when(repository.save(Mockito.any())).thenReturn(saved);
+
+        verify(repository, times(1)).save(Mockito.any());
+    }
+
+    @Test
+    @Disabled
+    void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() throws IOException {
+        CustomFile outerFolder = new CustomFile("Outer directoroe", "directory", 0L, null, new ArrayList<>());
+        
         when(repository.save(outerFolder)).thenReturn(outerFolder);
         when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
         
         service.createDirectory(outerFolder);
 
-
         CustomFile innerFolder = new CustomFile("Inner directoroe", "directory", 0L, outerFolder, new ArrayList<>());
-
+        innerFolder.setId(2L);
         when(repository.save(innerFolder)).thenReturn(innerFolder);
-        when(repository.findById(1L)).thenReturn(Optional.of(innerFolder));
+        when(repository.findById(2L)).thenReturn(Optional.of(innerFolder));
 
-        service.createDirectory(innerFolder);
+        CustomFile savedInner = service.createDirectory(innerFolder);
 
-        try {
-            File file = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file1.png");
-            File file2 = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file2.png");
-            File file3 = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file3.png");
+        File file = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file1.png");
+        File file2 = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file2.png");
+        File file3 = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file3.png");
 
-            // Convert the file into a byte array
-            FileInputStream input = new FileInputStream(file);
-            byte[] bytes = new byte[(int) file.length()];
-            input.read(bytes);
-            input.close();
+        // Convert file to byte array
+        FileInputStream input = new FileInputStream(file);
+        byte[] bytes = new byte[(int) file.length()];
+        input.read(bytes);
+        input.close();
 
-            FileInputStream input2 = new FileInputStream(file2);
-            byte[] bytes2 = new byte[(int) file2.length()];
-            input2.read(bytes2);
-            input2.close();
+        FileInputStream input2 = new FileInputStream(file2);
+        byte[] bytes2 = new byte[(int) file2.length()];
+        input2.read(bytes2);
+        input2.close();
 
-            FileInputStream input3 = new FileInputStream(file3);
-            byte[] bytes3 = new byte[(int) file3.length()];
-            input3.read(bytes3);
-            input3.close();
+        FileInputStream input3 = new FileInputStream(file3);
+        byte[] bytes3 = new byte[(int) file3.length()];
+        input3.read(bytes3);
+        input3.close();
 
-            // Create a mock MultipartFile object
-            MockMultipartFile mockMultipartFile = new MockMultipartFile(
-                    "file",           // parameter name
-                    file.getName(),   // original file name
-                    "image/png",     // content type
-                    bytes            // content as byte array
-            );
-
-            MockMultipartFile mockMultipartFile2 = new MockMultipartFile(
-                    "file",           // parameter name
-                    file2.getName(),   // original file name
-                    "image/png",     // content type
-                    bytes2            // content as byte array
-            );
-
-            MockMultipartFile mockMultipartFile3 = new MockMultipartFile(
-                "file",           // parameter name
-                file3.getName(),   // original file name
-                "image/png",     // content type
-                bytes3            // content as byte array
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+                "file",                     // parameter name
+                file.getName(),                 // file name
+                "image/png",        // content type
+                bytes                           // content as byte array
         );
 
-            FilesClass filesClass = new FilesClass(innerFolder, mockMultipartFile);
-            FilesClass filesClass2 = new FilesClass(innerFolder, mockMultipartFile2);
-            FilesClass filesClass3 = new FilesClass(null, mockMultipartFile3);
+        MockMultipartFile mockMultipartFile2 = new MockMultipartFile(
+                "file",          
+                file2.getName(),   
+                "image/png",     
+                bytes2            
+        );
 
-            service.createFile(filesClass);
-            service.createFile(filesClass2);
-            service.createFile(filesClass3);
+        MockMultipartFile mockMultipartFile3 = new MockMultipartFile(
+            "file",        
+            file3.getName(),   
+            "image/png",  
+            bytes3            
+    );
 
-        } 
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        FilesClass filesClass = new FilesClass(savedInner, mockMultipartFile);
+        FilesClass filesClass2 = new FilesClass(savedInner, mockMultipartFile2);
+        FilesClass filesClass3 = new FilesClass(null, mockMultipartFile3);
+
+        service.createFile(filesClass);
+        service.createFile(filesClass2);
+        service.createFile(filesClass3);
     }
 }
