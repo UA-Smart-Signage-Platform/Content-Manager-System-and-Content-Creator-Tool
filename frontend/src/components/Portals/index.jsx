@@ -27,19 +27,19 @@ function Portals( { page, showPortal, setShowPortal, currentFolder } ) {
     const data = [
             {
             id: 1,
-            ip: '192.0.168.172'
+            ip: '22'
         },
         {
             id: 2,
-            ip: '192.0.168.172',
+            ip: '22',
         },
         {
             id: 3,
-            ip: '192.0.168.172',
+            ip: '22',
         },
         {
             id: 4,
-            ip: '192.0.168.172',
+            ip: '22',
         },
     ]
 
