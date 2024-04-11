@@ -74,6 +74,12 @@ public class UasmartsignageApplication {
 		monitorsGroup.setTemplateGroup(null);
 		monitorGroupService.saveGroup(monitorsGroup);
 
+		MonitorsGroup monitorsGroup2 = new MonitorsGroup();
+		monitorsGroup2.setName("MonitorsGroup2");
+		monitorsGroup2.setMonitors(List.of());
+		monitorsGroup2.setTemplateGroup(null);
+		monitorGroupService.saveGroup(monitorsGroup2);
+
 		//Create Monitor
 
 		Monitor monitor = new Monitor();

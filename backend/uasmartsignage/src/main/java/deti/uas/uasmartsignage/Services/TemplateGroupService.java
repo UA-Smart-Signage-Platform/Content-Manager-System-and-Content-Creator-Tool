@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Services;
 
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
@@ -11,6 +12,8 @@ import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.Monitor;
+
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
 
 import java.util.ArrayList;
@@ -22,11 +25,22 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
 
+import deti.uas.uasmartsignage.Services.TemplateService;
+import deti.uas.uasmartsignage.Services.MonitorGroupService;
+
 
 @Service
 public class TemplateGroupService {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final TemplateService templateService;
+    private final MonitorGroupService monitorGroupService;
+
+    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService) {
+        this.templateService = templateService;
+        this.monitorGroupService = monitorGroupService;
+    }
 
     @Autowired
     private TemplateGroupRepository templateGroupRepository;
@@ -36,6 +50,10 @@ public class TemplateGroupService {
     }
 
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
+        Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getMonitorsGroupForTemplate().getId());
+        templateGroup.setTemplate(template);
+        templateGroup.setMonitorsGroupForTemplate(monitorGroup);
         List<String> files = new ArrayList<>();
         if (templateGroup.getContent() != null) {
             for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
