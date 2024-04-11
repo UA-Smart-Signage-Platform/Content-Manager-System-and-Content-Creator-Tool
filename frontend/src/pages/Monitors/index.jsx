@@ -18,7 +18,7 @@ function Monitors(){
             })
         }
         else{
-            monitorsGroupService.getMonitorsByGroup(groupId).then((response) => {
+            monitorService.getMonitorsByGroup(groupId).then((response) => {
                 setMonitors(response.data);
             })
         }
@@ -63,12 +63,12 @@ function Monitors(){
     const columns = [
         {
             name: 'Name',
-            selector: row => row.location,
+            selector: row => row.name,
             sortable: true,
         },
         {
             name: 'Group',
-            selector: row => row.monitorsGroupForScreens.name,
+            selector: row => row.group.name,
             sortable: true,
         },
         {

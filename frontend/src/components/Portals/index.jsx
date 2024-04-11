@@ -1,25 +1,26 @@
 import { createPortal } from 'react-dom';
 import { MdArrowBack, MdMonitor, MdCheck } from "react-icons/md";
 import DataTable, { createTheme } from 'react-data-table-component';
+import { useEffect, useState } from 'react';
+import monitorService from '../../services/monitorService';
 
 function Portals( { page, showPortal, setShowPortal } ) {
-    /*
 
-    <div className="h-[14%] flex flex-col">
-                                        <div className="flex flex-row">
-                                            <div className="mr-auto flex flex-row text-xl items-center">
-                                                <MdMonitor className="w-7 h-7 mr-2"/>
-                                                192.0.168.172
-                                            </div>
-                                            <div className="ml-auto">
-                                                <button className="bg-[#97D700] size-8 mr-3 rounded-sm"><MdCheck/></button>
-                                                <button className="bg-[#D12E2E] size-8 rounded-sm">X</button>
-                                            </div>
-                                        </div>
-                                        <div id="dividerHr" className="border-[1px] border-secondary mt-auto flex-col"/>
-                                    </div>
+    const [pendingMonitors,setPendingMonitor] = useState([]);
+    const [updater,setUpdater] = useState(false);
 
-    */
+    useEffect(()=>{
+        monitorService.getPendingMonitors().then((response)=>{
+            setPendingMonitor(response.data)
+        })
+    },[updater])
+
+    const handleAccept = (id)=>{
+        monitorService.acceptMonitor(id).then((response)=>{
+            setUpdater(updater ? setUpdater(false):setUpdater(true));
+        });
+        setPendingMonitor(pendingMonitors.filter(a=> a.id !== id));
+    }
 
 
     const columns = [
@@ -29,34 +30,13 @@ function Portals( { page, showPortal, setShowPortal } ) {
         },
         {
             name: 'accept',
-            cell: (row) => <button className="bg-[#97D700] size-8 mr-3 rounded-sm"><MdCheck/></button>
+            cell: (row) => <button className="bg-[#97D700] size-8 mr-3 rounded-sm flex items-center text-lg" onClick={()=>handleAccept(row.id)}><MdCheck className='mx-auto'/></button>
         },
         {
             name: 'decline',
-            cell: (row) => <button className="bg-[#D12E2E] size-8 rounded-sm">{row.id}</button>
+            cell: (row) => <button className="bg-[#D12E2E] size-8 rounded-sm flex items-center text-lg"><span className='mx-auto'>X</span></button>
         },
-    ];
-    
-    const data = [
-            {
-            id: 1,
-            ip: '22'
-        },
-        {
-            id: 2,
-            ip: '22',
-        },
-        {
-            id: 3,
-            ip: '22',
-        },
-        {
-            id: 4,
-            ip: '22',
-        },
-    ]
-                                
-                        
+    ];                    
 
     if (page === "monitors")
         return (
@@ -80,7 +60,7 @@ function Portals( { page, showPortal, setShowPortal } ) {
                                 <DataTable className="p-3" 
                                     noTableHead
                                     columns={columns}
-                                    data={data}
+                                    data={pendingMonitors}
                                 />
                                     
                                 </div>
