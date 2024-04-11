@@ -23,6 +23,8 @@ class FileRepositoryTest {
     @Autowired
     FileRepository repository;
 
+  // TODO - create and revise tests
+
     @Test
     void whenFindById_thenReturnFile() {
         CustomFile customFile = new CustomFile();

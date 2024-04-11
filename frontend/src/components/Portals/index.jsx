@@ -54,7 +54,7 @@ function Portals( { page, showPortal, setShowPortal, currentFolder } ) {
         formData.append("file", file);
 
         if (!Array.isArray(currentFolder)){
-            formData.append("parent", currentFolder);
+            formData.append("parentId", currentFolder.id);
         }
         
         await mediaService.createFile(formData);
@@ -72,8 +72,6 @@ function Portals( { page, showPortal, setShowPortal, currentFolder } ) {
         await mediaService.createFolder(folder);
         setShowPortal(false);
     }
-
-    console.log(currentFolder);
 
     if (page === "monitors")
         return (

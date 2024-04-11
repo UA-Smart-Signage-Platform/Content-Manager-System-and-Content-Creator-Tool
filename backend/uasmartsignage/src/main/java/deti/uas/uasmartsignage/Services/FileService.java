@@ -100,11 +100,9 @@ public class FileService {
         if (directory.mkdir()) {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
-            
             fileRepository.save(customFile);
-            logger.info("Directory created: " + directory.getAbsolutePath());
-            
 
+            logger.info("Directory created: " + directory.getAbsolutePath());
             return customFile;
         } 
         else {
@@ -165,7 +163,7 @@ public class FileService {
         Long fileSize = file.getFile().getSize();
 
         // Get parent and transform FilesClass onto a CustomFile
-        CustomFile parent = (file.getParent() != null) ? getFileOrDirectoryById(file.getParent().getId()) : null;
+        CustomFile parent = (file.getParentId() != null) ? getFileOrDirectoryById(file.getParentId()) : null;
         CustomFile customFile = new CustomFile(fileName, fileType, fileSize, parent);
 
         Path path = Paths.get(getParentDirectoryPath(customFile) + fileName);
