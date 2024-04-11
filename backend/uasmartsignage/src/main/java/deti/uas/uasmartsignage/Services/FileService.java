@@ -100,20 +100,10 @@ public class FileService {
         if (directory.mkdir()) {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
-
-            System.out.println("============================================");
-            System.out.println(fileRepository.save(customFile));
-            System.out.println("============================================");
+            
+            fileRepository.save(customFile);
             logger.info("Directory created: " + directory.getAbsolutePath());
-
-            CustomFile parent = customFile.getParent();
-            if (parent != null){
-                logger.info("Adding folder to parent with path: " + customFile.getPath());
-                List<CustomFile> subDirectories = parent.getSubDirectories();
-                subDirectories.add(customFile);
-                parent.setSubDirectories(subDirectories);
-                fileRepository.save(parent);
-            }
+            
 
             return customFile;
         } 
