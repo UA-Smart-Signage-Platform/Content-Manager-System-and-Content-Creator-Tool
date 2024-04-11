@@ -29,15 +29,16 @@ import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class UasmartsignageApplication {
-	// private final FileService fileService;
-	// private final MonitorService monitorService;
-	// private final UserService userService;
-	// private final TemplateGroupService templateGroupService;
-	// private final TemplateService templateService;
-	// private final WidgetService widgetService;
-	// private final ContentService contentService;
-	// private final TemplateWidgetService templateWidgetService;
-	// private final MonitorGroupService monitorGroupService;
+	/*
+	private final FileService fileService;
+	private final MonitorService monitorService;
+	private final UserService userService;
+	private final TemplateGroupService templateGroupService;
+	private final TemplateService templateService;
+	private final WidgetService widgetService;
+	private final ContentService contentService;
+	private final TemplateWidgetService templateWidgetService;
+	private final MonitorGroupService monitorGroupService;
 
 
     // public UasmartsignageApplication(FileService fileService, MonitorService monitorService, UserService userService, TemplateGroupService templateGroupService, TemplateService templateService, WidgetService widgetService, ContentService contentService, TemplateWidgetService templateWidgetService, MonitorGroupService monitorGroupService) {
@@ -52,21 +53,22 @@ public class UasmartsignageApplication {
 	// 	this.monitorGroupService = monitorGroupService;
     // }
 
-	// @PostConstruct
-    // public void initialize() throws Exception {
-    //     System.out.println("Creating mock directory");
-    //     if (!fileService.getAllFiles().isEmpty()) {
-    //         System.out.println("Files already exist");
-    //         return;
-    //     }
-    //     CustomFile file = new CustomFile();
-    //     file.setName("Mock Directory");
-    //     file.setType("directory");
-    //     file.setParent(null);
-    //     List<CustomFile> subDirectories =  List.of();
-    //     file.setSubDirectories(subDirectories);
-    //     System.out.println("Creating file: " + file);
-    //     fileService.createFile(file);
+	
+	@PostConstruct
+    public void initialize() throws Exception {
+        System.out.println("Creating mock directory");
+        if (!fileService.getAllFiles().isEmpty()) {
+            System.out.println("Files already exist");
+            return;
+        }
+        CustomFile file = new CustomFile();
+        file.setName("Mock Directory");
+        file.setType("directory");
+        file.setParent(null);
+        List<CustomFile> subDirectories =  List.of();
+        file.setSubDirectories(subDirectories);
+        System.out.println("Creating file: " + file);
+        fileService.createFile(file);
 
 	// 	// Create MonitorsGroup
 
@@ -131,12 +133,14 @@ public class UasmartsignageApplication {
 
 	// 	//Create TemplateGroup
 
-	// 	TemplateGroup templateGroup = new TemplateGroup();
-	// 	templateGroup.setTemplate(template);
-	// 	templateGroup.setGroup(monitorsGroup);
-	// 	templateGroup.setContent(null);
-	// 	templateGroupService.saveGroup(templateGroup);
-    // }
+		TemplateGroup templateGroup = new TemplateGroup();
+		templateGroup.setTemplate(template);
+		templateGroup.setMonitorsGroupForTemplate(monitorsGroup);
+		templateGroup.setContent(null);
+		templateGroupService.saveGroup(templateGroup);
+    }
+	*/
+
     public static void main(String[] args) {
         SpringApplication.run(UasmartsignageApplication.class, args);
     }
