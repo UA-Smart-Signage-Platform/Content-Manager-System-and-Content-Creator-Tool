@@ -1,11 +1,11 @@
 package deti.uas.uasmartsignage.Services;
 
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Models.Monitor;
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -25,12 +25,15 @@ public class MonitorService {
 
     private final MonitorGroupService MonitorGroupService;
 
-    public MonitorService(MonitorGroupService MonitorGroupService) {
-        this.MonitorGroupService = MonitorGroupService;
-    }
+    
+
+    private final MonitorRepository monitorRepository;
 
     @Autowired
-    private MonitorRepository monitorRepository;
+    public MonitorService(MonitorRepository monitorRepository, MonitorGroupService monitorGroupService){
+        this.monitorRepository = monitorRepository;
+        this.MonitorGroupService = monitorGroupService;
+    }
 
     public Monitor getMonitorById(Long id) {
         return monitorRepository.findById(id).orElse(null);
@@ -45,14 +48,14 @@ public class MonitorService {
     }
     
     public Monitor updateMonitor(Long id, Monitor monitor) {
-        Monitor monitorById = monitorRepository.findById(id).orElse(null);
+        Monitor monitorById = monitorRepository.getReferenceById(id);
         if (monitorById == null) {
             return null;
         }
-        monitorById.setLocation(monitor.getLocation());
-        MonitorsGroup monitorsGroup = MonitorGroupService.getGroupById(monitor.getMonitorsGroupForScreens().getId());
+        monitorById.setName(monitor.getName());
+        MonitorsGroup monitorsGroup = MonitorGroupService.getGroupById(monitor.getGroup().getId());
         
-        if (monitorById.getMonitorsGroupForScreens() != monitor.getMonitorsGroupForScreens()) {
+        if (monitorById.getGroup() != monitor.getGroup()) {
             try {
                 GroupMessage confirmMessage = new GroupMessage();
                 confirmMessage.setMethod("GROUP");
@@ -61,26 +64,37 @@ public class MonitorService {
                 String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                 System.out.println("Sending confirm message: " + confirmMessageJson);
     
-                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
+                MqttConfig.getInstance().publish(monitor.getIp(), new MqttMessage(confirmMessageJson.getBytes()));
             } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
                 e.printStackTrace();
             }
         }
 
-        monitorById.setMonitorsGroupForScreens(monitor.getMonitorsGroupForScreens());
+        monitorById.setGroup(monitor.getGroup());
+        monitorById.setName(monitor.getName());
+        monitorById.setGroup(monitor.getGroup());
+        return monitorRepository.save(monitorById);
+    }
+
+    public Monitor updatePending(Long id,boolean pending){
+        Monitor monitorById = monitorRepository.getReferenceById(id);
+        if (monitorById == null){
+            return null;
+        }
+        monitorById.setPending(pending);
         return monitorRepository.save(monitorById);
     }
     
-    public Iterable<Monitor> getAllMonitors() {
-        return monitorRepository.findAll();
+    public List<Monitor> getAllMonitorsByPending(boolean pending) {
+        return monitorRepository.findByPending(pending);
     }
 
-    public List<Monitor> getMonitorsByGroup(MonitorsGroup monitorsGroup) {
-        return monitorRepository.findByMonitorsGroupForScreens(monitorsGroup);
+    public List<Monitor> getMonitorsByGroup(long groupId) {
+        return monitorRepository.findByPendingAndGroup_Id(false,groupId);
     }
 
     public Monitor getMonitorByLocation(String location) {
-        return monitorRepository.findByLocation(location);
+        return monitorRepository.findByName(location);
     }
 
     

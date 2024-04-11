@@ -83,11 +83,11 @@ public class MqttSubscriberService {
         monitorGroupService.saveGroup(monitorsGroup);
 
         Monitor monitor = new Monitor();
-        monitor.setLocation(registrationMessage.getName());
-        monitor.setMonitorsGroupForScreens(monitorsGroup);
+        monitor.setName(registrationMessage.getName());
+        monitor.setGroup(monitorsGroup);
         monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
         monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
-        monitor.setUuid(registrationMessage.getUuid());
+        monitor.setIp(registrationMessage.getUuid());
         monitor.setPending(true);
 
         monitorService.saveMonitor(monitor);

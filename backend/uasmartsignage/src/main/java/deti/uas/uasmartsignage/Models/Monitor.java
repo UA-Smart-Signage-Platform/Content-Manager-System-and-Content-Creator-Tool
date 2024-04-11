@@ -20,8 +20,14 @@ public class Monitor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String ip;
+
     @Column(nullable = false)
-    private String location;
+    private boolean pending;
 
     @Column(nullable = true)
     private int width;
@@ -29,15 +35,9 @@ public class Monitor {
     @Column(nullable = true)
     private int height;
 
-    @Column(nullable = false, unique = true)
-    private String uuid;
-
-    @Column(nullable = false, columnDefinition = "boolean default true")
-    private Boolean pending;
-
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
     @JsonIgnoreProperties("monitors")
-    private MonitorsGroup monitorsGroupForScreens;
+    private MonitorsGroup group;
 
 }

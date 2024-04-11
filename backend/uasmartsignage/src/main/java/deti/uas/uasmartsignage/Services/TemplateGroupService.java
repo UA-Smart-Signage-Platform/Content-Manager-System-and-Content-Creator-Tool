@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Services;
 
+import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
@@ -12,7 +13,6 @@ import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.util.concurrent.Monitor;
 
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
 
@@ -51,9 +51,10 @@ public class TemplateGroupService {
 
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
-        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getMonitorsGroupForTemplate().getId());
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+        List<Monitor> monitors = monitorGroup.getMonitors();
         templateGroup.setTemplate(template);
-        templateGroup.setMonitorsGroupForTemplate(monitorGroup);
+        templateGroup.setGroup(monitorGroup);
         List<String> files = new ArrayList<>();
         if (templateGroup.getContent() != null) {
             for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
@@ -69,10 +70,11 @@ public class TemplateGroupService {
             
 
             String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
+            for (Monitor monitor : monitors) {
+                MqttConfig.getInstance().publish(monitor.getIp(), new MqttMessage(confirmMessageJson.getBytes()));
+            }
 
-            String topic = "group/" + String.valueOf(templateGroup.getMonitorsGroupForTemplate().getId());
-
-            MqttConfig.getInstance().publish(topic, new MqttMessage(confirmMessageJson.getBytes()));
+            
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             e.printStackTrace();
         }
@@ -94,6 +96,7 @@ public class TemplateGroupService {
             return null;
         }
         TemplateGroup templateGroupAfter = templateGroupRepository.findById(templateGroup.getId()).orElse(null);
+        List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
         List<String> files = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : templateGroupAfter.getContent().entrySet()) {
             files.add(entry.getValue());
@@ -109,9 +112,10 @@ public class TemplateGroupService {
                 String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                 System.out.println("Sending confirm message: " + confirmMessageJson);
 
-                String topic = "group/" + String.valueOf(templateGroup.getMonitorsGroupForTemplate().getId());
-    
-                MqttConfig.getInstance().publish(topic, new MqttMessage(confirmMessageJson.getBytes()));
+                for (Monitor monitor : monitors) {
+                    MqttConfig.getInstance().publish(monitor.getIp(), new MqttMessage(confirmMessageJson.getBytes()));
+                }
+
             } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
                 // Handle exception
                 e.printStackTrace();
@@ -121,7 +125,7 @@ public class TemplateGroupService {
         
 
         templateGroupById.setTemplate(templateGroup.getTemplate());
-        templateGroupById.setMonitorsGroupForTemplate(templateGroup.getMonitorsGroupForTemplate());
+        templateGroupById.setTemplate(templateGroup.getTemplate());
         templateGroupById.setContent(templateGroup.getContent());
         return templateGroupRepository.save(templateGroupById);
     }

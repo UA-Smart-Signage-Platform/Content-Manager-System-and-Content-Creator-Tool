@@ -1,10 +1,10 @@
 package deti.uas.uasmartsignage.Models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -24,23 +24,27 @@ public class CustomFile {
     @Column(nullable = false)
     private String type;
 
+    @Column(nullable = false)
+    private Long size;
+
     @Column
     private String path;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
+    @ManyToOne
+    @JsonIgnoreProperties("subDirectories")
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties("parent")
     private List<CustomFile> subDirectories;
 
-    public CustomFile(String name, String type, CustomFile parent, List<CustomFile> subDirectories) {
+    public CustomFile(String name, String type, Long size, CustomFile parent) {
         this.name = name;
         this.type = type;
+        this.size = size;
         this.parent = parent;
-        this.subDirectories = subDirectories;
+        this.subDirectories = null;
     }
 
     public String toString() {
@@ -48,8 +52,8 @@ public class CustomFile {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
-                ", parent=" + parent +
-                ", subDirectories=" + subDirectories +
+                ", parent=" + (parent != null ? parent : "null") +
+                ", subDirectories=" + (subDirectories == null ? "null" : Arrays.toString(subDirectories.toArray())) +
                 '}';
     }
 }
