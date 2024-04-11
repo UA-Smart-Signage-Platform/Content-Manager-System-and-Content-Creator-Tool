@@ -74,7 +74,6 @@ public class FileController {
     })
     @PostMapping("/files/directory")
     public ResponseEntity<CustomFile> createDirectory(@RequestBody CustomFile customFile) {
-        System.out.println(customFile);
         CustomFile newCustomFile = fileService.createDirectory(customFile);
         if (newCustomFile == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);
