@@ -14,12 +14,12 @@ import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 
 @Component
 @Profile("!test")
-public class MonitorAndGroupLoader implements CommandLineRunner {
+public class DataLoader implements CommandLineRunner {
         private MonitorRepository monitorRepository;
         private MonitorGroupRepository groupRepository;
 
         @Autowired
-        public MonitorAndGroupLoader(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository){
+        public DataLoader(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository){
             this.groupRepository = groupRepository;
             this.monitorRepository = monitorRepository;
         }
