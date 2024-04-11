@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.io.File;
@@ -30,23 +31,16 @@ public class FileService {
         this.fileRepository = fileRepository;
     }
 
-
+   
     /**
-     * Retrieves and returns a list of all CustomFile stored inside the CustomFile (folder).
+     * Retrieves and returns a list of all CustomFile stored at root level.
      * 
-     * @return A list of all CustomFile stored inside the CustomFile (folder).
-     */
-    public List<CustomFile> getFilesInsideFolder(Long id) {
-        Optional<CustomFile> folder = fileRepository.findById(id);
-        if (folder.isPresent()) {
-            List<CustomFile> files = folder.get().getSubDirectories();
-            logger.debug("Retrieved {} files and folders from the folder.", files.size());
-            return files;
-        } 
-        else {
-            logger.error("Folder with ID {} not found in the repository.", id);
-            return List.of();
-        }
+     * @return A list of all CustomFile stored at root level.
+    */
+    public List<CustomFile> getFilesAtRoot() {
+        List<CustomFile> files = fileRepository.findAllByParentIsNull();
+        logger.debug("Retrieved {} files and folders located at root level.", files.size());
+        return files;
     }
 
 
@@ -56,7 +50,7 @@ public class FileService {
      * @param id The ID of the CustomFile to retrieve.
      * @return The CustomFile with the specified ID, or null if no such file is found.
      */
-    public CustomFile getFileById(Long id) {
+    public CustomFile getFileOrDirectoryById(Long id) {
         logger.info("Retrieving file with ID: {}", id);
         CustomFile file = fileRepository.findById(id).orElse(null);
 
@@ -105,7 +99,11 @@ public class FileService {
 
         if (directory.mkdir()) {
             customFile.setPath(parentDirectoryPath + customFile.getName());
-            fileRepository.save(customFile);
+            customFile.setSubDirectories(new ArrayList<>());
+
+            System.out.println("============================================");
+            System.out.println(fileRepository.save(customFile));
+            System.out.println("============================================");
             logger.info("Directory created: " + directory.getAbsolutePath());
 
             CustomFile parent = customFile.getParent();
@@ -114,6 +112,7 @@ public class FileService {
                 List<CustomFile> subDirectories = parent.getSubDirectories();
                 subDirectories.add(customFile);
                 parent.setSubDirectories(subDirectories);
+                fileRepository.save(parent);
             }
 
             return customFile;
@@ -134,7 +133,7 @@ public class FileService {
      * @param customFile The CustomFile for which the parent directory path is generated.
      * @return The parent directory path for the given CustomFile.
      */
-    public static String getParentDirectoryPath(CustomFile customFile) {
+    public String getParentDirectoryPath(CustomFile customFile) {
         StringBuilder pathBuilder = new StringBuilder();
 
         while (customFile.getParent() != null) {
@@ -176,8 +175,8 @@ public class FileService {
         Long fileSize = file.getFile().getSize();
 
         // Get parent and transform FilesClass onto a CustomFile
-        CustomFile parent = (file.getParent() != null) ? getFileById(file.getParent().getId()) : null;
-        CustomFile customFile = new CustomFile(fileName, fileType, fileSize, parent, null);
+        CustomFile parent = (file.getParent() != null) ? getFileOrDirectoryById(file.getParent().getId()) : null;
+        CustomFile customFile = new CustomFile(fileName, fileType, fileSize, parent);
 
         Path path = Paths.get(getParentDirectoryPath(customFile) + fileName);
 

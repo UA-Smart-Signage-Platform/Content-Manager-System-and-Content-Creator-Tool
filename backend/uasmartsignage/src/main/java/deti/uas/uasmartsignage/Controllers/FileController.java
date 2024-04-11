@@ -37,19 +37,19 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/{id}")
-    public ResponseEntity<CustomFile> getFileOrFolderById(@PathVariable Long id) {
-        CustomFile customFile = fileService.getFileById(id);
+    public ResponseEntity<CustomFile> getFileOrDirectoryById(@PathVariable Long id) {
+        CustomFile customFile = fileService.getFileOrDirectoryById(id);
         return new ResponseEntity<>(customFile, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get all files and folders inside a folder")
+    @Operation(summary = "Get all files and folders located in root")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all files and folders inside a folder", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "List of all files and folders at root level", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "No files or folders found", content = @Content(mediaType = "application/json"))
     })
-    @GetMapping("/files/directory/{id}")
-    public ResponseEntity<List<CustomFile>> getFilesByFolder(@PathVariable Long id) {
-        List<CustomFile> customFiles = fileService.getFilesInsideFolder(id);
+    @GetMapping("/files/directory/root")
+    public ResponseEntity<List<CustomFile>> getRootFilesAndDirectories() {
+        List<CustomFile> customFiles = fileService.getFilesAtRoot();
         return new ResponseEntity<>(customFiles, HttpStatus.OK);
     }
 
@@ -74,6 +74,7 @@ public class FileController {
     })
     @PostMapping("/files/directory")
     public ResponseEntity<CustomFile> createDirectory(@RequestBody CustomFile customFile) {
+        System.out.println(customFile);
         CustomFile newCustomFile = fileService.createDirectory(customFile);
         if (newCustomFile == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);

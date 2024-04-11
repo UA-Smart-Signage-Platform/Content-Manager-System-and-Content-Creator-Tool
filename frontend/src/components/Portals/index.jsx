@@ -66,11 +66,14 @@ function Portals( { page, showPortal, setShowPortal, currentFolder } ) {
             name: folderName,
             type: "directory",
             parent: Array.isArray(currentFolder) ? null : currentFolder,
+            size: 0,
         }
 
         await mediaService.createFolder(folder);
         setShowPortal(false);
     }
+
+    console.log(currentFolder);
 
     if (page === "monitors")
         return (

@@ -2,6 +2,7 @@ package deti.uas.uasmartsignage.repositoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ class FileRepositoryTest {
         customFile.setType("directory");
         customFile.setSize(0L);
         customFile.setParent(null);
-        customFile.setSubDirectories(List.of());
+        customFile.setSubDirectories(new ArrayList<>());
 
         entityManager.persistAndFlush(customFile);
 
@@ -46,7 +47,7 @@ class FileRepositoryTest {
 
     @Test
     void whenFindByName_thenReturnFile() {
-        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null, List.of());
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
 
         entityManager.persistAndFlush(customFile);
 
@@ -63,8 +64,8 @@ class FileRepositoryTest {
 
     @Test
     void whenFindAllFiles_thenReturnAllMonitors() {
-        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null, List.of());
-        CustomFile customFile2 = new CustomFile("A normal file", "image", 200L, customFile, List.of());
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
+        CustomFile customFile2 = new CustomFile("A normal file", "image", 200L, customFile);
 
         entityManager.persist(customFile);
         entityManager.persistAndFlush(customFile2);
@@ -78,7 +79,7 @@ class FileRepositoryTest {
 
     @Test
     void whenDeleteFile_thenReturnEmpty() {
-        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null, List.of());
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
 
         entityManager.persistAndFlush(customFile);
 

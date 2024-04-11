@@ -16,18 +16,20 @@ function Media() {
 
     useEffect(() => {
         if(currentFolder === null){
-            mediaService.getFilesAndDirectories().then((response) => {
+            mediaService.getFilesAtRootLevel().then((response) => {
                 setFilesAndDirectories(response.data);
                 setFolder(response.data);
             })
         }
         else{
-            mediaService.getFilesByDirectory(currentFolder).then((response) => {
+            mediaService.getFileOrDirectoryById(currentFolder).then((response) => {
                 setFilesAndDirectories(response.data.subDirectories);
                 setFolder(response.data);
             })
         }
     }, [currentFolder]);
+
+    console.log(folder);
 
     const columns = [
         {

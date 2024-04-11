@@ -38,12 +38,12 @@ public class CustomFile {
     @JsonIgnoreProperties("parent")
     private List<CustomFile> subDirectories;
 
-    public CustomFile(String name, String type, Long size, CustomFile parent, List<CustomFile> subDirectories) {
+    public CustomFile(String name, String type, Long size, CustomFile parent) {
         this.name = name;
         this.type = type;
         this.size = size;
         this.parent = parent;
-        this.subDirectories = List.of();
+        this.subDirectories = null;
     }
 
     public String toString() {
