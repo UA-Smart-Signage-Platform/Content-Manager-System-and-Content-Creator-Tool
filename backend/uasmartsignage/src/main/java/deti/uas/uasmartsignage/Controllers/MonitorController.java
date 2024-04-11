@@ -18,7 +18,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/monitors")
+@RequestMapping("/api/monitors")
 public class MonitorController {
 
     private MonitorService monitorService;

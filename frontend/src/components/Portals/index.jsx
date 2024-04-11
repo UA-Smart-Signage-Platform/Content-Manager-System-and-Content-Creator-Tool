@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import monitorService from '../../services/monitorService';
 import mediaService from '../../services/mediaService';
 
-function Portals( { page, showPortal, setShowPortal } ) {
+function Portals( { page, showPortal, setShowPortal,currentFolder } ) {
 
     const [pendingMonitors,setPendingMonitor] = useState([]);
     const [updater,setUpdater] = useState(false);
