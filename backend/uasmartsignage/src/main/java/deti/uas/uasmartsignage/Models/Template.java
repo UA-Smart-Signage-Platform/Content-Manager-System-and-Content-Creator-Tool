@@ -22,10 +22,7 @@ public class Template {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    private String path;
-
+    
     @Column(nullable = false, unique = true)
     private String name;
 

@@ -30,16 +30,12 @@ public class Widget {
 
     private String path;
 
-    @ManyToOne
-    @JoinColumn(name = "contentId", nullable = false)
-    @JsonIgnoreProperties("widgets")
-    private Content content;
-
+    @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("widget")
+    private List<Content> contents;
     
     @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("widget")
     private List<TemplateWidget> templateWidgets;
-
-    
 
 }

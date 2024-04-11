@@ -23,6 +23,12 @@ public class Monitor {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = true)
+    private int width;
+
+    @Column(nullable = true)
+    private int height;
+
     @Column(nullable = false, unique = true)
     private String ip;
 

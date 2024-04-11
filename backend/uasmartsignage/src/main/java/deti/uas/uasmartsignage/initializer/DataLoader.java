@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.initializer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,19 +8,35 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.TemplateWidget;
+import deti.uas.uasmartsignage.Models.Widget;
+import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
+import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 
 @Component
 @Profile("!test")
 public class DataLoader implements CommandLineRunner {
         private MonitorRepository monitorRepository;
         private MonitorGroupRepository groupRepository;
+        private WidgetRepository widgetRepository;
+        private ContentRepository contentRepository;
+        private TemplateRepository templateRepository;
+        private TemplateWidgetRepository templateWidgetRepository;
 
         @Autowired
-        public DataLoader(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository){
+        public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository, ContentRepository contentRepository, WidgetRepository widgetRepository, MonitorGroupRepository groupRepository, MonitorRepository monitorRepository){
+            this.templateWidgetRepository = templateWidgetRepository;
+            this.templateRepository = templateRepository;
+            this.contentRepository = contentRepository;
+            this.widgetRepository = widgetRepository;
             this.groupRepository = groupRepository;
             this.monitorRepository = monitorRepository;
         }
@@ -28,6 +45,8 @@ public class DataLoader implements CommandLineRunner {
             if (!groupRepository.findAll().isEmpty()){
                 return;
             }
+
+            this.loadTemplates();
 
             MonitorsGroup deti = new MonitorsGroup();
             deti.setName("deti");
@@ -48,6 +67,8 @@ public class DataLoader implements CommandLineRunner {
             Monitor hall = new Monitor();
             hall.setIp("192.168.1");
             hall.setName("hall");
+            hall.setWidth(1920);
+            hall.setHeight(1080);
             hall.setPending(false);
             hall.setGroup(deti);
             monitorRepository.save(hall);
@@ -93,5 +114,49 @@ public class DataLoader implements CommandLineRunner {
             car2.setPending(true);
             car2.setGroup(dBio);
             monitorRepository.save(car2);
+        }
+
+        private void loadTemplates(){
+
+            // create the widgets and their contents
+            Widget temperatureWidget = new Widget();
+            temperatureWidget.setName("Temperature");
+            temperatureWidget.setPath("static/widgets/temperature.widget");
+            temperatureWidget.setContents(new ArrayList<>());
+            widgetRepository.save(temperatureWidget);
+            
+            Widget mediaWidget = new Widget();
+            mediaWidget.setName("Media");
+            mediaWidget.setPath("static/widgets/media.widget");
+            widgetRepository.save(mediaWidget);
+            Content content = new Content();
+            content.setName("videos");
+            content.setType("media");
+            content.setWidget(mediaWidget);
+            contentRepository.save(content);
+
+            // create template1
+            Template template1 = new Template();
+            template1.setName("template1");
+            templateRepository.save(template1);
+
+            // create the widget mappings for template 1
+            TemplateWidget widget1 = new TemplateWidget();
+            widget1.setTop(0);
+            widget1.setLeftPosition(0);
+            widget1.setHeight(10);
+            widget1.setWidth(20);
+            widget1.setTemplate(template1);
+            widget1.setWidget(temperatureWidget);
+            templateWidgetRepository.save(widget1);
+
+            TemplateWidget widget2 = new TemplateWidget();
+            widget2.setTop(10);
+            widget2.setLeftPosition(20);
+            widget2.setHeight(90);
+            widget2.setWidth(80);
+            widget2.setTemplate(template1);
+            widget2.setWidget(mediaWidget);
+            templateWidgetRepository.save(widget2);
         }
 }
