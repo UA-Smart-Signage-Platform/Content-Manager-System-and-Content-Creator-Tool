@@ -22,7 +22,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @AllArgsConstructor
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/groups")
-@CrossOrigin(origins = "http://localhost:3000")
 public class MonitorGroupController {
 
     private MonitorGroupService monitorGroupService;
