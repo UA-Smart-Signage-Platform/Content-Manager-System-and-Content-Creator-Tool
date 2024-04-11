@@ -38,15 +38,15 @@ public class FileServiceTest {
     @InjectMocks
     private FileService service;
 
+    // TODO - create and revise tests
 
     @Test
-    @Disabled
     void whenGetFileById_thenReturnFile() {
-        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null, List.of());
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
 
         when(repository.findById(1L)).thenReturn(Optional.of(customFile));
 
-        CustomFile found = service.getFileById(1L);
+        CustomFile found = service.getFileOrDirectoryById(1L);
 
         assertThat(found).isEqualTo(customFile);
         verify(repository, times(1)).findById(1L);
@@ -55,7 +55,7 @@ public class FileServiceTest {
     @Test
     @Disabled
     void whenSaveFolder_thenFolderIsSaved() {
-        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null, new ArrayList<>());
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
 
         when(repository.save(customFile)).thenReturn(customFile);
 
@@ -68,8 +68,8 @@ public class FileServiceTest {
     @Test
     @Disabled
     void whenSaveFolderInsideFolder_thenFolderIsSavedInsideFolder() {
-        CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null, new ArrayList<>());
-        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 0L, outerFolder, new ArrayList<>());
+        CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
+        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 0L, outerFolder);
 
         when(repository.save(outerFolder)).thenReturn(outerFolder);
         when(repository.save(innerFolder)).thenReturn(innerFolder);
@@ -80,7 +80,7 @@ public class FileServiceTest {
         assertThat(savedOuter).isEqualTo(outerFolder);
         assertThat(savedInner).isEqualTo(innerFolder);
         assertThat(savedOuter.getSubDirectories().size()).isEqualTo(1);
-        verify(repository, times(2)).save(Mockito.any());
+        verify(repository, times(3)).save(Mockito.any());
     }
 
     @Test
@@ -112,14 +112,14 @@ public class FileServiceTest {
     @Test
     @Disabled
     void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() throws IOException {
-        CustomFile outerFolder = new CustomFile("Outer directoroe", "directory", 0L, null, new ArrayList<>());
+        CustomFile outerFolder = new CustomFile("Outer directoroe", "directory", 0L, null);
         
         when(repository.save(outerFolder)).thenReturn(outerFolder);
         when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
         
         service.createDirectory(outerFolder);
 
-        CustomFile innerFolder = new CustomFile("Inner directoroe", "directory", 0L, outerFolder, new ArrayList<>());
+        CustomFile innerFolder = new CustomFile("Inner directoroe", "directory", 0L, outerFolder);
         innerFolder.setId(2L);
         when(repository.save(innerFolder)).thenReturn(innerFolder);
         when(repository.findById(2L)).thenReturn(Optional.of(innerFolder));
@@ -167,12 +167,13 @@ public class FileServiceTest {
             bytes3            
     );
 
-        FilesClass filesClass = new FilesClass(savedInner, mockMultipartFile);
-        FilesClass filesClass2 = new FilesClass(savedInner, mockMultipartFile2);
-        FilesClass filesClass3 = new FilesClass(null, mockMultipartFile3);
+    // (need to revise this logic)
+        //FilesClass filesClass = new FilesClass(savedInner, mockMultipartFile);
+        //FilesClass filesClass2 = new FilesClass(savedInner, mockMultipartFile2);
+        //FilesClass filesClass3 = new FilesClass(null, mockMultipartFile3);
 
-        service.createFile(filesClass);
-        service.createFile(filesClass2);
-        service.createFile(filesClass3);
+        //service.createFile(filesClass);
+        //service.createFile(filesClass2);
+        //service.createFile(filesClass3);
     }
 }
