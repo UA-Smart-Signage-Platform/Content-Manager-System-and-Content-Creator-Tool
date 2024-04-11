@@ -21,11 +21,17 @@ public class Monitor {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String location;
+    private String name;
+
+    @Column(nullable = false, unique = true)
+    private String ip;
+
+    @Column(nullable = false)
+    private boolean pending;
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
     @JsonIgnoreProperties("monitors")
-    private MonitorsGroup monitorsGroupForScreens;
+    private MonitorsGroup group;
 
 }

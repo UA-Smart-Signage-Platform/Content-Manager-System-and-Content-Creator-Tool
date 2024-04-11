@@ -35,7 +35,7 @@ public class TemplateGroupService {
             return null;
         }
         templateGroupById.setTemplate(templateGroup.getTemplate());
-        templateGroupById.setMonitorsGroupForTemplate(templateGroup.getMonitorsGroupForTemplate());
+        templateGroupById.setTemplate(templateGroup.getTemplate());
         templateGroupById.setContent(templateGroup.getContent());
         return templateGroupRepository.save(templateGroupById);
     }
