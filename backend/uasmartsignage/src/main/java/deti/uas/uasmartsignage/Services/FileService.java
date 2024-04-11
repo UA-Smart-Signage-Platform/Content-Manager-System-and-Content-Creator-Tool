@@ -4,8 +4,6 @@ import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -14,13 +12,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.io.File;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class FileService {
 
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
+    
     private final FileRepository fileRepository;
 
     @Autowired
@@ -29,10 +31,110 @@ public class FileService {
     }
 
 
-    // This method is used to get the upload directory for a file
-    // if the upload directory does not exist, it will create it
-    // and return the path to the directory
-    public static String getUploadDir(CustomFile customFile) {
+    /**
+     * Retrieves and returns a list of all CustomFile stored inside the CustomFile (folder).
+     * 
+     * @return A list of all CustomFile stored inside the CustomFile (folder).
+     */
+    public List<CustomFile> getFilesInsideFolder(Long id) {
+        Optional<CustomFile> folder = fileRepository.findById(id);
+        if (folder.isPresent()) {
+            List<CustomFile> files = folder.get().getSubDirectories();
+            logger.debug("Retrieved {} files and folders from the folder.", files.size());
+            return files;
+        } 
+        else {
+            logger.error("Folder with ID {} not found in the repository.", id);
+            return List.of();
+        }
+    }
+
+
+    /**
+     * Retrieves and returns CustomFile with the specified ID from the file repository.
+     * 
+     * @param id The ID of the CustomFile to retrieve.
+     * @return The CustomFile with the specified ID, or null if no such file is found.
+     */
+    public CustomFile getFileById(Long id) {
+        logger.info("Retrieving file with ID: {}", id);
+        CustomFile file = fileRepository.findById(id).orElse(null);
+
+        if (file == null) {
+            logger.warn("File with ID {} not found", id);
+        }
+        return file;
+    }
+
+
+    /**
+     * Retrieves and returns CustomFile with the specified name from the file repository.
+     * 
+     * @param fileName The name of the CustomFile to retrieve.
+     * @return The CustomFile with the specified name, or {@code null} if no such file exists.
+     */
+    public CustomFile getFileByName(String fileName) {
+        logger.info("Retrieving file with name: {}", fileName);
+        CustomFile customFile = fileRepository.findByName(fileName);
+
+        if (customFile == null) {
+            logger.warn("File with name '{}' not found", fileName);
+        }
+        return customFile;
+    }
+
+
+    /**
+     * Creates CustomFile in the repository. If the file type is "directory", a directory is created.
+     *
+     * @param customFile The CustomFile to create.
+     * @return The created CustomFile, or {@code null} if creation fails.
+     */
+    public CustomFile createDirectory(CustomFile customFile) {
+        if (!customFile.getType().equals("directory")) {
+            return null;
+        }
+
+        String parentDirectoryPath = getParentDirectoryPath(customFile);
+        File directory = new File(parentDirectoryPath + customFile.getName());
+
+        if (directory.exists()){
+            logger.info("Directory already exists: " + directory.getAbsolutePath());
+            return null;
+        }
+
+        if (directory.mkdir()) {
+            customFile.setPath(parentDirectoryPath + customFile.getName());
+            fileRepository.save(customFile);
+            logger.info("Directory created: " + directory.getAbsolutePath());
+
+            CustomFile parent = customFile.getParent();
+            if (parent != null){
+                logger.info("Adding folder to parent with path: " + customFile.getPath());
+                List<CustomFile> subDirectories = parent.getSubDirectories();
+                subDirectories.add(customFile);
+                parent.setSubDirectories(subDirectories);
+            }
+
+            return customFile;
+        } 
+        else {
+            logger.info("Failed to create directory: " + directory.getAbsolutePath());
+            return null;
+        }
+        
+    }
+
+
+    /**
+     * Constructs and returns the parent directory path for the provided CustomFile.
+     * The directory path is determined by traversing the parent directories of the CustomFile.
+     * If the root directory for uploads does not exist, it will be created.
+     *
+     * @param customFile The CustomFile for which the parent directory path is generated.
+     * @return The parent directory path for the given CustomFile.
+     */
+    public static String getParentDirectoryPath(CustomFile customFile) {
         StringBuilder pathBuilder = new StringBuilder();
 
         while (customFile.getParent() != null) {
@@ -40,51 +142,69 @@ public class FileService {
             customFile = customFile.getParent();
         }
 
-        String rootDir = System.getProperty("user.dir");
-        File rootDirFile = new File(rootDir + File.separator + "uploads");
-        if (!rootDirFile.exists()) {
-            if (rootDirFile.mkdir()) {
-                System.out.println("Directory created: " + rootDirFile.getAbsolutePath());
-            } else {
-                System.out.println("Failed to create directory: " + rootDirFile.getAbsolutePath());
+        String rootPath = System.getProperty("user.dir");
+        File rootDirectory = new File(rootPath + File.separator + "uploads");
+        if (!rootDirectory.exists()) {
+            if (rootDirectory.mkdir()) {
+                logger.info("Directory created: {}", rootDirectory.getAbsolutePath());
+            } 
+            else {
+                logger.error("Failed to create directory: {}", rootDirectory.getAbsolutePath());
             }
         }
 
-        pathBuilder.insert(0, rootDirFile + File.separator);
-
+        pathBuilder.insert(0, rootDirectory + File.separator);
         return pathBuilder.toString();
     }
 
 
-    public List<CustomFile> getAllFiles() {
-        return fileRepository.findAll();
-    }
-
-    public CustomFile getFileById(Long id) {
-        return fileRepository.findById(id).orElse(null);
-    }
-
-    public CustomFile createFile(CustomFile customFile) {
-        //System.out.println(customFile.getType());
-        if (customFile.getType().equals("directory")) {
-            String Dir = getUploadDir(customFile);
-            File directory = new File(Dir + customFile.getName());
-            if (!directory.exists()){
-                if (directory.mkdir()) {
-                    fileRepository.save(customFile);
-                    System.out.println("Directory created: " + directory.getAbsolutePath());
-                    customFile.setPath(Dir + customFile.getName());
-                    updateFile(customFile.getId(), customFile);
-                    return customFile;
-
-                } else {
-                    System.out.println("Failed to create directory: " + directory.getAbsolutePath());
-                    return null;
-                }
-            }
+    /**
+     * Creates a new CustomFile from the provided FilesClass and saves it to the repository.
+     * 
+     * @param file The FilesClass containing information about the file to create (normally an image or video).
+     * @return The created CustomFile, or {@code null} if creation fails.
+     */
+    public CustomFile createFile(FilesClass file) {
+        if (file.getFile().isEmpty()) {
+            logger.info("Provided file is empty.");
+            return null;
         }
-        return fileRepository.save(customFile);
+
+        // Get information from sent file
+        String fileName = StringUtils.cleanPath(file.getFile().getOriginalFilename());
+        String fileType = file.getFile().getContentType();
+        Long fileSize = file.getFile().getSize();
+
+        // Get parent and transform FilesClass onto a CustomFile
+        CustomFile parent = (file.getParent() != null) ? getFileById(file.getParent().getId()) : null;
+        CustomFile customFile = new CustomFile(fileName, fileType, fileSize, parent, null);
+
+        Path path = Paths.get(getParentDirectoryPath(customFile) + fileName);
+
+        customFile.setPath(path.toString());
+        logger.info("Creating file with type: " + customFile.getType() + " and name: " + customFile.getName());
+        fileRepository.save(customFile);
+
+        // Add file to parent's list
+        if (parent != null){
+            logger.info("Adding file to parent with path: " + customFile.getPath());
+            List<CustomFile> subDirectories = parent.getSubDirectories();
+            subDirectories.add(customFile);
+            parent.setSubDirectories(subDirectories);
+        }
+
+        try {
+            Files.copy(file.getFile().getInputStream(), path);
+            return customFile;
+        } 
+        catch (IOException e) {
+            logger.error("Failed to copy file: {}", e.getMessage());
+            return null;
+        }
     }
+
+    // TODO - need to revise logic and alike...
+
 
     public CustomFile updateFile(Long id, CustomFile customFile) {
         Optional<CustomFile> fileOptional = fileRepository.findById(id);
@@ -96,7 +216,8 @@ public class FileService {
                 file.setPath(customFile.getPath());
                 file.setSubDirectories(customFile.getSubDirectories());
                 return fileRepository.save(file);
-            } else {
+            } 
+            else {
                 throw new RuntimeException("File not found with id " + id);
             }
     }
@@ -105,47 +226,9 @@ public class FileService {
         Optional<CustomFile> fileOptional = fileRepository.findById(id);
         if (fileOptional.isPresent()) {
             fileRepository.delete(fileOptional.get());
-        } else {
+        } 
+        else {
             throw new RuntimeException("File not found with id " + id);
         }
-    }
-
-    public CustomFile createAndSaveFile(FilesClass file) {
-        CustomFile newCustomFile;
-
-        if (file.getFile().isEmpty()) {
-            return null;
-        }
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
-        String fileType = file.getFile().getContentType();
-
-        if (file.getParent() != null) {
-            Long parentId = file.getParent().getId();
-            CustomFile parent = getFileById(parentId);
-            newCustomFile = new CustomFile(fileName, fileType, parent, file.getSubDirectories());
-            System.out.println("Parent: " + newCustomFile.toString());
-        }
-        else{
-            newCustomFile = new CustomFile(fileName, fileType, null, file.getSubDirectories());
-        }
-
-        CustomFile finalCustomFile = createFile(newCustomFile);
-
-        Path path = Paths.get(getUploadDir(newCustomFile) + fileName);
-
-        finalCustomFile.setPath(path.toString());
-        updateFile(finalCustomFile.getId(), finalCustomFile);
-
-        try {
-            Files.copy(file.getFile().getInputStream(), path);
-            return finalCustomFile;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public CustomFile getFileByName(String fileName) {
-        return fileRepository.findByName(fileName);
     }
 }
