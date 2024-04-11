@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.Profile;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.Monitor;
@@ -27,6 +29,7 @@ import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class UasmartsignageApplication {
+	/*
 	private final FileService fileService;
 	private final MonitorService monitorService;
 	private final UserService userService;
@@ -38,18 +41,19 @@ public class UasmartsignageApplication {
 	private final MonitorGroupService monitorGroupService;
 
 
-    public UasmartsignageApplication(FileService fileService, MonitorService monitorService, UserService userService, TemplateGroupService templateGroupService, TemplateService templateService, WidgetService widgetService, ContentService contentService, TemplateWidgetService templateWidgetService, MonitorGroupService monitorGroupService) {
-        this.fileService = fileService;
-		this.monitorService = monitorService;
-		this.userService = userService;
-		this.templateGroupService = templateGroupService;
-		this.templateService = templateService;
-		this.widgetService = widgetService;
-		this.contentService = contentService;
-		this.templateWidgetService = templateWidgetService;
-		this.monitorGroupService = monitorGroupService;
-    }
+    // public UasmartsignageApplication(FileService fileService, MonitorService monitorService, UserService userService, TemplateGroupService templateGroupService, TemplateService templateService, WidgetService widgetService, ContentService contentService, TemplateWidgetService templateWidgetService, MonitorGroupService monitorGroupService) {
+    //     this.fileService = fileService;
+	// 	this.monitorService = monitorService;
+	// 	this.userService = userService;
+	// 	this.templateGroupService = templateGroupService;
+	// 	this.templateService = templateService;
+	// 	this.widgetService = widgetService;
+	// 	this.contentService = contentService;
+	// 	this.templateWidgetService = templateWidgetService;
+	// 	this.monitorGroupService = monitorGroupService;
+    // }
 
+	
 	@PostConstruct
     public void initialize() throws Exception {
         System.out.println("Creating mock directory");
@@ -66,100 +70,68 @@ public class UasmartsignageApplication {
         System.out.println("Creating file: " + file);
         fileService.createFile(file);
 
-		// Create MonitorsGroup
+	// 	// Create MonitorsGroup
 
-		MonitorsGroup monitorsGroup = new MonitorsGroup();
-		monitorsGroup.setName("BOMBA");
-		monitorsGroup.setTemplateGroup(null);
-		monitorGroupService.saveGroup(monitorsGroup);
+	// 	MonitorsGroup monitorsGroup = new MonitorsGroup();
+	// 	monitorsGroup.setName("MonitorsGroup");
+	// 	monitorsGroup.setMonitors(List.of());
+	// 	monitorsGroup.setTemplateGroup(null);
+	// 	monitorGroupService.saveGroup(monitorsGroup);
 
-		MonitorsGroup monitorsGroup2 = new MonitorsGroup();
-		monitorsGroup2.setName("DETI");
-		monitorsGroup2.setTemplateGroup(null);
-		monitorGroupService.saveGroup(monitorsGroup2);
+	// 	//Create Monitor
 
-		MonitorsGroup monitorsGroup3 = new MonitorsGroup();
-		monitorsGroup3.setName("WOOF");
-		monitorsGroup3.setTemplateGroup(null);
-		monitorGroupService.saveGroup(monitorsGroup3);
+	// 	Monitor monitor = new Monitor();
+	// 	monitor.setName("Aveiro");
+	// 	monitor.setGroup(monitorsGroup);
+	// 	monitor.setPending(false);
+	// 	monitor.setIp("192.1.20");
+	// 	monitorService.saveMonitor(monitor);
 
-		//Create Monitor
+	// 	//Create Content
 
-		Monitor monitor = new Monitor();
-		monitor.setLocation("Rot");
-		monitor.setMonitorsGroupForScreens(monitorsGroup);
-		monitorService.saveMonitor(monitor);
+	// 	Content content = new Content();
+	// 	content.setName("Video");
+	// 	content.setType("video");
+	// 	content.setDescription("Video Description");
+	// 	contentService.saveContent(content);
 
-		Monitor monitor2 = new Monitor();
-		monitor2.setLocation("Aviao");
-		monitor2.setMonitorsGroupForScreens(monitorsGroup2);
-		monitorService.saveMonitor(monitor2);
+	// 	//create Widget
 
-		Monitor monitor3 = new Monitor();
-		monitor3.setLocation("casadebanho");
-		monitor3.setMonitorsGroupForScreens(monitorsGroup2);
-		monitorService.saveMonitor(monitor3);
-
-		Monitor monitor4 = new Monitor();
-		monitor4.setLocation("hall");
-		monitor4.setMonitorsGroupForScreens(monitorsGroup3);
-		monitorService.saveMonitor(monitor4);
-
-		Monitor monitor5 = new Monitor();
-		monitor5.setLocation("dead");
-		monitor5.setMonitorsGroupForScreens(monitorsGroup3);
-		monitorService.saveMonitor(monitor5);
-
-		Monitor monitor6 = new Monitor();
-		monitor6.setLocation("lima");
-		monitor6.setMonitorsGroupForScreens(monitorsGroup3);
-		monitorService.saveMonitor(monitor6);
-
-		//Create Content
-
-		Content content = new Content();
-		content.setName("Video");
-		content.setType("video");
-		content.setDescription("Video Description");
-		contentService.saveContent(content);
-
-		//create Widget
-
-		Widget widget = new Widget();
-		widget.setName("Widget");
-		widget.setPath("path");
-		widget.setContent(content);
-		widgetService.saveWidget(widget);
+	// 	Widget widget = new Widget();
+	// 	widget.setName("Widget");
+	// 	widget.setPath("path");
+	// 	widget.setContent(content);
+	// 	widgetService.saveWidget(widget);
 
 
-		//Create Template
+	// 	//Create Template
 
-		Template template = new Template();
-		template.setPath("path");
-		template.setName("Template");
-		templateService.saveTemplate(template);
+	// 	Template template = new Template();
+	// 	template.setPath("path");
+	// 	template.setName("Template");
+	// 	templateService.saveTemplate(template);
 
-		//Create TemplateWidget
+	// 	//Create TemplateWidget
 
-		TemplateWidget templateWidget = new TemplateWidget();
+	// 	TemplateWidget templateWidget = new TemplateWidget();
 
-		templateWidget.setName("TemplateWidget");
-		templateWidget.setTop(1L);
-		templateWidget.setLeftPosition(1L);
-		templateWidget.setWidth(1L);
-		templateWidget.setHeight(1L);
-		templateWidget.setTemplate(template);
-		templateWidget.setWidget(widget);
-		templateWidgetService.saveTemplateWidget(templateWidget);
+	// 	templateWidget.setName("TemplateWidget");
+	// 	templateWidget.setTop(1L);
+	// 	templateWidget.setLeftPosition(1L);
+	// 	templateWidget.setWidth(1L);
+	// 	templateWidget.setHeight(1L);
+	// 	templateWidget.setTemplate(template);
+	// 	templateWidget.setWidget(widget);
+	// 	templateWidgetService.saveTemplateWidget(templateWidget);
 
-		//Create User
+	// 	//Create User
 
-		User user = new User();
-		user.setUsername("username");
-		user.setRole(1);
-		userService.saveUser(user);
+	// 	User user = new User();
+	// 	user.setUsername("username");
+	// 	user.setRole(1);
+	// 	userService.saveUser(user);
 
-		//Create TemplateGroup
+	// 	//Create TemplateGroup
 
 		TemplateGroup templateGroup = new TemplateGroup();
 		templateGroup.setTemplate(template);
@@ -167,6 +139,8 @@ public class UasmartsignageApplication {
 		templateGroup.setContent(null);
 		templateGroupService.saveGroup(templateGroup);
     }
+	*/
+
     public static void main(String[] args) {
         SpringApplication.run(UasmartsignageApplication.class, args);
     }
