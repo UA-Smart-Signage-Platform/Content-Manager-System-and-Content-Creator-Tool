@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import monitorService from '../../services/monitorService';
 
 
-function pendingMonitorsModal( { showPortal, setShowPortal } ) {
+function PendingMonitorsModal( { showPortal, setShowPortal } ) {
 
     const [pendingMonitors,setPendingMonitor] = useState([]);
     const [updater,setUpdater] = useState(false);
@@ -72,4 +72,4 @@ function pendingMonitorsModal( { showPortal, setShowPortal } ) {
     )
 }
 
-export default pendingMonitorsModal;
+export default PendingMonitorsModal;
