@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -37,8 +38,8 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/{id}")
-    public ResponseEntity<CustomFile> getFileOrDirectoryById(@PathVariable Long id) {
-        CustomFile customFile = fileService.getFileOrDirectoryById(id);
+    public ResponseEntity<Optional<CustomFile>> getFileOrDirectoryById(@PathVariable Long id) {
+        Optional<CustomFile> customFile = fileService.getFileOrDirectoryById(id);
         return new ResponseEntity<>(customFile, HttpStatus.OK);
     }
 
@@ -79,26 +80,6 @@ public class FileController {
         return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);
     }
 
-
-
-
-
-
-    // TODO - need to revise logic and alike...
-
-    //falta apagar o ficheiro do disco
-    @Operation(summary = "Update a file")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File updated", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
-        CustomFile updatedCustomFile = fileService.updateFile(id, customFile);
-        return new ResponseEntity<>(updatedCustomFile, HttpStatus.OK);
-    }
-
-    //falta apagar o ficheiro do disco
     @Operation(summary = "Delete a file")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "File deleted", content = @Content(mediaType = "application/json")),
@@ -110,6 +91,21 @@ public class FileController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    // TODO - need to revise logic and alike...
+
+    @Operation(summary = "Update a file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File updated", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
+        CustomFile updatedCustomFile = fileService.updateFile(id, customFile);
+        return new ResponseEntity<>(updatedCustomFile, HttpStatus.OK);
+    }
+
+
+
     @Operation(summary = "Download a file")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "File downloaded", content = @Content(mediaType = "application/json")),
@@ -118,8 +114,12 @@ public class FileController {
     @GetMapping("/download/{fileName:.+}")
     public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
         // Define the path to the directory containing the files
-        CustomFile customFile = fileService.getFileByName(fileName);
-        String sFilePath = customFile.getPath();
+        Optional<CustomFile> customFile = fileService.getFileByName(fileName);
+        if (customFile.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String sFilePath = customFile.get().getPath();
 
         // Resolve the path to the requested file
         Path filePath = Paths.get(sFilePath);
