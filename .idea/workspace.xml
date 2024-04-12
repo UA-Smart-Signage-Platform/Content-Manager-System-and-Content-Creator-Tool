@@ -30,7 +30,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "40-sonarcloud-integration",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/diogo/Documentos/PI/PROJETO/Content-Manager-System-and-Content-Creator-Tool",
+    "last_opened_file_path": "/home/diogo/Documentos/PI/PROJETO",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -49,6 +49,7 @@
       <updated>1712937217565</updated>
       <workItem from="1712937218590" duration="660000" />
       <workItem from="1712937889238" duration="365000" />
+      <workItem from="1712940101142" duration="6000" />
     </task>
     <servers />
   </component>
