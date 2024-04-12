@@ -81,8 +81,7 @@ public class MqttSubscriberService {
         try {
             ConfirmRegistrationMessage confirmMessage = new ConfirmRegistrationMessage();
             confirmMessage.setMethod("CONFIRM_REGISTER");
-            confirmMessage.setGroup(String.valueOf(monitorsGroup.getId()));
-
+            
             String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
 
             MqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));

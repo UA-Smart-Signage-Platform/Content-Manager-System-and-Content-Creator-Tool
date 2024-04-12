@@ -14,8 +14,6 @@ import deti.uas.uasmartsignage.Configuration.MqttConfig;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 
-import deti.uas.uasmartsignage.Mqtt.GroupMessage;
-
 import java.util.List;
 
 @Service 

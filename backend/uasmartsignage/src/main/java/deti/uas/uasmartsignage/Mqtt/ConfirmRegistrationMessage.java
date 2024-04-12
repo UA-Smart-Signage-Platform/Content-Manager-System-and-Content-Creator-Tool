@@ -12,7 +12,6 @@ import lombok.Setter;
 public class ConfirmRegistrationMessage {
 
     private String method;
-    private String group;
 
     
 }
