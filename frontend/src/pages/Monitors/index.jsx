@@ -18,7 +18,7 @@ function Monitors(){
             })
         }
         else{
-            monitorsGroupService.getMonitorsByGroup(groupId).then((response) => {
+            monitorService.getMonitorsByGroup(groupId).then((response) => {
                 setMonitors(response.data);
             })
         }
@@ -78,7 +78,7 @@ function Monitors(){
         },
         {
             name: 'Status',
-            selector: row => row.status,
+            selector: row => <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div>,
             sortable: true
         },
         {

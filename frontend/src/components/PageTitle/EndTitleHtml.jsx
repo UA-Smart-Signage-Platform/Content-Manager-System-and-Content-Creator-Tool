@@ -1,5 +1,5 @@
 import { MdOutlineSearch, MdAdd } from "react-icons/md";
-import Portals from "../Portals"
+import PendingMonitorsModal from "../Portals/PendingMonitorsModal";
 import { useState } from "react";
 
 function EndTitleHtml( { page } ) {
@@ -23,7 +23,7 @@ function EndTitleHtml( { page } ) {
                     <MdAdd className="h-6 w-6 mr-1 ml-1"/>
                     <span>Pending Monitors</span>
                 </button>
-                <Portals page="monitors" showPortal={showPortal} setShowPortal={setShowPortal}/>
+                <PendingMonitorsModal showPortal={showPortal} setShowPortal={setShowPortal}/>
             </div>
         )
     if (page === "...")

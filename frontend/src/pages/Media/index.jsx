@@ -1,9 +1,8 @@
-import { PageTitle, MediaRow } from '../../components';
+import { PageTitle, MediaRow,MediaFileModal,MediaFolderModal } from '../../components';
 import { MdOutlineInsertDriveFile, MdAdd, MdOutlineFolder, MdOutlineInsertPhoto } from "react-icons/md";
 import mediaService from '../../services/mediaService';
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import Portals from '../../components/Portals'
 
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
@@ -97,11 +96,11 @@ function Media() {
                         </ul>
                         </div>
                     )}
-                    <Portals page="mediaFile" 
+                    <MediaFileModal
                             showPortal={showPortalFile} 
                             setShowPortal={setShowPortalFile} 
                             currentFolder={folder}/>
-                    <Portals page="mediaFolder" 
+                    <MediaFolderModal
                             showPortal={showPortalFolder} 
                             setShowPortal={setShowPortalFolder} 
                             currentFolder={folder}/>
