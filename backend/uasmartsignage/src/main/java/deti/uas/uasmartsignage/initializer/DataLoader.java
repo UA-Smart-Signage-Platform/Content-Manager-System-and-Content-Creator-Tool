@@ -46,49 +46,49 @@ public class DataLoader implements CommandLineRunner {
             dBio = groupRepository.saveAndFlush(dBio);
 
             Monitor hall = new Monitor();
-            hall.setIp("192.168.1");
+            hall.setUuid("hall");
             hall.setName("hall");
             hall.setPending(false);
             hall.setGroup(deti);
             monitorRepository.save(hall);
             
             Monitor flow = new Monitor();
-            flow.setIp("192.168.2");
+            flow.setUuid("flow");
             flow.setName("flow");
             flow.setPending(false);
             flow.setGroup(deti);
             monitorRepository.save(flow);
 
             Monitor door = new Monitor();
-            door.setIp("192.168.3");
+            door.setUuid("door");
             door.setName("door");
             door.setPending(false);
             door.setGroup(dMat);
             monitorRepository.save(door);
 
             Monitor pipa = new Monitor();
-            pipa.setIp("192.168.4");
+            pipa.setUuid("pipa");
             pipa.setName("pipa");
             pipa.setPending(false);
             pipa.setGroup(dMat);
             monitorRepository.save(pipa);
 
             Monitor train = new Monitor();
-            train.setIp("192.168.5");
+            train.setUuid("train");
             train.setName("train");
             train.setPending(false);
             train.setGroup(dBio);
             monitorRepository.save(train);
 
             Monitor car = new Monitor();
-            car.setIp("192.168.6");
+            car.setUuid("car");
             car.setName("car");
             car.setPending(true);
             car.setGroup(dMat);
             monitorRepository.save(car);
 
             Monitor car2 = new Monitor();
-            car2.setIp("192.168.7");
+            car2.setUuid("car2");
             car2.setName("car2");
             car2.setPending(true);
             car2.setGroup(dBio);

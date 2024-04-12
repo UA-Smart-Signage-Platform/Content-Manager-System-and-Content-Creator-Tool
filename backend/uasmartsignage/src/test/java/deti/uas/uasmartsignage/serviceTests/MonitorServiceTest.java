@@ -33,7 +33,7 @@ public class MonitorServiceTest {
     getMonitorByIdTestReturnsMonitor(){
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
-        monitor.setIp("192.1.2");
+        monitor.setUuid("192.1.2");
         monitor.setPending(false);
         when(repository.findById(1L)).thenReturn(Optional.of(monitor));
 
@@ -46,7 +46,7 @@ public class MonitorServiceTest {
     whenServiceSaveThenRepositorySave(){
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
-        monitor.setIp("192.1.2");
+        monitor.setUuid("192.1.2");
         monitor.setPending(false);
         when(repository.save(monitor)).thenReturn(monitor);
 
@@ -68,13 +68,13 @@ public class MonitorServiceTest {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setGroup(group1);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("192.1.2");
         monitor.setPending(false);
 
         Monitor monitorUpdated = new Monitor();
         monitorUpdated.setGroup(group2);
         monitorUpdated.setName("Name");
-        monitorUpdated.setIp("192.1.2");
+        monitorUpdated.setUuid("192.1.2");
         monitorUpdated.setPending(false);
 
         when(repository.save(monitor)).thenReturn(monitor);
@@ -97,7 +97,7 @@ public class MonitorServiceTest {
         monitor.setId(1L);
         monitor.setName("monitor");
         monitor.setGroup(group2);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("192.1.2");
         monitor.setPending(true);
 
         when(repository.save(monitor)).thenReturn(monitor);
@@ -121,13 +121,13 @@ public class MonitorServiceTest {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setGroup(group1);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("192.1.2");
         monitor.setPending(false);
 
         Monitor monitor2 = new Monitor();
         monitor2.setGroup(group2);
         monitor2.setName("Name");
-        monitor2.setIp("192.1.2");
+        monitor2.setUuid("192.1.2");
         monitor2.setPending(false);
 
         when(repository.findByPending(false)).thenReturn(Arrays.asList(monitor,monitor2));
@@ -146,13 +146,13 @@ public class MonitorServiceTest {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setGroup(group1);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("192.1.2");
         monitor.setPending(false);
 
         Monitor monitor2 = new Monitor();
         monitor2.setGroup(group1);
         monitor2.setName("Name");
-        monitor2.setIp("192.1.2");
+        monitor2.setUuid("192.1.2");
         monitor2.setPending(false);
 
         when(repository.findByPendingAndGroup_Id(false, 1L)).thenReturn(Arrays.asList(monitor,monitor2));

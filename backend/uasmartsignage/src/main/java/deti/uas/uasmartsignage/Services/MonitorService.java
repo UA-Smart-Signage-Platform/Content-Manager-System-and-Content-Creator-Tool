@@ -53,23 +53,6 @@ public class MonitorService {
             return null;
         }
         monitorById.setName(monitor.getName());
-        MonitorsGroup monitorsGroup = MonitorGroupService.getGroupById(monitor.getGroup().getId());
-        
-        if (monitorById.getGroup() != monitor.getGroup()) {
-            try {
-                GroupMessage confirmMessage = new GroupMessage();
-                confirmMessage.setMethod("GROUP");
-                confirmMessage.setGroup(monitorsGroup.getName());
-    
-                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-                System.out.println("Sending confirm message: " + confirmMessageJson);
-    
-                MqttConfig.getInstance().publish(monitor.getIp(), new MqttMessage(confirmMessageJson.getBytes()));
-            } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-                e.printStackTrace();
-            }
-        }
-
         monitorById.setGroup(monitor.getGroup());
         monitorById.setName(monitor.getName());
         monitorById.setGroup(monitor.getGroup());

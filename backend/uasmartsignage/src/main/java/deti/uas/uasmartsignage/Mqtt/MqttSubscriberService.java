@@ -63,21 +63,6 @@ public class MqttSubscriberService {
         System.out.println("Height: " + registrationMessage.getHeight());
         System.out.println("UUID: " + registrationMessage.getUuid());
 
-        /* if (monitorService.getMonitorByLocation(registrationMessage.getName()) != null) {
-            System.out.println("Monitor with name " + registrationMessage.getName() + " already exists");
-            try {
-                SameNameMessage confirmMessage = new SameNameMessage();
-                confirmMessage.setMethod("NAME_EXISTS");
-    
-                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-    
-                MqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
-            } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-                e.printStackTrace();
-            }
-            return;
-        } */
-
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName(registrationMessage.getName());
         monitorGroupService.saveGroup(monitorsGroup);
@@ -87,7 +72,7 @@ public class MqttSubscriberService {
         monitor.setGroup(monitorsGroup);
         monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
         monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
-        monitor.setIp(registrationMessage.getUuid());
+        monitor.setUuid(registrationMessage.getUuid());
         monitor.setPending(true);
 
         monitorService.saveMonitor(monitor);

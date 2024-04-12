@@ -71,7 +71,7 @@ public class TemplateGroupService {
 
             String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
             for (Monitor monitor : monitors) {
-                MqttConfig.getInstance().publish(monitor.getIp(), new MqttMessage(confirmMessageJson.getBytes()));
+                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
             }
 
             
@@ -113,7 +113,7 @@ public class TemplateGroupService {
                 System.out.println("Sending confirm message: " + confirmMessageJson);
 
                 for (Monitor monitor : monitors) {
-                    MqttConfig.getInstance().publish(monitor.getIp(), new MqttMessage(confirmMessageJson.getBytes()));
+                    MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
                 }
 
             } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
