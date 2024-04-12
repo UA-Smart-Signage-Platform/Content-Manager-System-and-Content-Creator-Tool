@@ -15,6 +15,9 @@ Closes #<issue number here>.
 <!--Have you added any unit tests and/or integration tests?-->
 
 ### Checklist
+- [ ] I have tested my changes locally.
+- [ ] I have updated the documentation to reflect my changes.
+- [ ] I have added/updated unit tests (if applicable).
 - [ ] My code adheres to the [CONTRIBUTING GUIDE](https://ua-smart-signage-platform.github.io/Documentation-Website/guidelines/)
 
 ### Aditional Information
