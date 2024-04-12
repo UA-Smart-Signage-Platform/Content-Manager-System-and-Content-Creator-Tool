@@ -6,13 +6,20 @@ on:
       - 40-sonarcloud-integration
       - main
       - dev
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - 'frontend/**'
+      - 'backend/**'
 
 jobs:
   backend:
     name: Backend
     runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.modified, 'backend/') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,14 +52,16 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.modified, 'frontend/') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         with:
           projectBaseDir: frontend
-        env: 
+        env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
