@@ -1,4 +1,4 @@
-name: UA Smart Signage Platform 
+name: SonarCloud Analysis
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   backend:
-    name: SonarCloud Analysis
+    name: Backend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -43,7 +43,7 @@ jobs:
           mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ua-smart-signage-platform_backend
 
   frontend:
-    name: SonarCloud Analysis
+    name: Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
