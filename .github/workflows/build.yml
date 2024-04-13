@@ -3,7 +3,6 @@ name: SonarCloud Analysis
 on:
   push:
     branches:
-      - 40-sonarcloud-integration
       - main
       - dev
   pull_request:
@@ -23,12 +22,6 @@ jobs:
         with:
           java-version: 17
           distribution: 'zulu'
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
