@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
-import { Dashboard, Monitors,Media,Monitor } from './pages';
+import { Dashboard, Monitors, Media, Monitor, Schedule } from './pages';
 
 
 const router = createBrowserRouter([
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       },
       {
         path: "schedule",
-        element:<div>test3</div>,
+        element:<Schedule/>,
       },
       {
         path: "monitors",

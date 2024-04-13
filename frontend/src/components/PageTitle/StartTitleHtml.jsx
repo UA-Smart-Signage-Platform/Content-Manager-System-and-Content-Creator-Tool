@@ -1,4 +1,4 @@
-import { MdAccountCircle } from "react-icons/md";
+import { MdAccountCircle, MdInfoOutline } from "react-icons/md";
 
 
 function StartTitleHtml( {page} ){
@@ -17,10 +17,15 @@ function StartTitleHtml( {page} ){
         )
     if (page === "media")
         return(
-            <div className="flex ml-2 font-bold">
-                <span className="text-3xl">Media</span>
-            </div>
+            <span className="font-bold text-3xl">Media</span>
         )
+    if (page === "schedule")
+        return(
+            <span className="font-bold text-3xl flex flex-row place-content-end items-end">
+                Schedule
+                <MdInfoOutline className="ml-2 w-6 cursor-pointer"/>
+            </span>
+    )
 }
 
 export default StartTitleHtml
