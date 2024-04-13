@@ -26,7 +26,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/templateGroups")
+@RequestMapping("/api/templateGroups")
 public class TemplateGroupController {
 
     private TemplateGroupService templateGroupService;
@@ -115,7 +115,7 @@ public class TemplateGroupController {
             return new ResponseEntity<>(savedTemplateGroup, HttpStatus.OK);
         }
         else{
-            TemplateGroup updatedTemplateGroup = templateGroupService.saveGroup(templateGroup);
+            TemplateGroup updatedTemplateGroup = templateGroupService.updateTemplateGroup(realTemplateGroup.getId(), templateGroup);
             return new ResponseEntity<>(updatedTemplateGroup, HttpStatus.OK);
         }
     }

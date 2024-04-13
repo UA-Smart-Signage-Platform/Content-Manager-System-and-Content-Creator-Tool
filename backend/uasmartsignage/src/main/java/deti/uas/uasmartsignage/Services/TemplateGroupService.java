@@ -123,10 +123,9 @@ public class TemplateGroupService {
         if (templateGroupById == null) {
             return null;
         }
-        TemplateGroup templateGroupAfter = templateGroupRepository.findById(templateGroup.getId()).orElse(null);
         List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
         List<String> files = new ArrayList<>();
-        for (Map.Entry<Integer, String> entry : templateGroupAfter.getContent().entrySet()) {
+        for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
             files.add(entry.getValue());
         }
         if (templateGroupById.getTemplate() != templateGroup.getTemplate()) {
@@ -192,6 +191,7 @@ public class TemplateGroupService {
                     doc.body().appendChild(child);
             }
 
+            logger.info(String.format("HTML for template %s was generated successfully", template.getName()));
             return doc.html();
 
         } catch (FileNotFoundException e) {
@@ -233,6 +233,7 @@ public class TemplateGroupService {
                 widgetHTML = widgetHTML.replace("[[" + content.getName() + "]]", value);
             }
 
+            logger.info(String.format("HTML for widget %s was generated successfully", widget.getWidget().getName()));
             return widgetHTML;
 
         } catch (FileNotFoundException e) {

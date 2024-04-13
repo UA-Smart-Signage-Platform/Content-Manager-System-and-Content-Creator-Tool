@@ -49,6 +49,11 @@ public class DataLoader implements CommandLineRunner {
         }
 
         this.loadTemplates();
+        this.loadGroupsAndMonitors();
+  
+    }
+
+    private void loadGroupsAndMonitors(){
 
         MonitorsGroup deti = new MonitorsGroup();
         deti.setName("deti");
