@@ -6,7 +6,7 @@ function PageTitle({ startTitle, middleTitle, endTitle }) {
     return (
         <div className="flex flex-col h-full">
             <div id="centerItems" className="items-end h-full w-full flex">
-                <div id="startTitle" className="ml-4 w-[20%] flex mb-3">
+                <div id="startTitle" className="ml-4 w-[20%] flex mb-2">
                     <StartTitleHtml page={startTitle} />
                 </div>
                 <div id="middleTitle" className="w-[60%]">
