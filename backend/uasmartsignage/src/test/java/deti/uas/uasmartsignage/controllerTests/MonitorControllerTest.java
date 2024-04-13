@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MonitorController.class)
 @ActiveProfiles("test")
-public class MonitorControllerTest {
+class MonitorControllerTest {
     
     @Autowired
     private MockMvc mvc;
@@ -53,7 +53,7 @@ public class MonitorControllerTest {
 
         when(service.getAllMonitorsByPending(false)).thenReturn(Arrays.asList(monitor,monitor2));
 
-        mvc.perform(get("/monitors").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/monitors").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("hall")))
@@ -72,7 +72,7 @@ public class MonitorControllerTest {
 
         when(service.getAllMonitorsByPending(true)).thenReturn(Arrays.asList(monitor,monitor2));
 
-        mvc.perform(get("/monitors/pending").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/monitors/pending").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("hall")))
@@ -88,7 +88,7 @@ public class MonitorControllerTest {
 
         when(service.updatePending(1L, false)).thenReturn(monitor);
 
-        mvc.perform(put("/monitors/accept/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(put("/api/monitors/accept/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name", is("hall")));
     }
@@ -98,7 +98,7 @@ public class MonitorControllerTest {
 
         when(service.updatePending(1L, false)).thenReturn(null);
 
-        mvc.perform(put("/monitors/accept/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(put("/api/monitors/accept/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
 
@@ -111,7 +111,7 @@ public class MonitorControllerTest {
 
         when(service.getMonitorById(1L)).thenReturn(monitor);
 
-        mvc.perform(get("/monitors/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/monitors/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name", is("hall")));
     }
@@ -121,7 +121,7 @@ public class MonitorControllerTest {
 
         when(service.getMonitorById(1L)).thenReturn(null);
 
-        mvc.perform(get("/monitors/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/monitors/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
 
@@ -137,7 +137,7 @@ public class MonitorControllerTest {
 
         when(service.getMonitorsByGroup(1L)).thenReturn(Arrays.asList(monitor,monitor2));
 
-        mvc.perform(get("/monitors/group/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(get("/api/monitors/group/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
             .andExpect(jsonPath("$[0].name", is("hall")))
@@ -152,7 +152,7 @@ public class MonitorControllerTest {
 
         when(service.saveMonitor(Mockito.any())).thenReturn(monitor);
 
-        mvc.perform(post("/monitors").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(monitor)))
+        mvc.perform(post("/api/monitors").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(monitor)))
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.name", is("hall")));
     }
@@ -160,7 +160,7 @@ public class MonitorControllerTest {
     @Test void
     testSaveMonitor400() throws Exception{
 
-        mvc.perform(post("/monitors").contentType(MediaType.APPLICATION_JSON).content("monitor"))
+        mvc.perform(post("/api/monitors").contentType(MediaType.APPLICATION_JSON).content("monitor"))
             .andExpect(status().isBadRequest());
     }
 
@@ -172,7 +172,7 @@ public class MonitorControllerTest {
 
         when(service.updateMonitor(Mockito.anyLong(), Mockito.any())).thenReturn(monitor);
 
-        mvc.perform(put("/monitors/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(monitor)))
+        mvc.perform(put("/api/monitors/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(monitor)))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name", is("hall")));
     }
@@ -185,13 +185,13 @@ public class MonitorControllerTest {
 
         when(service.updateMonitor(Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-        mvc.perform(put("/monitors/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(monitor)))
+        mvc.perform(put("/api/monitors/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(monitor)))
             .andExpect(status().isNotFound());
     }
 
     @Test void
     testDeleteMonitor() throws Exception{
-        mvc.perform(delete("/monitors/1").contentType(MediaType.APPLICATION_JSON))
+        mvc.perform(delete("/api/monitors/1").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
     }
 

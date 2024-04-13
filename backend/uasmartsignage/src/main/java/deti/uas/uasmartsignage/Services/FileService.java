@@ -4,10 +4,15 @@ import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -193,43 +198,123 @@ public class FileService {
         }
     }
 
-    public void deleteFile(Long id) {
+    /**
+     * Deletes the desired file from the repository and the filesystem.
+     *
+     * @param id The ID of the file to delete.
+     * @return true if the file was successfully deleted, false otherwise.
+     */
+    public boolean deleteFile(Long id) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
             logger.warn("File with ID {} not found", id);
-        }
-        else {
+            return false;
+        } else {
             // Delete file from disk
             File fileToDelete = new File(file.get().getPath());
             if (fileToDelete.delete()) {
                 logger.info("File deleted: {}", fileToDelete.getAbsolutePath());
-            }
-            else {
+            } else {
                 logger.error("Failed to delete file: {}", fileToDelete.getAbsolutePath());
+                return false;
             }
             // Delete file from repository
             fileRepository.delete(file.get());
             logger.info("File with ID {} deleted", id);
+            return true;
         }
     }
 
-    // TODO - need to revise logic and alike...
 
+    /**
+     * Downloads the file with the specified name from the filesystem.
+     *
+     * @param fileName The name of the file to download.
+     * @return ResponseEntity with the file resource and headers.
+     */
+    public ResponseEntity<Resource> downloadFileByName(String fileName) throws IOException {
+        Optional<CustomFile> customFile = getFileByName(fileName);
+        if (customFile.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
 
-    public CustomFile updateFile(Long id, CustomFile customFile) {
-        Optional<CustomFile> fileOptional = fileRepository.findById(id);
-            if (fileOptional.isPresent()) {
-                CustomFile file = fileOptional.get();
-                file.setName(customFile.getName());
-                file.setType(customFile.getType());
-                file.setParent(customFile.getParent());
-                file.setPath(customFile.getPath());
-                file.setSubDirectories(customFile.getSubDirectories());
-                return fileRepository.save(file);
-            } 
-            else {
-                throw new RuntimeException("File not found with id " + id);
-            }
+        String sFilePath = customFile.get().getPath();
+
+        Path filePath = Paths.get(sFilePath);
+        Resource fileResource = new UrlResource(filePath.toUri());
+
+        if (fileResource.exists() && fileResource.isReadable()) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileResource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Downloads the file with the specified name.
+     *
+     * @param fileId The id of the file to download.
+     * @return ResponseEntity with the file resource and headers.
+     */
+    public ResponseEntity<Resource> downloadFileById(Long fileId) throws MalformedURLException {
+        Optional<CustomFile> customFile = fileRepository.findById(fileId);
+        if (customFile.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String sFilePath = customFile.get().getPath();
+
+        Path filePath = Paths.get(sFilePath);
+        Resource fileResource = new UrlResource(filePath.toUri());
+
+        if (fileResource.exists() && fileResource.isReadable()) {
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileResource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Updates the name of the file with the specified ID.
+     *
+     * @param id The ID of the file to update.
+     * @param customFile The CustomFile containing the new name.
+     * @return The updated CustomFile, or {@code null} if the update fails.
+     */
+    public CustomFile updateFileName(Long id, CustomFile customFile) {
+        Optional<CustomFile> file = fileRepository.findById(id);
+        if (file.isEmpty()) {
+            logger.warn("File with ID {} not found", id);
+            return null;
+        }
+
+        CustomFile updatedFile = file.get();
+        updatedFile.setName(customFile.getName());
+
+        String parentDirectoryPath = getParentDirectoryPath(updatedFile);
+
+        File fileToUpdate = new File(updatedFile.getPath());
+        File newFile = new File(parentDirectoryPath + customFile.getName());
+        if (fileToUpdate.renameTo(newFile)) {
+            updatedFile.setPath(parentDirectoryPath + updatedFile.getName());
+            logger.info("File renamed: {}", newFile.getAbsolutePath());
+            fileRepository.save(updatedFile);
+        }
+        else {
+            logger.error("Failed to rename file: {}", newFile.getAbsolutePath());
+        }
+
+        return updatedFile;
     }
 
 

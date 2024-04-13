@@ -3,6 +3,8 @@ package deti.uas.uasmartsignage.initializer;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Repositories.FileRepository;
+import deti.uas.uasmartsignage.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -18,11 +20,15 @@ import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 public class DataLoader implements CommandLineRunner {
         private MonitorRepository monitorRepository;
         private MonitorGroupRepository groupRepository;
+        private FileRepository fileRepository;
+        private FileService fileService;
 
         @Autowired
-        public DataLoader(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository){
+        public DataLoader(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository, FileRepository fileRepository, FileService fileService){
             this.groupRepository = groupRepository;
             this.monitorRepository = monitorRepository;
+            this.fileRepository = fileRepository;
+            this.fileService = fileService;
         }
 
         public void run(String ...args) throws Exception{
@@ -94,5 +100,6 @@ public class DataLoader implements CommandLineRunner {
             car2.setPending(true);
             car2.setGroup(dBio);
             monitorRepository.save(car2);
+
         }
 }

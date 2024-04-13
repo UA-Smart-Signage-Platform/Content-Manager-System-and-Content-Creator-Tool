@@ -25,7 +25,6 @@ class FileRepositoryTest {
     @Autowired
     FileRepository repository;
 
-  // TODO - create and revise tests (this ones are good)
 
     @Test
     void whenFindById_thenReturnFile() {

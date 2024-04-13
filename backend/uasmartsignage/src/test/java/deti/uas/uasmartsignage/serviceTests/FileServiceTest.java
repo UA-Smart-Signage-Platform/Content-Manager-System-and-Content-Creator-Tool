@@ -33,7 +33,7 @@ import deti.uas.uasmartsignage.Repositories.FileRepository;
 import deti.uas.uasmartsignage.Services.FileService;
 
 @ExtendWith(MockitoExtension.class)
-public class FileServiceTest {
+class FileServiceTest {
     
     @Mock
     private FileRepository repository;
@@ -143,7 +143,7 @@ public class FileServiceTest {
 
         FilesClass filesClass = new FilesClass(null, mockMultipartFile);
         CustomFile saved = service.createFile(filesClass);
-        when(repository.save(any())).thenReturn(saved);
+        //when(repository.save(any())).thenReturn(saved);
         verify(repository, times(1)).save(any());
 
         //Clean up
