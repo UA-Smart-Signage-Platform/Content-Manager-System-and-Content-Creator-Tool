@@ -1,7 +1,10 @@
 package deti.uas.uasmartsignage.Controllers;
 
 import java.util.List;
+import java.util.Map;
 
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +13,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import deti.uas.uasmartsignage.Services.TemplateService;
+
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 
@@ -24,6 +30,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class TemplateGroupController {
 
     private TemplateGroupService templateGroupService;
+    private MonitorGroupService monitorGroupService;
+    private TemplateService templateService;
 
     @Operation(summary = "Get all template groups")
     @ApiResponses(value = {
@@ -83,6 +91,33 @@ public class TemplateGroupController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(updatedTemplateGroup, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Set the template for an specific group")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Template group set", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Group or Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
+    @PutMapping("/set")
+    public ResponseEntity<?> setTemplateForGroup(@RequestBody TemplateGroup templateGroup) {
+        
+        if(monitorGroupService.getGroupById(templateGroup.getGroup().getId()) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        else if(templateService.getTemplateById(templateGroup.getTemplate().getId()) == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        TemplateGroup realTemplateGroup = templateGroupService.getTemplateGroupByGroupID(templateGroup.getGroup().getId());
+
+        if(realTemplateGroup == null){
+            TemplateGroup savedTemplateGroup = templateGroupService.saveGroup(templateGroup);
+            return new ResponseEntity<>(savedTemplateGroup, HttpStatus.OK);
+        }
+        else{
+            TemplateGroup updatedTemplateGroup = templateGroupService.saveGroup(templateGroup);
+            return new ResponseEntity<>(updatedTemplateGroup, HttpStatus.OK);
+        }
     }
     
 }

@@ -71,6 +71,10 @@ public class TemplateGroupService {
         return templateGroupRepository.findById(id).orElse(null);
     }
 
+    public TemplateGroup getTemplateGroupByGroupID(Long groupID) {
+        return templateGroupRepository.findByGroupId(groupID);
+    }
+
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
