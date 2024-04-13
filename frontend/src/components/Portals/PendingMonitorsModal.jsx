@@ -3,9 +3,10 @@ import { MdArrowBack, MdMonitor, MdCheck } from "react-icons/md";
 import DataTable, { createTheme } from 'react-data-table-component';
 import { useEffect, useState } from 'react';
 import monitorService from '../../services/monitorService';
+import PropTypes from 'prop-types'
 
 
-function pendingMonitorsModal( { showPortal, setShowPortal } ) {
+function PendingMonitorsModal( { showPortal, setShowPortal } ) {
 
     const [pendingMonitors,setPendingMonitor] = useState([]);
     const [updater,setUpdater] = useState(false);
@@ -25,8 +26,8 @@ function pendingMonitorsModal( { showPortal, setShowPortal } ) {
 
     const columns = [
         {
-            name: 'IP',
-            selector: row => row.ip,
+            name: 'Name',
+            selector: row => row.name,
         },
         {
             name: 'accept',
@@ -72,4 +73,10 @@ function pendingMonitorsModal( { showPortal, setShowPortal } ) {
     )
 }
 
-export default pendingMonitorsModal;
+
+PendingMonitorsModal.propTypes = {
+    showPortal: PropTypes.bool.isRequired,
+    setShowPortal: PropTypes.func.isRequired
+}
+
+export default PendingMonitorsModal;
