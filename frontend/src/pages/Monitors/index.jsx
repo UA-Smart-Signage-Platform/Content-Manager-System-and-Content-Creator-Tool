@@ -80,12 +80,7 @@ function Monitors(){
             name: 'Status',
             selector: row => <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div>,
             sortable: true
-        },
-        {
-            name: 'IP',
-            selector: row => row.ip,
-            sortable: true
-        }
+        }   
     ];
 
 
