@@ -56,15 +56,18 @@ public class DataLoader implements CommandLineRunner {
     private void loadGroupsAndMonitors(){
 
         MonitorsGroup deti = new MonitorsGroup();
-        deti.setName("deti");
+        deti.setName("DETI");
+        deti.setDescription("Monitors from first floor, second and third");
         deti.setMonitors(List.of());
 
         MonitorsGroup dMat = new MonitorsGroup();
-        dMat.setName("dMat");
+        dMat.setName("DMAT");
+        dMat.setDescription("Monitors from first floor and bar");
         dMat.setMonitors(List.of());
 
         MonitorsGroup dBio = new MonitorsGroup();
-        dBio.setName("dBio");
+        dBio.setName("DBIO");
+        dBio.setDescription("Monitors from resting area");
         dBio.setMonitors(List.of());
 
         deti = groupRepository.saveAndFlush(deti);
