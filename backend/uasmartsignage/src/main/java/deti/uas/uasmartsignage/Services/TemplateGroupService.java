@@ -87,12 +87,13 @@ public class TemplateGroupService {
         try {
             TemplateMessage confirmMessage = new TemplateMessage();
             confirmMessage.setMethod("TEMPLATE");
-            //confirmMessage.setHtml(templateGroup.getTemplate().getPath());
             confirmMessage.setFiles(files);
             
-
-            String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
             for (Monitor monitor : monitors) {
+                String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
+                confirmMessage.setHtml(html);
+
+                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                 MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
             }
 
@@ -114,6 +115,7 @@ public class TemplateGroupService {
 
     public TemplateGroup updateTemplateGroup(Long id, TemplateGroup templateGroup) {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
+        Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
         if (templateGroupById == null) {
             return null;
         }
@@ -127,14 +129,13 @@ public class TemplateGroupService {
             try {
                 TemplateMessage confirmMessage = new TemplateMessage();
                 confirmMessage.setMethod("TEMPLATE");
-                //confirmMessage.setHtml(templateGroupAfter.getTemplate().getPath());
                 confirmMessage.setFiles(files);
-                
-    
-                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-                System.out.println("Sending confirm message: " + confirmMessageJson);
 
                 for (Monitor monitor : monitors) {
+                    String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
+                    confirmMessage.setHtml(html);
+
+                    String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                     MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
                 }
 
