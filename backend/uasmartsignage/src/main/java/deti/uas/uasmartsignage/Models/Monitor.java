@@ -20,14 +20,20 @@ public class Monitor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true)
-    private String ip;
+    private String uuid;
 
     @Column(nullable = false)
     private boolean pending;
+
+    @Column(nullable = true)
+    private int width;
+
+    @Column(nullable = true)
+    private int height;
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
