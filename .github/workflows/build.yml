@@ -33,7 +33,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           cd backend/uasmartsignage
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ua-smart-signage-platform_backend
+          mvn -B verify
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
