@@ -1,0 +1,40 @@
+<!-- This is the base HTML used when 
+creating the full HTML from a template -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <script src="https://unpkg.com/htmx.org@1.9.4/dist/htmx.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        div {
+            position: absolute;
+            overflow: hidden;
+        }
+
+        .stretch {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var videos = document.querySelectorAll('video');
+
+            videos.forEach(function (video) {
+                video.addEventListener('ended', function () {
+                    video.play();
+                });
+            });
+        });
+    </script>
+</head>
+<body style="background-color:#97d700;">
+</body>
+</html>

@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.Repositories;
 
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Monitor;
 
 import java.util.List;
@@ -10,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MonitorRepository extends JpaRepository<Monitor, Long> {
-    Monitor findByLocation(String location);
-    List<Monitor> findByMonitorsGroupForScreens(MonitorsGroup monitorsGroupForScreens);
+    Monitor findByName(String name);
+    List<Monitor> findByPendingAndGroup_Id(boolean pending,long groupId);
+    List<Monitor> findByPending(boolean pending);
 }

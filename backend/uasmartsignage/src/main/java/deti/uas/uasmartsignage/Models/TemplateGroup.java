@@ -31,7 +31,7 @@ public class TemplateGroup {
     @OneToOne
     @JoinColumn(name = "groupId", nullable = false)
     @JsonIgnoreProperties("templateGroup")
-    private MonitorsGroup monitorsGroupForTemplate;
+    private MonitorsGroup group;
 
     @ElementCollection
     @CollectionTable(name = "TemplateGroup_Content", joinColumns = @JoinColumn(name = "template_group_id"))

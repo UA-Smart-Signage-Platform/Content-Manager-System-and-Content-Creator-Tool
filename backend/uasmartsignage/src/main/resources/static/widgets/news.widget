@@ -1,0 +1,3 @@
+<div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; background-color: #97d700; text-align: center; justify-content: center; align-items: center; display: flex; font-size: 50px;">
+    <marquee scrollamount="20" hx-get="http://127.0.0.1:5000/ua/news" hx-trigger="load, every 30m"></marquee>
+</div>
