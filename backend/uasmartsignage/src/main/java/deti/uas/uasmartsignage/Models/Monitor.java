@@ -20,7 +20,7 @@ public class Monitor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = true)
@@ -30,7 +30,7 @@ public class Monitor {
     private int height;
 
     @Column(nullable = false, unique = true)
-    private String ip;
+    private String uuid;
 
     @Column(nullable = false)
     private boolean pending;

@@ -5,17 +5,32 @@ import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Models.Monitor;
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Services.MonitorGroupService;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import deti.uas.uasmartsignage.Configuration.MqttConfig;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+
 
 import java.util.List;
 
 @Service 
 public class MonitorService {
 
-    private MonitorRepository monitorRepository;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final MonitorGroupService MonitorGroupService;
+
     
+
+    private final MonitorRepository monitorRepository;
+
     @Autowired
-    public MonitorService(MonitorRepository monitorRepository){
+    public MonitorService(MonitorRepository monitorRepository, MonitorGroupService monitorGroupService){
         this.monitorRepository = monitorRepository;
+        this.MonitorGroupService = monitorGroupService;
     }
 
     public Monitor getMonitorById(Long id) {
@@ -37,6 +52,8 @@ public class MonitorService {
         }
         monitorById.setName(monitor.getName());
         monitorById.setGroup(monitor.getGroup());
+        monitorById.setName(monitor.getName());
+        monitorById.setGroup(monitor.getGroup());
         return monitorRepository.save(monitorById);
     }
 
@@ -55,6 +72,10 @@ public class MonitorService {
 
     public List<Monitor> getMonitorsByGroup(long groupId) {
         return monitorRepository.findByPendingAndGroup_Id(false,groupId);
+    }
+
+    public Monitor getMonitorByLocation(String location) {
+        return monitorRepository.findByName(location);
     }
 
     

@@ -13,14 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class FilesClass {
 
-    private CustomFile parent;
+    private Long parentId;
 
     private MultipartFile file;
 
     @Override
     public String toString() {
         return "FilesClass{" +
-                ", parent=" + parent +
+                ", parent=" + parentId +
                 ", file=" + file +
                 '}';
     }

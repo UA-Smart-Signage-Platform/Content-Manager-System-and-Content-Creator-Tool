@@ -11,6 +11,15 @@ const monitorService = {
 
     async acceptMonitor() {
         return await client.post("/monitors")
+    },
+    async getMonitorsByGroup(id){
+        return await client.get(`/monitors/group/${id}`)
+    },
+    async getPendingMonitors(){
+        return await client.get('/monitors/pending')
+    },
+    async acceptMonitor(id){
+        return await client.put(`/monitors/accept/${id}`)
     }
 }
 

@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Profile;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Template;
@@ -65,8 +66,6 @@ public class UasmartsignageApplication {
         file.setName("Mock Directory");
         file.setType("directory");
         file.setParent(null);
-        List<CustomFile> subDirectories =  List.of();
-        file.setSubDirectories(subDirectories);
         System.out.println("Creating file: " + file);
         fileService.createFile(file);
 

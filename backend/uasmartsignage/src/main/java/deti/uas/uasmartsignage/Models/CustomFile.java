@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Getter
@@ -29,7 +30,7 @@ public class CustomFile {
     @Column
     private String path;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JsonIgnoreProperties("subDirectories")
     @JoinColumn(name = "parentId")
     private CustomFile parent;
@@ -38,12 +39,12 @@ public class CustomFile {
     @JsonIgnoreProperties("parent")
     private List<CustomFile> subDirectories;
 
-    public CustomFile(String name, String type, Long size, CustomFile parent, List<CustomFile> subDirectories) {
+    public CustomFile(String name, String type, Long size, CustomFile parent) {
         this.name = name;
         this.type = type;
         this.size = size;
         this.parent = parent;
-        this.subDirectories = subDirectories;
+        this.subDirectories = null;
     }
 
     public String toString() {
@@ -52,7 +53,7 @@ public class CustomFile {
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", parent=" + (parent != null ? parent : "null") +
-                ", subDirectories=" + subDirectories +
+                ", subDirectories=" + (subDirectories == null ? "null" : Arrays.toString(subDirectories.toArray())) +
                 '}';
     }
 }
