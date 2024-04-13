@@ -37,7 +37,7 @@ public class WidgetService {
         }
         widgetById.setName(widget.getName());
         widgetById.setPath(widget.getPath());
-        widgetById.setContent(widget.getContent());
+        widgetById.setContents(widget.getContents());
         return widgetRepository.save(widgetById);
     }
 

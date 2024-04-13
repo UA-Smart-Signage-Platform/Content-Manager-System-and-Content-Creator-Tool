@@ -23,17 +23,17 @@ public class Monitor {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, unique = true)
-    private String uuid;
-
-    @Column(nullable = false)
-    private boolean pending;
-
     @Column(nullable = true)
     private int width;
 
     @Column(nullable = true)
     private int height;
+
+    @Column(nullable = false, unique = true)
+    private String uuid;
+
+    @Column(nullable = false)
+    private boolean pending;
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)

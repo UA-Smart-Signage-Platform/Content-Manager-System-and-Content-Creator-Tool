@@ -56,9 +56,9 @@ public class WidgetController {
     })
     @PostMapping
     public ResponseEntity<?> saveWidget(@RequestBody Widget widget) {
-        Long contentId = widget.getContent().getId();
-        Content content = contentService.getContentById(contentId);
-        widget.setContent(content);
+        // Long contentId = widget.getContent().getId();
+        // Content content = contentService.getContentById(contentId);
+        // widget.setContent(content);
         Widget savedWidget = widgetService.saveWidget(widget);
         return new ResponseEntity<>(savedWidget, HttpStatus.CREATED);
     }

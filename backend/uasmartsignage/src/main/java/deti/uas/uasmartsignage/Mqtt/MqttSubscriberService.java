@@ -38,7 +38,7 @@ public class MqttSubscriberService {
     public void subscribeToRegistrationTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
         System.out.println("Subscribing to registration topic");
         try {
-            MqttConfig.getInstance().subscribe("registration_topic", (topic, mqttMessage) -> {
+            MqttConfig.getInstance().subscribe("register", (topic, mqttMessage) -> {
                 String payload = new String(mqttMessage.getPayload());
                 System.out.println("Received message on topic: " + topic);
 
