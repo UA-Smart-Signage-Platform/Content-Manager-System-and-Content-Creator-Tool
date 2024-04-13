@@ -19,7 +19,7 @@ jobs:
   backend:
     name: Backend
     runs-on: ubuntu-latest
-    if: ${{ bool(grep('^backend/', join(github.event.head_commit.modified, '\n'))) }}
+    if: ${{ github.event_name == 'pull_request' || contains(github.event.head_commit.modified, 'backend/') }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
-    if: ${{ bool(grep('^frontend/', join(github.event.head_commit.modified, '\n'))) }}
+    if: ${{ github.event_name == 'pull_request' || steps.check_frontend.outputs.modified == 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
