@@ -1,0 +1,19 @@
+<div id="currentTime" style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; display: flex; justify-content: center; align-items: center; text-align: center; font-size: 50px;"></div>
+<script>
+    function updateHourAndMinute() {
+        var currentTimeElement = document.getElementById('currentTime');
+        var currentTime = new Date();
+        var hours = currentTime.getHours();
+        var minutes = currentTime.getMinutes();
+
+        hours = (hours < 10) ? "0" + hours : hours;
+        minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+        var formattedTime = hours + ":" + minutes;
+
+        currentTimeElement.textContent = formattedTime;
+    }
+
+    updateHourAndMinute();
+    setInterval(updateHourAndMinute, 60000);
+</script>
