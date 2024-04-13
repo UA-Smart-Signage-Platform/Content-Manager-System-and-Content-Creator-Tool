@@ -19,7 +19,7 @@ jobs:
   backend:
     name: Backend
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.head_commit.modified, 'backend/') }}
+    if: ${{ bool(grep('^backend/', join(github.event.head_commit.modified, '\n'))) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event.head_commit.modified, 'frontend/') }}
+    if: ${{ bool(grep('^frontend/', join(github.event.head_commit.modified, '\n'))) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
