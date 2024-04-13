@@ -6,53 +6,40 @@ on:
       - 40-sonarcloud-integration
       - main
       - dev
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - 'frontend/**'
-      - 'backend/**'
 
 jobs:
   backend:
     name: Backend
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || contains(github.event.head_commit.modified, 'backend/') }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: 17
-          distribution: 'zulu'
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Build and analyze backend
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          cd backend/uasmartsignage
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ua-smart-signage-platform_backend
-
+  @@ -23,27 +23,27 @@
+  with:
+    java-version: 17
+    distribution: 'zulu'
+  - name: Cache SonarCloud packages
+    uses: actions/cache@v3
+    with:
+      path: ~/.sonar/cache
+      key: ${{ runner.os }}-sonar
+      restore-keys: ${{ runner.os }}-sonar
+  - name: Cache Maven packages
+    uses: actions/cache@v3
+    with:
+      path: ~/.m2
+      key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+      restore-keys: ${{ runner.os }}-m2
+  - name: Build and analyze backend
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    run: |
+      cd backend/uasmartsignage
+      mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=ua-smart-signage-platform_backend
   frontend:
     name: Frontend
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'pull_request' || steps.check_frontend.outputs.modified == 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -64,4 +51,3 @@ jobs:
           projectBaseDir: frontend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
