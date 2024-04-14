@@ -20,6 +20,9 @@ const monitorService = {
     },
     async acceptMonitor(id){
         return await client.put(`/monitors/accept/${id}`)
+    },
+    async updateMonitor(id,monitor){
+        return await client.put(`/monitors/${id}`,monitor)
     }
 }
 

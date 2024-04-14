@@ -28,7 +28,7 @@ public class MonitorController {
         this.monitorService = monitorService;
     }
 
-    @Operation(summary = "Get all monitors")
+    @Operation(summary = "Get all monitors not Pending")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of all monitors", content = @Content(mediaType = "application/json")),
     })
