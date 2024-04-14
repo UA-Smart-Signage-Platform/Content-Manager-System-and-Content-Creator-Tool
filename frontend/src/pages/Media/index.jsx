@@ -1,20 +1,29 @@
-import { PageTitle, MediaRow,MediaFileModal,MediaFolderModal } from '../../components';
-import { MdOutlineInsertDriveFile, MdAdd, MdOutlineFolder, MdOutlineInsertPhoto } from "react-icons/md";
-import mediaService from '../../services/mediaService';
+import { PageTitle, MediaFileModal, MediaFolderModal } from '../../components';
+import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies } from "react-icons/md";
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
+import mediaService from '../../services/mediaService';
+import { useNavigate, useParams } from 'react-router';
 
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
-    const [showPortalFile, setShowPortalFile] = useState(false);
-    const [showPortalFolder, setShowPortalFolder] = useState(false);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
+
     const [currentFolder, setCurrentFolder] = useState(null);
-    const [previousFolder, setPreviousFolder] = useState(null);
     const [folder, setFolder] = useState(null);
 
+    const [updater, setUpdater] = useState(false);
+    const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+
+    const [showPortalFile, setShowPortalFile] = useState(false);
+    const [showPortalFolder, setShowPortalFolder] = useState(false);
+
+    const { path } = useParams();
+    const navigate = useNavigate();
+
     useEffect(() => {
-        if(currentFolder === null){
+        if(path === 'home'){
             mediaService.getFilesAtRootLevel().then((response) => {
                 setFilesAndDirectories(response.data);
                 setFolder(response.data);
@@ -26,54 +35,104 @@ function Media() {
                 setFolder(response.data);
             })
         }
-    }, [currentFolder]);
-
-    console.log(folder);
+    }, [currentFolder, updater]);
 
     const columns = [
         {
-            name: 'Name',
+            name: `Name`,
+            header: { style: { fontSize: "72px" } },
             selector: row => row.name,
             cell: (row) => {
                 return(
-                    <div className="flex flex-row">
+                    <div className="flex flex-row text-lg items-center">
                         {getFileIcon(row.type)}
                         <span className="ml-2">{row.name}</span>
                     </div>
                 )
             },
             sortable: true,
+            width: '47%',
         },
         {
             name: 'Size',
+            selector: row => row.size,
+            cell: (row) => {
+                return(
+                    <div className="flex flex-row text-lg">
+                        <span className="">{formatBytes(row.size)}</span>
+                    </div>
+                )
+            },
             sortable: true,
+            width: '25%',
         },
         {
             name: 'Date',
             sortable: true,
+            cell: (row) => {
+                return(
+                    <div className="flex flex-row text-lg">
+                        <span className="">{row.date}</span>
+                    </div>
+                )
+            },
+            width: '28%',
+            right: 'true',
         }
     ];
-
 
     const getFileIcon = (type) => {
         switch (type) {
             case "directory":
-                return <MdOutlineFolder/>;
+                return <MdOutlineFolder className="h-6 w-6 mr-2"/>;
             case "image/png":
-                return <MdOutlineInsertPhoto/>;
-            case "video":
-                return <MdOutlineInsertPhoto/>;
+                return <MdOutlineInsertPhoto className="h-7 w-7 mr-2"/>;
+            case "video/mp4":
+                return <MdLocalMovies className="h-6 w-6 mr-2"/>;
             default:
                 break;
         }
-    }
+    };
 
     const handleRowClick = (row) => {
-        if (row.type === 'directory') {
-            setPreviousFolder(currentFolder);
-            setCurrentFolder(row.id);
-        } 
-      };
+        switch (row.type){
+            case "directory":
+                setCurrentFolder(row.id);
+                navigate(window.location.pathname + "&" + row.name);
+                return;
+            default:
+                const change = (row.name === file ? null : row.name);
+                setFile(change);
+                if (change !== null){
+                    if (path === 'home' ){
+                        setPreview("http://localhost:8080/uploads/" + row.name);
+                    }
+                    else{
+                        // will be changed to row.path
+                        const filePath = window.location.pathname.split("/")[2].replace("&", "/").replace("home/", "") + "/" + row.name;
+                        setPreview("http://localhost:8080/uploads/" + filePath);
+                    }
+                }
+                else{
+                    setPreview(null);
+                }
+                break;
+        }
+    };
+
+    // code taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+    const formatBytes = (bytes, decimals = 2) => {
+        if (!+bytes) return '0 Bytes'
+    
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+    
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    }
+
 
     return (
         <div className="h-full flex flex-col">
@@ -99,18 +158,25 @@ function Media() {
                     <MediaFileModal
                             showPortal={showPortalFile} 
                             setShowPortal={setShowPortalFile} 
-                            currentFolder={folder}/>
+                            currentFolder={folder}
+                            updater={updater}
+                            setUpdater={setUpdater}/>
                     <MediaFolderModal
                             showPortal={showPortalFolder} 
                             setShowPortal={setShowPortalFolder} 
-                            currentFolder={folder}/>
-                    <span className="flex items-center w-[24%]">
-                        <span className="h-full w-[7%]"><MdOutlineInsertDriveFile className="w-full h-full"/></span>
-                        <span className="ml-4">Name</span>
-                    </span>
-                    <span className="flex items-center w-[15%]">Size</span>
-                    <span className="flex items-center w-[15%] ml-auto">Date</span>
-                    <span className="w-[35%]"></span>
+                            currentFolder={folder}
+                            updater={updater}
+                            setUpdater={setUpdater}/>
+                    <div className="flex items-center w-[24%] ml-6 flex-row">
+                        {path.split("&").map((folder, index) =>
+                            <button onClick={() => navigate(window.location.pathname)}
+                                    onMouseOver={(e) => e.target.style.backgroundColor = 'blue'}
+                                    onMouseOut={(e) => e.target.style.backgroundColor = ''}
+                                     key={index}>
+                                        {folder}
+                            </button>
+                        )}
+                    </div>
                 </div>
                 <div id="dividerHr" className="border-[1px] border-secondary"/>
                 <div className="h-[94%] flex flex-row">
@@ -118,15 +184,18 @@ function Media() {
                         <DataTable className="p-3" 
                             pointerOnHover
                             highlightOnHover
+                            pagination
                             columns={columns}
                             data={filesAndDirectories}
-                            onRowClicked={handleRowClick}
-                        />
+                            onRowClicked={handleRowClick}/>
                     </div>
                     <div id="mediaDividerHr" className=" w-[1px] h-full border-[1px] border-secondary"/>
                     <div id="mediaImage" className="flex h-full w-[45%]">
-                        <div id="mediaImagePreview" className="m-auto mt-[25%] text-2xl font-light">
-                            <span>Select an image to preview it here</span>
+                        <div id="mediaPreview" className="flex h-[60%] w-[40%] ml-[1%] mt-[1%] fixed justify-center items-center">
+                            {file === null ? "" : <img className="h-full w-full" src={`${preview}`} alt={`${file}`}/>}
+                        </div>
+                        <div id="mediaTextPreview" className="m-auto mt-[25%] text-2xl font-light">
+                            <span>Select a file to preview it here</span>
                         </div>
                     </div>
                 </div>

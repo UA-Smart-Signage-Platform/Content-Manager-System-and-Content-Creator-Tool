@@ -3,7 +3,7 @@ import { MdArrowBack } from "react-icons/md";
 import { useState } from 'react';
 import mediaService from '../../services/mediaService';
 
-function MediaFolderModal( { showPortal, setShowPortal, currentFolder } ) {
+function MediaFolderModal( { showPortal, setShowPortal, currentFolder, updater, setUpdater } ) {
 
     const [folderName, setFolderName] = useState(null);
 
@@ -16,6 +16,7 @@ function MediaFolderModal( { showPortal, setShowPortal, currentFolder } ) {
         }
 
         await mediaService.createFolder(folder);
+        setUpdater(!updater);
         setShowPortal(false);
     }
     return (
