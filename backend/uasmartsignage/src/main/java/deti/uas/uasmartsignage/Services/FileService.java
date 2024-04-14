@@ -90,12 +90,22 @@ public class FileService {
      * @return The created CustomFile, or {@code null} if creation fails.
      */
     public CustomFile createDirectory(CustomFile customFile) {
+
+        
         if (!customFile.getType().equals("directory")) {
             return null;
         }
 
+        //filesystem path
+        StringBuilder pathBuilder = new StringBuilder();
+        String rootPath = System.getProperty("user.dir");
+
+        //database path
         String parentDirectoryPath = getParentDirectoryPath(customFile);
-        File directory = new File(parentDirectoryPath + customFile.getName());
+        pathBuilder.insert(0, parentDirectoryPath);
+        pathBuilder.insert(0, rootPath);
+
+        File directory = new File(pathBuilder.toString() + customFile.getName());
 
         if (directory.exists()){
             logger.info("Directory already exists: " + directory.getAbsolutePath());
@@ -106,7 +116,6 @@ public class FileService {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
             fileRepository.save(customFile);
-
             logger.info("Directory created: " + directory.getAbsolutePath());
             return customFile;
         }
@@ -134,8 +143,11 @@ public class FileService {
             customFile = customFile.getParent();
         }
 
+        //Creating upload dir
         String rootPath = System.getProperty("user.dir");
         File rootDirectory = new File(rootPath + File.separator + "uploads");
+        File uploadDir = new File(File.separator + "uploads");
+
         if (!rootDirectory.exists()) {
             if (rootDirectory.mkdir()) {
                 logger.info("Directory created: {}", rootDirectory.getAbsolutePath());
@@ -145,7 +157,8 @@ public class FileService {
             }
         }
 
-        pathBuilder.insert(0, rootDirectory + File.separator);
+        //adding upload path
+        pathBuilder.insert(0, uploadDir + File.separator);
         return pathBuilder.toString();
     }
 
@@ -181,15 +194,25 @@ public class FileService {
         }
 
 
-        // Create file path
+        // Creating file path for database
         Path path = Paths.get(getParentDirectoryPath(customFile) + fileName);
         customFile.setPath(path.toString());
 
-        logger.info("Creating file with type: " + customFile.getType() + " and name: " + customFile.getName());
-        fileRepository.save(customFile);
+        // Creating file path for filesystem
+        StringBuilder pathBuilder = new StringBuilder();
+        String rootPath = System.getProperty("user.dir");
+        // Get parent path and add the filename
+        String parentDirectoryPath = getParentDirectoryPath(customFile) + fileName;
+        pathBuilder.insert(0, parentDirectoryPath);
+        pathBuilder.insert(0, rootPath);
+
+        Path fileSysPath = Paths.get(pathBuilder.toString());
+        
 
         try {
-            Files.copy(file.getFile().getInputStream(), path);
+            logger.info("Creating file with type: " + customFile.getType() + " and name: " + customFile.getName());
+            Files.copy(file.getFile().getInputStream(), fileSysPath);
+            fileRepository.save(customFile);
             return customFile;
         } 
         catch (IOException e) {
@@ -268,6 +291,7 @@ public class FileService {
         }
 
         String sFilePath = customFile.get().getPath();
+        String rootPath = System.getProperty("user.dir");
 
         Path filePath = Paths.get(sFilePath);
         Resource fileResource = new UrlResource(filePath.toUri());
