@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Services;
 
+
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
@@ -26,9 +27,12 @@ public class FileService {
     
     private final FileRepository fileRepository;
 
+    private final LogsService logsService;
+
     @Autowired
-    public FileService(FileRepository fileRepository) {
+    public FileService(FileRepository fileRepository, LogsService logsService) {
         this.fileRepository = fileRepository;
+        this.logsService = logsService;
     }
 
    
@@ -40,6 +44,18 @@ public class FileService {
     public List<CustomFile> getFilesAtRoot() {
         List<CustomFile> files = fileRepository.findAllByParentIsNull();
         logger.debug("Retrieved {} files and folders located at root level.", files.size());
+
+        // Add log to InfluxDB
+        String measurement = "BackendLogs";
+        String operationSource = "FileService";
+        String operation = "RetrieveFilesAtRoot";
+        String description = "Retrieved files and folders located at root level";
+        String bucket = "changeme";
+        if (!logsService.addLog(measurement,2, operationSource, operation, description, bucket)) {
+            logger.error("Failed to add log to InfluxDB");
+        }
+
+        logger.info("Added log to InfluxDB: {}", description);
         return files;
     }
 
@@ -54,9 +70,20 @@ public class FileService {
         logger.info("Retrieving file with ID: {}", id);
         CustomFile file = fileRepository.findById(id).orElse(null);
 
+        // Add log to InfluxDB
+        String measurement = "BackendLogs";
+        String operationSource = "FileService";
+        String operation = "RetrieveFileById";
+        String description = "Retrieved file with ID: " + id;
+        String bucket = "changeme";
+        if (!logsService.addLog(measurement,2, operationSource, operation, description, bucket)) {
+            logger.error("Failed to add log to InfluxDB");
+        }
+
         if (file == null) {
             logger.warn("File with ID {} not found", id);
         }
+        logger.info("Added log to InfluxDB: {}", description);
         return file;
     }
 
@@ -71,9 +98,20 @@ public class FileService {
         logger.info("Retrieving file with name: {}", fileName);
         CustomFile customFile = fileRepository.findByName(fileName);
 
+        // Add log to InfluxDB
+        String measurement = "BackendLogs";
+        String operationSource = "FileService";
+        String operation = "RetrieveFileByName";
+        String description = "Retrieved file with name: " + fileName;
+        String bucket = "changeme";
+        if (!logsService.addLog(measurement,2, operationSource, operation, description, bucket)) {
+            logger.error("Failed to add log to InfluxDB");
+        }
+
         if (customFile == null) {
             logger.warn("File with name '{}' not found", fileName);
         }
+        logger.info("Added log to InfluxDB: {}", description);
         return customFile;
     }
 
