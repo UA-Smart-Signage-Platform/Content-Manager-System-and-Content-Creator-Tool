@@ -1,9 +1,7 @@
 package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +11,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientFactory;
+import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -20,7 +22,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.ResourceUtils;
 
@@ -30,20 +34,23 @@ import deti.uas.uasmartsignage.Repositories.FileRepository;
 import deti.uas.uasmartsignage.Services.FileService;
 
 @ExtendWith(MockitoExtension.class)
-public class FileServiceTest {
+class FileServiceTest {
     
-    @Mock(lenient = true)
+    @Mock
     private FileRepository repository;
 
     @InjectMocks
     private FileService service;
+
+    @Mock
+    private LogsService logsService;
+
 
     // TODO - create and revise tests
 
     @Test
     void whenGetFileById_thenReturnFile() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
-
         when(repository.findById(1L)).thenReturn(Optional.of(customFile));
 
         CustomFile found = service.getFileOrDirectoryById(1L);

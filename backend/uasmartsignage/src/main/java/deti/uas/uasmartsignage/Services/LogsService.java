@@ -15,11 +15,17 @@ public class LogsService {
     private final InfluxDBClient influxDBClient;
 
     private String org;
+    private String bucket;
+    private String token;
+    private String url;
 
 
     public LogsService(InfluxDBProperties influxDBProperties) {
-        this.influxDBClient = InfluxDBClientFactory.create(influxDBProperties.getUrl(), influxDBProperties.getToken().toCharArray());
         this.org = influxDBProperties.getOrg();
+        this.bucket = influxDBProperties.getBucket();
+        this.token = influxDBProperties.getToken();
+        this.url = influxDBProperties.getUrl();
+        this.influxDBClient = InfluxDBClientFactory.create(url, token.toCharArray());
     }
 
     /**
