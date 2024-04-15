@@ -55,6 +55,11 @@ function Media() {
             width: '47%',
         },
         {
+            id: 'isFolder',
+            selector: row => row.type,
+            omit: true,
+        },
+        {
             name: 'Size',
             selector: row => row.size,
             cell: (row) => {
@@ -195,6 +200,7 @@ function Media() {
                 <div className="h-[94%] flex flex-row">
                     <div id="mediaContent" className="flex flex-col w-[50%] ml-[4%] overflow-scroll max-h-[760px]">
                         <DataTable className="p-3" 
+                            defaultSortFieldId="isFolder"
                             pointerOnHover
                             highlightOnHover
                             pagination
@@ -204,10 +210,10 @@ function Media() {
                     </div>
                     <div id="mediaDividerHr" className=" w-[1px] h-full border-[1px] border-secondary"/>
                     <div id="mediaImage" className="flex h-full w-[45%]">
-                        <div id="mediaPreview" className="flex h-[60%] w-[40%] ml-[1%] mt-[1%] fixed justify-center items-center">
+                        <div id="mediaPreview" className="flex w-[40%] ml-[1%] mt-[1%] fixed justify-center items-center">
                             {file === null ? 
                                     "" : fileType === "video/mp4" ? 
-                                            <video  src={`${preview}`} controls muted/> : <img className="h-full w-full" src={`${preview}`} alt={`${file}`}/>}
+                                            <video src={`${preview}`} controls muted/> : <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>}
                         </div>
                         <div id="mediaTextPreview" className="m-auto mt-[25%] text-2xl font-light">
                             <span>Select a file to preview it here</span>
