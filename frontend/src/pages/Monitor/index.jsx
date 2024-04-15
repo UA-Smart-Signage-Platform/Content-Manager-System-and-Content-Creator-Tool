@@ -13,16 +13,16 @@ function Monitor(){
     const [groupId,setGroupId] = useState();
     const [groups,setGroups] = useState([]);
     const { id } = useParams();
-    const [Update,setUpdate] = useState(false);
+    const [update,setUpdate] = useState(false);
 
     useEffect(()=>{
         monitorService.getMonitorById(id).then((response)=>{
             setMonitor(response.data)
             setName(response.data.name)
             setGroupId(response.data.group.id)
+        })
         monitorsGroupService.getGroups().then((response)=>{
             setGroups(response.data)
-        })
         })
     },[])
 
@@ -52,7 +52,7 @@ function Monitor(){
                     <div className="h-[92%] w-full flex flex-row gap-5">
                         <div className="w-[50%] h-full bg-secondaryLight rounded-[30px] flex flex-col p-5 gap-5">
                             <div className=" text-center text-4xl flex flex-row items-center justify-center gap-4">
-                                {Update ? 
+                                {update ? 
                                     <div className="rounded-lg bg-secondaryMedium px-2 flex flex-row items-center">
                                         <input className="bg-secondaryMedium rounded-lg" value={name} onChange={(e)=>setName(e.target.value)}></input>
                                         <MdCreate className="ml-auto text-2xl text-gray-500"/>
@@ -60,7 +60,7 @@ function Monitor(){
                                     :
                                     <div className="">{monitor.name}</div>
                                 }
-                                {Update ? 
+                                {update ? 
                                     <MdCheck className="transition ml-auto cursor-pointer text-3xl hover:text-4xl hover:translate-y-[-5px] hover:translate-x-1" onClick={()=>handleUpdate()}/>
                                     :
                                     <MdCreate className="transition ml-auto cursor-pointer text-3xl hover:text-4xl hover:translate-y-[-5px] hover:translate-x-1" onClick={()=>setUpdate(true)}/>
@@ -89,10 +89,10 @@ function Monitor(){
                                             <span className="flex flex-row gap-2 justify-center items-center">Group</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            {Update?
+                                            {update?
                                                 <select className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}>
                                                     {groups.map((group)=>
-                                                    <option value={group.id} selected={groupId== group.id}>{group.name}</option>
+                                                    <option key={group.id} value={group.id} selected={groupId== group.id}>{group.name}</option>
                                                 )}
                                                 </select>
                                                 :

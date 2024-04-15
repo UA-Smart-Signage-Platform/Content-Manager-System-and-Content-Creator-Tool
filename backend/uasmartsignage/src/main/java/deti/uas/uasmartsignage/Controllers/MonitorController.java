@@ -30,7 +30,7 @@ public class MonitorController {
 
     @Operation(summary = "Get all monitors not Pending")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all monitors", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "List of all monitors that are not pending", content = @Content(mediaType = "application/json")),
     })
     @GetMapping
     public ResponseEntity<?> getAllMonitors() {
