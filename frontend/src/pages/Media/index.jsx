@@ -45,14 +45,7 @@ function Media() {
                     <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
                 </div>
             ),
-            selector: (row) => {
-                return(
-                    <div data-tag="allowRowEvents" className="flex flex-row items-center">
-                        {getFileIcon(row.type)}
-                        <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-                    </div>
-                )
-            },
+            selector: row => headNameStyle(row),
             width: '47%',
         },
         {
@@ -88,6 +81,15 @@ function Media() {
         },
     };
 
+
+    const headNameStyle = (row) => {
+        return(
+            <div data-tag="allowRowEvents" className="flex flex-row items-center">
+                {getFileIcon(row.type)}
+                <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+            </div>
+        )
+    };
 
     const getFileIcon = (type) => {
         switch (type) {
@@ -144,11 +146,8 @@ function Media() {
         return (
             <div className="flex flex-row">
                 {path.split("&").map((folder, index, array) =>
-                    <div key={index}>
-                        <button onClick={() => { navigate("/media/" + folder) }}
-                                onMouseOver={(e) => e.target.style.backgroundColor = 'blue'}
-                                onMouseOut={(e) => e.target.style.backgroundColor = ''}
-                                >
+                    <div>
+                        <button key={index} onClick={() => { navigate("/media/" + folder) }}>
                                 {folder}
                         </button>
                         {(array.length > index + 1) && <span className="pr-2 pl-2">&gt;</span>}
