@@ -27,10 +27,17 @@ function Monitors(){
 
 
     const customStyles = {
+        headRow: {
+            style: {
+                minHeight: '40px',
+                borderBottomWidth: '1px',
+                borderBottomStyle: 'solid',
+            },
+        },
         rows: {
             style: {
                 
-                minHeight: '72px', // override the row height
+                minHeight: '40px', // override the row height
             },
         },
         headCells: {
