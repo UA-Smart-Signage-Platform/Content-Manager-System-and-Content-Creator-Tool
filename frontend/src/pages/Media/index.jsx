@@ -1,5 +1,5 @@
 import { PageTitle, MediaFileModal, MediaFolderModal } from '../../components';
-import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies } from "react-icons/md";
+import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile } from "react-icons/md";
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import mediaService from '../../services/mediaService';
@@ -40,18 +40,19 @@ function Media() {
 
     const columns = [
         {
-            name: `Name`,
-            header: { style: { fontSize: "72px" } },
-            selector: row => row.name,
-            cell: (row) => {
+            name: (
+                <div className="flex flex-row">
+                    <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
+                </div>
+            ),
+            selector: row => {
                 return(
-                    <div className="flex flex-row text-lg items-center">
+                    <div data-tag="allowRowEvents" className="flex flex-row items-center">
                         {getFileIcon(row.type)}
-                        <span className="ml-2">{row.name}</span>
+                        <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
                     </div>
                 )
             },
-            sortable: true,
             width: '47%',
         },
         {
@@ -61,40 +62,41 @@ function Media() {
         },
         {
             name: 'Size',
-            selector: row => row.size,
-            cell: (row) => {
-                return(
-                    <div className="flex flex-row text-lg">
-                        <span className="">{formatBytes(row.size)}</span>
-                    </div>
-                )
-            },
+            selector: row => formatBytes(row.size, 0),
             sortable: true,
             width: '25%',
         },
         {
             name: 'Date',
+            selector: row => row.date,
             sortable: true,
-            cell: (row) => {
-                return(
-                    <div className="flex flex-row text-lg">
-                        <span className="">{row.date}</span>
-                    </div>
-                )
-            },
             width: '28%',
             right: 'true',
         }
     ];
 
+    const customStyles = {
+        head: {
+            style: {
+                fontSize: '20px',
+            },
+        },
+        rows: {
+            style: {
+                fontSize: '16px',
+            },
+        },
+    };
+
+
     const getFileIcon = (type) => {
         switch (type) {
             case "directory":
-                return <MdOutlineFolder className="h-6 w-6 mr-2"/>;
+                return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
             case "image/png":
-                return <MdOutlineInsertPhoto className="h-7 w-7 mr-2"/>;
+                return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
             case "video/mp4":
-                return <MdLocalMovies className="h-6 w-6 mr-2"/>;
+                return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
             default:
                 break;
         }
@@ -138,14 +140,14 @@ function Media() {
         const i = Math.floor(Math.log(bytes) / Math.log(k))
     
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-    }
+    };
 
     const breadCrumbs = () => {
         return (
             <div className="flex flex-row">
                 {path.split("&").map((folder, index, array) =>
                     <div key={index}>
-                        <button onClick={() => {navigate("/media/" + folder) }}
+                        <button onClick={() => { navigate("/media/" + folder) }}
                                 onMouseOver={(e) => e.target.style.backgroundColor = 'blue'}
                                 onMouseOut={(e) => e.target.style.backgroundColor = ''}
                                 >
@@ -156,8 +158,36 @@ function Media() {
                 )}
             </div>
         )
-    }
+    };
 
+    const showText = () => {
+        return (
+            <div id="mediaTextPreview" className="m-auto mt-[25%] text-2xl font-light">
+                <span>Select a file to preview it here</span>
+            </div>
+        )
+    };
+
+    const showFilePreview = () => {
+        return (
+            fileType === "video/mp4" ? 
+            <div>
+                <span className="flex flex-row text-2xl items-center font-medium mb-3">
+                    <MdLocalMovies data-tag="allowRowEvents" className="h-8 w-8 "/> 
+                    Preview:
+                </span>
+                <video src={`${preview}`} controls muted/> 
+            </div>
+            : 
+            <div>
+                <span className="flex flex-row text-2xl items-center font-medium mb-3">
+                    <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-8 w-8"/> 
+                    Preview:
+                </span>
+                <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>
+            </div>
+        )
+    }
 
     return (
         <div className="h-full flex flex-col">
@@ -206,17 +236,13 @@ function Media() {
                             pagination
                             columns={columns}
                             data={filesAndDirectories}
-                            onRowClicked={handleRowClick}/>
+                            onRowClicked={handleRowClick}
+                            customStyles={customStyles}/>
                     </div>
                     <div id="mediaDividerHr" className=" w-[1px] h-full border-[1px] border-secondary"/>
                     <div id="mediaImage" className="flex h-full w-[45%]">
                         <div id="mediaPreview" className="flex w-[40%] ml-[1%] mt-[1%] fixed justify-center items-center">
-                            {file === null ? 
-                                    "" : fileType === "video/mp4" ? 
-                                            <video src={`${preview}`} controls muted/> : <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>}
-                        </div>
-                        <div id="mediaTextPreview" className="m-auto mt-[25%] text-2xl font-light">
-                            <span>Select a file to preview it here</span>
+                            {file === null ? showText() : showFilePreview()}
                         </div>
                     </div>
                 </div>
