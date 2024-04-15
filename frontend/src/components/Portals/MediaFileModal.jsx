@@ -59,4 +59,12 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
     )
 }
 
+MediaFileModal.propTypes = {
+    showPortal: PropTypes.bool.isRequired,
+    setShowPortal: PropTypes.func.isRequired,
+    currentFolder: PropTypes.int.isRequired,
+    updater: PropTypes.bool.isRequired,
+    setUpdater: PropTypes.func.isRequired,
+}
+
 export default MediaFileModal;

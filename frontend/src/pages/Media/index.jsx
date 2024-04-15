@@ -45,7 +45,7 @@ function Media() {
                     <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
                 </div>
             ),
-            selector: row => {
+            selector: (row) => {
                 return(
                     <div data-tag="allowRowEvents" className="flex flex-row items-center">
                         {getFileIcon(row.type)}
@@ -103,29 +103,27 @@ function Media() {
     };
 
     const handleRowClick = (row) => {
-        switch (row.type){
-            case "directory":
-                setCurrentFolder(row.id);
-                navigate(window.location.pathname + "&" + row.name);
-                return;
-            default:
-                const change = (row.name === file ? null : row.name);
-                setFileType(row.type);
-                setFile(change);
-                if (change !== null){
-                    if (path === 'home' ){
-                        setPreview("http://localhost:8080/uploads/" + row.name);
-                    }
-                    else{
-                        // will be changed to row.path
-                        const filePath = window.location.pathname.split("/")[2].replace("&", "/").replace("home/", "") + "/" + row.name;
-                        setPreview("http://localhost:8080/uploads/" + filePath);
-                    }
+        if (row.type === "directory"){
+            setCurrentFolder(row.id);
+            navigate(window.location.pathname + "&" + row.name);
+        }
+        else{
+            const change = (row.name === file ? null : row.name);
+            setFileType(row.type);
+            setFile(change);
+            if (change !== null){
+                if (path === 'home' ){
+                    setPreview("http://localhost:8080/uploads/" + row.name);
                 }
                 else{
-                    setPreview(null);
+                    // will be changed to row.path
+                    const filePath = window.location.pathname.split("/")[2].replace("&", "/").replace("home/", "") + "/" + row.name;
+                    setPreview("http://localhost:8080/uploads/" + filePath);
                 }
-                break;
+            }
+            else{
+                setPreview(null);
+            }
         }
     };
 
