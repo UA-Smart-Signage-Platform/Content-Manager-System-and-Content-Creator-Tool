@@ -14,6 +14,7 @@ function Media() {
 
     const [updater, setUpdater] = useState(false);
     const [file, setFile] = useState(null);
+    const [fileType, setFileType] = useState(null);
     const [preview, setPreview] = useState(null);
 
     const [showPortalFile, setShowPortalFile] = useState(false);
@@ -102,6 +103,7 @@ function Media() {
                 return;
             default:
                 const change = (row.name === file ? null : row.name);
+                setFileType(row.type);
                 setFile(change);
                 if (change !== null){
                     if (path === 'home' ){
@@ -131,6 +133,24 @@ function Media() {
         const i = Math.floor(Math.log(bytes) / Math.log(k))
     
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    }
+
+    const breadCrumbs = () => {
+        return (
+            <div className="flex flex-row">
+                {path.split("&").map((folder, index, array) =>
+                    <div key={index}>
+                        <button onClick={() => {navigate("/media/" + folder) }}
+                                onMouseOver={(e) => e.target.style.backgroundColor = 'blue'}
+                                onMouseOut={(e) => e.target.style.backgroundColor = ''}
+                                >
+                                {folder}
+                        </button>
+                        {(array.length > index + 1) && <span className="pr-2 pl-2">&gt;</span>}
+                    </div>
+                )}
+            </div>
+        )
     }
 
 
@@ -168,14 +188,7 @@ function Media() {
                             updater={updater}
                             setUpdater={setUpdater}/>
                     <div className="flex items-center w-[24%] ml-6 flex-row">
-                        {path.split("&").map((folder, index) =>
-                            <button onClick={() => navigate(window.location.pathname)}
-                                    onMouseOver={(e) => e.target.style.backgroundColor = 'blue'}
-                                    onMouseOut={(e) => e.target.style.backgroundColor = ''}
-                                     key={index}>
-                                        {folder}
-                            </button>
-                        )}
+                        {breadCrumbs()}
                     </div>
                 </div>
                 <div id="dividerHr" className="border-[1px] border-secondary"/>
@@ -192,7 +205,9 @@ function Media() {
                     <div id="mediaDividerHr" className=" w-[1px] h-full border-[1px] border-secondary"/>
                     <div id="mediaImage" className="flex h-full w-[45%]">
                         <div id="mediaPreview" className="flex h-[60%] w-[40%] ml-[1%] mt-[1%] fixed justify-center items-center">
-                            {file === null ? "" : <img className="h-full w-full" src={`${preview}`} alt={`${file}`}/>}
+                            {file === null ? 
+                                    "" : fileType === "video/mp4" ? 
+                                            <video  src={`${preview}`} controls muted/> : <img className="h-full w-full" src={`${preview}`} alt={`${file}`}/>}
                         </div>
                         <div id="mediaTextPreview" className="m-auto mt-[25%] text-2xl font-light">
                             <span>Select a file to preview it here</span>
