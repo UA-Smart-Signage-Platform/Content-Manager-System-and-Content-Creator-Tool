@@ -1,10 +1,10 @@
 import { createPortal } from 'react-dom';
 import { MdArrowBack, MdMonitor, MdCheck } from "react-icons/md";
 import { useEffect, useState } from 'react';
-import monitorService from '../../services/monitorService';
 import mediaService from '../../services/mediaService';
+import PropTypes from 'prop-types';
 
-function MediaFileModal({showPortal, setShowPortal,currentFolder}){
+function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setUpdater }){
 
     const [file, setFile] = useState(null);
 
@@ -22,6 +22,7 @@ function MediaFileModal({showPortal, setShowPortal,currentFolder}){
         }
         
         await mediaService.createFile(formData);
+        setUpdater(!updater);
         setShowPortal(false);
     }
 
@@ -57,6 +58,14 @@ function MediaFileModal({showPortal, setShowPortal,currentFolder}){
             )}
         </>
     )
+}
+
+MediaFileModal.propTypes = {
+    showPortal: PropTypes.bool.isRequired,
+    setShowPortal: PropTypes.func.isRequired,
+    currentFolder: PropTypes.number.isRequired,
+    updater: PropTypes.bool.isRequired,
+    setUpdater: PropTypes.func.isRequired,
 }
 
 export default MediaFileModal;

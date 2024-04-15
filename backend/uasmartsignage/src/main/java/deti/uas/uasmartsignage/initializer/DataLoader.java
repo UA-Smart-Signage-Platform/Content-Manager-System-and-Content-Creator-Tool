@@ -224,7 +224,7 @@ public class DataLoader implements CommandLineRunner {
         // create the widget mappings for template 2
         temperature = new TemplateWidget();
         temperature.setTop(0);
-        temperature.setLeftPosition(0);
+        temperature.setLeftPosition(80);
         temperature.setHeight(20);
         temperature.setWidth(20);
         temperature.setTemplate(template2);
@@ -233,7 +233,7 @@ public class DataLoader implements CommandLineRunner {
 
         video = new TemplateWidget();
         video.setTop(0);
-        video.setLeftPosition(20);
+        video.setLeftPosition(0);
         video.setHeight(90);
         video.setWidth(80);
         video.setTemplate(template2);
@@ -251,7 +251,7 @@ public class DataLoader implements CommandLineRunner {
 
         image = new TemplateWidget();
         image.setTop(20);
-        image.setLeftPosition(0);
+        image.setLeftPosition(80);
         image.setHeight(70);
         image.setWidth(20);
         image.setTemplate(template2);

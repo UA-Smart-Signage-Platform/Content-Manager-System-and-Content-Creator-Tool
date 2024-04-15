@@ -48,8 +48,8 @@ function NavBar() {
                 onMouseLeave={()=>{setIsShow(false)}}
                 >
                 <div className="w-full h-[16%] flex flex-col place-content-center font-bold">
-                    <h>UA SMART</h>
-                    <h className="ml-8">SIGNAGE</h> 
+                    <h1>UA SMART</h1>
+                    <h1 className="ml-8">SIGNAGE</h1> 
                 </div>
                 <Link to={"dashboard"} className="w-full h-[5%] flex items-center">
                     Dashboard
