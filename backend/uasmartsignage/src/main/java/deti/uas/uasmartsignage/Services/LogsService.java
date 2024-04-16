@@ -39,7 +39,7 @@ public class LogsService {
      * @param bucket The bucket to write the log to.
      * @return True if the log was successfully added, false otherwise.
      */
-    public boolean addLog(String measurement,Integer severity, String operationSource, String operation, String description, String bucket) {
+    public boolean addBackendLog(String measurement,Integer severity, String operationSource, String operation, String description, String bucket) {
         String severityString = "INFO";
         if (severity < 0 || severity > 2) {
             return false;
@@ -54,6 +54,26 @@ public class LogsService {
             Point point = Point.measurement(measurement)
                     .addTag("operationSource", operationSource)
                     .addField("severity", severityString)
+                    .addField("operation", operation)
+                    .addField("description", description)
+                    .time(System.currentTimeMillis(), WritePrecision.MS);
+
+            // Write the point to InfluxDB
+            WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
+            writeApi.writePoint(bucket, org, point);
+            return true;
+        } catch (Exception e) {
+            System.out.println(e);
+            return false;
+        }
+    }
+
+    public boolean addMonitorLog(String measurement, String operationSource, String operation, String description, String bucket) {
+        //not implemented yet
+        try {
+            // Prepare the InfluxDB point
+            Point point = Point.measurement(measurement)
+                    .addTag("operationSource", operationSource)
                     .addField("operation", operation)
                     .addField("description", description)
                     .time(System.currentTimeMillis(), WritePrecision.MS);

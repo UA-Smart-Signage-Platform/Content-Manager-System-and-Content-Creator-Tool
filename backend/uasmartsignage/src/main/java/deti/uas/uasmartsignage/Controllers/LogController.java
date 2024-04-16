@@ -46,6 +46,7 @@ public class LogController {
             QueryApi queryApi = influxDBClient.getQueryApi();
             List<FluxTable> tables = queryApi.query(fluxQuery, org);
 
+            // Initialize list of BackendLog objects
             int size = tables.get(0).getRecords().size();
             for (int i = 0; i < size; i++) {
                 BackendLog backendLog = new BackendLog();
@@ -56,6 +57,7 @@ public class LogController {
             for (FluxTable table : tables) {
                 List<FluxRecord> records = table.getRecords();
                 int index = 0;
+                // Iterate over records and populate BackendLog objects (this is needed because the query returns multiple fields for each record)
                 for (FluxRecord record : records) {
                     int finalIndex = index;
                     record.getValues().forEach((k, v) -> {

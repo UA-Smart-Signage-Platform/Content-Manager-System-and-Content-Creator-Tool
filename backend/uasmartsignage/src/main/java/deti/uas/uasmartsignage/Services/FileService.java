@@ -51,7 +51,7 @@ public class FileService {
         String operation = "RetrieveFilesAtRoot";
         String description = "Retrieved files and folders located at root level";
         String bucket = "changeme";
-        if (!logsService.addLog(measurement,2, operationSource, operation, description, bucket)) {
+        if (!logsService.addBackendLog(measurement,2, operationSource, operation, description, bucket)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
@@ -76,7 +76,7 @@ public class FileService {
         String operation = "RetrieveFileById";
         String description = "Retrieved file with ID: " + id;
         String bucket = "changeme";
-        if (!logsService.addLog(measurement,2, operationSource, operation, description, bucket)) {
+        if (!logsService.addBackendLog(measurement,2, operationSource, operation, description, bucket)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
@@ -104,7 +104,7 @@ public class FileService {
         String operation = "RetrieveFileByName";
         String description = "Retrieved file with name: " + fileName;
         String bucket = "changeme";
-        if (!logsService.addLog(measurement,2, operationSource, operation, description, bucket)) {
+        if (!logsService.addBackendLog(measurement,2, operationSource, operation, description, bucket)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
