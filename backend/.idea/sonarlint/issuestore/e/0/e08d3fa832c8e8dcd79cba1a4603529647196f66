@@ -1,0 +1,8 @@
+
+Š
+java:S1192e"IDefine a constant instead of duplicating this literal "user.dir" 5 times.(‰¹ÃöûÿÿÿÿJ$32499002-e5f1-4fa5-80f5-4c0abc7eaf85
+–
+java:S1192?"ZDefine a constant instead of duplicating this literal "File with ID {} not found" 3 times.(’ÛÊJ$da55d3e0-cb64-432c-b281-fdc701f8ec86
+š	java:S120"ZRename this package name to match the regular expression '^[a-z_]+(\.[a-z_][a-z0-9_]*)*$'.(ü“ÅÍüÿÿÿÿJ$56ac69e5-1e79-47b4-9d03-b39c940c2588
+
+java:S4042î"NUse "java.nio.file.Files#delete" here for better messages on error conditions.(¨ı¦™øÿÿÿÿJ$6da903f8-85b0-462c-971e-97ebea153f86

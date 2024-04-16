@@ -18,7 +18,7 @@ public class CustomFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -27,7 +27,7 @@ public class CustomFile {
     @Column(nullable = false)
     private Long size;
 
-    @Column
+    @Column(unique = true)
     private String path;
 
     @ManyToOne

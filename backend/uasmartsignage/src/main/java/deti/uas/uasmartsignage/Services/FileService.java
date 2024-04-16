@@ -262,6 +262,8 @@ public class FileService {
         }
 
         String sFilePath = customFile.get().getPath();
+        String rootPath = System.getProperty("user.dir");
+        sFilePath = rootPath + sFilePath;
 
         Path filePath = Paths.get(sFilePath);
         Resource fileResource = new UrlResource(filePath.toUri());
@@ -292,6 +294,7 @@ public class FileService {
 
         String sFilePath = customFile.get().getPath();
         String rootPath = System.getProperty("user.dir");
+        sFilePath = rootPath + sFilePath;
 
         Path filePath = Paths.get(sFilePath);
         Resource fileResource = new UrlResource(filePath.toUri());
