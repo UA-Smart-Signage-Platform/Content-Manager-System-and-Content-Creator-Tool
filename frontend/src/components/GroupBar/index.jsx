@@ -81,14 +81,14 @@ function GroupBar( {id, changeId, page} ) {
                             <span className=" mb-1 font-medium text-2xl">Overview</span>
                         </div>
                         {page != null &&
-                            <div className="ml-auto cursor-pointer pr-4" onClick={changeToEditMode} role="button">
+                            <button className="ml-auto cursor-pointer pr-4" onClick={changeToEditMode}>
                                 <motion.div
                                     animate={{rotate:editMode?90:0,
                                               scale:editMode?1.2:1   
                                     }}
                                     transition={{duration:0.2}}
                                 ><MdSettings className="h-6 w-6"/></motion.div>
-                            </div>
+                            </button>
                         }
                     </div>
                     <div id="selected" group-id="0" onClick={()=> changeId(null)} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
@@ -115,7 +115,7 @@ function GroupBar( {id, changeId, page} ) {
                         }
                     </div>
                     { groups != null && groups.map((group, index) => (
-                    <div id={group.id}
+                    <div key={group.id}
                         onClick={()=> changeId(group.id)}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
