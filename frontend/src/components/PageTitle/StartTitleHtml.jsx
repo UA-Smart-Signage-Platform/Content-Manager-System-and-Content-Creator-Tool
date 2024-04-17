@@ -1,4 +1,4 @@
-import { MdAccountCircle, MdInfoOutline } from "react-icons/md";
+import { MdAccountCircle, MdInfoOutline, MdMonitor } from "react-icons/md";
 
 
 function StartTitleHtml( {page} ){
@@ -24,6 +24,13 @@ function StartTitleHtml( {page} ){
             <span className="font-bold text-3xl flex flex-row place-content-end items-end">
                 Schedule
                 <MdInfoOutline className="ml-2 w-6 cursor-pointer"/>
+            </span>
+    )
+    if (page === "monitor")
+        return(
+            <span className="font-bold text-3xl flex flex-row place-content-end items-end">
+                <MdMonitor className="mx-2 text-4xl"/>
+                Monitor
             </span>
     )
 }
