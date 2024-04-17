@@ -28,6 +28,10 @@ public class TemplateWidgetService {
         if (templateWidgetById == null) {
             return null;
         }
+        templateWidgetById.setTop(templateWidget.getTop());
+        templateWidgetById.setLeftPosition(templateWidget.getLeftPosition());
+        templateWidgetById.setWidth(templateWidget.getWidth());
+        templateWidgetById.setHeight(templateWidget.getHeight());
         templateWidgetById.setWidget(templateWidget.getWidget());
         templateWidgetById.setTemplate(templateWidget.getTemplate());
         return templateWidgetRepository.save(templateWidgetById);

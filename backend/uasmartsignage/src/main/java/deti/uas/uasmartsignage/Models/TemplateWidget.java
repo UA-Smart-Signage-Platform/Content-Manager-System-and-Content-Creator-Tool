@@ -1,6 +1,8 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,29 +24,27 @@ public class TemplateWidget {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private Long top;
+    private int top;
 
     //left conflict with sql
     @Column(nullable = false)
-    private Long leftPosition;
+    private int leftPosition;
 
     @Column(nullable = false)
-    private Long width;
+    private int width;
 
     @Column(nullable = false)
-    private Long height;
+    private int height;
 
     @ManyToOne
     @JoinColumn(name = "templateId", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties("templateWidgets")
     private Template template;
 
     @ManyToOne
     @JoinColumn(name = "widgetId", nullable = false)
-    @JsonIgnore
+    @JsonIgnoreProperties("templateWidgets")
     private Widget widget;
-   
+    
+    
 }

@@ -5,6 +5,8 @@ target/
 !**/src/test/**/target/
 
 .m2/
+uploads/
+spring-server-tcpmqtt1883
 
 ### STS ###
 .apt_generated

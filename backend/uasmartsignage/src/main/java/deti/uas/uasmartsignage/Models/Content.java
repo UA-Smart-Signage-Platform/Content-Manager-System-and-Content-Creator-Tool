@@ -33,10 +33,9 @@ public class Content {
 
     private String description;
 
-    @OneToMany(mappedBy = "content", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<Widget> widgets;
-
+    @ManyToOne
+    @JoinColumn(name = "widget_id")
+    private Widget widget;
     
     @ElementCollection
     @CollectionTable(name = "Content_Options", joinColumns = @JoinColumn(name = "content_id"))

@@ -31,5 +31,14 @@ public class MonitorGroupService {
     public MonitorsGroup getGroupByName(String name) {
         return monitorGroupRepository.findByName(name);
     }    
+
+    public MonitorsGroup updateGroup(Long id, MonitorsGroup monitorsGroup) {
+        MonitorsGroup monitorsGroupById = monitorGroupRepository.findById(id).orElse(null);
+        if (monitorsGroupById == null) {
+            return null;
+        }
+        monitorsGroupById.setName(monitorsGroup.getName());
+        return monitorGroupRepository.save(monitorsGroupById);
+    }
     
 }

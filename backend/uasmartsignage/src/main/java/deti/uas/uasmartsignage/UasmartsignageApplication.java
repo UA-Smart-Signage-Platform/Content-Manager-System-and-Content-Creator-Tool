@@ -4,8 +4,11 @@ import java.util.List;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.context.annotation.Profile;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Template;
@@ -27,6 +30,7 @@ import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class UasmartsignageApplication {
+	/*
 	private final FileService fileService;
 	private final MonitorService monitorService;
 	private final UserService userService;
@@ -38,18 +42,19 @@ public class UasmartsignageApplication {
 	private final MonitorGroupService monitorGroupService;
 
 
-    public UasmartsignageApplication(FileService fileService, MonitorService monitorService, UserService userService, TemplateGroupService templateGroupService, TemplateService templateService, WidgetService widgetService, ContentService contentService, TemplateWidgetService templateWidgetService, MonitorGroupService monitorGroupService) {
-        this.fileService = fileService;
-		this.monitorService = monitorService;
-		this.userService = userService;
-		this.templateGroupService = templateGroupService;
-		this.templateService = templateService;
-		this.widgetService = widgetService;
-		this.contentService = contentService;
-		this.templateWidgetService = templateWidgetService;
-		this.monitorGroupService = monitorGroupService;
-    }
+    // public UasmartsignageApplication(FileService fileService, MonitorService monitorService, UserService userService, TemplateGroupService templateGroupService, TemplateService templateService, WidgetService widgetService, ContentService contentService, TemplateWidgetService templateWidgetService, MonitorGroupService monitorGroupService) {
+    //     this.fileService = fileService;
+	// 	this.monitorService = monitorService;
+	// 	this.userService = userService;
+	// 	this.templateGroupService = templateGroupService;
+	// 	this.templateService = templateService;
+	// 	this.widgetService = widgetService;
+	// 	this.contentService = contentService;
+	// 	this.templateWidgetService = templateWidgetService;
+	// 	this.monitorGroupService = monitorGroupService;
+    // }
 
+	
 	@PostConstruct
     public void initialize() throws Exception {
         System.out.println("Creating mock directory");
@@ -61,71 +66,71 @@ public class UasmartsignageApplication {
         file.setName("Mock Directory");
         file.setType("directory");
         file.setParent(null);
-        List<CustomFile> subDirectories =  List.of();
-        file.setSubDirectories(subDirectories);
         System.out.println("Creating file: " + file);
         fileService.createFile(file);
 
-		// Create MonitorsGroup
+	// 	// Create MonitorsGroup
 
-		MonitorsGroup monitorsGroup = new MonitorsGroup();
-		monitorsGroup.setName("MonitorsGroup");
-		monitorsGroup.setMonitors(List.of());
-		monitorsGroup.setTemplateGroup(null);
-		monitorGroupService.saveGroup(monitorsGroup);
+	// 	MonitorsGroup monitorsGroup = new MonitorsGroup();
+	// 	monitorsGroup.setName("MonitorsGroup");
+	// 	monitorsGroup.setMonitors(List.of());
+	// 	monitorsGroup.setTemplateGroup(null);
+	// 	monitorGroupService.saveGroup(monitorsGroup);
 
-		//Create Monitor
+	// 	//Create Monitor
 
-		Monitor monitor = new Monitor();
-		monitor.setLocation("Aveiro");
-		monitor.setMonitorsGroupForScreens(monitorsGroup);
-		monitorService.saveScreen(monitor);
+	// 	Monitor monitor = new Monitor();
+	// 	monitor.setName("Aveiro");
+	// 	monitor.setGroup(monitorsGroup);
+	// 	monitor.setPending(false);
+	// 	monitor.setIp("192.1.20");
+	// 	monitorService.saveMonitor(monitor);
 
-		//Create Content
+	// 	//Create Content
 
-		Content content = new Content();
-		content.setName("Video");
-		content.setType("video");
-		content.setDescription("Video Description");
-		contentService.saveContent(content);
+	// 	Content content = new Content();
+	// 	content.setName("Video");
+	// 	content.setType("video");
+	// 	content.setDescription("Video Description");
+	// 	contentService.saveContent(content);
 
-		//create Widget
+	// 	//create Widget
 
-		Widget widget = new Widget();
-		widget.setName("Widget");
-		widget.setPath("path");
-		widget.setContent(content);
-		widgetService.saveWidget(widget);
+	// 	Widget widget = new Widget();
+	// 	widget.setName("Widget");
+	// 	widget.setPath("path");
+	// 	widget.setContent(content);
+	// 	widgetService.saveWidget(widget);
 
 
-		//Create Template
+	// 	//Create Template
 
-		Template template = new Template();
-		template.setPath("path");
-		template.setName("Template");
-		templateService.saveTemplate(template);
+	// 	Template template = new Template();
+	// 	template.setPath("path");
+	// 	template.setName("Template");
+	// 	templateService.saveTemplate(template);
 
-		//Create TemplateWidget
+	// 	//Create TemplateWidget
 
-		TemplateWidget templateWidget = new TemplateWidget();
+	// 	TemplateWidget templateWidget = new TemplateWidget();
 
-		templateWidget.setName("TemplateWidget");
-		templateWidget.setTop(1L);
-		templateWidget.setLeftPosition(1L);
-		templateWidget.setWidth(1L);
-		templateWidget.setHeight(1L);
-		templateWidget.setTemplate(template);
-		templateWidget.setWidget(widget);
-		templateWidgetService.saveTemplateWidget(templateWidget);
+	// 	templateWidget.setName("TemplateWidget");
+	// 	templateWidget.setTop(1L);
+	// 	templateWidget.setLeftPosition(1L);
+	// 	templateWidget.setWidth(1L);
+	// 	templateWidget.setHeight(1L);
+	// 	templateWidget.setTemplate(template);
+	// 	templateWidget.setWidget(widget);
+	// 	templateWidgetService.saveTemplateWidget(templateWidget);
 
-		//Create User
+	// 	//Create User
 
-		User user = new User();
-		user.setUsername("username");
-		user.setRole(1);
-		userService.saveUser(user);
+	// 	User user = new User();
+	// 	user.setUsername("username");
+	// 	user.setRole(1);
+	// 	userService.saveUser(user);
 
-		//Create TemplateGroup
+	// 	//Create TemplateGroup
 
 		TemplateGroup templateGroup = new TemplateGroup();
 		templateGroup.setTemplate(template);
@@ -133,6 +138,8 @@ public class UasmartsignageApplication {
 		templateGroup.setContent(null);
 		templateGroupService.saveGroup(templateGroup);
     }
+	*/
+
     public static void main(String[] args) {
         SpringApplication.run(UasmartsignageApplication.class, args);
     }

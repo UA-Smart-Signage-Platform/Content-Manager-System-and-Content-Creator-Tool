@@ -30,7 +30,8 @@ public class TemplateService {
             return null;
         }
         templateById.setName(template.getName());
-        templateById.setTemplateWidgets(template.getTemplateWidgets());
+        
+        templateById.setTemplateWidgets(templateById.getTemplateWidgets());
         return templateRepository.save(templateById);
     }
 
