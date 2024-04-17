@@ -24,6 +24,12 @@ public class Schedule {
     @Column(name = "frequency")
     private String frequency;
 
+    @Column(name = "n_times")
+    private int nTimes;
+
+    @Column(name = "interval")
+    private int interval;
+
     @Column(name = "start_date")
     private LocalDateTime startDate;
 
