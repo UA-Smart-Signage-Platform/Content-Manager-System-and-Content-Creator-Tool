@@ -234,7 +234,9 @@ public class FileService {
             return false;
         } else {
             // Delete file from disk
-            File fileToDelete = new File(file.get().getPath());
+            String rootPath = System.getProperty("user.dir");
+            String filePath = rootPath + file.get().getPath();
+            File fileToDelete = new File(filePath);
             if (fileToDelete.delete()) {
                 logger.info("File deleted: {}", fileToDelete.getAbsolutePath());
             } else {

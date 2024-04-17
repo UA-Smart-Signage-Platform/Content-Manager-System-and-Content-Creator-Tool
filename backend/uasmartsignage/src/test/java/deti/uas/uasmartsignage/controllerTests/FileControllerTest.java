@@ -55,8 +55,6 @@ class FileControllerTest {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-
-
     @Test
     void testGetFileByIdEndpoint() throws Exception {
         CustomFile file = new CustomFile();

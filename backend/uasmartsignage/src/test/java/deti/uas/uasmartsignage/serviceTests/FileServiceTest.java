@@ -85,7 +85,8 @@ class FileServiceTest {
         verify(repository, times(1)).save(customFile);
 
         String parentDirectoryPath = service.getParentDirectoryPath(customFile);
-        File directory = new File(parentDirectoryPath + customFile.getName());
+        String rootPath = System.getProperty("user.dir");
+        File directory = new File(rootPath + parentDirectoryPath + customFile.getName());
 
         assertThat(directory).exists();
 
@@ -100,7 +101,8 @@ class FileServiceTest {
         service.createDirectory(outerFolder);
 
         String parentDirectoryPathOuterF = service.getParentDirectoryPath(outerFolder);
-        File outerDirectory = new File(parentDirectoryPathOuterF + outerFolder.getName());
+        String rootPath = System.getProperty("user.dir");
+        File outerDirectory = new File(rootPath + parentDirectoryPathOuterF + outerFolder.getName());
 
         assertThat(outerDirectory).exists();
 
@@ -113,7 +115,7 @@ class FileServiceTest {
         verify(repository, times(1)).save(innerFolder);
 
         String parentDirectoryPathInnerF = service.getParentDirectoryPath(innerFolder);
-        File innerDirectory = new File(parentDirectoryPathInnerF + innerFolder.getName());
+        File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + innerFolder.getName());
 
         assertThat(innerDirectory).exists();
 
@@ -143,7 +145,7 @@ class FileServiceTest {
 
         FilesClass filesClass = new FilesClass(null, mockMultipartFile);
         CustomFile saved = service.createFile(filesClass);
-        //when(repository.save(any())).thenReturn(saved);
+
         verify(repository, times(1)).save(any());
 
         //Clean up
@@ -158,7 +160,8 @@ class FileServiceTest {
         service.createDirectory(outerFolder);
 
         String parentDirectoryPathOuterF = service.getParentDirectoryPath(outerFolder);
-        File outerDirectory = new File(parentDirectoryPathOuterF + outerFolder.getName());
+        String rootPath = System.getProperty("user.dir");
+        File outerDirectory = new File(rootPath + parentDirectoryPathOuterF + outerFolder.getName());
 
         assertThat(outerDirectory).exists();
 
@@ -183,7 +186,7 @@ class FileServiceTest {
 
 
         String parentDirectoryPathInnerF = service.getParentDirectoryPath(savedInner);
-        File innerDirectory = new File(parentDirectoryPathInnerF + savedInner.getName());
+        File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + savedInner.getName());
 
         assertThat(innerDirectory).exists();
         verify(repository, times(2)).save(any());
@@ -210,7 +213,8 @@ class FileServiceTest {
         service.deleteFile(1L);
 
         String parentDirectoryPath = service.getParentDirectoryPath(customFile);
-        File directory = new File(parentDirectoryPath + customFile.getName());
+        String rootPath = System.getProperty("user.dir");
+        File directory = new File(rootPath + parentDirectoryPath + customFile.getName());
 
         // Check if the file was deleted from the repository and from the disk
         assertThat(repository.findByName(customFile.getName())).isEmpty();

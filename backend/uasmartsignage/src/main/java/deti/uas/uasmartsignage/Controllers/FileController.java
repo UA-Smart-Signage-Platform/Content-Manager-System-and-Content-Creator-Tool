@@ -56,9 +56,9 @@ public class FileController {
     @GetMapping("/files/directory/root")
     public ResponseEntity<List<CustomFile>> getRootFilesAndDirectories() {
         List<CustomFile> customFiles = fileService.getFilesAtRoot();
-        /* if (customFiles.isEmpty()) {
+        if (customFiles.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } */
+        }
         return new ResponseEntity<>(customFiles, HttpStatus.OK);
     }
 
