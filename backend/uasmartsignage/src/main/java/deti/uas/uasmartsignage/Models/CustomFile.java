@@ -31,7 +31,7 @@ public class CustomFile {
     private String path;
 
     @ManyToOne
-    @JsonIgnoreProperties("subDirectories")
+    @JsonIgnoreProperties(value = {"subDirectories"}, allowSetters = true)
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
