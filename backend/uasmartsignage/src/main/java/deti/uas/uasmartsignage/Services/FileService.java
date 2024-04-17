@@ -32,6 +32,9 @@ public class FileService {
 
     private static final String SOURCE = "FileService";
 
+    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
+    private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
+
     @Autowired
     public FileService(FileRepository fileRepository, LogsService logsService) {
         this.fileRepository = fileRepository;
@@ -52,10 +55,10 @@ public class FileService {
         String operation = "RetrieveFilesAtRoot";
         String description = "Retrieved files and folders located at root level";
         if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
-            logger.error("Failed to add log to InfluxDB");
+            logger.error(ADDLOGERROR);
         }
 
-        logger.info("Added log to InfluxDB: {}", description);
+        logger.info(ADDLOGSUCCESS, description);
         return files;
     }
 
@@ -74,13 +77,13 @@ public class FileService {
         String operation = "RetrieveFileById";
         String description = "Retrieved file with ID: " + id;
         if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
-            logger.error("Failed to add log to InfluxDB");
+            logger.error(ADDLOGERROR);
         }
 
         if (file == null) {
             logger.warn("File with ID {} not found", id);
         }
-        logger.info("Added log to InfluxDB: {}", description);
+        logger.info(ADDLOGSUCCESS, description);
         return file;
     }
 
@@ -99,13 +102,13 @@ public class FileService {
         String operation = "RetrieveFileByName";
         String description = "Retrieved file with name: " + fileName;
         if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
-            logger.error("Failed to add log to InfluxDB");
+            logger.error(ADDLOGERROR);
         }
         //does it make sense to log to influx if the file is not found?
         if (customFile == null) {
             logger.warn("File with name '{}' not found", fileName);
         }
-        logger.info("Added log to InfluxDB: {}", description);
+        logger.info(ADDLOGSUCCESS, description);
         return customFile;
     }
 

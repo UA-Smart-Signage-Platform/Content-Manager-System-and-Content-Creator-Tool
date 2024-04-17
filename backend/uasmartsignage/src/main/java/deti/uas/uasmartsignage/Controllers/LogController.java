@@ -21,16 +21,10 @@ import java.util.Objects;
 @RequestMapping("api")
 public class LogController {
 
-    private final InfluxDBClient influxDBClient;
-
-    private String org;
-
     private final LogsService logsService;
 
     @Autowired
     public LogController(InfluxDBProperties influxDBProperties, LogsService logsService) {
-        this.influxDBClient = InfluxDBClientFactory.create(influxDBProperties.getUrl(), influxDBProperties.getToken().toCharArray());
-        this.org = influxDBProperties.getOrg();
         this.logsService = logsService;
     }
 

@@ -30,6 +30,12 @@ public class LogsService {
     private final String org;
     private final String bucket;
 
+    private static final String SEVERITY = "severity";
+    private static final String OPERATION = "operation";
+    private static final String DESCRIPTION = "description";
+    private static final String OPERATION_SOURCE = "operationSource";
+    private static final String USER = "user";
+
 
     public LogsService(InfluxDBProperties influxDBProperties) {
         String token = influxDBProperties.getToken();
@@ -54,11 +60,11 @@ public class LogsService {
         try {
             // Prepare the InfluxDB point
             Point point = Point.measurement(measurement)
-                    .addTag("operationSource", operationSource)
-                    .addField("severity", severity.toString())
-                    .addField("user", user)
-                    .addField("operation", operation)
-                    .addField("description", description)
+                    .addTag(OPERATION_SOURCE, operationSource)
+                    .addField(SEVERITY, severity.toString())
+                    .addField(USER, user)
+                    .addField(OPERATION, operation)
+                    .addField(DESCRIPTION, description)
                     .time(System.currentTimeMillis(), WritePrecision.MS);
 
             // Write the point to InfluxDB
@@ -104,20 +110,20 @@ public class LogsService {
             for (FluxRecord fluxRecord : records) {
                 int finalIndex = index;
                 fluxRecord.getValues().forEach((k, v) -> {
-                    if (k.equals("operationSource")) {
+                    if (k.equals(OPERATION_SOURCE)) {
                         logs.get(finalIndex).setModule(v.toString());
                     }
                 });
-                if (Objects.equals(fluxRecord.getField(), "description")) {
+                if (Objects.equals(fluxRecord.getField(), DESCRIPTION)) {
                     logs.get(index).setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
                 }
-                if (Objects.equals(fluxRecord.getField(), "operation")) {
+                if (Objects.equals(fluxRecord.getField(), OPERATION)) {
                     logs.get(index).setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
                 }
-                if (Objects.equals(fluxRecord.getField(), "severity")) {
+                if (Objects.equals(fluxRecord.getField(), SEVERITY)) {
                     logs.get(index).setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
                 }
-                if (Objects.equals(fluxRecord.getField(), "user")) {
+                if (Objects.equals(fluxRecord.getField(), USER)) {
                     logs.get(index).setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
                 }
                 logs.get(index).setTimestamp(Objects.requireNonNull(fluxRecord.getTime()).toString());
@@ -129,21 +135,6 @@ public class LogsService {
 
     public boolean addMonitorLog(String measurement, String operationSource, String operation, String description, String bucket) {
         //not implemented yet
-        try {
-            // Prepare the InfluxDB point
-            Point point = Point.measurement(measurement)
-                    .addTag("operationSource", operationSource)
-                    .addField("operation", operation)
-                    .addField("description", description)
-                    .time(System.currentTimeMillis(), WritePrecision.MS);
-
-            // Write the point to InfluxDB
-            WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
-            writeApi.writePoint(bucket, org, point);
-            return true;
-        } catch (Exception e) {
-            System.out.println(e);
-            return false;
-        }
+        return false;
     }
 }
