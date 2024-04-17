@@ -7,6 +7,7 @@ import com.influxdb.client.QueryApi;
 import com.influxdb.client.WriteApiBlocking;
 import com.influxdb.client.domain.WritePrecision;
 import com.influxdb.client.write.Point;
+import com.influxdb.exceptions.InfluxException;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
@@ -41,7 +42,7 @@ public class LogsService {
     /**
      * Adds a log to the InfluxDB database.
      *
-     * @param severity The severity of the log. 0 for ERROR, 1 for WARNING, 2 for INFO.
+     * @param severity The severity of the log (INFO, WARNING, ERROR).
      * @param operationSource The source of the operation that generated the log.
      * @param operation The operation that generated the log.
      * @param description The description of the log.
@@ -64,61 +65,64 @@ public class LogsService {
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
             writeApi.writePoint(bucket, org, point);
             return true;
-        } catch (Exception e) {
+        } catch (InfluxException e) {
             logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
-            return false;
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred: {}", e.getMessage());
         }
+        return false;
     }
 
     public List<BackendLog> getBackendLogs() {
         List<BackendLog> logs = new ArrayList<>();
-        try {
-            // Construct Flux query to retrieve logs
-            String fluxQuery = "from(bucket: \""+ bucket +"\")" +
-                    " |> range(start: -48h)" +  // Adjust time range as needed
-                    " |> filter(fn: (r) => r._measurement == \"BackendLogs\")";  // Measurement name
+        // Construct Flux query to retrieve logs
+        String fluxQuery = "from(bucket: \""+ bucket +"\")" +
+                " |> range(start: -48h)" +  // Adjust time range as needed
+                " |> filter(fn: (r) => r._measurement == \"BackendLogs\")";  // Measurement name
 
-            // Execute the query
-            QueryApi queryApi = influxDBClient.getQueryApi();
-            List<FluxTable> tables = queryApi.query(fluxQuery, org);
+        // Execute the query
+        QueryApi queryApi = influxDBClient.getQueryApi();
+        List<FluxTable> tables = queryApi.query(fluxQuery, org);
 
-            // Initialize list of BackendLog objects
-            int size = tables.get(0).getRecords().size();
-            for (int i = 0; i < size; i++) {
-                BackendLog backendLog = new BackendLog();
-                logs.add(backendLog);
-            }
+        // Return empty list if no logs are found
+        if (tables.isEmpty()) {
+            return logs;
+        }
 
-            // Process query results
-            for (FluxTable table : tables) {
-                List<FluxRecord> records = table.getRecords();
-                int index = 0;
-                // Iterate over records and populate BackendLog objects (this is needed because the query returns multiple fields for each record)
-                for (FluxRecord fluxRecord : records) {
-                    int finalIndex = index;
-                    fluxRecord.getValues().forEach((k, v) -> {
-                        if (k.equals("operationSource")) {
-                            logs.get(finalIndex).setModule(v.toString());
-                        }
-                    });
-                    if (Objects.equals(fluxRecord.getField(), "description")) {
-                        logs.get(index).setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
+        // Initialize list of BackendLog objects
+        int size = tables.get(0).getRecords().size();
+        for (int i = 0; i < size; i++) {
+            BackendLog backendLog = new BackendLog();
+            logs.add(backendLog);
+        }
+
+        // Process query results
+        for (FluxTable table : tables) {
+            List<FluxRecord> records = table.getRecords();
+            int index = 0;
+            // Iterate over records and populate BackendLog objects (this is needed because the query returns multiple fields for each record)
+            for (FluxRecord fluxRecord : records) {
+                int finalIndex = index;
+                fluxRecord.getValues().forEach((k, v) -> {
+                    if (k.equals("operationSource")) {
+                        logs.get(finalIndex).setModule(v.toString());
                     }
-                    if (Objects.equals(fluxRecord.getField(), "operation")) {
-                        logs.get(index).setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
-                    }
-                    if (Objects.equals(fluxRecord.getField(), "severity")) {
-                        logs.get(index).setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
-                    }
-                    if (Objects.equals(fluxRecord.getField(), "user")) {
-                        logs.get(index).setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
-                    }
-                    logs.get(index).setTimestamp(Objects.requireNonNull(fluxRecord.getTime()).toString());
-                    index++;
+                });
+                if (Objects.equals(fluxRecord.getField(), "description")) {
+                    logs.get(index).setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
                 }
+                if (Objects.equals(fluxRecord.getField(), "operation")) {
+                    logs.get(index).setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                }
+                if (Objects.equals(fluxRecord.getField(), "severity")) {
+                    logs.get(index).setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
+                }
+                if (Objects.equals(fluxRecord.getField(), "user")) {
+                    logs.get(index).setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                }
+                logs.get(index).setTimestamp(Objects.requireNonNull(fluxRecord.getTime()).toString());
+                index++;
             }
-        } catch (Exception e) {
-            logger.error("Failed to retrieve logs from InfluxDB: {}", e.getMessage());
         }
         return logs;
     }
