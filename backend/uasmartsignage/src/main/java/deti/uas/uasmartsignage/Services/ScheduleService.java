@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
+import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 
 import java.util.List;
 
@@ -13,6 +15,9 @@ public class ScheduleService {
 
         @Autowired
         private ScheduleRepository scheduleRepository;
+
+        @Autowired
+        private MonitorGroupRepository groupRepository;
 
         public ScheduleService(ScheduleRepository scheduleRepository) {
             this.scheduleRepository = scheduleRepository;
@@ -36,5 +41,13 @@ public class ScheduleService {
 
         public Iterable<Schedule> getAllSchedules() {
             return scheduleRepository.findAll();
+        }
+
+        public Schedule createSchedule(Schedule schedule) {
+            MonitorsGroup group = groupRepository.findById(schedule.getMonitorsGroupForSchedules().getId()).orElse(null);
+            if(group != null) {
+                schedule.setMonitorsGroupForSchedules(group);
+            }
+            return scheduleRepository.save(schedule);
         }
 }
