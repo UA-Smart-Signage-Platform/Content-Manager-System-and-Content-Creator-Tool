@@ -1,4 +1,4 @@
-import { useEffect, useState,useCallback } from "react";
+import { useEffect, useState } from "react";
 import { MdSettings, MdCreate,MdAdd,MdCheck } from "react-icons/md";
 import monitorsGroupService from "../../services/monitorsGroupService"
 import {motion} from "framer-motion"
@@ -81,7 +81,7 @@ function GroupBar( {id, changeId, page} ) {
                             <span className=" mb-1 font-medium text-2xl">Overview</span>
                         </div>
                         {page != null &&
-                            <div className="ml-auto cursor-pointer pr-4" onClick={changeToEditMode}>
+                            <div className="ml-auto cursor-pointer pr-4" onClick={changeToEditMode} role="button">
                                 <motion.div
                                     animate={{rotate:editMode?90:0,
                                               scale:editMode?1.2:1   
@@ -115,8 +115,8 @@ function GroupBar( {id, changeId, page} ) {
                         }
                     </div>
                     { groups != null && groups.map((group, index) => (
-                    <div id="" group-id={group.id} 
-                        onClick={()=> changeId(group.id)} 
+                    <div id={group.id}
+                        onClick={()=> changeId(group.id)}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
                     >
