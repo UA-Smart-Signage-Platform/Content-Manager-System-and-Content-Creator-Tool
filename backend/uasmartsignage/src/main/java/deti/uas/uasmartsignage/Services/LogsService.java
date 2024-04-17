@@ -133,7 +133,7 @@ public class LogsService {
         return logs;
     }
 
-    public boolean addMonitorLog(String measurement, String operationSource, String operation, String description, String bucket) {
+    public boolean addMonitorLog() {
         //not implemented yet
         return false;
     }
