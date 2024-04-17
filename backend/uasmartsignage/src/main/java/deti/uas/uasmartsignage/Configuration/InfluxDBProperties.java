@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Setter
 @ConfigurationProperties(prefix = "influxdb")
 public class InfluxDBProperties {
-
     private String url;
     private String token;
     private String org;

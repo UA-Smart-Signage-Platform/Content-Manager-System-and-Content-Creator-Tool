@@ -29,6 +29,8 @@ public class FileService {
 
     private final LogsService logsService;
 
+    private static final String SOURCE = "FileService";
+
     @Autowired
     public FileService(FileRepository fileRepository, LogsService logsService) {
         this.fileRepository = fileRepository;
@@ -46,12 +48,9 @@ public class FileService {
         logger.debug("Retrieved {} files and folders located at root level.", files.size());
 
         // Add log to InfluxDB
-        String measurement = "BackendLogs";
-        String operationSource = "FileService";
         String operation = "RetrieveFilesAtRoot";
         String description = "Retrieved files and folders located at root level";
-        String bucket = "changeme";
-        if (!logsService.addBackendLog(measurement,2, operationSource, operation, description, bucket)) {
+        if (!logsService.addBackendLog(2, SOURCE, operation, description)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
@@ -71,12 +70,9 @@ public class FileService {
         CustomFile file = fileRepository.findById(id).orElse(null);
 
         // Add log to InfluxDB
-        String measurement = "BackendLogs";
-        String operationSource = "FileService";
         String operation = "RetrieveFileById";
         String description = "Retrieved file with ID: " + id;
-        String bucket = "changeme";
-        if (!logsService.addBackendLog(measurement,2, operationSource, operation, description, bucket)) {
+        if (!logsService.addBackendLog(2, SOURCE, operation, description)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
@@ -99,15 +95,12 @@ public class FileService {
         CustomFile customFile = fileRepository.findByName(fileName);
 
         // Add log to InfluxDB
-        String measurement = "BackendLogs";
-        String operationSource = "FileService";
         String operation = "RetrieveFileByName";
         String description = "Retrieved file with name: " + fileName;
-        String bucket = "changeme";
-        if (!logsService.addBackendLog(measurement,2, operationSource, operation, description, bucket)) {
+        if (!logsService.addBackendLog(2, SOURCE, operation, description)) {
             logger.error("Failed to add log to InfluxDB");
         }
-
+        //does it make sense to log to influx if the file is not found?
         if (customFile == null) {
             logger.warn("File with name '{}' not found", fileName);
         }

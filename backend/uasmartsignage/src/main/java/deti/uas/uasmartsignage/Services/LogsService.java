@@ -31,15 +31,14 @@ public class LogsService {
     /**
      * Adds a log to the InfluxDB database.
      *
-     * @param measurement The name of the measurement to log.
      * @param severity The severity of the log. 0 for ERROR, 1 for WARNING, 2 for INFO.
      * @param operationSource The source of the operation that generated the log.
      * @param operation The operation that generated the log.
      * @param description The description of the log.
-     * @param bucket The bucket to write the log to.
      * @return True if the log was successfully added, false otherwise.
      */
-    public boolean addBackendLog(String measurement,Integer severity, String operationSource, String operation, String description, String bucket) {
+    public boolean addBackendLog(Integer severity, String operationSource, String operation, String description) {
+        String measurement = "BackendLogs";
         String severityString = "INFO";
         if (severity < 0 || severity > 2) {
             return false;

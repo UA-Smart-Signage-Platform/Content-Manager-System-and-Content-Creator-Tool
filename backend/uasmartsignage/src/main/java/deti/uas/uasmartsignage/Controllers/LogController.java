@@ -58,30 +58,29 @@ public class LogController {
                 List<FluxRecord> records = table.getRecords();
                 int index = 0;
                 // Iterate over records and populate BackendLog objects (this is needed because the query returns multiple fields for each record)
-                for (FluxRecord record : records) {
+                for (FluxRecord fluxRecord : records) {
                     int finalIndex = index;
-                    record.getValues().forEach((k, v) -> {
+                    fluxRecord.getValues().forEach((k, v) -> {
                         if (k.equals("operationSource")) {
                             logs.get(finalIndex).setModule(v.toString());
                         }
                     });
-                    if (Objects.equals(record.getField(), "description")) {
-                        logs.get(index).setDescription(Objects.requireNonNull(record.getValue()).toString());
+                    if (Objects.equals(fluxRecord.getField(), "description")) {
+                        logs.get(index).setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
                     }
-                    if (Objects.equals(record.getField(), "operation")) {
-                        logs.get(index).setOperation(Objects.requireNonNull(record.getValue()).toString());
+                    if (Objects.equals(fluxRecord.getField(), "operation")) {
+                        logs.get(index).setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
                     }
-                    if (Objects.equals(record.getField(), "severity")) {
-                        logs.get(index).setSeverity(Objects.requireNonNull(record.getValue()).toString());
+                    if (Objects.equals(fluxRecord.getField(), "severity")) {
+                        logs.get(index).setSeverity(Objects.requireNonNull(fluxRecord.getValue()).toString());
                     }
-                    logs.get(index).setTimestamp(Objects.requireNonNull(record.getTime()).toString());
+                    logs.get(index).setTimestamp(Objects.requireNonNull(fluxRecord.getTime()).toString());
                     index++;
                 }
             }
 
             return ResponseEntity.ok(logs);
         } catch (Exception e) {
-            System.out.println(e);
             return ResponseEntity.badRequest().body(null);
         }
     }
