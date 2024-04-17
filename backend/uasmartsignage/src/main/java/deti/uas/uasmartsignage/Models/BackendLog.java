@@ -18,13 +18,16 @@ public class BackendLog {
 
         private String description;
 
-        private String severity;
+        private Severity severity;
 
         private String timestamp;
+
+        private String user;
 
         @Override
         public String toString() {
             return "BackendLog{" +
+                    "user='" + user + '\'' +
                     "module='" + module + '\'' +
                     ", operation='" + operation + '\'' +
                     ", description='" + description + '\'' +

@@ -3,6 +3,7 @@ package deti.uas.uasmartsignage.Services;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
+import deti.uas.uasmartsignage.Models.Severity;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class FileService {
         // Add log to InfluxDB
         String operation = "RetrieveFilesAtRoot";
         String description = "Retrieved files and folders located at root level";
-        if (!logsService.addBackendLog(2, SOURCE, operation, description)) {
+        if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
@@ -72,7 +73,7 @@ public class FileService {
         // Add log to InfluxDB
         String operation = "RetrieveFileById";
         String description = "Retrieved file with ID: " + id;
-        if (!logsService.addBackendLog(2, SOURCE, operation, description)) {
+        if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
             logger.error("Failed to add log to InfluxDB");
         }
 
@@ -97,7 +98,7 @@ public class FileService {
         // Add log to InfluxDB
         String operation = "RetrieveFileByName";
         String description = "Retrieved file with name: " + fileName;
-        if (!logsService.addBackendLog(2, SOURCE, operation, description)) {
+        if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
             logger.error("Failed to add log to InfluxDB");
         }
         //does it make sense to log to influx if the file is not found?
