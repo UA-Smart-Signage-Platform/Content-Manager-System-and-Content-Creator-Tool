@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { MdSettings, MdCreate,MdAdd,MdCheck } from "react-icons/md";
+import { MdSettings, MdCreate, MdAdd, MdCheck } from "react-icons/md";
 import monitorsGroupService from "../../services/monitorsGroupService"
 import {motion} from "framer-motion"
 
@@ -27,14 +27,14 @@ function GroupBar( {id, changeId, page} ) {
             setGroups([...groups,{id:-1,name:"",description:""}])
     }
 
-    const changeEditGroupName = (name) =>{
+    const editGroupName = (name) =>{
         setEditGroup({
             id:editGroup.id,
             name: name,
             description: editGroup.description,
         })
     }
-    const cahngeEditGroupDescription = (description) =>{
+    const editGroupDescription = (description) =>{
         setEditGroup({
             id:editGroup.id,
             name: editGroup.name,
@@ -49,7 +49,8 @@ function GroupBar( {id, changeId, page} ) {
                     setGroups(groupsData.data);
                 })
             })
-        }else{
+        }
+        else{
             monitorsGroupService.updateGroup(editGroup.id,editGroup).then((response) =>{
                 monitorsGroupService.getGroups().then((groupsData) => {
                     setGroups(groupsData.data);
@@ -125,7 +126,7 @@ function GroupBar( {id, changeId, page} ) {
                                 <div>
                                     {editGroup.id !== group.id ? 
                                         <span className="text-2xl">{group.name}</span> :
-                                        <input className=" bg-white rounded-md w-full px-2" value={editGroup.name} autoFocus onChange={(e)=>changeEditGroupName(e.target.value)}/>
+                                        <input className=" bg-white rounded-md w-full px-2" value={editGroup.name} autoFocus onChange={(e)=>editGroupName(e.target.value)}/>
                                     }
                                 </div>
                                 {editMode &&
@@ -139,7 +140,7 @@ function GroupBar( {id, changeId, page} ) {
                             </div>
                             {editGroup.id !== group.id ? 
                                         <span className="text-sm">{group.description}</span> :
-                                        <input className=" bg-white rounded-md w-full text-sm px-2" value={editGroup.description} onChange={(e)=>cahngeEditGroupDescription(e.target.value)}/>
+                                        <input className=" bg-white rounded-md w-full text-sm px-2" value={editGroup.description} onChange={(e)=>editGroupDescription(e.target.value)}/>
                                     }
                         </div>
                     </div>
