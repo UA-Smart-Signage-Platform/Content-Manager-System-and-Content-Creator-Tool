@@ -34,7 +34,7 @@ public class MonitorsGroup {
     private TemplateGroup templateGroup;
 
 
-    @OneToMany(mappedBy = "monitorsgroupforshcedules", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "monitorsGroupForSchedules", cascade = CascadeType.ALL)
    private List<Schedule> schedules;
 
     @Override

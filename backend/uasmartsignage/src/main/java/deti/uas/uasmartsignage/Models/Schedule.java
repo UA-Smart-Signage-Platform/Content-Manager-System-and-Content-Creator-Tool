@@ -27,8 +27,8 @@ public class Schedule {
     @Column(name = "n_times")
     private int nTimes;
 
-    @Column(name = "interval")
-    private int interval;
+    @Column(name = " intervalOfTime")
+    private int intervalOfTime;
 
     @Column(name = "start_date")
     private LocalDateTime startDate;
