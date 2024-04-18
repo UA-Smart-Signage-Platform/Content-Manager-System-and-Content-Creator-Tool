@@ -39,7 +39,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getScheduleById(Long id) {
+    public ResponseEntity<?> getScheduleById(@PathVariable Long id){
         Schedule schedule = scheduleService.getScheduleById(id);
         if (schedule == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -53,7 +53,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSchedule(Long id, Schedule schedule) {
+    public ResponseEntity<?> updateSchedule(@PathVariable Long id, Schedule schedule) {
         Schedule updatedSchedule = scheduleService.updateSchedule(id, schedule);
         if (updatedSchedule == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -67,7 +67,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSchedule(Long id) {
+    public ResponseEntity<?> deleteSchedule(@PathVariable Long id){
         Schedule schedule = scheduleService.getScheduleById(id);
         if (schedule == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
