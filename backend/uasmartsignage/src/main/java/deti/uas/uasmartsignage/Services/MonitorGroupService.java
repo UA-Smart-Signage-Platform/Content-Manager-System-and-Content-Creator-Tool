@@ -33,11 +33,12 @@ public class MonitorGroupService {
     }    
 
     public MonitorsGroup updateGroup(Long id, MonitorsGroup monitorsGroup) {
-        MonitorsGroup monitorsGroupById = monitorGroupRepository.findById(id).orElse(null);
+        MonitorsGroup monitorsGroupById = monitorGroupRepository.getReferenceById(id);
         if (monitorsGroupById == null) {
             return null;
         }
         monitorsGroupById.setName(monitorsGroup.getName());
+        monitorsGroupById.setDescription(monitorsGroup.getDescription());
         return monitorGroupRepository.save(monitorsGroupById);
     }
     
