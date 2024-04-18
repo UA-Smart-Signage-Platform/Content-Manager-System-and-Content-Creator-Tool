@@ -19,7 +19,7 @@ public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long shedule_id;
 
     @Column(name = "frequency")
     private String frequency;
@@ -54,7 +54,7 @@ public class Schedule {
     private LocalDate createdOn;
 
     @ManyToOne
-    @JoinColumn(name = "groupId", nullable = false)
+    @JoinColumn(name = "id", nullable = false)
     @JsonIgnoreProperties({"schedules", "monitors"})
     private MonitorsGroup monitorsGroupForSchedules;
 

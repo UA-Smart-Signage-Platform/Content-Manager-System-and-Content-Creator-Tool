@@ -33,10 +33,10 @@ public class MonitorsGroup {
     @JsonIgnoreProperties("group")
     private TemplateGroup templateGroup;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "monitorsgroupforshcedules", cascade = CascadeType.ALL)
     @JoinTable(
         name = "MonitorsGroup_Schedule",
-        joinColumns = @JoinColumn(name = "group_id"),
+        joinColumns = @JoinColumn(name = "id"),
         inverseJoinColumns = @JoinColumn(name = "schedule_id")
     )
    private List<Schedule> schedules;
