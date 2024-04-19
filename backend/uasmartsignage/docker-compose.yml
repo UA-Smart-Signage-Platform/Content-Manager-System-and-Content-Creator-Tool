@@ -10,6 +10,18 @@ services:
       - "5432:5432"
     networks:
       - mqttnet
+   
+  influxdb:
+    image: influxdb:2.1.1
+    env_file:
+      - .env
+    entrypoint: ["./entrypoint.sh"]
+    volumes:
+        - influxdb_data:/var/lib/influxdb
+    networks:
+        - mqttnet
+    ports:
+        - ${DOCKER_INFLUXDB_INIT_PORT}:${DOCKER_INFLUXDB_INIT_PORT}
 
   api:
     build:
