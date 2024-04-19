@@ -13,15 +13,17 @@ import java.util.List;
 @Service
 public class ScheduleService {
 
-        @Autowired
-        private ScheduleRepository scheduleRepository;
+
+        private final ScheduleRepository scheduleRepository;
+
+        private final MonitorGroupRepository groupRepository;
 
         @Autowired
-        private MonitorGroupRepository groupRepository;
-
-        public ScheduleService(ScheduleRepository scheduleRepository) {
+        public ScheduleService(ScheduleRepository scheduleRepository, MonitorGroupRepository groupRepository){
             this.scheduleRepository = scheduleRepository;
+            this.groupRepository = groupRepository;
         }
+
 
         public Schedule getScheduleById(Long id) {
             return scheduleRepository.findById(id).orElse(null);
@@ -35,7 +37,7 @@ public class ScheduleService {
             scheduleRepository.deleteById(id);
         }
 
-        public Schedule updateSchedule(Long id,Schedule schedule) {
+        public Schedule updateSchedule(Schedule schedule) {
             return scheduleRepository.save(schedule);
         }
 
