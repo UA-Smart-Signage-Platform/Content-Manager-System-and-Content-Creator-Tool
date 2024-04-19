@@ -1,8 +1,6 @@
 package deti.uas.uasmartsignage.Repositories;
 
 import java.util.Optional;
-import java.util.List;
-
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
