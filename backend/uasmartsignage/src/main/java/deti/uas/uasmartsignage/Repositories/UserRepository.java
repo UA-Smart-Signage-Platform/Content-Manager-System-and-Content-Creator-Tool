@@ -1,6 +1,6 @@
 package deti.uas.uasmartsignage.Repositories;
 
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<AppUser, Long>{
 
-    User findByUsername(String username);
-    List<User> findByRole(Integer role);
+    AppUser findByEmail(String email);
+    List<AppUser> findByRole(String role);
 }

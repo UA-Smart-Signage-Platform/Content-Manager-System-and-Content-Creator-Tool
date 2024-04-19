@@ -18,14 +18,14 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "Users")
-public class User{
+public class AppUser{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true,nullable = false)
-    private String username;
+    private String email;
 
     @Column(nullable = false)
-    private Integer role;
+    private String role;
 }

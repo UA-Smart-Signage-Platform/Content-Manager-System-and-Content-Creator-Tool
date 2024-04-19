@@ -1,11 +1,15 @@
 package deti.uas.uasmartsignage.Controllers;
 
+import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
 
+import org.apache.catalina.authenticator.SpnegoAuthenticator.AuthenticateAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,9 +27,12 @@ public class MonitorController {
 
     private MonitorService monitorService;
 
+    private IAuthenticationFacade authenticationFacade;
+
     @Autowired
-    public MonitorController(MonitorService monitorService){
+    public MonitorController(MonitorService monitorService, IAuthenticationFacade authenticationFacade) {
         this.monitorService = monitorService;
+        this.authenticationFacade = authenticationFacade;
     }
 
     @Operation(summary = "Get all monitors not Pending")
@@ -34,6 +41,10 @@ public class MonitorController {
     })
     @GetMapping
     public ResponseEntity<?> getAllMonitors() {
+
+        Authentication authentication = authenticationFacade.getAuthentication();
+        System.out.println(authentication.getName());
+        
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(false);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }

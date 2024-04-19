@@ -6,44 +6,72 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Repositories.UserRepository;
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
+
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+
+import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
+
+    private final CustomUserDetailsService customUserDetailsService;
+
+    private final UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
+    public UserService(CustomUserDetailsService customUserDetailsService, UserRepository userRepository) {
+        this.customUserDetailsService = customUserDetailsService;
         this.userRepository = userRepository;
     }
 
-    public User getUserById(Long id) {
+    public AppUser getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
 
-    public User saveUser(User user) {
+    public AppUser saveUser(AppUser user) {
+        UserDetails newUser = User.builder()
+            .username(user.getEmail())
+            // bcrypt hash of "password"
+            .password("{bcrypt}$2a$10$EBdA5hBJs3DBtWMme9A7fO1RD5k2B3wQsP1zsAqjOh4K/WA7bqA8W")
+            .roles(user.getRole())
+            .build();
+        
+        customUserDetailsService.addUser(newUser);
         return userRepository.save(user);
     }
 
     public void deleteUser(Long id) {
+        AppUser user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return;
+        }
+        customUserDetailsService.deleteUser(user.getEmail());
         userRepository.deleteById(id);
     }
 
-    public User updateUser(User user) {
+    public AppUser updateUser(AppUser user) {
         return userRepository.save(user);
     }
 
-    public Iterable<User> getAllUsers() {
+    public Iterable<AppUser> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public List<User> getUsersByRole(Integer role) {
+    public List<AppUser> getUsersByRole(String role) {
         return userRepository.findByRole(role);
     }
 
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+    public AppUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return customUserDetailsService.loadUserByUsername(username);
     }
 
 

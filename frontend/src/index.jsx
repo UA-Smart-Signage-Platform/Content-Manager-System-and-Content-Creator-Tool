@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { createBrowserRouter,RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
-import { Dashboard, Monitors, Media, Monitor, Schedule } from './pages';
+import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin } from './pages';
 
 
 const router = createBrowserRouter([
@@ -35,6 +35,14 @@ const router = createBrowserRouter([
       {
         path: "contentcreator",
         element:<div>test4</div>,
+      },
+      {
+        path: "login",
+        element:<Wso2Login/>,
+      },
+      {
+        path: "admin",
+        element:<Admin/>,
       },
     ]
   },
