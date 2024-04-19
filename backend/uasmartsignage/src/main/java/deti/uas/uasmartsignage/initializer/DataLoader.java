@@ -119,6 +119,7 @@ public class DataLoader implements CommandLineRunner {
             byte[] content = "Hello, World!".getBytes();
             Files.write(tempFile, content);*/
 
+            /*
             CustomFile fileEntity = new CustomFile();
             fileEntity.setName("test");
             fileEntity.setType("image/png");
@@ -133,14 +134,14 @@ public class DataLoader implements CommandLineRunner {
             byte[] content1 = "Hello!".getBytes();
             Files.write(tempFile1, content1);*/
 
-            CustomFile file1 = new CustomFile();
-            file1.setName("lei");
-            file1.setType("image/png");
-            file1.setParent(null);
-            file1.setPath("lei");
-            file1.setId(1L);
-            file1.setSize(10L);
-            fileRepository.save(file1);
+            //CustomFile file1 = new CustomFile();
+            //file1.setName("lei");
+            //file1.setType("image/png");
+            //file1.setParent(null);
+            //file1.setPath("lei");
+            //file1.setId(1L);
+            //file1.setSize(10L);
+            //fileRepository.save(file1);
             //Files.copy(tempFile1, Paths.get(file1.getPath()), StandardCopyOption.REPLACE_EXISTING);
 
             /*Path tempDir = Files.createTempDirectory("videos");
@@ -153,28 +154,27 @@ public class DataLoader implements CommandLineRunner {
             fileRepository.save(directoryEntity);
             fileService.createDirectory(directoryEntity);*/
 
-            CustomFile directoryEntity = new CustomFile();
-            directoryEntity.setName("videos");
-            directoryEntity.setType("directory");
-            directoryEntity.setParent(null);
-            directoryEntity.setPath("videos");
-            directoryEntity.setSize(0L);
-            fileRepository.save(directoryEntity);
+            //CustomFile directoryEntity = new CustomFile();
+            //directoryEntity.setName("videos");
+            //directoryEntity.setType("directory");
+            //directoryEntity.setParent(null);
+            //directoryEntity.setPath("videos");
+            //directoryEntity.setSize(0L);
+            //fileRepository.save(directoryEntity);
 
 
 
             /*tempFile2 = Files.createTempFile("test2", ".mp4");
             byte[] content3 = "Goodbye".getBytes();
             Files.write(tempFile2, content3);*/
-            CustomFile file2 = new CustomFile();
-            file2.setName("lei2");
-            file2.setType("video/mp4");
-            file2.setParent(directoryEntity);
-            file2.setPath("lei2");
-            file2.setSize(10L);
-            fileRepository.save(file2);
+            //CustomFile file2 = new CustomFile();
+            //file2.setName("lei2");
+            //file2.setType("video/mp4");
+            //file2.setParent(directoryEntity);
+            //file2.setPath("lei2");
+            //file2.setSize(10L);
+            //fileRepository.save(file2);
             //Files.copy(tempFile2, Paths.get(file2.getPath()), StandardCopyOption.REPLACE_EXISTING);
-
 
         }
 }

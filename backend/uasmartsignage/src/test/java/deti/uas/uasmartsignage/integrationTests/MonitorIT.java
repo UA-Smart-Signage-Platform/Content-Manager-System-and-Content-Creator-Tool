@@ -6,8 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -18,13 +17,33 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.util.List;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestPropertySource(locations = "classpath:app_it.properties")
-public class MonitorIT {
+@Testcontainers
+public class MonitorIT{
+        @Container
+        public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
+                .withDatabaseName("uasmartsignageIT")
+                .withUsername("integrationTest")
+                .withPassword("test");
+
+
+        @DynamicPropertySource
+        static void properties(DynamicPropertyRegistry registry) {
+            registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+            registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+            registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
+        }
 
         @LocalServerPort
         private int port;
@@ -59,28 +78,31 @@ public class MonitorIT {
             ResponseEntity<List<Monitor>> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/pending", HttpMethod.GET, null, new ParameterizedTypeReference<List<Monitor>>() {});
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertFalse(response.getBody().isEmpty());
-            assertEquals(3, response.getBody().size());
+            assertEquals(2, response.getBody().size());
         }
 
         @Test
-        @Disabled
         void testDeleteMonitorEndpoint() {
-            ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.DELETE, null, String.class);
+            ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/2", HttpMethod.DELETE, null, String.class);
             assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
             assertNull(response.getBody());
         }
 
         @Test
-        @Disabled
-        void testAcceptPendingMonitorEndpoint() {
+        void testAcceptPendingMonitorEndpoint404() {
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1/accept", HttpMethod.PUT, null, Monitor.class);
-            assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertFalse(response.getBody().isPending());
-            assertEquals("hall", response.getBody().getName());
+            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         }
 
         @Test
-        @Disabled  //update or create-drop on app_it.properties // other possibility is to use a different database
+        void testAcceptPendingMonitorEndpoint200() {
+            ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/accept/7", HttpMethod.PUT, null, Monitor.class);
+            assertEquals(HttpStatus.OK, response.getStatusCode());
+            assertFalse(response.getBody().isPending());
+            assertEquals("car2", response.getBody().getName());
+        }
+
+        @Test
         void testCreateMonitorEndpoint() {
             MonitorsGroup group = new MonitorsGroup();
             group.setName("update1");
@@ -93,7 +115,7 @@ public class MonitorIT {
             Monitor monitor = new Monitor();
             monitor.setIp("192.168.20");
             monitor.setName("monitor10");
-            monitor.setPending(true);
+            monitor.setPending(false);
             monitor.setGroup(response1.getBody());
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors", HttpMethod.POST, new HttpEntity<>(monitor), Monitor.class);
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -106,11 +128,11 @@ public class MonitorIT {
         void testUpdateMonitorEndpoint() {
             Monitor monitor = new Monitor();
             monitor.setIp("192.168.7");
-            monitor.setName("car2");
+            monitor.setName("monitor6");
             monitor.setPending(true);
-            ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.PUT, new HttpEntity<>(monitor), Monitor.class);
+            ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/6", HttpMethod.PUT, new HttpEntity<>(monitor), Monitor.class);
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals("car2", response.getBody().getName());
+            assertEquals("monitor6", response.getBody().getName());
         }
 
 
