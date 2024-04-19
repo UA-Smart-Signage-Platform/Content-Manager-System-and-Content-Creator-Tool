@@ -6,7 +6,6 @@ import mediaService from '../../services/mediaService';
 import DataTable from 'react-data-table-component';
 
 import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile } from "react-icons/md";
-import { useNavigate, useParams } from 'react-router';
 
 function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
@@ -15,10 +14,7 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
     const [folder, setFolder] = useState(null);
 
     const [file, setFile] = useState(null);
-    const [fileType, setFileType] = useState(null);
-
     const [path, setPath] = useState("home");
-    const navigate = useNavigate();
 
     useEffect(() => {
         if(path === 'home'){
@@ -89,12 +85,11 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
 
     const handleRowClick = (row) => {
         if (row.type === "directory"){
+            setPath(null);
             setCurrentFolder(row.id);
-            navigate(window.location.pathname + "&" + row.name);
         }
         else{
             const change = (row.name === file ? null : row.name);
-            setFileType(row.type);
             setFile(change);
             if (change !== null){
                 if (path === 'home' ){
@@ -109,16 +104,13 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
         }
     };
 
-
-    console.log(showContentsPortal);
-
     return (
     <>
         {showContentsPortal && createPortal(
             <div className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
                     <div className="bg-black h-screen w-screen opacity-75"></div>
                     <div className="absolute text-gray-50 h-screen w-screen flex items-center">
-                        <div className="bg-[#fafdf7] text-[#101604] h-[45%] w-[30%] mx-auto rounded-xl p-[2%]">
+                        <div className="bg-[#fafdf7] text-[#101604] h-[75%] w-[55%] mx-auto rounded-xl p-[2%]">
                             <div className="h-[10%] flex">
                                 <button onClick={() => setShowContentsPortal(false)} className="flex flex-row">
                                     <MdArrowBack className="w-7 h-7 mr-2"/> 

@@ -10,13 +10,13 @@ import ScheduleContentModal from './ScheduleContentModal';
 function ScheduleModal( { showPortal, setShowPortal } ) {
     const [templates, setTemplates] = useState([]);
     const [groups, setGroups] = useState([]);
+    const [selectColors,setSelectedColors] = useState([]);
 
     const [selectedTemplateId, setSelectedTemplateId] = useState(null);
     const [selectedGroupId, setSelectedGroupId] = useState(null);
     const [selectedContent, setSelectedContent] = useState({});
 
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [dropdownInfo, setDropdownInfo] = useState({ top: 0, left: 0, id: 0 });
+    const [isDropdownOpen, setDropdownOpen] = useState(-1);
 
     const [showContentsPortal, setShowContentsPortal] = useState(false);
 
@@ -42,21 +42,27 @@ function ScheduleModal( { showPortal, setShowPortal } ) {
     }
 
     const colors = [
-        'bg-pink-700',
-        'bg-rose-700',
-        'bg-violet-700',
-        'bg-blue-700',
-        'bg-green-700',
-        'bg-yellow-700',
-        'bg-orange-700',
-        'bg-stone-700'
+        'bg-pink-200 border-pink-400',
+        'bg-rose-200 border-rose-400',
+        'bg-violet-200 border-violet-400',
+        'bg-blue-200 border-blue-400',
+        'bg-green-200 border-blue-400',
+        'bg-yellow-200 border-yellow-400',
+        'bg-orange-200 border-orange-400',
+        'bg-stone-200 border-stone-400'
     ];
 
-    function getRandomColorClass() {
-        return colors[Math.floor(Math.random() * colors.length)];
-    }
+    useEffect(()=>{
+        if (templates.length !== 0){
+            let template = templates.at(selectedTemplateId-1).templateWidgets.length;
+            let arr = [];
+            for (let i = 0; i < template; i++){
+                arr.push(colors[Math.floor(Math.random() * colors.length)]);
+            }
+            setSelectedColors(arr)
+        }
 
-
+    },[selectedTemplateId])
 
     return (
     <>
@@ -64,7 +70,7 @@ function ScheduleModal( { showPortal, setShowPortal } ) {
             <div className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <div className="absolute text-gray-50 h-screen w-screen flex items-center">
-                    <div className="bg-[#fafdf7] text-[#101604] h-[75%] w-[70%] mx-auto rounded-xl p-[1%]">
+                    <div className="bg-[#fafdf7] text-[#101604] h-[90%] w-[90%] mx-auto rounded-xl p-[1%]">
                         <div className="h-[5%] w-full flex items-center">
                             <button onClick={() => setShowPortal(false)} className="flex flex-row">
                                 <MdArrowBack className="w-7 h-7 mr-2"/> 
@@ -73,7 +79,7 @@ function ScheduleModal( { showPortal, setShowPortal } ) {
                         </div>
                         <div className="h-[90%] w-full p-[1%] flex flex-row">
                             <div className="w-[30%] text-xl">
-                                <div className="w-full h-[50%] flex flex-col items-center place-content-center">
+                                <div className="w-full h-full flex flex-col items-center place-content-center">
                                     <span className="text-2xl">Creating new rule for:</span>
                                     <div className="flex flex-row mt-5">
                                         <select onChange={(e) => setSelectedGroupId(e.target.value)} className="bg-zinc-300 rounded-md pr-3 pl-3 cursor-pointer mr-8">
@@ -89,39 +95,8 @@ function ScheduleModal( { showPortal, setShowPortal } ) {
                                             )}
                                         </select>
                                     </div>
-                                </div>
-                                <div className="flex flex-col w-full h-[50%] pl-[15%]">
-                                    <span className="text-2xl h-[10%]">Content:</span>
-                                    <div className="flex flex-row justify-around h-[75%] mt-5">
-                                        {selectedTemplateId !== null && selectedGroupId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget) => 
-                                        <div>
-                                            {templateWidget.widget.contents.length !== 0 && 
-                                                <div className="flex flex-col">
-                                                    <span>{templateWidget.widget.name}</span>
-                                                    <button onClick={(e) => {setDropdownOpen(!isDropdownOpen);                         
-                                                                            const buttonRect = e.target.getBoundingClientRect();
-                                                                            setDropdownInfo({ top: buttonRect.bottom, 
-                                                                                            left: buttonRect.left, 
-                                                                                            id: `${templateWidget.widget.contents[0].id}` });}} 
-                                                                            className=" bg-slate-200 rounded-md p-2">add content</button>
-                                                </div>
-                                            }
-                                        </div>
-                                        )}
-                                        {isDropdownOpen && (
-                                            <div className="fixed text-md z-10 bg-slate-300 w-[7%] rounded-md" style={{ top: dropdownInfo.top, left: dropdownInfo.left }}>
-                                                <ul>
-                                                    <li onClick={() => { setShowContentsPortal(true); setDropdownOpen(!isDropdownOpen)}} className="pl-1 pb-2 cursor-pointer">Add File</li>
-                                                    <li className="pl-1 pb-2 cursor-pointer">Add Folder</li>
-                                                </ul>
-                                            </div>
-                                        )}
-                                        <ScheduleContentModal
-                                            showContentsPortal={showContentsPortal} 
-                                            setShowContentsPortal={setShowContentsPortal} />
-                                    </div>
-                                    <div className="flex h-[15%] place-self-end mr-auto ml-auto text-xl">
-                                        <button onClick={handleSubmit} className="bg-blue-300 rounded-md p-3">Submit</button>
+                                    <div className="flex place-self-end mr-auto ml-auto text-xl">
+                                        <button onClick={handleSubmit} className="bg-blue-300 rounded-md p-3 mt-6">Submit</button>
                                     </div>
                                 </div>
                             </div>
@@ -130,21 +105,32 @@ function ScheduleModal( { showPortal, setShowPortal } ) {
                                 <div className="flex w-full h-[8%] items-center place-items-center">
                                     <span className="font-medium text-3xl">Template Preview:</span>
                                 </div>
-                                <div className="w-full h-[92%] relative top-[0%] left-[0%] border-4 border-gray-300">
-                                    {selectedTemplateId !== null && selectedGroupId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget) => 
-                                    <div className={`absolute border-2`}
+                                <div className="w-full h-[92%] relative border-4 border-gray-300 rounded-md">
+                                    {selectedTemplateId !== null && selectedGroupId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
+                                    <div className={`absolute`}
                                         style={{
                                             width: `${templateWidget.width}%`,
                                             height: `${templateWidget.height}%`,
                                             top: `${templateWidget.top}%`,
                                             left: `${templateWidget.leftPosition}%`
                                         }}> 
-                                        <div className={`h-full w-full absolute ${getRandomColorClass()} opacity-25`}></div>
-                                        <div className="h-full w-full flex items-center place-content-center">
-                                            <span>{templateWidget.widget.name}</span>
-                                        </div>
+                                        <button onClick={(e) => {setDropdownOpen(isDropdownOpen > -1 ? -1 : index);}} 
+                                                className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectColors[index]}`}>
+                                            <span className='z-10'>{templateWidget.widget.name}</span>
+                                            {isDropdownOpen === index && (
+                                                    <div className="text-md bg-slate-300 rounded-md">
+                                                        <ul>
+                                                            <li onClick={() => { setShowContentsPortal(true); setDropdownOpen(-1)}} className="pl-1 pb-2 cursor-pointer">Add File</li>
+                                                            <li className="pl-1 pb-2 cursor-pointer">Add Folder</li>
+                                                        </ul>
+                                                    </div>
+                                            )}
+                                        </button>
                                     </div>
                                     )}
+                                    <ScheduleContentModal
+                                        showContentsPortal={showContentsPortal} 
+                                        setShowContentsPortal={setShowContentsPortal} />
                                 </div>
                             </div>
                         </div>
