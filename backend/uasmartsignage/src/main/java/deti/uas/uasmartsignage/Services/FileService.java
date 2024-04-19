@@ -30,7 +30,7 @@ public class FileService {
 
     private final LogsService logsService;
 
-    private static final String SOURCE = "FileService";
+    private final String source = this.getClass().getSimpleName();
 
     private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
     private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
@@ -52,9 +52,9 @@ public class FileService {
         logger.debug("Retrieved {} files and folders located at root level.", files.size());
 
         // Add log to InfluxDB
-        String operation = "RetrieveFilesAtRoot";
+        String operation = "getFilesAtRoot";
         String description = "Retrieved files and folders located at root level";
-        if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
 
@@ -74,9 +74,9 @@ public class FileService {
         CustomFile file = fileRepository.findById(id).orElse(null);
 
         // Add log to InfluxDB
-        String operation = "RetrieveFileById";
+        String operation = "getFileOrDirectoryById";
         String description = "Retrieved file with ID: " + id;
-        if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
 
@@ -99,9 +99,9 @@ public class FileService {
         CustomFile customFile = fileRepository.findByName(fileName);
 
         // Add log to InfluxDB
-        String operation = "RetrieveFileByName";
+        String operation = "getFileByName";
         String description = "Retrieved file with name: " + fileName;
-        if (!logsService.addBackendLog(Severity.INFO, SOURCE, operation, description)) {
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
         //does it make sense to log to influx if the file is not found?
