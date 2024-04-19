@@ -83,7 +83,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> createSchedule(Schedule schedule) {
+    public ResponseEntity<Schedule> createSchedule(Schedule schedule) {
         Schedule newSchedule = scheduleService.createSchedule(schedule);
         return new ResponseEntity<>(newSchedule, HttpStatus.CREATED);
     }
