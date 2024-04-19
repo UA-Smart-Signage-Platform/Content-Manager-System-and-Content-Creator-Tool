@@ -22,6 +22,8 @@ public class MonitorsGroup {
     @Column(nullable = false, unique = true)
     private String name;
 
+    private boolean madeForMonitor;
+
     @Column
     private String description;
 
