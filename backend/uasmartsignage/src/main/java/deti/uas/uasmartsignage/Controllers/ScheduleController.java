@@ -53,7 +53,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateSchedule(@PathVariable Long id) {
+    public ResponseEntity<Schedule> updateSchedule(@PathVariable Long id) {
         Schedule schedule = scheduleService.getScheduleById(id);
         Schedule updatedSchedule = scheduleService.updateSchedule(schedule);
         if (updatedSchedule == null) {
@@ -68,7 +68,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSchedule(@PathVariable Long id){
+    public ResponseEntity<Void> deleteSchedule(@PathVariable Long id){
         Schedule schedule = scheduleService.getScheduleById(id);
         if (schedule == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
