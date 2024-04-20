@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public class BaseIntegrationTest {
     /*
     @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:lastest")
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("uasmartsignageIT")
             .withUsername("integrationTest")
             .withPassword("test");

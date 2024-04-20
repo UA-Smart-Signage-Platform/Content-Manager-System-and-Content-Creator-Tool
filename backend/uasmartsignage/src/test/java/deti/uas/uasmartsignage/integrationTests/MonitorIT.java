@@ -124,15 +124,16 @@ public class MonitorIT{
         }
 
         @Test
-        @Disabled
         void testUpdateMonitorEndpoint() {
             Monitor monitor = new Monitor();
-            monitor.setIp("192.168.7");
-            monitor.setName("monitor6");
-            monitor.setPending(true);
+            monitor.setName("update_monitor");
+            monitor.setPending(false);
+            ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/1", HttpMethod.GET, null, MonitorsGroup.class);
+            monitor.setGroup(response1.getBody());
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/6", HttpMethod.PUT, new HttpEntity<>(monitor), Monitor.class);
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            assertEquals("monitor6", response.getBody().getName());
+            assertEquals("update_monitor", response.getBody().getName());
+            assertEquals("deti", response.getBody().getGroup().getName());
         }
 
 
