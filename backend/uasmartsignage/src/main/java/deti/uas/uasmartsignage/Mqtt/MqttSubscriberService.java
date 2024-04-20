@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
+import org.slf4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -28,6 +29,8 @@ public class MqttSubscriberService {
 
     private final MonitorGroupService monitorGroupService;
 
+    private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
+
     public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService) {
         this.objectMapper = objectMapper;
         this.monitorService = monitorService;
@@ -36,35 +39,36 @@ public class MqttSubscriberService {
 
     @PostConstruct
     public void subscribeToRegistrationTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
-        System.out.println("Subscribing to registration topic");
+        logger.info("Subscribing to registration topic");
         try {
             MqttConfig.getInstance().subscribe("register", (topic, mqttMessage) -> {
                 String payload = new String(mqttMessage.getPayload());
-                System.out.println("Received message on topic: " + topic);
+               logger.info("Received message on topic {}: {}", topic, payload);
 
                 try {
                     RegistrationMessage registrationMessage = objectMapper.readValue(payload, RegistrationMessage.class);
                     handleRegistrationMessage(registrationMessage);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Error parsing registration message: {}", e.getMessage());
                 }
 
             });
         } catch (MqttException e) {
-            e.printStackTrace();
+            logger.error("Error subscribing to registration topic: {}", e.getMessage());
         }
     }
 
     private void handleRegistrationMessage(RegistrationMessage registrationMessage) {
-        System.out.println("Received registration message:");
-        System.out.println("Method: " + registrationMessage.getMethod());
-        System.out.println("Name: " + registrationMessage.getName());
-        System.out.println("Width: " + registrationMessage.getWidth());
-        System.out.println("Height: " + registrationMessage.getHeight());
-        System.out.println("UUID: " + registrationMessage.getUuid());
+        logger.info("Received registration message: {}", registrationMessage);
+        logger.info("Method: {}", registrationMessage.getMethod());
+        logger.info("Name: {}", registrationMessage.getName());
+        logger.info("Width: {}", registrationMessage.getWidth());
+        logger.info("Height: {}", registrationMessage.getHeight());
+        logger.info("UUID: {}", registrationMessage.getUuid());
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName(registrationMessage.getName());
+        monitorsGroup.setMadeForMonitor(true);
         monitorGroupService.saveGroup(monitorsGroup);
 
         Monitor monitor = new Monitor();
@@ -86,7 +90,7 @@ public class MqttSubscriberService {
 
             MqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-            e.printStackTrace();
+            logger.error("Error sending confirmation message: {}", e.getMessage());
         }
 
 
