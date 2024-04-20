@@ -18,7 +18,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 
 //this class was created to be the base class for all integration tests because as it is now, in every class the container is created and destroyed and with this class the container is created only once
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
 @Testcontainers
 @TestInstance(Lifecycle.PER_CLASS)
 public class BaseIntegrationTest {

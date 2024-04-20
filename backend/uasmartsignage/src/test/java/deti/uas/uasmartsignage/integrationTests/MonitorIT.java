@@ -28,7 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 
 import java.util.List;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
 @Testcontainers
 public class MonitorIT{
         @Container
