@@ -81,7 +81,7 @@ public class MonitorGroupService {
      *
      * @return A list of all MonitorsGroups stored in the database.
      */
-    public Optional<List<MonitorsGroup>> getAllGroups() {
+    public List<MonitorsGroup> getAllGroups() {
         return monitorGroupRepository.findAllByMonitorsPendingFalse();
     }
 
@@ -115,7 +115,7 @@ public class MonitorGroupService {
      *
      * @return A list of all MonitorsGroups that are not made for a unique monitor.
      */
-    public Optional<List<MonitorsGroup>> getAllGroupsNotMadeForMonitor() {
+    public List<MonitorsGroup> getAllGroupsNotMadeForMonitor() {
         return monitorGroupRepository.findAllByMadeForMonitorFalse();
     }
 }

@@ -119,11 +119,11 @@ class MonitorGroupTest {
         monitorsGroup3.setId(3L);
         monitorsGroup3.setMonitors(Arrays.asList(monitor, monitor2, monitor3));
 
-        when(monitorGroupRepository.findAllByMonitorsPendingFalse()).thenReturn(Optional.of(List.of(monitorsGroup)));
+        when(monitorGroupRepository.findAllByMonitorsPendingFalse()).thenReturn(List.of(monitorsGroup));
 
-        Optional<List<MonitorsGroup>> found = service.getAllGroups();
+        List<MonitorsGroup> found = service.getAllGroups();
 
-        assertThat(found).isEqualTo(Optional.of(List.of(monitorsGroup)));
+        assertThat(found).isEqualTo(List.of(monitorsGroup));
         verify(monitorGroupRepository, times(1)).findAllByMonitorsPendingFalse();
     }
 
@@ -159,11 +159,11 @@ class MonitorGroupTest {
         monitorsGroup3.setMadeForMonitor(false);
         monitorsGroup3.setMonitors(Arrays.asList(monitor, monitor2, monitor3));
 
-        when(monitorGroupRepository.findAllByMadeForMonitorFalse()).thenReturn(Optional.of(Arrays.asList(monitorsGroup, monitorsGroup3)));
+        when(monitorGroupRepository.findAllByMadeForMonitorFalse()).thenReturn(Arrays.asList(monitorsGroup, monitorsGroup3));
 
-        Optional<List<MonitorsGroup>> found = service.getAllGroupsNotMadeForMonitor();
+        List<MonitorsGroup> found = service.getAllGroupsNotMadeForMonitor();
 
-        assertThat(found).isEqualTo(Optional.of(Arrays.asList(monitorsGroup,monitorsGroup3)));
+        assertThat(found).isEqualTo(Arrays.asList(monitorsGroup,monitorsGroup3));
         verify(monitorGroupRepository, times(1)).findAllByMadeForMonitorFalse();
     }
 

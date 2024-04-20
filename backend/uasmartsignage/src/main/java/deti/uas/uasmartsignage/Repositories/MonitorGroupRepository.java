@@ -13,7 +13,7 @@ public interface MonitorGroupRepository extends JpaRepository<MonitorsGroup, Lon
 
     Optional<MonitorsGroup> findById(Long id);
 
-    Optional<List<MonitorsGroup>> findAllByMonitorsPendingFalse();
+    List<MonitorsGroup> findAllByMonitorsPendingFalse();
 
-    Optional<List<MonitorsGroup>> findAllByMadeForMonitorFalse();
+    List<MonitorsGroup> findAllByMadeForMonitorFalse();
 }
