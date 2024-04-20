@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,7 @@ public class MonitorGroupService {
      *
      * @param id The ID of the MonitorsGroup to delete.
      */
+    @Transactional
     public void deleteGroup(Long id) {
         Optional<MonitorsGroup> group = monitorGroupRepository.findById(id);
         if (group.isPresent()) {
@@ -79,20 +81,8 @@ public class MonitorGroupService {
      *
      * @return A list of all MonitorsGroups stored in the database.
      */
-    public List<MonitorsGroup> getAllGroups() {
-        List<MonitorsGroup> groups = monitorGroupRepository.findAll();
-        List<MonitorsGroup> groupsWithoutPendingMonitors = new ArrayList<>();
-        for (MonitorsGroup group : groups) {
-            for (int i = 0; i < group.getMonitors().size(); i++) {
-                if (group.getMonitors().get(i).isPending()) {
-                    break;
-                }
-                if (i == group.getMonitors().size() - 1) {
-                    groupsWithoutPendingMonitors.add(group);
-                }
-            }
-        }
-        return groupsWithoutPendingMonitors;
+    public Optional<List<MonitorsGroup>> getAllGroups() {
+        return monitorGroupRepository.findAllByMonitorsPendingFalse();
     }
 
     /**
@@ -125,18 +115,7 @@ public class MonitorGroupService {
      *
      * @return A list of all MonitorsGroups that are not made for a unique monitor.
      */
-    public List<MonitorsGroup> getAllGroupsNotMadeForMonitor() {
-        List<MonitorsGroup> groups = monitorGroupRepository.findAll();
-        List<MonitorsGroup> groupsNotMadeForMonitor = new ArrayList<>();
-        for (MonitorsGroup group : groups) {
-            if (!group.isMadeForMonitor()) {
-                groupsNotMadeForMonitor.add(group);
-            }
-        }
-        if (groups.isEmpty()) {
-            logger.warn("No groups found");
-            return new ArrayList<>();
-        }
-        return groupsNotMadeForMonitor;
+    public Optional<List<MonitorsGroup>> getAllGroupsNotMadeForMonitor() {
+        return monitorGroupRepository.findAllByMadeForMonitorFalse();
     }
 }

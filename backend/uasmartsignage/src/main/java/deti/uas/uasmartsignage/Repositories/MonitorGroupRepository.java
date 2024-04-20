@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Repositories;
 
+import java.util.List;
 import java.util.Optional;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,8 @@ public interface MonitorGroupRepository extends JpaRepository<MonitorsGroup, Lon
     MonitorsGroup findByName(String name);
 
     Optional<MonitorsGroup> findById(Long id);
+
+    Optional<List<MonitorsGroup>> findAllByMonitorsPendingFalse();
+
+    Optional<List<MonitorsGroup>> findAllByMadeForMonitorFalse();
 }

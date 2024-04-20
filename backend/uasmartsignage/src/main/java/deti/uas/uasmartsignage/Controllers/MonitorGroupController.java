@@ -36,11 +36,11 @@ public class MonitorGroupController {
     })
     @GetMapping
     public ResponseEntity<List<MonitorsGroup>> getAllGroups() {
-        List<MonitorsGroup> monitorsGroups =  monitorGroupService.getAllGroups();
+        Optional<List<MonitorsGroup>> monitorsGroups =  monitorGroupService.getAllGroups();
         if (monitorsGroups.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroups.get(), HttpStatus.OK);
     }
 
     @Operation(summary = "Get all groups without the ones made for unique monitor")
@@ -50,11 +50,11 @@ public class MonitorGroupController {
     })
     @GetMapping("/notMadeForMonitor")
     public ResponseEntity<List<MonitorsGroup>> getAllGroupsNotMadeForMonitor() {
-        List<MonitorsGroup> monitorsGroups = monitorGroupService.getAllGroupsNotMadeForMonitor();
+        Optional<List<MonitorsGroup>> monitorsGroups = monitorGroupService.getAllGroupsNotMadeForMonitor();
         if (monitorsGroups.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroups.get(), HttpStatus.OK);
     }
 
     @Operation(summary = "Get group by id")

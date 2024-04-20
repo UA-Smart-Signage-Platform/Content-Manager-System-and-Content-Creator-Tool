@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,7 +105,7 @@ class MonitorGroupTest {
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("group1");
         monitorsGroup.setId(1L);
-        monitorsGroup.setMonitors(java.util.Arrays.asList(monitor, monitor3));
+        monitorsGroup.setMonitors(Arrays.asList(monitor, monitor3));
 
         // Still Pending
         MonitorsGroup monitorsGroup2 = new MonitorsGroup();
@@ -116,14 +117,14 @@ class MonitorGroupTest {
         MonitorsGroup monitorsGroup3 = new MonitorsGroup();
         monitorsGroup3.setName("group3");
         monitorsGroup3.setId(3L);
-        monitorsGroup3.setMonitors(java.util.Arrays.asList(monitor, monitor2, monitor3));
+        monitorsGroup3.setMonitors(Arrays.asList(monitor, monitor2, monitor3));
 
-        when(monitorGroupRepository.findAll()).thenReturn(java.util.Arrays.asList(monitorsGroup, monitorsGroup2, monitorsGroup3));
+        when(monitorGroupRepository.findAllByMonitorsPendingFalse()).thenReturn(Optional.of(List.of(monitorsGroup)));
 
-        java.util.List<MonitorsGroup> found = service.getAllGroups();
+        Optional<List<MonitorsGroup>> found = service.getAllGroups();
 
-        assertThat(found).isEqualTo(java.util.Arrays.asList(monitorsGroup));
-        verify(monitorGroupRepository, times(1)).findAll();
+        assertThat(found).isEqualTo(Optional.of(List.of(monitorsGroup)));
+        verify(monitorGroupRepository, times(1)).findAllByMonitorsPendingFalse();
     }
 
     @Test
@@ -144,26 +145,26 @@ class MonitorGroupTest {
         monitorsGroup.setName("group1");
         monitorsGroup.setId(1L);
         monitorsGroup.setMadeForMonitor(false);
-        monitorsGroup.setMonitors(java.util.Arrays.asList(monitor, monitor3));
+        monitorsGroup.setMonitors(Arrays.asList(monitor, monitor3));
 
         MonitorsGroup monitorsGroup2 = new MonitorsGroup();
         monitorsGroup2.setName("group2");
         monitorsGroup2.setId(2L);
         monitorsGroup2.setMadeForMonitor(true);
-        monitorsGroup2.setMonitors(java.util.Arrays.asList(monitor2));
+        monitorsGroup2.setMonitors(List.of(monitor2));
 
         MonitorsGroup monitorsGroup3 = new MonitorsGroup();
         monitorsGroup3.setName("group3");
         monitorsGroup3.setId(3L);
         monitorsGroup3.setMadeForMonitor(false);
-        monitorsGroup3.setMonitors(java.util.Arrays.asList(monitor, monitor2, monitor3));
+        monitorsGroup3.setMonitors(Arrays.asList(monitor, monitor2, monitor3));
 
-        when(monitorGroupRepository.findAll()).thenReturn(java.util.Arrays.asList(monitorsGroup, monitorsGroup2, monitorsGroup3));
+        when(monitorGroupRepository.findAllByMadeForMonitorFalse()).thenReturn(Optional.of(Arrays.asList(monitorsGroup, monitorsGroup3)));
 
-        java.util.List<MonitorsGroup> found = service.getAllGroupsNotMadeForMonitor();
+        Optional<List<MonitorsGroup>> found = service.getAllGroupsNotMadeForMonitor();
 
-        assertThat(found).isEqualTo(java.util.Arrays.asList(monitorsGroup,monitorsGroup3));
-        verify(monitorGroupRepository, times(1)).findAll();
+        assertThat(found).isEqualTo(Optional.of(Arrays.asList(monitorsGroup,monitorsGroup3)));
+        verify(monitorGroupRepository, times(1)).findAllByMadeForMonitorFalse();
     }
 
 
