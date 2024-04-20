@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.datainit;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,6 +15,7 @@ import deti.uas.uasmartsignage.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,8 +44,6 @@ public class DataInit implements CommandLineRunner{
         this.monitorRepository = monitorRepository;
         this.fileRepository = fileRepository;
         this.fileService = fileService;
-        System.out.println("Creating mock directoredfjrghyjukily");
-
     }
 
 
@@ -51,8 +51,6 @@ public class DataInit implements CommandLineRunner{
         if (!groupRepository.findAll().isEmpty()){
             return;
         }
-
-        System.out.println("Creating mock directory1111111111111111111111111");
 
         MonitorsGroup deti = new MonitorsGroup();
         deti.setName("deti");
@@ -119,66 +117,18 @@ public class DataInit implements CommandLineRunner{
         car2.setGroup(dBio);
         monitorRepository.save(car2);
 
-        /*Path tempFile = Files.createTempFile("test", ".png");
-        byte[] content = "Hello, World!".getBytes();
-        Files.write(tempFile, content);*/
+        byte[] content = "This is a test file content".getBytes(StandardCharsets.UTF_8);
+        MultipartFile file = new MockMultipartFile("file", "test.png", "image/png", content);
+        FilesClass ff = new FilesClass();
+        ff.setFile(file);
+        ff.setParentId(null);
+        fileService.createFile(ff);
 
-        /*
-        CustomFile fileEntity = new CustomFile();
-        fileEntity.setName("test");
-        fileEntity.setType("image/png");
-        fileEntity.setParent(null);
-        fileEntity.setSize(10L);
-        fileEntity.setPath("test");
-        fileRepository.save(fileEntity);
-
-
-
-        /*tempFile1 = Files.createTempFile("test1", ".png");
-        byte[] content1 = "Hello!".getBytes();
-        Files.write(tempFile1, content1);*/
-
-        //CustomFile file1 = new CustomFile();
-        //file1.setName("lei");
-        //file1.setType("image/png");
-        //file1.setParent(null);
-        //file1.setPath("lei");
-        //file1.setId(1L);
-        //file1.setSize(10L);
-        //fileRepository.save(file1);
-        //Files.copy(tempFile1, Paths.get(file1.getPath()), StandardCopyOption.REPLACE_EXISTING);
-
-        /*Path tempDir = Files.createTempDirectory("videos");
-        CustomFile directoryEntity = new CustomFile();
-        directoryEntity.setName("videos");
-        directoryEntity.setType("directory");
-        directoryEntity.setParent(null);
-        directoryEntity.setPath(tempDir.toString());
-        directoryEntity.setSize(0L);
-        fileRepository.save(directoryEntity);
-        fileService.createDirectory(directoryEntity);*/
-
-        //CustomFile directoryEntity = new CustomFile();
-        //directoryEntity.setName("videos");
-        //directoryEntity.setType("directory");
-        //directoryEntity.setParent(null);
-        //directoryEntity.setPath("videos");
-        //directoryEntity.setSize(0L);
-        //fileRepository.save(directoryEntity);
-
-
-
-        /*tempFile2 = Files.createTempFile("test2", ".mp4");
-        byte[] content3 = "Goodbye".getBytes();
-        Files.write(tempFile2, content3);*/
-        //CustomFile file2 = new CustomFile();
-        //file2.setName("lei2");
-        //file2.setType("video/mp4");
-        //file2.setParent(directoryEntity);
-        //file2.setPath("lei2");
-        //file2.setSize(10L);
-        //fileRepository.save(file2);
-        //Files.copy(tempFile2, Paths.get(file2.getPath()), StandardCopyOption.REPLACE_EXISTING);
+        MultipartFile file1 = new MockMultipartFile("file", "test1.png", "image/png", content);
+        FilesClass ff1 = new FilesClass();
+        ff1.setFile(file1);
+        ff1.setParentId(null);
+        fileService.createFile(ff1);
 
     }
 }

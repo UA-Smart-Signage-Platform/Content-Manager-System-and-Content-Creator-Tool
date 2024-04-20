@@ -90,8 +90,6 @@ public class FileService {
      * @return The created CustomFile, or {@code null} if creation fails.
      */
     public CustomFile createDirectory(CustomFile customFile) {
-
-        
         if (!customFile.getType().equals("directory")) {
             return null;
         }
@@ -236,6 +234,7 @@ public class FileService {
             // Delete file from disk
             String rootPath = System.getProperty("user.dir");
             String filePath = rootPath + file.get().getPath();
+            logger.info("Deleting file: {}", filePath);
             File fileToDelete = new File(filePath);
             if (fileToDelete.delete()) {
                 logger.info("File deleted: {}", fileToDelete.getAbsolutePath());

@@ -104,10 +104,6 @@ public class FileController {
     }
 
     @Operation(summary = "Download a file")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File downloaded", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-    })
     @GetMapping("/files/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
         return fileService.downloadFileById(fileId);
@@ -121,22 +117,9 @@ public class FileController {
     @PutMapping("/files/{id}")
     public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
         CustomFile updatedFile = fileService.updateFileName(id, customFile);
-        System.out.println(updatedFile);
         if (updatedFile == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(updatedFile, HttpStatus.OK);
     }
-
-    // take out or revise this method (name isnt unique only path + id is better)
-    /*@Operation(summary = "Download a file")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File downloaded", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-    })
-    @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
-        return fileService.downloadFileByName(fileName);
-    }*/
-
 }

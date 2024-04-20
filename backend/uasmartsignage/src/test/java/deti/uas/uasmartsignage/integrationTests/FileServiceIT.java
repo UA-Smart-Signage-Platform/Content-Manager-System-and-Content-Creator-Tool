@@ -1,34 +1,37 @@
 package deti.uas.uasmartsignage.integrationTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
-import org.checkerframework.checker.units.qual.C;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.test.context.TestPropertySource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.util.List;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import java.nio.file.Files;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
 @Testcontainers
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FileServiceIT{
 
     @Container
@@ -36,7 +39,6 @@ public class FileServiceIT{
             .withDatabaseName("uasmartsignageIT")
             .withUsername("integrationTest")
             .withPassword("test");
-
 
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
@@ -52,36 +54,159 @@ public class FileServiceIT{
     private TestRestTemplate restTemplate;
 
     @Test
-    @Disabled
-    void testGetFileByIdEndpoint() {
-        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/1", CustomFile.class);
+    @Order(1)
+    void testGetFileByIdEndpoint() throws IOException{
+        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/2", CustomFile.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().getId());
-        assertEquals("test", response.getBody().getName());
-
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getId());
+        assertEquals("test1.png", response.getBody().getName());
     }
 
     @Test
-    @Disabled
+    @Order(2)
     void testGetFileByIdEndpointNotFound() {
         ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/100", String.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
-    @Disabled
+    @Order(3)
     void testGetRootFilesAndDirectoriesEndpoint() {
         ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/directory/root", String.class);
-        //ResponseEntity<List<CustomFile>> response = restTemplate.exchange("http://localhost:" + port + "/api/files/directory/root", HttpMethod.GET, null, new ParameterizedTypeReference<List<CustomFile>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-
     }
 
     @Test
-    @Disabled
-    void testGetRootFilesAndDirectoriesEndpointNotFound() {
-        //ResponseEntity<List<CustomFile>> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/directory/root1", String.class);
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/directory/root1", String.class);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    @Order(4)
+    void testDeleteFileByIdEndpoint() {
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, null, String.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    @Test
+    @Order(5)
+    void testCreateFileEndpoint() {
+
+        byte[] content = "This is a test file content".getBytes(StandardCharsets.UTF_8);
+        // Create a ByteArrayResource from the file content with a custom filename
+        ByteArrayResource resource = new ByteArrayResource(content) {
+            @Override
+            public String getFilename() {
+                return "test3.png";
+            }
+        };
+
+        // Set up the request body with the file and parentId
+        MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("file", resource);
+        requestBody.add("parentId", null);
+
+        // Set up the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // Create the HTTP entity with headers and request body
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files", HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+    }
+
+
+    // Bad request because file already exists
+    @Test
+    @Order(6)
+    void testCreateFileEndpoint400() {
+        byte[] content = "This is a test file content".getBytes(StandardCharsets.UTF_8);
+        // Create a ByteArrayResource from the file content with a custom filename
+        ByteArrayResource resource = new ByteArrayResource(content) {
+            @Override
+            public String getFilename() {
+                return "test3.png";
+            }
+        };
+
+        // Set up the request body with the file and parentId
+        MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
+        requestBody.add("file", resource);
+        requestBody.add("parentId", null);
+
+        // Set up the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+        // Create the HTTP entity with headers and request body
+        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files", HttpMethod.POST, requestEntity, String.class);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    @Order(7)
+    void testCreateDirectoryEndpoint() {
+        CustomFile directory = new CustomFile();
+        directory.setName("New Directory");
+        directory.setType("directory");
+        directory.setSize(0L);
+        directory.setParent(null);
+
+        // Set up the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Create the HTTP entity with headers and request body
+        HttpEntity<CustomFile> requestEntity = new HttpEntity<>(directory, headers);
+
+        ResponseEntity<CustomFile> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/files/directory",
+                HttpMethod.POST,
+                requestEntity,
+                CustomFile.class
+        );
+
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        CustomFile createdDirectory = response.getBody();
+        assertEquals("New Directory", createdDirectory.getName());
+        assertEquals("directory", createdDirectory.getType());
+    }
+
+    @Test
+    @Order(8)
+    void testCreateDirectoryEndpoint400() {
+        CustomFile directory = new CustomFile();
+        directory.setName("New Directory");
+        directory.setType("directory");
+        directory.setSize(0L);
+        directory.setParent(null);
+
+        // Set up the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Create the HTTP entity with headers and request body
+        HttpEntity<CustomFile> requestEntity = new HttpEntity<>(directory, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/files/directory",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @AfterAll
+    static void cleanup() throws IOException {
+        // Delete the uploads directory after all tests have completed
+        Path uploadsPath = Paths.get(System.getProperty("user.dir") + "/uploads");
+        if (Files.exists(uploadsPath)) {
+            Files.walk(uploadsPath)
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            Files.deleteIfExists(uploadsPath);
+        }
     }
 }
