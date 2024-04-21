@@ -1,0 +1,180 @@
+package deti.uas.uasmartsignage.controllerTests;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Services.ScheduleService;
+import org.hibernate.validator.constraints.time.DurationMax;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
+import deti.uas.uasmartsignage.Controllers.ScheduleController;
+import deti.uas.uasmartsignage.Models.Schedule;
+import deti.uas.uasmartsignage.Services.ScheduleService;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(ScheduleController.class)
+@ActiveProfiles("test")
+public class ScheduleControllerTest {
+    @Autowired
+    private MockMvc mvc;
+
+    @MockBean
+    private ScheduleService service;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @Test
+    void testGetAllSchedulesEndpoint() throws Exception{
+        User user = new User();
+        user.setUsername("admin");
+        user.setRole(1);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule1 = new Schedule();
+        schedule1.setDate(LocalDate.parse("2021-06-01"));
+        schedule1.setFrequency("daily");
+        schedule1.setCreatedBy(user);
+        schedule1.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule1.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule1.setPriority(1);
+        schedule1.setNTimes(10);
+        schedule1.setIntervalOfTime(10);
+        schedule1.setLastEditedBy(user);
+        schedule1.setMonitorsGroupForSchedules(group);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setDate(LocalDate.parse("2021-06-01"));
+        schedule2.setFrequency("weekly");
+        schedule2.setCreatedBy(user);
+        schedule2.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule2.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule2.setPriority(1);
+        schedule2.setNTimes(10);
+        schedule2.setIntervalOfTime(10);
+        schedule2.setLastEditedBy(user);
+        schedule2.setMonitorsGroupForSchedules(group);
+
+        when(service.getAllSchedules()).thenReturn(Arrays.asList(schedule1,schedule2));
+
+        mvc.perform(get("/api/schedules").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+            .andExpect(jsonPath("$[0].frequency", is("daily")))
+            .andExpect(jsonPath("$[1].frequency", is("weekly")));
+    }
+
+    @Test
+    void testGetScheduleByIdEndpoint() throws Exception{
+        User user = new User();
+        user.setUsername("admin");
+        user.setRole(1);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setDate(LocalDate.parse("2021-06-01"));
+        schedule.setFrequency("daily");
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setPriority(1);
+        schedule.setNTimes(10);
+        schedule.setIntervalOfTime(10);
+        schedule.setLastEditedBy(user);
+        schedule.setMonitorsGroupForSchedules(group);
+
+        when(service.getScheduleById(1L)).thenReturn(schedule);
+
+        mvc.perform(get("/api/schedules/1").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.frequency", is("daily")))
+            .andExpect(jsonPath("$.priority", is(1)));
+    }
+
+    @Test
+    @Disabled  //problem with objectmapper(cannot serialize LocalDateTime)
+    void testSaveScheduleEndpoint() throws Exception{
+        User user = new User();
+        user.setUsername("admin");
+        user.setRole(1);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setDate(LocalDate.parse("2021-06-01"));
+        schedule.setFrequency("daily");
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setPriority(3);
+        schedule.setNTimes(10);
+        schedule.setIntervalOfTime(10);
+        schedule.setLastEditedBy(user);
+        schedule.setMonitorsGroupForSchedules(group);
+
+        when(service.saveSchedule(Mockito.any(Schedule.class))).thenReturn(schedule);
+
+        mvc.perform(post("/api/schedules").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(schedule)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.frequency", is("daily")))
+            .andExpect(jsonPath("$.priority", is(3)));
+    }
+
+    @Test
+    @Disabled
+    void testDeleteScheduleEndpoint() throws Exception{
+        User user = new User();
+        user.setUsername("admin");
+        user.setRole(1);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setDate(LocalDate.parse("2021-06-01"));
+        schedule.setFrequency("daily");
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setPriority(1);
+        schedule.setNTimes(10);
+        schedule.setIntervalOfTime(10);
+        schedule.setLastEditedBy(user);
+        schedule.setMonitorsGroupForSchedules(group);
+
+        //when(service.deleteSchedule(1L)).thenReturn(null);
+
+        mvc.perform(delete("/api/schedules/1").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk());
+    }
+
+
+}

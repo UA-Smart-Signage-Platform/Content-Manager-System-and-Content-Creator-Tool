@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Shcedule")
+@Table(name = "schedule")
 public class Schedule {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long shedule_id;
+    private Long id;
 
     @Column(name = "frequency")
     private String frequency;
@@ -27,7 +27,7 @@ public class Schedule {
     @Column(name = "n_times")
     private int nTimes;
 
-    @Column(name = " intervalOfTime")
+    @Column(name = "intervalOfTime")
     private int intervalOfTime;
 
     @Column(name = "start_date")
@@ -37,24 +37,24 @@ public class Schedule {
     private LocalDateTime endDate;
 
     @Column(name = "date")
-    private LocalDate _date;
+    private LocalDate date;
 
     @Column(name = "priority")
     private int priority;
 
     @ManyToOne
-    @JoinColumn(name = "created_by", referencedColumnName = "id")
+    @JoinColumn(name = "created_by")
     private User createdBy;
 
     @ManyToOne
-    @JoinColumn(name = "last_edited_by", referencedColumnName = "id")
+    @JoinColumn(name = "last_edited_by")
     private User lastEditedBy;
 
     @Column(name = "created_on")
     private LocalDate createdOn;
 
     @ManyToOne
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "monitors_group_id", nullable = false)
     @JsonIgnoreProperties({"schedules", "monitors"})
     private MonitorsGroup monitorsGroupForSchedules;
 
