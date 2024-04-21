@@ -137,5 +137,14 @@ public class MonitorIT{
         }
 
 
+    @Test
+    @Order(999)
+    // Clean up (not related to this Controller but needed because files are created by default)
+    void testDeleteFileByIdWithDirectoryEndpoint() {
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, null, String.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
 
 }

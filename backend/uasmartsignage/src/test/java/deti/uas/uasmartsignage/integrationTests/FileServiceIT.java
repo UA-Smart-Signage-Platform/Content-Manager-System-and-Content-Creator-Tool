@@ -22,12 +22,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-
-import java.nio.file.Files;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Comparator;
 import java.util.Objects;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
@@ -206,17 +200,41 @@ public class FileServiceIT{
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
-    @AfterAll
-    static void cleanup() throws IOException {
-        // Delete the uploads directory after all tests have completed
-        Path uploadsPath = Paths.get(System.getProperty("user.dir") + "/uploads/testDir");
-        if (Files.exists(uploadsPath)) {
-            Files.walk(uploadsPath)
-                    .sorted(Comparator.reverseOrder()) // Reverse order to delete files first
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-            Files.deleteIfExists(uploadsPath);
-        }
+    @Test
+    @Order(9)
+    void testUpdateFileEndpoint() throws IOException  {
+        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/3", CustomFile.class);
+        CustomFile file = getResponse.getBody();
+
+        file.setName("UpdatedFile.txt");
+
+        // Set up the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Create the HTTP entity with headers and request body
+        HttpEntity<CustomFile> requestEntity = new HttpEntity<>(file, headers);
+
+        ResponseEntity<CustomFile> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/files/3",
+                HttpMethod.PUT,
+                requestEntity,
+                CustomFile.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        CustomFile updatedFile = response.getBody();
+        assertEquals("UpdatedFile.txt", updatedFile.getName());
+
+    }
+
+    @Test
+    @Order(999)
+        // Clean up
+    void testDeleteFileByIdWithDirectoryEndpoint() {
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, null, String.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
 }

@@ -236,29 +236,66 @@ public class FileService {
      * @param id The ID of the file to delete.
      * @return true if the file was successfully deleted, false otherwise.
      */
-    @Transactional
     public boolean deleteFile(Long id) {
-        Optional<CustomFile> file = fileRepository.findById(id);
-        if (file.isEmpty()) {
+        Optional<CustomFile> fileOptional = fileRepository.findById(id);
+        if (fileOptional.isEmpty()) {
             logger.warn("File with ID {} not found", id);
             return false;
+        }
+
+        // Delete file from disk
+        CustomFile file = fileOptional.get();
+        String rootPath = System.getProperty("user.dir");
+        String filePath = rootPath + file.getPath();
+        logger.info("Deleting file: {}", filePath);
+        File fileToDelete = new File(filePath);
+
+        if (!fileToDelete.exists()) {
+            logger.warn("File does not exist: {}", filePath);
+            return false;
+        }
+
+        if (fileToDelete.isDirectory()) {
+            if (!deleteDirectory(fileToDelete)) {
+                logger.error("Failed to delete directory: {}", fileToDelete.getAbsolutePath());
+                return false;
+            }
         } else {
-            // Delete file from disk
-            String rootPath = System.getProperty("user.dir");
-            String filePath = rootPath + file.get().getPath();
-            logger.info("Deleting file: {}", filePath);
-            File fileToDelete = new File(filePath);
-            if (fileToDelete.delete()) {
-                logger.info("File deleted: {}", fileToDelete.getAbsolutePath());
-            } else {
+            if (!fileToDelete.delete()) {
                 logger.error("Failed to delete file: {}", fileToDelete.getAbsolutePath());
                 return false;
             }
-            // Delete file from repository
-            fileRepository.delete(file.get());
-            logger.info("File with ID {} deleted", id);
-            return true;
         }
+
+        // Delete file from repository
+        fileRepository.delete(file);
+        logger.info("File with ID {} deleted", id);
+        return true;
+    }
+
+    /**
+     * Deletes the specified directory and all its contents.
+     *
+     * @param directory The directory to delete.
+     * @return true if the directory was successfully deleted, false otherwise.
+     */
+    private boolean deleteDirectory(File directory) {
+        File[] files = directory.listFiles();
+        logger.info("Deleting directory: {}", directory.getAbsolutePath());
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    if (!deleteDirectory(file)) {
+                        return false;
+                    }
+                } else {
+                    if (!file.delete()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return directory.delete();
     }
 
     /**
