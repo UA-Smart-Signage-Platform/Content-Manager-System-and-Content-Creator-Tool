@@ -5,7 +5,6 @@ import monitorsGroupService from "../../services/monitorsGroupService";
 function Schedule(){
     const [groups, setGroups] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState(null);
-
     const [showPortal, setShowPortal] = useState(false);
 
     useEffect(() => {
@@ -24,8 +23,8 @@ function Schedule(){
             <div id="divider" className="flex h-[92%] mr-3 ml-3 ">
                 <div className="flex flex-col w-[25%] h-full pt-4">
                     <div className="flex flex-row w-full h-[5%] items-center ">
-                        <button onClick={() => setShowPortal(true)} className="bg-slate-300 rounded-md h-[80%] pr-4 pl-4">+ Add rule</button>
-                        <select onChange={(e) => setSelectedGroupId(e.target.value)} className="ml-auto mr-5 bg-slate-300 rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
+                        <button onClick={() => {selectedGroupId !== null && setShowPortal(true)}} className="bg-secondaryLight rounded-md h-[80%] pr-4 pl-4">+ Add rule</button>
+                        <select onChange={(e) => setSelectedGroupId(e.target.value - 1)} className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
                             <option selected disabled hidden>Group</option>
                             {groups.length !== 0 && groups.map((group) => 
                                 <option value={group.id}>{group.name}</option>
@@ -34,13 +33,14 @@ function Schedule(){
                     </div>
                     <ScheduleModal
                             showPortal={showPortal} 
-                            setShowPortal={setShowPortal} />
+                            setShowPortal={setShowPortal}
+                            selectedGroup={groups.at(selectedGroupId)} />
                     <div className="w-full h-[90%]">
-                        <div className="bg-slate-400"></div>
+                        <div className="bg-secondaryLight"></div>
                     </div>
                 </div>
                 <div id="dividerHr" className="mt-1 mb-1 w-[1px] h-full border-[1px] border-secondary"/>
-                <div className="w-[74%] bg-slate-200 ml-3 mt-3">
+                <div className="w-[74%] bg-secondaryLight ml-3 mt-3">
 
                 </div>
             </div>

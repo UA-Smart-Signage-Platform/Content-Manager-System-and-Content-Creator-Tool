@@ -11,33 +11,31 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
 
     const [currentFolder, setCurrentFolder] = useState(null);
-    const [folder, setFolder] = useState(null);
+    const [folderStack, setFolderStack] = useState([]);
 
     const [file, setFile] = useState(null);
-    const [path, setPath] = useState("home");
+    const [path, setPath] = useState(null);
+
+    const [selectedRow, setSelectedRow] = useState(null);
 
     useEffect(() => {
-        if(path === 'home'){
+        if(currentFolder === null){
             mediaService.getFilesAtRootLevel().then((response) => {
                 setFilesAndDirectories(response.data);
-                setFolder(response.data);
             })
         }
         else{
             mediaService.getFileOrDirectoryById(currentFolder).then((response) => {
-                setFilesAndDirectories(response.data.subDirectories);
-                setFolder(response.data);
+                const data = response.data.subDirectories;
+                data.unshift({name: "...", type: "directory"});
+                setFilesAndDirectories(data);
             })
         }
     }, [currentFolder]);
 
+
     const columns = [
         {
-            name: (
-                <div className="flex flex-row">
-                    <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
-                </div>
-            ),
             selector: row => headNameStyle(row),
         },
         {
@@ -83,16 +81,19 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
         }
     };
 
-    const handleRowClick = (row) => {
+    const handleRowDoubleClick = (row) => {
         if (row.type === "directory"){
-            setPath(null);
-            setCurrentFolder(row.id);
+            if (row.name === "...") {
+                navigateBack();
+            }
+            else{
+                setFolderStack([...folderStack, currentFolder]);
+                setCurrentFolder(row.id);
+            }
         }
         else{
-            const change = (row.name === file ? null : row.name);
-            setFile(change);
-            if (change !== null){
-                if (path === 'home' ){
+            if (row.name === file ? null : row.name !== null){
+                if (path === null ){
                     console.log("http://localhost:8080/uploads/" + row.name);
                 }
                 else{
@@ -101,6 +102,24 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
                     console.log("http://localhost:8080/uploads/" + filePath);
                 }
             }
+        }
+    };
+
+    const handleRowClick = (row) => {
+        //if (selectedRow !== null){
+            //selectedRow
+        //}
+        setSelectedRow(row);
+        console.log(row);
+    };
+
+    const navigateBack = () => {
+        if (folderStack.length > 0) {
+            setCurrentFolder(folderStack.pop());
+            setFolderStack([...folderStack]); 
+        }
+        else {
+            setCurrentFolder(null);
         }
     };
 
@@ -122,15 +141,25 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
                                     Choose file
                                 </div>
                                 <div className="h-[80%] p-[2%] text-lg flex flex-col">
-                                <DataTable className="p-3" 
-                                    defaultSortFieldId="isFolder"
-                                    pointerOnHover
-                                    highlightOnHover
-                                    pagination
-                                    columns={columns}
-                                    data={filesAndDirectories}
-                                    onRowClicked={handleRowClick}
-                                    customStyles={customStyles}/>
+                                    <div className="h-[80%] w-full">
+                                        <DataTable className="p-3" 
+                                            defaultSortFieldId="isFolder"
+                                            noTableHead
+                                            pointerOnHover
+                                            highlightOnHover
+                                            pagination
+                                            columns={columns}
+                                            data={filesAndDirectories}
+                                            onRowClicked={handleRowClick}
+                                            onRowDoubleClicked={handleRowDoubleClick}
+                                            customStyles={customStyles}/>
+                                    </div>
+                                    <div className="h-[20%] flex w-full items-center place-content-end">
+                                        <div className="pr-6">
+                                            <button className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">Submit</button>
+                                        </div>
+                                        <button className="bg-[#E9E9E9] rounded-md p-2 pl-4 pr-4">Open</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
