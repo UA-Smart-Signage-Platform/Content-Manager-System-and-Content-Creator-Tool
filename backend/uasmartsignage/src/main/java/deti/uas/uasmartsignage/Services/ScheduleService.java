@@ -15,11 +15,10 @@ public class ScheduleService {
 
 
         private final ScheduleRepository scheduleRepository;
-
         private final MonitorGroupRepository groupRepository;
 
         @Autowired
-        public ScheduleService(ScheduleRepository scheduleRepository, MonitorGroupRepository groupRepository){
+        public ScheduleService(ScheduleRepository scheduleRepository, MonitorGroupRepository groupRepository) {
             this.scheduleRepository = scheduleRepository;
             this.groupRepository = groupRepository;
         }
@@ -43,13 +42,5 @@ public class ScheduleService {
 
         public Iterable<Schedule> getAllSchedules() {
             return scheduleRepository.findAll();
-        }
-
-        public Schedule createSchedule(Schedule schedule) {
-            MonitorsGroup group = groupRepository.findById(schedule.getMonitorsGroupForSchedules().getId()).orElse(null);
-            if(group != null) {
-                schedule.setMonitorsGroupForSchedules(group);
-            }
-            return scheduleRepository.save(schedule);
         }
 }

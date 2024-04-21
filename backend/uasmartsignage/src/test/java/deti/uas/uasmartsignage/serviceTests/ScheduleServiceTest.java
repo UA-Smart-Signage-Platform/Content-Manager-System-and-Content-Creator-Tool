@@ -3,7 +3,7 @@ package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -131,7 +131,6 @@ public class ScheduleServiceTest {
     }
 
     @Test
-    @Disabled
     void whenServiceDeleteThenRepositoryDelete(){
         User user = new User();
         user.setUsername("admin");
@@ -151,11 +150,12 @@ public class ScheduleServiceTest {
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
         schedule.setMonitorsGroupForSchedules(group);
-        when(repository.findById(1L)).thenReturn(Optional.of(schedule));
+
         service.deleteSchedule(1L);
 
+        verify(repository, times(1)).deleteById(1L);
+        assertFalse(repository.existsById(1L));
 
-        assertThat(repository.findById(1L)).isEmpty();
     }
 
     //missing update(not know what can be updated)

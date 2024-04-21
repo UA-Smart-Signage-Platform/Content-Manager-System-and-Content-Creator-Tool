@@ -2,6 +2,7 @@ package deti.uas.uasmartsignage.Controllers;
 
 import java.util.List;
 
+import deti.uas.uasmartsignage.Models.Monitor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -83,9 +84,9 @@ public class ScheduleController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<Schedule> createSchedule(Schedule schedule) {
-        Schedule newSchedule = scheduleService.createSchedule(schedule);
-        return new ResponseEntity<>(newSchedule, HttpStatus.CREATED);
+    public ResponseEntity<Schedule> saveSchedule(@RequestBody Schedule schedule) {
+        Schedule savedSchedule = scheduleService.saveSchedule(schedule);
+        return new ResponseEntity<>(savedSchedule, HttpStatus.CREATED);
     }
 
 }

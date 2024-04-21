@@ -33,7 +33,6 @@ public class MonitorsGroup {
     @JsonIgnoreProperties("group")
     private TemplateGroup templateGroup;
 
-
     @OneToMany(mappedBy = "monitorsGroupForSchedules", cascade = CascadeType.ALL)
    private List<Schedule> schedules;
 

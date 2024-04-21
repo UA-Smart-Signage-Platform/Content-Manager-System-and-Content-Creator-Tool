@@ -54,7 +54,7 @@ public class Schedule {
     private LocalDate createdOn;
 
     @ManyToOne
-    @JoinColumn(name = "monitors_group_id", nullable = false)
+    @JoinColumn(name = "group_id", nullable = false)
     @JsonIgnoreProperties({"schedules", "monitors"})
     private MonitorsGroup monitorsGroupForSchedules;
 
