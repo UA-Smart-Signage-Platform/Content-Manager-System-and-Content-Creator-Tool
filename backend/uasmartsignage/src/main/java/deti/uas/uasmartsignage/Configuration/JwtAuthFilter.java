@@ -28,6 +28,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import deti.uas.uasmartsignage.Services.jwtUtil;
 
 
 import java.io.IOException;
@@ -38,6 +39,9 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
+    @Autowired
+    private jwtUtil jwtUtil;
 
 
     @Override
@@ -50,9 +54,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Check if the token is not null and starts with Bearer
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
-            username = getUsernameFromToken(token);
-
-
+            System.out.println("Token: " + token);
+            
+            try {
+                // Try to extract username using jwtUtil
+                username = jwtUtil.extractUsername(token);
+                System.out.println("Username from jwtUtil: " + username);
+            } catch (Exception e) {
+                System.out.println("Failed to extract username from jwtUtil, trying another method");
+                
+                try {
+                    // Try to extract username using Ua IDP
+                    username = getUsernameFromToken(token);
+                    System.out.println("Username from getUsernameFromToken: " + username);
+                } catch (Exception ex) {
+                    System.out.println("Failed to extract username from token");
+                }
+            }
         }
         
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -85,8 +103,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         );
 
         if (response.getStatusCode().is2xxSuccessful()) {
-            // Parse the response to extract username
-            // Replace this with actual parsing logic based on your IDP's response format
+           
             JsonElement jsonElement = JsonParser.parseString(response.getBody());
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             String email = jsonObject.get("email").getAsString();

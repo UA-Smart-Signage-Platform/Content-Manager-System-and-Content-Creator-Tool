@@ -5,7 +5,7 @@ import { LuMoon } from "react-icons/lu";
 import  {ReactComponent as Logo}  from "../../static/logo.svg"
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
 
 
@@ -13,6 +13,16 @@ function NavBar() {
     const [isShow,setIsShow] = useState(false);
     const theme = useThemeStore((state) =>state.theme)
     const changeTheme = useThemeStore((state)=> state.changeTheme)
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('id_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('userInfo');
+
+        navigate("/Login");
+    };
 
     return(
         <> 
@@ -66,6 +76,10 @@ function NavBar() {
                 <Link to={"contentcreator"} className="w-full h-[5%] flex items-center">
                     Content Creator Tool
                 </Link>
+                <div className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" 
+                    onClick={handleLogout}>
+                    Logout
+                </div>
                 <div className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" 
                     onClick={()=>{changeTheme(theme === "dark" ? "light":"dark");console.log(theme)}}>
                     <div className="h-full w-[25px] relative flex items-center">

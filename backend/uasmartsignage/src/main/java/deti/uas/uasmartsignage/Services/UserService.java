@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
 
+import org.mindrot.jbcrypt.BCrypt;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -35,8 +37,8 @@ public class UserService implements UserDetailsService {
     public AppUser saveUser(AppUser user) {
         UserDetails newUser = User.builder()
             .username(user.getEmail())
-            // bcrypt hash of "password"
-            .password("{bcrypt}$2a$10$EBdA5hBJs3DBtWMme9A7fO1RD5k2B3wQsP1zsAqjOh4K/WA7bqA8W")
+            // bcrypt hash of a random password
+            .password(BCrypt.hashpw(generateRandomPassword(), BCrypt.gensalt()))
             .roles(user.getRole())
             .build();
         
@@ -57,7 +59,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public Iterable<AppUser> getAllUsers() {
+    public List<AppUser> getAllUsers() {
         return userRepository.findAll();
     }
 
@@ -72,6 +74,20 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return customUserDetailsService.loadUserByUsername(username);
+    }
+
+    private String generateRandomPassword() {
+        // Define the characters that can be used in the random password
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[{]}|;:,<.>/?";
+        StringBuilder password = new StringBuilder();
+    
+        // Generate a random password of length 20
+        for (int i = 0; i < 20; i++) {
+            int index = (int) (Math.random() * chars.length());
+            password.append(chars.charAt(index));
+        }
+    
+        return password.toString();
     }
 
 

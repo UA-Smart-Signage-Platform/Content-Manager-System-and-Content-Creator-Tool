@@ -54,6 +54,12 @@ const UserItem = styled.li`
   }
 `;
 
+const Select = styled.select`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
+
 function UserManagement() {
   const [users, setUsers] = useState([]);
   const [newUser, setNewUser] = useState({
@@ -118,13 +124,11 @@ function UserManagement() {
             placeholder="Email"
             onChange={handleChange}
           />
-          <Input
-            type="text"
-            name="role"
-            value={newUser.role}
-            placeholder="Role"
-            onChange={handleChange}
-          />
+          <Select name="role" value={newUser.role} onChange={handleChange}>
+            <option value="">Select Role</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="USER">USER</option>
+          </Select>
           <Button onClick={createUser}>Create User</Button>
         </InputGroup>
       </CreateUserContainer>

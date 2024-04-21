@@ -41,6 +41,10 @@ const router = createBrowserRouter([
         element:<Wso2Login/>,
       },
       {
+        path: "",
+        element:<Wso2Login/>
+      },
+      {
         path: "admin",
         element:<Admin/>,
       },
