@@ -6,11 +6,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface WidgetRepository extends JpaRepository<Widget, Long> {
     Widget findByName(String name);
-    Widget findById(long id);
 
     // List<Widget> findByContent(Content content);
 

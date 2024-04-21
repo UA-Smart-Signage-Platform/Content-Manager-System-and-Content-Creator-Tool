@@ -103,12 +103,6 @@ public class WidgetRepositoryTest {
     }
 
     @Test
-    void whenFindByInvalidId_thenReturnEmpty() {
-        Widget found = repository.findById(10L);
-        assertThat(found).isNull();
-    }
-
-    @Test
     void whenDeleteWidget_thenReturnEmpty() {
         Content content = new Content();
         content.setName("content");
