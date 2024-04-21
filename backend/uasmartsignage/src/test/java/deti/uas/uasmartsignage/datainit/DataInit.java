@@ -117,25 +117,5 @@ public class DataInit implements CommandLineRunner{
         car2.setGroup(dBio);
         monitorRepository.save(car2);
 
-        CustomFile testDir = new CustomFile();
-        testDir.setName("testDir");
-        testDir.setParent(null);
-        testDir.setSize(0L);
-        testDir.setType("directory");
-        fileService.createDirectory(testDir);
-
-        byte[] content = "This is a test file content".getBytes(StandardCharsets.UTF_8);
-        MultipartFile file = new MockMultipartFile("file", "test.png", "image/png", content);
-        FilesClass ff = new FilesClass();
-        ff.setFile(file);
-        ff.setParentId(1L);
-        fileService.createFile(ff);
-
-        MultipartFile file1 = new MockMultipartFile("file", "test1.png", "image/png", content);
-        FilesClass ff1 = new FilesClass();
-        ff1.setFile(file1);
-        ff1.setParentId(1L);
-        fileService.createFile(ff1);
-
     }
 }
