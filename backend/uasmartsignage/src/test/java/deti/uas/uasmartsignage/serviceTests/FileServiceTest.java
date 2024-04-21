@@ -41,8 +41,6 @@ class FileServiceTest {
     @InjectMocks
     private FileService service;
 
-    // TODO - create and revise
-
     @Test
     void whenGetFilesAtRoot_thenReturnFiles() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
@@ -106,7 +104,7 @@ class FileServiceTest {
 
         assertThat(outerDirectory).exists();
 
-        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 0L, outerFolder);
+        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 100L, outerFolder);
         when(repository.save(innerFolder)).thenReturn(innerFolder);
 
         CustomFile savedInner = service.createDirectory(innerFolder);
@@ -118,6 +116,7 @@ class FileServiceTest {
         File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + innerFolder.getName());
 
         assertThat(innerDirectory).exists();
+        assertThat(innerDirectory).hasParent(outerDirectory);
 
         // Clean up
         if (innerDirectory.exists()) {
@@ -146,10 +145,15 @@ class FileServiceTest {
         FilesClass filesClass = new FilesClass(null, mockMultipartFile);
         CustomFile saved = service.createFile(filesClass);
 
+        File file = new File(System.getProperty("user.dir") + "/uploads/" + saved.getName());
+
         verify(repository, times(1)).save(any());
+        assertThat(saved.getName()).isEqualTo(tempFile.getFileName().toString());
 
         //Clean up
-        Files.deleteIfExists(tempFile);
+        if (file.exists()) {
+            file.delete();
+        }
     }
 
     @Test
@@ -177,6 +181,8 @@ class FileServiceTest {
                 Files.readAllBytes(tempFile) // content as byte array
         );
 
+        long fileSize = Files.size(tempFile);
+
 
         when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
 
@@ -189,7 +195,10 @@ class FileServiceTest {
         File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + savedInner.getName());
 
         assertThat(innerDirectory).exists();
-        verify(repository, times(2)).save(any());
+        assertThat(innerDirectory).hasParent(outerDirectory);
+        //check if the parent size is updated
+        assertThat(outerFolder.getSize()).isEqualTo(fileSize);
+        verify(repository, times(3)).save(any());
 
         // Clean up
         if (innerDirectory.exists()) {

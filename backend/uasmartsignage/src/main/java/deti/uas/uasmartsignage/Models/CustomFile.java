@@ -30,13 +30,14 @@ public class CustomFile {
     @Column(unique = true)
     private String path;
 
+
     @ManyToOne
-    @JsonIgnoreProperties(value = {"subDirectories"}, allowSetters = true)
+    @JsonIgnoreProperties({"subDirectories", "parent"})
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("parent")
+    @JsonIgnoreProperties({"parent", "subDirectories"})
     private List<CustomFile> subDirectories;
 
     public CustomFile(String name, String type, Long size, CustomFile parent) {

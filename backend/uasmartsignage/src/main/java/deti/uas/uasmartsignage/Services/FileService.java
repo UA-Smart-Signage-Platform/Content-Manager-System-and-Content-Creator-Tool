@@ -9,6 +9,7 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
@@ -89,6 +90,7 @@ public class FileService {
      * @param customFile The CustomFile to create.
      * @return The created CustomFile, or {@code null} if creation fails.
      */
+    @Transactional
     public CustomFile createDirectory(CustomFile customFile) {
         if (!customFile.getType().equals("directory")) {
             return null;
@@ -100,10 +102,11 @@ public class FileService {
 
         //database path
         String parentDirectoryPath = getParentDirectoryPath(customFile);
+        logger.info("Parent directory path: " + parentDirectoryPath);
         pathBuilder.insert(0, parentDirectoryPath);
         pathBuilder.insert(0, rootPath);
 
-        File directory = new File(pathBuilder.toString() + customFile.getName());
+        File directory = new File(pathBuilder + customFile.getName());
 
         if (directory.exists()){
             logger.info("Directory already exists: " + directory.getAbsolutePath());
@@ -133,10 +136,12 @@ public class FileService {
      * @param customFile The CustomFile for which the parent directory path is generated.
      * @return The parent directory path for the given CustomFile.
      */
+
     public String getParentDirectoryPath(CustomFile customFile) {
         StringBuilder pathBuilder = new StringBuilder();
 
         while (customFile.getParent() != null) {
+            logger.info("Parent directory: {}", customFile.getParent().getName());
             pathBuilder.insert(0, customFile.getParent().getName() + "/");
             customFile = customFile.getParent();
         }
@@ -167,6 +172,7 @@ public class FileService {
      * @param file The FilesClass containing information about the file to create (normally an image or video).
      * @return The created CustomFile, or {@code null} if creation fails.
      */
+    @Transactional
     public CustomFile createFile(FilesClass file) {
         CustomFile customFile;
 
@@ -188,6 +194,11 @@ public class FileService {
             customFile = new CustomFile(fileName, fileType, fileSize, null);
         }
         else {
+            //update parent directory
+            logger.info("Parent directory found: {}", parent.get().getName());
+            //add the new file size
+            parent.get().setSize(parent.get().getSize() + fileSize);
+            fileRepository.save(parent.get());
             customFile = new CustomFile(fileName, fileType, fileSize, parent.get());
         }
 
@@ -225,6 +236,7 @@ public class FileService {
      * @param id The ID of the file to delete.
      * @return true if the file was successfully deleted, false otherwise.
      */
+    @Transactional
     public boolean deleteFile(Long id) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
@@ -246,38 +258,6 @@ public class FileService {
             fileRepository.delete(file.get());
             logger.info("File with ID {} deleted", id);
             return true;
-        }
-    }
-
-
-    /**
-     * Downloads the file with the specified name from the filesystem.
-     *
-     * @param fileName The name of the file to download.
-     * @return ResponseEntity with the file resource and headers.
-     */
-    public ResponseEntity<Resource> downloadFileByName(String fileName) throws IOException {
-        Optional<CustomFile> customFile = getFileByName(fileName);
-        if (customFile.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
-        String sFilePath = customFile.get().getPath();
-        String rootPath = System.getProperty("user.dir");
-        sFilePath = rootPath + sFilePath;
-
-        Path filePath = Paths.get(sFilePath);
-        Resource fileResource = new UrlResource(filePath.toUri());
-
-        if (fileResource.exists() && fileResource.isReadable()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(fileResource);
-        } else {
-            return ResponseEntity.notFound().build();
         }
     }
 
@@ -319,6 +299,7 @@ public class FileService {
      * @param customFile The CustomFile containing the new name.
      * @return The updated CustomFile, or {@code null} if the update fails.
      */
+    @Transactional
     public CustomFile updateFileName(Long id, CustomFile customFile) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {

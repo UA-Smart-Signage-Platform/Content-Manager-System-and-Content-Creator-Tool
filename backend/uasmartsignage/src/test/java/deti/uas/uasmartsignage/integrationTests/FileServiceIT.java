@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.Objects;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
@@ -56,9 +57,9 @@ public class FileServiceIT{
     @Test
     @Order(1)
     void testGetFileByIdEndpoint() throws IOException{
-        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/2", CustomFile.class);
+        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/3", CustomFile.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, Objects.requireNonNull(response.getBody()).getId());
+        assertEquals(3, Objects.requireNonNull(response.getBody()).getId());
         assertEquals("test1.png", response.getBody().getName());
     }
 
@@ -73,13 +74,14 @@ public class FileServiceIT{
     @Order(3)
     void testGetRootFilesAndDirectoriesEndpoint() {
         ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/directory/root", String.class);
+        System.out.println(response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     @Order(4)
     void testDeleteFileByIdEndpoint() {
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, null, String.class);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/2", HttpMethod.DELETE, null, String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -100,7 +102,7 @@ public class FileServiceIT{
         // Set up the request body with the file and parentId
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("file", resource);
-        requestBody.add("parentId", null);
+        requestBody.add("parentId", 1);
 
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
@@ -130,7 +132,7 @@ public class FileServiceIT{
         // Set up the request body with the file and parentId
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("file", resource);
-        requestBody.add("parentId", null);
+        requestBody.add("parentId", 1);
 
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
@@ -146,11 +148,14 @@ public class FileServiceIT{
     @Test
     @Order(7)
     void testCreateDirectoryEndpoint() {
+        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/1", CustomFile.class);
+        CustomFile testDir = getResponse.getBody();
+
         CustomFile directory = new CustomFile();
         directory.setName("New Directory");
         directory.setType("directory");
         directory.setSize(0L);
-        directory.setParent(null);
+        directory.setParent(testDir);
 
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
@@ -175,11 +180,14 @@ public class FileServiceIT{
     @Test
     @Order(8)
     void testCreateDirectoryEndpoint400() {
+        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/1", CustomFile.class);
+        CustomFile testDir = getResponse.getBody();
+
         CustomFile directory = new CustomFile();
         directory.setName("New Directory");
         directory.setType("directory");
         directory.setSize(0L);
-        directory.setParent(null);
+        directory.setParent(testDir);
 
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
@@ -201,12 +209,14 @@ public class FileServiceIT{
     @AfterAll
     static void cleanup() throws IOException {
         // Delete the uploads directory after all tests have completed
-        Path uploadsPath = Paths.get(System.getProperty("user.dir") + "/uploads");
+        Path uploadsPath = Paths.get(System.getProperty("user.dir") + "/uploads/testDir");
         if (Files.exists(uploadsPath)) {
             Files.walk(uploadsPath)
+                    .sorted(Comparator.reverseOrder()) // Reverse order to delete files first
                     .map(Path::toFile)
                     .forEach(File::delete);
             Files.deleteIfExists(uploadsPath);
         }
     }
+
 }
