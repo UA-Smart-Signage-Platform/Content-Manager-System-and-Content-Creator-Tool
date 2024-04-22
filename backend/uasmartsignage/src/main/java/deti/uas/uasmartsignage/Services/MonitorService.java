@@ -39,12 +39,13 @@ public class MonitorService {
     public Monitor updateMonitor(Long id, Monitor monitor) {
         Monitor monitorById = monitorRepository.getReferenceById(id);
         MonitorsGroup group = monitorById.getGroup();
+        monitorById.setName(monitor.getName());
+        monitorById.setGroup(monitor.getGroup());
+        Monitor returnMonitor = monitorRepository.save(monitorById);
         if (group.isMadeForMonitor()) {
             monitorGroupRepository.deleteById(group.getId());
         }
-        monitorById.setName(monitor.getName());
-        monitorById.setGroup(monitor.getGroup());
-        return monitorRepository.save(monitorById);
+        return returnMonitor;
     }
 
     public Monitor updatePending(Long id,boolean pending){
