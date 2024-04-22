@@ -14,33 +14,56 @@ import java.util.List;
 public class ScheduleService {
 
 
-        private final ScheduleRepository scheduleRepository;
-        private final MonitorGroupRepository groupRepository;
+    private final ScheduleRepository scheduleRepository;
+    private final MonitorGroupRepository groupRepository;
 
-        @Autowired
-        public ScheduleService(ScheduleRepository scheduleRepository, MonitorGroupRepository groupRepository) {
-            this.scheduleRepository = scheduleRepository;
-            this.groupRepository = groupRepository;
-        }
+    @Autowired
+    public ScheduleService(ScheduleRepository scheduleRepository, MonitorGroupRepository groupRepository) {
+        this.scheduleRepository = scheduleRepository;
+        this.groupRepository = groupRepository;
+    }
 
 
-        public Schedule getScheduleById(Long id) {
+    /**
+     * Retrieves and returns a Schedule by its id.
+     * @param id The id of the Schedule to retrieve.
+     * @return Schedule with the given id.
+     */
+    public Schedule getScheduleById(Long id) {
             return scheduleRepository.findById(id).orElse(null);
-        }
+    }
 
-        public Schedule saveSchedule(Schedule schedule) {
-            return scheduleRepository.save(schedule);
-        }
+    /**
+     * Saves a Schedule to the database.
+     * @param schedule The Schedule to save.
+     * @return The saved Schedule.
+     */
+    public Schedule saveSchedule(Schedule schedule) {
+        return scheduleRepository.save(schedule);
+    }
 
-        public void deleteSchedule(Long id) {
-            scheduleRepository.deleteById(id);
-        }
+    /**
+     * Deletes a Schedule from the database.
+     * @param id The id of the Schedule to delete.
+     */
+    public void deleteSchedule(Long id) {
+        scheduleRepository.deleteById(id);
+    }
 
-        public Schedule updateSchedule(Schedule schedule) {
-            return scheduleRepository.save(schedule);
-        }
+    /**
+     * Updates a Schedule in the database.
+     * @param schedule The Schedule to update.
+     * @return The updated Schedule.
+     */
+    public Schedule updateSchedule(Schedule schedule) {
+        return scheduleRepository.save(schedule);
+    }
 
-        public Iterable<Schedule> getAllSchedules() {
-            return scheduleRepository.findAll();
-        }
+    /**
+     * Retrieves and returns a list of all Schedules.
+     * @return A list of all Schedules.
+     */
+    public List<Schedule> getAllSchedules() {
+        return scheduleRepository.findAll();
+    }
 }

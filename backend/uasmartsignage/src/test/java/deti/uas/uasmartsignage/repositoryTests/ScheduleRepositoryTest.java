@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
@@ -17,7 +18,7 @@ import deti.uas.uasmartsignage.Models.User;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 
 @DataJpaTest
-public class ScheduleRepositoryTest {
+class ScheduleRepositoryTest {
     @Autowired
     TestEntityManager entityManager;
 
@@ -92,7 +93,7 @@ public class ScheduleRepositoryTest {
         entityManager.persistAndFlush(schedule1);
         entityManager.persistAndFlush(schedule2);
 
-        Iterable<Schedule> found = repository.findAll();
+        List<Schedule> found = repository.findAll();
 
         assertThat(found).hasSize(2).contains(schedule1, schedule2);
     }

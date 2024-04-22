@@ -30,7 +30,10 @@ public class ScheduleController {
     })
     @GetMapping
     public ResponseEntity<List<Schedule>> getAllSchedules() {
-        List<Schedule> schedules = (List<Schedule>) scheduleService.getAllSchedules();
+        List<Schedule> schedules = scheduleService.getAllSchedules();
+        if (schedules.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(schedules, HttpStatus.OK);
     }
 
@@ -86,6 +89,9 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<Schedule> saveSchedule(@RequestBody Schedule schedule) {
         Schedule savedSchedule = scheduleService.saveSchedule(schedule);
+        if (savedSchedule == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(savedSchedule, HttpStatus.CREATED);
     }
 

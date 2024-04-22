@@ -27,7 +27,7 @@ import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
 @ExtendWith(MockitoExtension.class)
-public class ScheduleServiceTest {
+class ScheduleServiceTest {
     @Mock
     private ScheduleRepository repository;
 

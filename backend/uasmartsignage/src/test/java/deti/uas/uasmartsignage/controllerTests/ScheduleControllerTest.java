@@ -38,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ScheduleController.class)
 @ActiveProfiles("test")
-public class ScheduleControllerTest {
+class ScheduleControllerTest {
     @Autowired
     private MockMvc mvc;
 
@@ -150,7 +150,6 @@ public class ScheduleControllerTest {
     }
 
     @Test
-    @Disabled
     void testDeleteScheduleEndpoint() throws Exception{
         User user = new User();
         user.setUsername("admin");
@@ -171,7 +170,7 @@ public class ScheduleControllerTest {
         schedule.setLastEditedBy(user);
         schedule.setMonitorsGroupForSchedules(group);
 
-        service.deleteSchedule(1L);
+        when(service.getScheduleById(1L)).thenReturn(schedule);
 
         mvc.perform(delete("/api/schedules/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
