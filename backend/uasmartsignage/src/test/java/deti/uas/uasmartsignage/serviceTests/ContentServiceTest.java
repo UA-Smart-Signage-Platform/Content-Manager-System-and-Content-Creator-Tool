@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 
@@ -61,10 +62,16 @@ public class ContentServiceTest {
         }
 
         @Test
-        @Disabled
         void whenDeleteContent_thenVerifyRepositoryDelete() {
+            Content content = new Content();
+            content.setName("New Content");
+            content.setType("type");
+            content.setDescription("description");
+            content.setWidget(null);
+            content.setOptions(new ArrayList<>());
             service.deleteContent(1L);
             verify(repository, times(1)).deleteById(1L);
+            assertFalse(repository.existsById(1L));
         }
 
         @Test

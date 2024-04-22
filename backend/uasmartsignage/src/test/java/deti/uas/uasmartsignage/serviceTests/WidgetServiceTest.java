@@ -2,7 +2,7 @@ package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +70,38 @@ public class WidgetServiceTest {
         assertThat(found).hasSize(2).extracting(Widget::getName).contains("widget1", "widget2");
     }
 
-    //missing delete and update tests
+    @Test
+    void whenDeleteWidget_thenVerifyRepositoryDelete() {
+        Widget widget = new Widget();
+        widget.setName("widget");
+        widget.setPath("path");
+        widget.setContents(List.of(new Content()));
+
+        service.deleteWidget(1L);
+
+        verify(repository, times(1)).deleteById(1L);
+        assertFalse(repository.existsById(1L));
+    }
+
+    @Test
+    void whenUpdateWidget_thenReturnUpdatedWidget() {
+        Widget widget = new Widget();
+        widget.setName("widget");
+        widget.setPath("path");
+        widget.setContents(List.of(new Content()));
+        when(repository.findById(1L)).thenReturn(Optional.of(widget));
+        when(repository.save(widget)).thenReturn(widget);
+
+        Widget newwidget = new Widget();
+        newwidget.setName("newWidget");
+        newwidget.setPath("newPath");
+        newwidget.setContents(List.of(new Content()));
+
+        Widget updatedWidget = service.updateWidget(1L, newwidget);
+
+        assertThat(updatedWidget.getName()).isEqualTo("newWidget");
+        assertThat(updatedWidget.getPath()).isEqualTo("newPath");
+    }
 
 
 }

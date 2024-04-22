@@ -44,19 +44,10 @@ public class WidgetRepositoryTest {
         template.setName("template");
         entityManager.persistAndFlush(template);
 
-        /*TemplateWidget templatewidget = new TemplateWidget();
-        templatewidget.setTop(1);
-        templatewidget.setLeftPosition(1);
-        templatewidget.setWidth(1);
-        templatewidget.setHeight(1);
-        templatewidget.setTemplate(template);
-        entityManager.persistAndFlush(templatewidget);*/
-
         Widget widget1 = new Widget();
         widget1.setName("widget1");
         widget1.setPath("path");
         widget1.setContents(List.of(content));
-        //widget1.setTemplateWidgets(List.of(templatewidget));
         entityManager.persistAndFlush(widget1);
 
         Widget widget2 = new Widget();
@@ -82,19 +73,10 @@ public class WidgetRepositoryTest {
         template.setName("template");
         entityManager.persistAndFlush(template);
 
-        /*TemplateWidget templatewidget = new TemplateWidget();
-        templatewidget.setTop(1);
-        templatewidget.setLeftPosition(1);
-        templatewidget.setWidth(1);
-        templatewidget.setHeight(1);
-        templatewidget.setTemplate(template);
-        entityManager.persistAndFlush(templatewidget);*/
-
         Widget widget = new Widget();
         widget.setName("widget");
         widget.setPath("path");
         widget.setContents(List.of(content));
-        //widget.setTemplateWidgets(List.of(templatewidget));
         entityManager.persistAndFlush(widget);
 
         Widget found = repository.findById(widget.getId()).get();
@@ -114,19 +96,10 @@ public class WidgetRepositoryTest {
         template.setName("template");
         entityManager.persistAndFlush(template);
 
-        /*TemplateWidget templatewidget = new TemplateWidget();
-        templatewidget.setTop(1);
-        templatewidget.setLeftPosition(1);
-        templatewidget.setWidth(1);
-        templatewidget.setHeight(1);
-        templatewidget.setTemplate(template);
-        entityManager.persistAndFlush(templatewidget);*/
-
         Widget widget = new Widget();
         widget.setName("widget");
         widget.setPath("path");
         widget.setContents(List.of(content));
-        //widget.setTemplateWidgets(List.of(templatewidget));
         entityManager.persistAndFlush(widget);
 
         repository.delete(widget);
