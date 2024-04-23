@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
-import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
 
 import java.util.List;
 
@@ -15,12 +13,10 @@ public class ScheduleService {
 
 
     private final ScheduleRepository scheduleRepository;
-    private final MonitorGroupRepository groupRepository;
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository, MonitorGroupRepository groupRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository) {
         this.scheduleRepository = scheduleRepository;
-        this.groupRepository = groupRepository;
     }
 
 
