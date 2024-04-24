@@ -48,9 +48,9 @@ function Root(){
             let seconds = data.expires_in;
             
             try {
-              await Promise.all([
-                setWithExpiry('access_token', data.access_token, seconds * 1000),
-            ]);
+              
+                setWithExpiry('access_token', data.access_token, seconds * 1000)
+            
               const permissions = await getInfo();
               console.log("permissions", permissions);
               
@@ -61,11 +61,11 @@ function Root(){
                   return;
               }
   
-              await Promise.all([
-                  setWithExpiry('access_token', data.access_token, seconds * 1000),
-                  setWithExpiry('id_token', data.id_token, seconds * 1000),
-                  localStorage.setItem('refresh_token', data.refresh_token)
-              ]);
+              
+                setWithExpiry('access_token', data.access_token, seconds * 1000)
+                setWithExpiry('id_token', data.id_token, seconds * 1000)
+                localStorage.setItem('refresh_token', data.refresh_token)
+              
               
                 navigate("/dashboard");
   
@@ -105,11 +105,11 @@ function Root(){
             
             let seconds = data.expires_in;
     
-            await Promise.all([
-                setWithExpiry('access_token', data.access_token, seconds * 1000),
-                setWithExpiry('id_token', data.id_token, seconds * 1000),
-                localStorage.setItem('refresh_token', data.refresh_token)
-            ]);
+            
+            setWithExpiry('access_token', data.access_token, seconds * 1000)
+            setWithExpiry('id_token', data.id_token, seconds * 1000)
+            localStorage.setItem('refresh_token', data.refresh_token)
+            
 
 
     

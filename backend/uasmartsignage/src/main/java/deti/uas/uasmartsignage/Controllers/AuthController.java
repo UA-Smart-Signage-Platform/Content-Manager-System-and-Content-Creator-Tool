@@ -27,6 +27,10 @@ import deti.uas.uasmartsignage.Services.jwtUtil;
 
 import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -48,6 +52,11 @@ public class AuthController {
 
     
 
+    @Operation(summary = "Create authentication token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token created", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @PostMapping
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
         
@@ -64,6 +73,11 @@ public class AuthController {
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
 
+    @Operation(summary = "Change password")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password changed", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
@@ -82,6 +96,10 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Get user info")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User info", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+    })
     @GetMapping("/info")
     public ResponseEntity<Map<String, String>> getUserInfo() {
         Authentication authentication = authenticationFacade.getAuthentication();
