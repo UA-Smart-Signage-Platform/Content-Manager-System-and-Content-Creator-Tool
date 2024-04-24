@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import loginService from '../../services/loginService';
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +25,13 @@ const Wso2Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('id_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('userInfo');
+  }, []);
 
   const getInfo = async () => {
     try {

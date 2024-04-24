@@ -44,6 +44,7 @@ public class SecurityConfig {
             .and()
             .authorizeRequests()
             .requestMatchers("/api/login").permitAll()
+            .requestMatchers("/api/login/change-password").hasRole("ADMIN")
             .requestMatchers("/api/users/**").hasRole("ADMIN")
             .anyRequest().hasAnyRole("ADMIN", "USER")
             .and()

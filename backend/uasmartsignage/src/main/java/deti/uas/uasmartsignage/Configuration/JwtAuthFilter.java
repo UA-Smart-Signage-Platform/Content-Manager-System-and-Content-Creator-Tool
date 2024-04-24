@@ -21,9 +21,6 @@ import org.springframework.http.ResponseEntity;
 import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -54,21 +51,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Check if the token is not null and starts with Bearer
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             token = authorizationHeader.substring(7);
-            System.out.println("Token: " + token);
             
             try {
                 // Try to extract username using jwtUtil
                 username = jwtUtil.extractUsername(token);
-                System.out.println("Username from jwtUtil: " + username);
             } catch (Exception e) {
-                System.out.println("Failed to extract username from jwtUtil, trying another method");
+                logger.error("Failed to extract username from jwtUtil, trying to extract from IDP");
                 
                 try {
                     // Try to extract username using Ua IDP
                     username = getUsernameFromToken(token);
-                    System.out.println("Username from getUsernameFromToken: " + username);
                 } catch (Exception ex) {
-                    System.out.println("Failed to extract username from token");
+                    logger.error("Failed to extract username from token");
                 }
             }
         }
@@ -87,6 +81,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    // Calls the UA IDP to get the username from the token
     private String getUsernameFromToken(String token) throws JsonProcessingException {
         String idpUserinfoEndpoint = "https://wso2-gw.ua.pt/userinfo";
         HttpHeaders headers = new HttpHeaders();
@@ -106,10 +101,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
            
             JsonElement jsonElement = JsonParser.parseString(response.getBody());
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            String email = jsonObject.get("email").getAsString();
             
-            System.out.println("Email: " + email);
-            return email;
+            return jsonObject.get("email").getAsString();
         } else {
             throw new RuntimeException("Failed to fetch username from IDP");
         }
