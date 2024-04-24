@@ -1,0 +1,159 @@
+package deti.uas.uasmartsignage.controllerTests;
+
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import deti.uas.uasmartsignage.Models.Content;
+import deti.uas.uasmartsignage.Models.Monitor;
+import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Services.ContentService;
+import deti.uas.uasmartsignage.Services.WidgetService;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.web.servlet.MockMvc;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+
+import deti.uas.uasmartsignage.Controllers.WidgetController;
+import deti.uas.uasmartsignage.Models.Widget;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@WebMvcTest(WidgetController.class)
+@ActiveProfiles("test")
+class WidgetControllerTest {
+
+        @Autowired
+        private MockMvc mvc;
+
+        @MockBean
+        private WidgetService service;
+
+        @MockBean
+        private ContentService contentService;//can be erased in the controller??
+
+        private ObjectMapper objectMapper = new ObjectMapper();
+
+        @Test
+        void testGetAllWidgetsEndpoint() throws Exception{
+            Content content = new Content();
+            content.setName("content");
+            content.setType("type");
+            content.setDescription("description");
+
+            Widget widget1 = new Widget();
+            widget1.setName("widget1");
+            widget1.setPath("path");
+            widget1.setContents(List.of(content));
+
+            Widget widget2 = new Widget();
+            widget2.setName("widget2");
+            widget2.setPath("path");
+            widget2.setContents(List.of(content));
+
+            when(service.getAllWidgets()).thenReturn(Arrays.asList(widget1,widget2));
+
+            mvc.perform(get("/widgets").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].name", is("widget1")))
+                .andExpect(jsonPath("$[1].name", is("widget2")));
+        }
+
+        @Test
+        void testGetWidgetByIdEndpoint() throws Exception{
+            Content content = new Content();
+            content.setName("content");
+            content.setType("type");
+            content.setDescription("description");
+
+            Template template = new Template();
+            template.setName("template");
+
+            Widget widget = new Widget();
+            widget.setName("widget");
+            widget.setPath("path");
+            widget.setContents(List.of(content));
+
+            when(service.getWidgetById(1L)).thenReturn(widget);
+
+            mvc.perform(get("/widgets/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("widget")));
+        }
+
+        @Test
+        void testSaveWidgetEndpoint() throws Exception{
+            Content content = new Content();
+            content.setName("content");
+            content.setType("type");
+            content.setDescription("description");
+
+            Template template = new Template();
+            template.setName("template");
+
+            Widget widget = new Widget();
+            widget.setName("widget");
+            widget.setPath("path");
+            widget.setContents(List.of(content));
+
+            when(service.saveWidget(Mockito.any(Widget.class))).thenReturn(widget);
+
+            mvc.perform(post("/widgets").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name", is("widget")));
+        }
+
+
+        @Test
+        void testDeleteWidgetEndpoint() throws Exception{
+            Content content = new Content();
+            content.setName("content");
+            content.setType("type");
+            content.setDescription("description");
+
+            Template template = new Template();
+            template.setName("template");
+
+            Widget widget = new Widget();
+            widget.setName("widget");
+            widget.setPath("path");
+            widget.setContents(List.of(content));
+
+            //when(service.getWidgetById(1L)).thenReturn(widget);
+
+            mvc.perform(delete("/widgets/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+        }
+
+        @Test
+        void testUpdateWidgetEndpoint() throws Exception{
+            Widget widget = new Widget();
+            widget.setName("updated_widget");
+            widget.setPath("new_path");
+
+            when(service.updateWidget(Mockito.anyLong(), Mockito.any())).thenReturn(widget);
+
+            mvc.perform(put("/widgets/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is("updated_widget")))
+                .andExpect(jsonPath("$.path", is("new_path")));
+        }
+}

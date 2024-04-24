@@ -173,7 +173,7 @@ class ScheduleControllerTest {
         when(service.getScheduleById(1L)).thenReturn(schedule);
 
         mvc.perform(delete("/api/schedules/1").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
     }
 
     //missing update test

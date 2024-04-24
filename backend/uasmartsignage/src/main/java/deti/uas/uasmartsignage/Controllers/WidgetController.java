@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.Controllers;
 
 
-import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Services.WidgetService;
