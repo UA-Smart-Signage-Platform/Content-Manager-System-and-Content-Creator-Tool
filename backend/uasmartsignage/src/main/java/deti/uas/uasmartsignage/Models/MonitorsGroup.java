@@ -35,6 +35,9 @@ public class MonitorsGroup {
     @JsonIgnoreProperties("group")
     private TemplateGroup templateGroup;
 
+    @OneToMany(mappedBy = "monitorsGroupForSchedules", cascade = CascadeType.ALL)
+   private List<Schedule> schedules;
+
     @Override
     public String toString() {
         return "MonitorsGroup [id=" + id + ", name=" + name

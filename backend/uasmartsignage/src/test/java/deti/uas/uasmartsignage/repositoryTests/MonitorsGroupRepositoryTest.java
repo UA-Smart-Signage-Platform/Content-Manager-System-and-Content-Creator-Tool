@@ -28,13 +28,13 @@ public class MonitorsGroupRepositoryTest {
     @Test void
     findAllByMonitorsPendingFalse(){
         Monitor m1 = new Monitor(null, "m1", 0, 0, UUID.randomUUID().toString(), false, null);
-        MonitorsGroup g1 = new MonitorsGroup(null, "g1", false, "bom grupo", null, null);
+        MonitorsGroup g1 = new MonitorsGroup(null, "g1", false, "bom grupo", null, null, null);
         repository.save(g1);
         m1.setGroup(g1);
         monitorRepository.save(m1);
 
         Monitor m2 = new Monitor(null, "m2", 0, 0, UUID.randomUUID().toString(), true, null);
-        MonitorsGroup g2 = new MonitorsGroup(null, "g2", false, "bom grupo 2", null, null);
+        MonitorsGroup g2 = new MonitorsGroup(null, "g2", false, "bom grupo 2", null, null,null);
         repository.save(g2);
         m2.setGroup(g2);
         monitorRepository.save(m2);
@@ -46,9 +46,9 @@ public class MonitorsGroupRepositoryTest {
 
     @Test void
     findAllByMadeForMonitorFalse(){
-        MonitorsGroup g1 = new MonitorsGroup(null, "g1", true, "bom grupo", null, null);
-        MonitorsGroup g2 = new MonitorsGroup(null, "g2", false, "bom grupo", null, null);
-        MonitorsGroup g3 = new MonitorsGroup(null, "g3", false, "bom grupo", null, null);
+        MonitorsGroup g1 = new MonitorsGroup(null, "g1", true, "bom grupo", null, null,null);
+        MonitorsGroup g2 = new MonitorsGroup(null, "g2", false, "bom grupo", null, null,null);
+        MonitorsGroup g3 = new MonitorsGroup(null, "g3", false, "bom grupo", null, null,null);
 
         repository.saveAll(Arrays.asList(g1,g2,g3));
 
