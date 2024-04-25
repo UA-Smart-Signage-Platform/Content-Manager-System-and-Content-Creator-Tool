@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Services;
 
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,12 @@ public class MonitorService {
 
     private final MonitorRepository monitorRepository;
 
-    @Autowired
+    private final MonitorGroupRepository monitorGroupRepository;
+
+
     public MonitorService(MonitorRepository monitorRepository, MonitorGroupRepository monitorGroupRepository){
         this.monitorRepository = monitorRepository;
+        this.monitorGroupRepository = monitorGroupRepository;
     }
 
     public Monitor getMonitorById(Long id) {
@@ -34,19 +38,18 @@ public class MonitorService {
     
     public Monitor updateMonitor(Long id, Monitor monitor) {
         Monitor monitorById = monitorRepository.getReferenceById(id);
-        if (monitorById == null) {
-            return null;
-        }
+        MonitorsGroup group = monitorById.getGroup();
         monitorById.setName(monitor.getName());
         monitorById.setGroup(monitor.getGroup());
-        return monitorRepository.save(monitorById);
+        Monitor returnMonitor = monitorRepository.save(monitorById);
+        if (group.isMadeForMonitor()) {
+            monitorGroupRepository.deleteById(group.getId());
+        }
+        return returnMonitor;
     }
 
     public Monitor updatePending(Long id,boolean pending){
         Monitor monitorById = monitorRepository.getReferenceById(id);
-        if (monitorById == null){
-            return null;
-        }
         monitorById.setPending(pending);
         return monitorRepository.save(monitorById);
     }
@@ -59,10 +62,4 @@ public class MonitorService {
         return monitorRepository.findByPendingAndGroup_Id(false,groupId);
     }
 
-    public Monitor getMonitorByLocation(String location) {
-        return monitorRepository.findByName(location);
-    }
-
-    
-    
 }

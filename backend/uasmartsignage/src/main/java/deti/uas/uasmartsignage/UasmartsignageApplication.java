@@ -2,9 +2,11 @@ package deti.uas.uasmartsignage;
 
 import java.util.List;
 
+import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 
 import deti.uas.uasmartsignage.Models.CustomFile;
@@ -29,6 +31,7 @@ import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
+@EnableConfigurationProperties(InfluxDBProperties.class)
 public class UasmartsignageApplication {
 	/*
 	private final FileService fileService;
