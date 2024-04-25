@@ -42,8 +42,8 @@ public class MonitorController {
     @GetMapping
     public ResponseEntity<?> getAllMonitors() {
 
-        Authentication authentication = authenticationFacade.getAuthentication();
-        System.out.println(authentication.getName());
+        //Authentication authentication = authenticationFacade.getAuthentication();
+        //System.out.println(authentication.getName());
         
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(false);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
