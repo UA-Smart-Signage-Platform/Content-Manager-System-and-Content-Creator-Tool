@@ -75,7 +75,7 @@ function Monitors(){
         },
         {
             name: 'Group',
-            selector: row => row.group.name,
+            selector: row => !row.group.madeForMonitor ? row.group.name:"-----",
             sortable: true,
         },
         {

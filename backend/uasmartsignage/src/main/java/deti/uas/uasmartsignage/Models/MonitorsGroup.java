@@ -27,7 +27,7 @@ public class MonitorsGroup {
     @Column
     private String description;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group")
     @JsonIgnoreProperties("group")
     private List<Monitor> monitors;
 
