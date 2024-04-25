@@ -5,9 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
+import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Services.ScheduleService;
+import deti.uas.uasmartsignage.Services.jwtUtil;
 import org.hibernate.validator.constraints.time.DurationMax;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -44,6 +47,16 @@ class ScheduleControllerTest {
 
     @MockBean
     private ScheduleService service;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private deti.uas.uasmartsignage.Services.jwtUtil jwtUtil;
+
+    @MockBean
+    private IAuthenticationFacade authenticationFacade;
+
 
     private ObjectMapper objectMapper = new ObjectMapper();
 

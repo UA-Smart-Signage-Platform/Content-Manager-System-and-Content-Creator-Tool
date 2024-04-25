@@ -4,6 +4,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
+import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import static org.hamcrest.Matchers.is;
 import deti.uas.uasmartsignage.Controllers.MonitorController;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.Services.jwtUtil;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,6 +38,15 @@ public class MonitorControllerTest {
     
     @Autowired
     private MockMvc mvc;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private jwtUtil jwtUtil;
+
+    @MockBean
+    private IAuthenticationFacade authenticationFacade;
 
     @MockBean 
     private MonitorService service;
