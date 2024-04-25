@@ -21,7 +21,7 @@ import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Services.ContentService;
 
 @ExtendWith(MockitoExtension.class)
-public class ContentServiceTest {
+class ContentServiceTest {
 
         @Mock
         private ContentRepository repository;
@@ -104,5 +104,28 @@ public class ContentServiceTest {
                 assertThat(update.getName()).isEqualTo("Updated Content");
                 assertThat(update.getType()).isEqualTo("type1");
         }
+
+        @Test
+    void testFindByAllContent() {
+        Content content = new Content();
+        content.setName("New Content");
+        content.setType("type");
+        content.setDescription("description");
+        content.setWidget(null);
+        content.setOptions(new ArrayList<>());
+
+        Content content2 = new Content();
+        content2.setName("New Content2");
+        content2.setType("type2");
+        content2.setDescription("description2");
+        content2.setWidget(null);
+        content2.setOptions(new ArrayList<>());
+
+        when(repository.findAll()).thenReturn(java.util.Arrays.asList(content, content2));
+
+        Iterable<Content> contents = service.getAllContents();
+
+        assertThat(contents).hasSize(2).contains(content, content2);
+    }
 
 }

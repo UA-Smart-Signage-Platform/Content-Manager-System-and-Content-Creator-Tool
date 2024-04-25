@@ -112,5 +112,24 @@ class TemplateControllerTest {
                 verify(service).deleteTemplate(1L);//checks if deleteTemplate is called with id 1L
             }
 
+            @Test
+            void testGetTemplateByIdEndpoint404() throws Exception{
+                when(service.getTemplateById(1L)).thenReturn(null);
+
+                mvc.perform(get("/api/templates/1").contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+            }
+
+            @Test
+            void testUpdateTemplateEndpoint404() throws Exception{
+                Template template = new Template();
+                template.setName("updated_template");
+                when(service.updateTemplate(Mockito.anyLong(), Mockito.any())).thenReturn(null);
+
+                mvc.perform(put("/api/templates/1000").contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(template)))
+                        .andExpect(status().isNotFound());
+            }
+
 
 }

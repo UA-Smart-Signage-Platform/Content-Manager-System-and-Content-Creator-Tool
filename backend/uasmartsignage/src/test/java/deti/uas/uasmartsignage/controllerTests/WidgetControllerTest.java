@@ -156,4 +156,24 @@ class WidgetControllerTest {
                 .andExpect(jsonPath("$.name", is("updated_widget")))
                 .andExpect(jsonPath("$.path", is("new_path")));
         }
+
+        @Test
+        void testGetWidgetByIdEndpoint404() throws Exception{
+            when(service.getWidgetById(1L)).thenReturn(null);
+
+            mvc.perform(get("/widgets/1").contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isNotFound());
+        }
+
+        @Test
+        void testUpdateWidgetEndpoint404() throws Exception{
+            Widget widget = new Widget();
+            widget.setName("widget");
+            widget.setPath("path");
+
+            when(service.updateWidget(Mockito.anyLong(), Mockito.any())).thenReturn(null);
+
+            mvc.perform(put("/widgets/10000").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
+                .andExpect(status().isNotFound());
+        }
 }

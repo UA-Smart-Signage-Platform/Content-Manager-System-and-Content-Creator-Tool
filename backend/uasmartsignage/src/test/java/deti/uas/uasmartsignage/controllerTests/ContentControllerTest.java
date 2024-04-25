@@ -157,5 +157,32 @@ class ContentControllerTest {
                     .andExpect(jsonPath("$.description", is("new DETI image")));
         }
 
+        @Test
+        void testGetContentByIdEndpoint404() throws Exception{
+            when(service.getContentById(1L)).thenReturn(null);
+
+            mvc.perform(get("/content/1").contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+        }
+
+        @Test
+        void testUpdateContentEndpoint404() throws Exception{
+            Widget widget = new Widget();
+            widget.setName("Widget");
+
+            Content content = new Content();
+            content.setName("Content");
+            content.setType("image");
+            content.setDescription("DETI image");
+            content.setWidget(widget);
+            content.setOptions(new ArrayList<>());
+
+            when(service.updateContent(Mockito.anyLong(), Mockito.any())).thenReturn(null);
+
+            mvc.perform(put("/content/1000").contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(content)))
+                    .andExpect(status().isNotFound());
+        }
+
 
 }
