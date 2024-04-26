@@ -1,16 +1,17 @@
 package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +25,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.ResourceUtils;
 
@@ -90,6 +95,18 @@ class FileServiceTest {
 
         // Clean up
         directory.delete();
+    }
+
+    @Test
+    void whenUpdateFileName_thenFileNotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        CustomFile updated = new CustomFile("Updated directory", "directory", 0L, null);
+        updated.setId(1L);
+
+        CustomFile saved = service.updateFileName(1L,updated);
+
+        assertThat(saved).isNull();
+        verify(repository, times(0)).save(updated);
     }
 
     @Test
@@ -229,6 +246,72 @@ class FileServiceTest {
         assertThat(repository.findByName(customFile.getName())).isEmpty();
         assertThat(directory).doesNotExist();
         verify(repository, times(1)).delete(customFile);
+    }
+
+    @Test
+    void whenDeleteFile_thenFileNotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        boolean deleted = service.deleteFile(1L);
+
+        assertThat(deleted).isFalse();
+        verify(repository, times(0)).delete(any());
+    }
+
+    @Test
+    void testDownloadFileById_FileExistsAndIsReadable() throws IOException {
+
+        // Creating a temporary file
+        Path tempFile = Files.createTempFile("test", ".png");
+        byte[] content = "Hello, World!".getBytes();
+        Files.write(tempFile, content);
+
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+                "file",                     // parameter name
+                tempFile.getFileName().toString(), // file name
+                "image/png",                // content type
+                Files.readAllBytes(tempFile) // content as byte array
+        );
+
+        FilesClass filesClass = new FilesClass(null, mockMultipartFile);
+        CustomFile savedFile = service.createFile(filesClass);
+
+        // Paths to the saved file and the root directory
+        Path filePath = Paths.get(savedFile.getPath());
+        String rootPath = System.getProperty("user.dir");
+        String fileDirectory = rootPath + "/uploads/";
+
+        when(repository.findById(1L)).thenReturn(Optional.of(savedFile));
+
+        ResponseEntity<Resource> response = service.downloadFileById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(filePath.getFileName().toString(), response.getBody().getFilename());
+
+        HttpHeaders headers = response.getHeaders();
+        assertTrue(headers.containsKey(HttpHeaders.CONTENT_DISPOSITION));
+        assertEquals("attachment; filename=\"" + filePath.getFileName().toString() + "\"",
+               headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
+
+
+        File file = new File(fileDirectory + savedFile.getName());
+        assertTrue(file.exists());
+
+        // Clean up
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    @Test
+    void testDownloadFileById_FileNotFound() throws MalformedURLException {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<Resource> response = service.downloadFileById(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
 }

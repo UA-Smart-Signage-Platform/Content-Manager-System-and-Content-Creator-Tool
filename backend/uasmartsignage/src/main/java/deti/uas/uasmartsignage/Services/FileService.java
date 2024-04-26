@@ -68,23 +68,6 @@ public class FileService {
 
 
     /**
-     * Retrieves and returns CustomFile with the specified name from the file repository.
-     * 
-     * @param fileName The name of the CustomFile to retrieve.
-     * @return The CustomFile with the specified name, or {@code null} if no such file exists.
-     */
-    public Optional<CustomFile> getFileByName(String fileName) {
-        logger.info("Retrieving file with name: {}", fileName);
-        Optional<CustomFile> file = fileRepository.findByName(fileName);
-
-        if (file.isEmpty()) {
-            logger.warn("File with name '{}' not found", fileName);
-        }
-        return file;
-    }
-
-
-    /**
      * Creates CustomFile in the repository. If the file type is "directory", a directory is created.
      *
      * @param customFile The CustomFile to create.
