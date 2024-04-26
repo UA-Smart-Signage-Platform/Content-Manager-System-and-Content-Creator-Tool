@@ -24,23 +24,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=files-test"})
-@Testcontainers
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class FileServiceIT{
+class FileServiceIT extends BaseIntegrationTest{
 
-    @Container
-    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
-            .withDatabaseName("uasmartsignageIT")
-            .withUsername("integrationTest")
-            .withPassword("test");
-
-    @DynamicPropertySource
-    static void properties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-    }
 
     @LocalServerPort
     private int port;
@@ -51,7 +36,7 @@ public class FileServiceIT{
     @Test
     @Order(1)
     void testGetFileByIdEndpoint() throws IOException{
-        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/3", CustomFile.class);
+        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" +  port  + "/api/files/3", CustomFile.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, Objects.requireNonNull(response.getBody()).getId());
         assertEquals("test1.png", response.getBody().getName());

@@ -28,22 +28,7 @@ import org.junit.jupiter.api.BeforeAll;
 
 import java.util.List;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
-@Testcontainers
-public class MonitorIT{
-        @Container
-        public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
-                .withDatabaseName("uasmartsignageIT")
-                .withUsername("integrationTest")
-                .withPassword("test");
-
-
-        @DynamicPropertySource
-        static void properties(DynamicPropertyRegistry registry) {
-            registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
-            registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
-            registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
-        }
+class MonitorIT extends BaseIntegrationTest{
 
         @LocalServerPort
         private int port;
