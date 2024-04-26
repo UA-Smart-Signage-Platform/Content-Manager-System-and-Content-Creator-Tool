@@ -33,6 +33,10 @@ class FileServiceIT extends BaseIntegrationTest{
     @Autowired
     private TestRestTemplate restTemplate;
 
+    // Important!!!!
+    // The tests are ordered because they depend on each other
+    // Last one is needed to clean up
+
     @Test
     @Order(1)
     void testGetFileByIdEndpoint() throws IOException{
@@ -214,8 +218,33 @@ class FileServiceIT extends BaseIntegrationTest{
     }
 
     @Test
+    @Order(10)
+    void testUpdateFileEndpoint400() throws IOException  {
+        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/3", CustomFile.class);
+        CustomFile file = getResponse.getBody();
+
+        file.setName("UpdatedFile.txt");
+
+        // Set up the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        // Create the HTTP entity with headers and request body
+        HttpEntity<CustomFile> requestEntity = new HttpEntity<>(file, headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/files/100",
+                HttpMethod.PUT,
+                requestEntity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
     @Order(999)
-        // Clean up
+    // Clean up
     void testDeleteFileByIdWithDirectoryEndpoint() {
         ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, null, String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
