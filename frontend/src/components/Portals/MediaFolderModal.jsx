@@ -2,8 +2,9 @@ import { createPortal } from 'react-dom';
 import { MdArrowBack } from "react-icons/md";
 import { useState } from 'react';
 import mediaService from '../../services/mediaService';
+import PropTypes from 'prop-types';
 
-function MediaFolderModal( { showPortal, setShowPortal, currentFolder } ) {
+function MediaFolderModal( { showPortal, setShowPortal, currentFolder, updater, setUpdater } ) {
 
     const [folderName, setFolderName] = useState(null);
 
@@ -16,6 +17,7 @@ function MediaFolderModal( { showPortal, setShowPortal, currentFolder } ) {
         }
 
         await mediaService.createFolder(folder);
+        setUpdater(!updater);
         setShowPortal(false);
     }
     return (
@@ -48,6 +50,14 @@ function MediaFolderModal( { showPortal, setShowPortal, currentFolder } ) {
         )}
     </>
 );
+}
+
+MediaFolderModal.propTypes = {
+    showPortal: PropTypes.bool.isRequired,
+    setShowPortal: PropTypes.func.isRequired,
+    currentFolder: PropTypes.number.isRequired,
+    updater: PropTypes.bool.isRequired,
+    setUpdater: PropTypes.func.isRequired,
 }
 
 export default MediaFolderModal;

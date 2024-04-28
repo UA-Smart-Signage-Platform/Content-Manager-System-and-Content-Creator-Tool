@@ -2,8 +2,6 @@ package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -14,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import deti.uas.uasmartsignage.Models.Monitor;
@@ -33,7 +30,7 @@ class MonitorServiceTest {
     getMonitorByIdTestReturnsMonitor(){
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
-        monitor.setIp("192.1.2");
+        monitor.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor.setPending(false);
         when(repository.findById(1L)).thenReturn(Optional.of(monitor));
 
@@ -46,7 +43,7 @@ class MonitorServiceTest {
     whenServiceSaveThenRepositorySave(){
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
-        monitor.setIp("192.1.2");
+        monitor.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor.setPending(false);
         when(repository.save(monitor)).thenReturn(monitor);
 
@@ -68,13 +65,13 @@ class MonitorServiceTest {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setGroup(group1);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor.setPending(false);
 
         Monitor monitorUpdated = new Monitor();
         monitorUpdated.setGroup(group2);
         monitorUpdated.setName("Name");
-        monitorUpdated.setIp("192.1.2");
+        monitorUpdated.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitorUpdated.setPending(false);
 
         when(repository.save(monitor)).thenReturn(monitor);
@@ -97,7 +94,7 @@ class MonitorServiceTest {
         monitor.setId(1L);
         monitor.setName("monitor");
         monitor.setGroup(group2);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor.setPending(true);
 
         when(repository.save(monitor)).thenReturn(monitor);
@@ -121,13 +118,13 @@ class MonitorServiceTest {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setGroup(group1);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor.setPending(false);
 
         Monitor monitor2 = new Monitor();
         monitor2.setGroup(group2);
         monitor2.setName("Name");
-        monitor2.setIp("192.1.2");
+        monitor2.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor2.setPending(false);
 
         when(repository.findByPending(false)).thenReturn(Arrays.asList(monitor,monitor2));
@@ -146,13 +143,13 @@ class MonitorServiceTest {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setGroup(group1);
-        monitor.setIp("192.1.2");
+        monitor.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor.setPending(false);
 
         Monitor monitor2 = new Monitor();
         monitor2.setGroup(group1);
         monitor2.setName("Name");
-        monitor2.setIp("192.1.2");
+        monitor2.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitor2.setPending(false);
 
         when(repository.findByPendingAndGroup_Id(false, 1L)).thenReturn(Arrays.asList(monitor,monitor2));

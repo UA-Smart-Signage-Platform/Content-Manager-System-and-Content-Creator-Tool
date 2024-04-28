@@ -22,13 +22,21 @@ public class MonitorsGroup {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    private boolean madeForMonitor;
+
+    private String description;
+
+    @OneToMany(mappedBy = "group")
     @JsonIgnoreProperties("group")
     private List<Monitor> monitors;
 
     @OneToOne(mappedBy = "group", cascade = CascadeType.ALL)
     @JsonIgnoreProperties("group")
     private TemplateGroup templateGroup;
+
+    @OneToMany(mappedBy = "monitorsGroupForSchedules", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("monitorsGroupForSchedules")
+    private List<Schedule> schedules;
 
     @Override
     public String toString() {

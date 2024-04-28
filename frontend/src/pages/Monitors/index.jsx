@@ -27,10 +27,17 @@ function Monitors(){
 
 
     const customStyles = {
+        headRow: {
+            style: {
+                minHeight: '40px',
+                borderBottomWidth: '1px',
+                borderBottomStyle: 'solid',
+            },
+        },
         rows: {
             style: {
                 
-                minHeight: '72px', // override the row height
+                minHeight: '40px', // override the row height
             },
         },
         headCells: {
@@ -68,7 +75,7 @@ function Monitors(){
         },
         {
             name: 'Group',
-            selector: row => row.group.name,
+            selector: row => !row.group.madeForMonitor ? row.group.name:"-----",
             sortable: true,
         },
         {
@@ -80,12 +87,7 @@ function Monitors(){
             name: 'Status',
             selector: row => <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div>,
             sortable: true
-        },
-        {
-            name: 'IP',
-            selector: row => row.ip,
-            sortable: true
-        }
+        }   
     ];
 
 

@@ -32,14 +32,14 @@ class MonitorRepositoryTest {
         entityManager.flush();
 
         Monitor deti = new Monitor();
-        deti.setIp("192.178.1");
+        deti.setUuid("192.178.1");
         deti.setName("deti");
         deti.setPending(false);
         deti.setGroup(group);
         deti = repository.save(deti);
 
         Monitor hall = new Monitor();
-        hall.setIp("192.178.2");
+        hall.setUuid("192.178.2");
         hall.setName("hall");
         hall.setPending(false);
         hall.setGroup(group);
@@ -63,14 +63,14 @@ class MonitorRepositoryTest {
         entityManager.flush();
 
         Monitor deti = new Monitor();
-        deti.setIp("192.178.1");
+        deti.setUuid("192.178.1");
         deti.setName("deti");
         deti.setPending(false);
         deti.setGroup(group);
         deti = repository.save(deti);
 
         Monitor hall = new Monitor();
-        hall.setIp("192.178.2");
+        hall.setUuid("192.178.2");
         hall.setName("hall");
         hall.setPending(false);
         hall.setGroup(group);
@@ -78,7 +78,7 @@ class MonitorRepositoryTest {
 
         Monitor room = new Monitor();
         room.setName("room");
-        room.setIp("192.178.3");
+        room.setUuid("192.178.3");
         room.setPending(false);
         room.setGroup(group2);
         room = repository.save(room);
@@ -101,14 +101,14 @@ class MonitorRepositoryTest {
         entityManager.flush();
 
         Monitor deti = new Monitor();
-        deti.setIp("192.178.1");
+        deti.setUuid("192.178.1");
         deti.setName("deti");
         deti.setPending(true);
         deti.setGroup(group);
         deti = repository.save(deti);
 
         Monitor hall = new Monitor();
-        hall.setIp("192.178.2");
+        hall.setUuid("192.178.2");
         hall.setName("hall");
         hall.setPending(false);
         hall.setGroup(group);
@@ -116,7 +116,7 @@ class MonitorRepositoryTest {
 
         Monitor room = new Monitor();
         room.setName("room");
-        room.setIp("192.178.3");
+        room.setUuid("192.178.3");
         room.setPending(true);
         room.setGroup(group2);
         room = repository.save(room);
@@ -138,14 +138,14 @@ class MonitorRepositoryTest {
         entityManager.flush();
 
         Monitor deti = new Monitor();
-        deti.setIp("192.178.1");
+        deti.setUuid("192.178.1");
         deti.setName("deti");
         deti.setPending(true);
         deti.setGroup(group);
         deti = repository.save(deti);
 
         Monitor hall = new Monitor();
-        hall.setIp("192.178.2");
+        hall.setUuid("192.178.2");
         hall.setName("hall");
         hall.setPending(false);
         hall.setGroup(group);
@@ -153,7 +153,7 @@ class MonitorRepositoryTest {
 
         Monitor room = new Monitor();
         room.setName("room");
-        room.setIp("192.178.3");
+        room.setUuid("192.178.3");
         room.setPending(true);
         room.setGroup(group2);
         room = repository.save(room);
@@ -171,7 +171,7 @@ class MonitorRepositoryTest {
         entityManager.flush();
 
         Monitor deti = new Monitor();
-        deti.setIp("192.178.1");
+        deti.setUuid("192.178.1");
         deti.setName("deti");
         deti.setPending(true);
         deti.setGroup(group);

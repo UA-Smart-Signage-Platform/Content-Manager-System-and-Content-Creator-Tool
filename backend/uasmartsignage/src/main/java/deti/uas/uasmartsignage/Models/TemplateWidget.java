@@ -24,20 +24,17 @@ public class TemplateWidget {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private Long top;
+    private int top;
 
     //left conflict with sql
     @Column(nullable = false)
-    private Long leftPosition;
+    private int leftPosition;
 
     @Column(nullable = false)
-    private Long width;
+    private int width;
 
     @Column(nullable = false)
-    private Long height;
+    private int height;
 
     @ManyToOne
     @JoinColumn(name = "templateId", nullable = false)
@@ -48,5 +45,6 @@ public class TemplateWidget {
     @JoinColumn(name = "widgetId", nullable = false)
     @JsonIgnoreProperties("templateWidgets")
     private Widget widget;
-   
+    
+    
 }

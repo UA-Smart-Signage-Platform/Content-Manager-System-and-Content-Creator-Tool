@@ -17,6 +17,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientFactory;
+import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -46,6 +51,9 @@ class FileServiceTest {
     @InjectMocks
     private FileService service;
 
+    @Mock
+    private LogsService logsService;
+
     @Test
     void whenGetFilesAtRoot_thenReturnFiles() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
@@ -64,7 +72,6 @@ class FileServiceTest {
     void whenGetFileById_thenReturnFile() {
         CustomFile customFile = new CustomFile("New directory", "directory", 1L, null);
         CustomFile saved = new CustomFile();
-
         when(repository.findById(1L)).thenReturn(Optional.of(customFile));
 
         Optional<CustomFile> found = service.getFileOrDirectoryById(1L);

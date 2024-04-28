@@ -1,7 +1,9 @@
 package deti.uas.uasmartsignage.Services;
 
+
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
+import deti.uas.uasmartsignage.Models.Severity;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -32,9 +34,17 @@ public class FileService {
     
     private final FileRepository fileRepository;
 
+    private final LogsService logsService;
+
+    private final String source = this.getClass().getSimpleName();
+
+    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
+    private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
+
     @Autowired
-    public FileService(FileRepository fileRepository) {
+    public FileService(FileRepository fileRepository, LogsService logsService) {
         this.fileRepository = fileRepository;
+        this.logsService = logsService;
     }
 
    
@@ -46,6 +56,15 @@ public class FileService {
     public List<CustomFile> getFilesAtRoot() {
         List<CustomFile> files = fileRepository.findAllByParentIsNull();
         logger.debug("Retrieved {} files and folders located at root level.", files.size());
+
+        // Add log to InfluxDB
+        String operation = "getFilesAtRoot";
+        String description = "Retrieved files and folders located at root level";
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+
+        logger.info(ADDLOGSUCCESS, description);
         return files;
     }
 
@@ -60,9 +79,17 @@ public class FileService {
         logger.info("Retrieving file with ID: {}", id);
         Optional<CustomFile> file = fileRepository.findById(id);
 
-        if (file.isEmpty()) {
+        // Add log to InfluxDB
+        String operation = "getFileOrDirectoryById";
+        String description = "Retrieved file with ID: " + id;
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+
+        if (file == null) {
             logger.warn("File with ID {} not found", id);
         }
+        logger.info(ADDLOGSUCCESS, description);
         return file;
     }
 
