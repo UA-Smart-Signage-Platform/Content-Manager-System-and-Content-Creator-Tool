@@ -21,7 +21,7 @@ import deti.uas.uasmartsignage.Services.TemplateService;
 
 @ExtendWith(MockitoExtension.class)
 
-public class TemplateServiceTest {
+class TemplateServiceTest {
     @Mock
     private TemplateRepository repository;
 
