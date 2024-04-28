@@ -18,7 +18,7 @@ import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 
 @DataJpaTest
 @ActiveProfiles("test")
-public class MonitorsGroupRepositoryTest {
+class MonitorsGroupRepositoryTest {
     
     @Autowired
     private MonitorGroupRepository repository;

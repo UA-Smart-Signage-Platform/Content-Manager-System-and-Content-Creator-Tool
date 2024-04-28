@@ -115,11 +115,24 @@ class MonitorIT extends BaseIntegrationTest{
         void testUpdateMonitorEndpoint() {
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.GET, null, Monitor.class);
             System.out.println(response.getBody());
+
+            MonitorsGroup group = new MonitorsGroup();
+            group.setName("updated_group");
+            group.setMonitors(List.of());
+            group.setId(4L);
+
+            ResponseEntity<MonitorsGroup> response_post = restTemplate.exchange("http://localhost:" + port + "/api/groups", HttpMethod.POST, new HttpEntity<>(group), MonitorsGroup.class);
+            assertEquals(HttpStatus.CREATED, response_post.getStatusCode());
+
+            ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.GET, null , MonitorsGroup.class);
+            assertEquals(HttpStatus.OK, response1.getStatusCode());
+            System.out.println("response body"+response1.getBody());
+            System.out.println("response" + response1);
+
             Monitor monitor = response.getBody();
             monitor.setName("update_monitor");
+            monitor.setGroup(response1.getBody());
 
-            //not working
-            //ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/1", HttpMethod.GET, null , MonitorsGroup.class);
 
             ResponseEntity<Monitor> response2 = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.PUT, new HttpEntity<>(monitor), Monitor.class);
             assertEquals(HttpStatus.OK, response2.getStatusCode());
@@ -128,6 +141,7 @@ class MonitorIT extends BaseIntegrationTest{
             assertEquals(HttpStatus.OK, response3.getStatusCode());
 
             assertEquals("update_monitor", response3.getBody().getName());
+            assertEquals("updated_group", response3.getBody().getGroup().getName());
         }
 
 }

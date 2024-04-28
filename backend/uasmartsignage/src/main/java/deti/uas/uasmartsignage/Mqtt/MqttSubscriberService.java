@@ -22,7 +22,7 @@ import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 
 @Component
-@Profile("!test")
+@Profile("!test & !integration-test")
 public class MqttSubscriberService {
 
     private final ObjectMapper objectMapper;
