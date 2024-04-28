@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,10 +24,7 @@ public class Schedule {
     private Long id;
 
     @Column(name = "frequency")
-    private String frequency;
-
-    @Column(name = "n_times")
-    private int nTimes;
+    private int frequency;
 
     @Column(name = "intervalOfTime")
     private int intervalOfTime;
@@ -35,9 +34,6 @@ public class Schedule {
 
     @Column(name = "end_date")
     private LocalDateTime endDate;
-
-    @Column(name = "date")
-    private LocalDate date;
 
     @Column(name = "priority")
     private int priority;
@@ -52,6 +48,19 @@ public class Schedule {
 
     @Column(name = "created_on")
     private LocalDate createdOn;
+
+
+    @ElementCollection
+    @CollectionTable(name = "schedule_weekdays", joinColumns = @JoinColumn(name = "schedule_id"))
+    @Column(name = "weekdays")
+    private List<Integer> weekdays;
+
+    @Column(name = "start_hour")
+    private LocalTime startHours;
+
+    @Column(name = "end_hour")
+    private LocalTime endHours;
+
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)
