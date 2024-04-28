@@ -61,6 +61,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 try {
                     // Try to extract username using Ua IDP
                     username = getUsernameFromToken(token);
+                    // Split the username by "@" and reconstruct it with "ua.pt" because ua IDP returns the email with @live.ua.pt 
+                    String[] parts = username.split("@");
+                    if (parts.length == 2) {
+                        username = parts[0] + "@ua.pt";
+                    } else {
+                        logger.error("Invalid username format: " + username);
+                    }
+
                 } catch (Exception ex) {
                     logger.error("Failed to extract username from token");
                 }
