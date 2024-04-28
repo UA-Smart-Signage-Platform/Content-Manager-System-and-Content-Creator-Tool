@@ -78,16 +78,15 @@ public class FileService {
     public Optional<CustomFile> getFileOrDirectoryById(Long id) {
         logger.info("Retrieving file with ID: {}", id);
         Optional<CustomFile> file = fileRepository.findById(id);
+        if (file.isEmpty()) {
+            logger.warn("File with ID {} not found", id);
+        }
 
         // Add log to InfluxDB
         String operation = "getFileOrDirectoryById";
         String description = "Retrieved file with ID: " + id;
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
-        }
-
-        if (file == null) {
-            logger.warn("File with ID {} not found", id);
         }
         logger.info(ADDLOGSUCCESS, description);
         return file;
