@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class TemplateRepositoryTest {
+class TemplateRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
