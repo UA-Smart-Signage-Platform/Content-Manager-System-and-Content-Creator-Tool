@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { MdSettings, MdCreate, MdAdd, MdCheck } from "react-icons/md";
+import { IoMdTrash } from "react-icons/io";
 import monitorsGroupService from "../../services/monitorsGroupService"
 import {motion} from "framer-motion"
 
@@ -9,7 +10,7 @@ function GroupBar( {id, changeId, page} ) {
     const [editGroup,setEditGroup] = useState({id:-1,name:"",description:""});
  
     useEffect(() => {
-        monitorsGroupService.getGroups().then((groupsData) => {
+        monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
             setGroups(groupsData.data);
         })
     }, []);
@@ -45,20 +46,29 @@ function GroupBar( {id, changeId, page} ) {
     const handleUpdateCreate = () =>{
         if (editGroup.id < 0){
             monitorsGroupService.createGroup(editGroup).then((response) =>{
-                monitorsGroupService.getGroups().then((groupsData) => {
+                monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
                     setGroups(groupsData.data);
                 })
             })
         }
         else{
             monitorsGroupService.updateGroup(editGroup.id,editGroup).then((response) =>{
-                monitorsGroupService.getGroups().then((groupsData) => {
+                monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
                     setGroups(groupsData.data);
                 })
             })
 
         }
         setEditGroup({id:-1,name:"",description:""})
+    }
+
+    const handleDelete = (id) =>{
+        monitorsGroupService.deleteGroup(id).then((response) =>{
+            monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
+                setGroups(groupsData.data);
+            })
+        })
+        setGroups(groups.filter((element) => element.id !== id))
     }
 
     const handleBlur = (e) => {
@@ -132,14 +142,19 @@ function GroupBar( {id, changeId, page} ) {
                                 {editMode &&
                                     <div className="ml-auto">
                                         {editGroup.id !== group.id ? 
-                                        <MdCreate className="h-5 w-5 cursor-pointer" onClick={()=>setEditGroup(group)}/> :
+                                        <div className="flex gap-1">
+                                            <button onClick={()=>setEditGroup(group)}><MdCreate className="h-5 size-5 cursor-pointer"/></button>
+                                            <button onClick={() => handleDelete(group.id)}><IoMdTrash className="h-5 size-5 cursor-pointer"/></button>
+                                        </div> 
+                                        :
                                         <button><MdCheck className="size-5" onClick={() => handleUpdateCreate()}/></button>
                                     }
                                     </div>
                                 }
                             </div>
                             {editGroup.id !== group.id ? 
-                                        <span className="text-sm">{group.description}</span> :
+                                        <span className="text-sm">{group.description}</span> 
+                                        :
                                         <input className=" bg-white rounded-md w-full text-sm px-2" value={editGroup.description} onChange={(e)=>editGroupDescription(e.target.value)}/>
                                     }
                         </div>

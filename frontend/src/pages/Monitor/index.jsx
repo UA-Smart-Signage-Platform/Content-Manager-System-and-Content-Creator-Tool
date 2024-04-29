@@ -21,7 +21,7 @@ function Monitor(){
             setName(response.data.name)
             setGroupId(response.data.group.id)
         })
-        monitorsGroupService.getGroups().then((response)=>{
+        monitorsGroupService.getGroupsNotMadeForMonitor().then((response)=>{
             setGroups(response.data)
         })
     },[])
@@ -74,7 +74,7 @@ function Monitor(){
                                 <div className="flex w-full gap-3 h-[49%] justify-around">
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-tl-[30px] basis-1/3 flex flex-col items-center p-2 h-full"> 
                                         <div className="h-[20%]">Memory</div>
-                                        <MemorySvg className=" h-[80%]" usado={"120"} max={`${monitor.size}`} full={0.5}/>
+                                        <MemorySvg className=" h-[80%]" usado={"120"} max={"200"} full={0.8}/>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] basis-1/3 p-2"> 
                                         <div className="h-[20%]">
@@ -96,7 +96,7 @@ function Monitor(){
                                                 )}
                                                 </select>
                                                 :
-                                                <span className="text-xl text-center w-full">{monitor.group.name}</span>
+                                                <span className="text-xl text-center w-full">{!monitor.group.madeForMonitor ? monitor.group.name:"----"}</span>
                                             }
                                         </div>
                                     </div>
