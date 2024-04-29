@@ -23,6 +23,7 @@ import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
 import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,6 +56,7 @@ class FileServiceTest {
     private LogsService logsService;
 
     @Test
+    @Order(1)
     void whenGetFilesAtRoot_thenReturnFiles() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
         List<CustomFile> files = new ArrayList<>();
@@ -69,6 +71,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(2)
     void whenGetFileById_thenReturnFile() {
         CustomFile customFile = new CustomFile("New directory", "directory", 1L, null);
         CustomFile saved = new CustomFile();
@@ -84,6 +87,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(3)
     void whenSaveFolder_thenFolderIsSaved() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
 
@@ -105,6 +109,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(4)
     void whenUpdateFileName_thenFileNotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
         CustomFile updated = new CustomFile("Updated directory", "directory", 0L, null);
@@ -117,6 +122,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(5)
     void whenSaveFolderInsideFolder_thenFolderIsSavedInsideFolder() {
         CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
 
@@ -139,8 +145,7 @@ class FileServiceTest {
         String parentDirectoryPathInnerF = service.getParentDirectoryPath(innerFolder);
         File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + innerFolder.getName());
 
-        assertThat(innerDirectory).exists();
-        assertThat(innerDirectory).hasParent(outerDirectory);
+        assertThat(innerDirectory).exists().hasParent(outerDirectory);
 
         // Clean up
         if (innerDirectory.exists()) {
@@ -153,6 +158,7 @@ class FileServiceTest {
 
 
     @Test
+    @Order(6)
     void whenSaveFile_thenFileIsSaved() throws IOException {
         Path tempFile = Files.createTempFile("test", ".png");
 
@@ -181,6 +187,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(7)
     void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() throws IOException {
         CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
         outerFolder.setId(1L);
@@ -235,6 +242,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(8)
     void whenDeleteFile_thenFileIsDeleted() throws IOException {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
         customFile.setId(1L);
@@ -256,6 +264,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(9)
     void whenDeleteFile_thenFileNotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
@@ -266,6 +275,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(10)
     void testDownloadFileById_FileExistsAndIsReadable() throws IOException {
 
         // Creating a temporary file
@@ -312,6 +322,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Order(11)
     void testDownloadFileById_FileNotFound() throws MalformedURLException {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 

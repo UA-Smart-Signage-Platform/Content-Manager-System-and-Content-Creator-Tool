@@ -90,7 +90,7 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/files/{id}")
-    public ResponseEntity<?> deleteFile(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
         boolean deleted = fileService.deleteFile(id);
         if (deleted) {
             return ResponseEntity.noContent().build();

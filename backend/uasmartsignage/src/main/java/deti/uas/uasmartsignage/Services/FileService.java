@@ -19,9 +19,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.io.File;
 
 import org.slf4j.Logger;
@@ -40,6 +38,9 @@ public class FileService {
 
     private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
     private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
+    private static final String FILENOTFOUND = "File with ID {} not found";
+    private static final String USERDIR = System.getProperty("user.dir");
+
 
     @Autowired
     public FileService(FileRepository fileRepository, LogsService logsService) {
@@ -79,7 +80,7 @@ public class FileService {
         logger.info("Retrieving file with ID: {}", id);
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
-            logger.warn("File with ID {} not found", id);
+            logger.warn(FILENOTFOUND, id);
             return Optional.empty();
         }
         else {
@@ -110,18 +111,17 @@ public class FileService {
 
         //filesystem path
         StringBuilder pathBuilder = new StringBuilder();
-        String rootPath = System.getProperty("user.dir");
 
         //database path
         String parentDirectoryPath = getParentDirectoryPath(customFile);
-        logger.info("Parent directory path: " + parentDirectoryPath);
+        logger.info("Parent directory path: {}",parentDirectoryPath);
         pathBuilder.insert(0, parentDirectoryPath);
-        pathBuilder.insert(0, rootPath);
+        pathBuilder.insert(0, USERDIR);
 
         File directory = new File(pathBuilder + customFile.getName());
 
         if (directory.exists()){
-            logger.info("Directory already exists: " + directory.getAbsolutePath());
+            logger.info("Directory already exists: {}", directory.getAbsolutePath());
             return null;
         }
 
@@ -129,11 +129,11 @@ public class FileService {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
             fileRepository.save(customFile);
-            logger.info("Directory created: " + directory.getAbsolutePath());
+            logger.info("Directory created: {}",directory.getAbsolutePath());
             return customFile;
         }
         else {
-            logger.info("Failed to create directory: " + directory.getAbsolutePath());
+            logger.info("Failed to create directory: {}",directory.getAbsolutePath());
             return null;
         }
         
@@ -158,8 +158,7 @@ public class FileService {
         }
 
         //Creating upload dir
-        String rootPath = System.getProperty("user.dir");
-        File rootDirectory = new File(rootPath + File.separator + "uploads");
+        File rootDirectory = new File(USERDIR + File.separator + "uploads");
         File uploadDir = new File(File.separator + "uploads");
 
         if (!rootDirectory.exists()) {
@@ -193,7 +192,7 @@ public class FileService {
         }
 
         // Get information from uploaded file
-        String fileName = StringUtils.cleanPath(file.getFile().getOriginalFilename());
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
         String fileType = file.getFile().getContentType();
         Long fileSize = file.getFile().getSize();
 
@@ -220,17 +219,16 @@ public class FileService {
 
         // Creating file path for filesystem
         StringBuilder pathBuilder = new StringBuilder();
-        String rootPath = System.getProperty("user.dir");
         // Get parent path and add the filename
         String parentDirectoryPath = getParentDirectoryPath(customFile) + fileName;
         pathBuilder.insert(0, parentDirectoryPath);
-        pathBuilder.insert(0, rootPath);
+        pathBuilder.insert(0, USERDIR);
 
         Path fileSysPath = Paths.get(pathBuilder.toString());
         
 
         try {
-            logger.info("Creating file with type: " + customFile.getType() + " and name: " + customFile.getName());
+            logger.info("Creating file with type: {} and name: {}",customFile.getType(),customFile.getName());
             Files.copy(file.getFile().getInputStream(), fileSysPath);
             fileRepository.save(customFile);
             return customFile;
@@ -250,14 +248,14 @@ public class FileService {
     public boolean deleteFile(Long id) {
         Optional<CustomFile> fileOptional = fileRepository.findById(id);
         if (fileOptional.isEmpty()) {
-            logger.warn("File with ID {} not found", id);
+            logger.warn(FILENOTFOUND, id);
             return false;
         }
 
         // Delete file from disk
         CustomFile file = fileOptional.get();
-        String rootPath = System.getProperty("user.dir");
-        String filePath = rootPath + file.getPath();
+
+        String filePath = USERDIR + file.getPath();
         logger.info("Deleting file: {}", filePath);
         File fileToDelete = new File(filePath);
 
@@ -267,8 +265,10 @@ public class FileService {
                 return false;
             }
         } else {
-            if (!fileToDelete.delete()) {
-                logger.error("Failed to delete file: {}", fileToDelete.getAbsolutePath());
+            try {
+                Files.deleteIfExists(Paths.get(filePath));
+            } catch (IOException e) {
+                logger.error("Failed to delete file: {}, error: {}", filePath, e.getMessage());
                 return false;
             }
         }
@@ -286,22 +286,17 @@ public class FileService {
      * @return true if the directory was successfully deleted, false otherwise.
      */
     private boolean deleteDirectory(File directory) {
-        File[] files = directory.listFiles();
-        logger.info("Deleting directory: {}", directory.getAbsolutePath());
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    if (!deleteDirectory(file)) {
-                        return false;
-                    }
-                } else {
-                    if (!file.delete()) {
-                        return false;
-                    }
-                }
-            }
+        Path directoryPath = directory.toPath();
+        try {
+            Files.walk(directoryPath)
+                    .sorted(Comparator.reverseOrder())
+                    .map(Path::toFile)
+                    .forEach(File::delete);
+            return true;
+        } catch (IOException e) {
+            logger.error("Failed to delete directory: {}, error: {}", directory.getAbsolutePath(), e.getMessage());
+            return false;
         }
-        return directory.delete();
     }
 
     /**
@@ -317,8 +312,7 @@ public class FileService {
         }
 
         String sFilePath = customFile.get().getPath();
-        String rootPath = System.getProperty("user.dir");
-        sFilePath = rootPath + sFilePath;
+        sFilePath = USERDIR + sFilePath;
 
         Path filePath = Paths.get(sFilePath);
         Resource fileResource = new UrlResource(filePath.toUri());
@@ -345,7 +339,7 @@ public class FileService {
     public CustomFile updateFileName(Long id, CustomFile customFile) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
-            logger.warn("File with ID {} not found", id);
+            logger.warn(FILENOTFOUND, id);
             return null;
         }
 
