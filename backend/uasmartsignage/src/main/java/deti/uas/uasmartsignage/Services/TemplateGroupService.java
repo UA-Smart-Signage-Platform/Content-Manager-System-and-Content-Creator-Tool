@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.Services;
 
 import deti.uas.uasmartsignage.Models.Content;
+import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Template;
@@ -53,10 +54,12 @@ public class TemplateGroupService {
 
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
+    private final FileService fileService;
 
-    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService) {
+    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService) {
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
+        this.fileService = fileService;
     }
 
     @Autowired
@@ -81,17 +84,20 @@ public class TemplateGroupService {
         List<Monitor> monitors = monitorGroup.getMonitors();
         templateGroup.setTemplate(template);
         templateGroup.setGroup(monitorGroup);
-        List<String> files = new ArrayList<>();
+        List<String> filesId = new ArrayList<>();
         if (templateGroup.getContent() != null) {
             for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
-                files.add(entry.getValue());
+                Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
+                filesId.add("http://localhost:8080/api/files/download/" + entry.getValue());
+                if (file.isPresent()) {
+                    entry.setValue(file.get().getName());
+                }
             }
         }
-        
         try {
             TemplateMessage confirmMessage = new TemplateMessage();
             confirmMessage.setMethod("TEMPLATE");
-            confirmMessage.setFiles(files);
+            confirmMessage.setFiles(filesId);
             
             for (Monitor monitor : monitors) {
                 String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
@@ -124,19 +130,26 @@ public class TemplateGroupService {
             return null;
         }
         List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
-        List<String> files = new ArrayList<>();
+        List<String> filesId = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
-            files.add(entry.getValue());
+            Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
+            filesId.add("http://localhost:8080/api/files/download/" + entry.getValue());
+            if (file.isPresent()) {
+                entry.setValue(file.get().getName());
+            }
         }
+
+
         if (templateGroupById.getTemplate() != templateGroup.getTemplate()) {
             try {
                 TemplateMessage confirmMessage = new TemplateMessage();
                 confirmMessage.setMethod("TEMPLATE");
-                confirmMessage.setFiles(files);
+                confirmMessage.setFiles(filesId);
 
                 for (Monitor monitor : monitors) {
                     String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
                     confirmMessage.setHtml(html);
+
 
                     String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                     MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
@@ -147,8 +160,6 @@ public class TemplateGroupService {
                 e.printStackTrace();
             }
         }
-
-        
 
         templateGroupById.setTemplate(templateGroup.getTemplate());
         templateGroupById.setTemplate(templateGroup.getTemplate());

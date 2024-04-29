@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.initializer;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
 import deti.uas.uasmartsignage.Repositories.WidgetRepository;
@@ -29,23 +31,29 @@ import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 @Component
 @Profile("!test")
 public class DataLoader implements CommandLineRunner {
+
     private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
     private WidgetRepository widgetRepository;
     private ContentRepository contentRepository;
     private TemplateRepository templateRepository;
     private TemplateWidgetRepository templateWidgetRepository;
+    private TemplateGroupRepository templateGroupRepository;
+    private FileService fileService;
 
     @Autowired
     public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
             ContentRepository contentRepository, WidgetRepository widgetRepository,
-            MonitorGroupRepository groupRepository, MonitorRepository monitorRepository) {
+            MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,
+            TemplateGroupRepository templateGroupRepository, FileService fileService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
         this.widgetRepository = widgetRepository;
         this.groupRepository = groupRepository;
         this.monitorRepository = monitorRepository;
+        this.templateGroupRepository = templateGroupRepository;
+        this.fileService = fileService;
     }
 
     public void run(String... args) throws Exception {
@@ -55,7 +63,7 @@ public class DataLoader implements CommandLineRunner {
 
         this.loadTemplates();
         this.loadGroupsAndMonitors();
-  
+        this.loadTemplateGroups();
     }
 
     private void loadGroupsAndMonitors(){
@@ -127,6 +135,7 @@ public class DataLoader implements CommandLineRunner {
         car2.setPending(true);
         car2.setGroup(dBio);
         monitorRepository.save(car2);
+
     }
 
     private void loadTemplates() {
@@ -262,5 +271,17 @@ public class DataLoader implements CommandLineRunner {
         image.setTemplate(template2);
         image.setWidget(imageWidget);
         templateWidgetRepository.save(image);
+    }
+
+    private void loadTemplateGroups() {
+        Template template1 = templateRepository.findByName("template1");
+
+        MonitorsGroup deti = groupRepository.findByName("DETI");
+
+        TemplateGroup templateGroup1 = new TemplateGroup();
+        templateGroup1.setGroup(deti);
+        templateGroup1.setTemplate(template1);
+        templateGroup1 = templateGroupRepository.save(templateGroup1);
+
     }
 }
