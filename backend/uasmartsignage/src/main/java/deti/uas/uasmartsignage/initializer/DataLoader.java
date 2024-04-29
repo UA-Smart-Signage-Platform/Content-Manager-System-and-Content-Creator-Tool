@@ -3,10 +3,15 @@ package deti.uas.uasmartsignage.initializer;
 import java.util.ArrayList;
 import java.util.List;
 
+import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Models.FilesClass;
+import deti.uas.uasmartsignage.Repositories.FileRepository;
+import deti.uas.uasmartsignage.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Monitor;
