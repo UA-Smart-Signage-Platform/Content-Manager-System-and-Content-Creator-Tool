@@ -59,8 +59,8 @@ class ScheduleControllerTest {
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(10);
         schedule1.setCreatedBy(user);
-        schedule1.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule1.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule1.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
         schedule1.setIntervalOfTime(10);
         schedule1.setLastEditedBy(user);
@@ -69,8 +69,8 @@ class ScheduleControllerTest {
         Schedule schedule2 = new Schedule();
         schedule2.setFrequency(5);
         schedule2.setCreatedBy(user);
-        schedule2.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule2.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule2.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
         schedule2.setIntervalOfTime(10);
         schedule2.setLastEditedBy(user);
@@ -97,8 +97,8 @@ class ScheduleControllerTest {
         Schedule schedule = new Schedule();
         schedule.setFrequency(3);
         schedule.setCreatedBy(user);
-        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
@@ -150,8 +150,8 @@ class ScheduleControllerTest {
         Schedule schedule = new Schedule();
         schedule.setFrequency(1);
         schedule.setCreatedBy(user);
-        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);

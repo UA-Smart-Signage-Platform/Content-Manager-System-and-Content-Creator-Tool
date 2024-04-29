@@ -30,10 +30,10 @@ public class Schedule {
     private int intervalOfTime;
 
     @Column(name = "start_date")
-    private LocalDateTime startDate;
+    private LocalDate startDate;
 
     @Column(name = "end_date")
-    private LocalDateTime endDate;
+    private LocalDate endDate;
 
     @Column(name = "priority")
     private int priority;
@@ -60,7 +60,6 @@ public class Schedule {
 
     @Column(name = "end_hour")
     private LocalTime endHours;
-
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)
