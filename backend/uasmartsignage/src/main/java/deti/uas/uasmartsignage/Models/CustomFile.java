@@ -18,7 +18,7 @@ public class CustomFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false)
@@ -27,16 +27,17 @@ public class CustomFile {
     @Column(nullable = false)
     private Long size;
 
-    @Column
+    @Column(unique = true)
     private String path;
 
+
     @ManyToOne
-    @JsonIgnoreProperties("subDirectories")
+    @JsonIgnoreProperties({"subDirectories", "parent"})
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("parent")
+    @JsonIgnoreProperties({"parent", "subDirectories"})
     private List<CustomFile> subDirectories;
 
     public CustomFile(String name, String type, Long size, CustomFile parent) {

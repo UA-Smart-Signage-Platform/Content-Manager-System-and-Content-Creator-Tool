@@ -5,6 +5,7 @@ import java.io.IOException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.slf4j.Logger;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,6 +22,7 @@ import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 
 @Component
+@Profile("!test & !integration-test")
 public class MqttSubscriberService {
 
     private final ObjectMapper objectMapper;

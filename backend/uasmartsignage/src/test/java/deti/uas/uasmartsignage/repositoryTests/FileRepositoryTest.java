@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -23,22 +25,20 @@ class FileRepositoryTest {
     @Autowired
     FileRepository repository;
 
-  // TODO - create and revise tests
 
     @Test
     void whenFindById_thenReturnFile() {
-        CustomFile customFile = new CustomFile();
-        customFile.setName("New Directory");
-        customFile.setType("directory");
-        customFile.setSize(0L);
-        customFile.setParent(null);
-        customFile.setSubDirectories(new ArrayList<>());
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
+        CustomFile saved = new CustomFile();
 
         entityManager.persistAndFlush(customFile);
 
-        CustomFile found = repository.findById(customFile.getId()).get();
+        Optional<CustomFile> found = repository.findById(customFile.getId());
+        if (found.isPresent()) {
+            saved = found.get();
+        }
 
-        assertThat(found).isEqualTo(customFile);
+        assertThat(saved).isEqualTo(customFile);
     }
 
     @Test
@@ -50,22 +50,25 @@ class FileRepositoryTest {
     @Test
     void whenFindByName_thenReturnFile() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
+        CustomFile saved = new CustomFile();
 
         entityManager.persistAndFlush(customFile);
 
-        CustomFile found = repository.findByName(customFile.getName());
-
-        assertThat(found).isEqualTo(customFile);
+        Optional<CustomFile> found = repository.findByName(customFile.getName());
+        if (found.isPresent()) {
+            saved = found.get();
+        }
+        assertThat(saved).isEqualTo(customFile);
     }
 
     @Test
     void whenFindByInvalidName_thenReturnNull() {
-        CustomFile found = repository.findByName("New directory");
-        assertThat(found).isNull();
+        Optional<CustomFile> found = repository.findByName("New directory");
+        assertThat(found).isEmpty();
     }
 
     @Test
-    void whenFindAllFiles_thenReturnAllMonitors() {
+    void whenFindAllFiles_thenReturnAllFiles() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
         CustomFile customFile2 = new CustomFile("A normal file", "image", 200L, customFile);
 
@@ -85,15 +88,10 @@ class FileRepositoryTest {
 
         entityManager.persistAndFlush(customFile);
 
-        List<CustomFile> customFiles = repository.findAll();
+        repository.delete(customFile);
 
-        assertThat(customFiles).hasSize(1);
-
-        entityManager.remove(customFile);
-
-        customFiles = repository.findAll();
-
-        assertThat(customFiles).hasSize(0);
+        Optional<CustomFile> found = repository.findById(customFile.getId());
+        assertThat(found).isEmpty();
     }
 
 }
