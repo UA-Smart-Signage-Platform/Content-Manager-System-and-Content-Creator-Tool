@@ -50,15 +50,11 @@ public class FileController {
 
     @Operation(summary = "Get all files and folders located in root")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all files and folders at root level", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "No files or folders found", content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "200", description = "List of all files and folders at root level", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/directory/root")
     public ResponseEntity<List<CustomFile>> getRootFilesAndDirectories() {
         List<CustomFile> customFiles = fileService.getFilesAtRoot();
-        if (customFiles.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(customFiles, HttpStatus.OK);
     }
 

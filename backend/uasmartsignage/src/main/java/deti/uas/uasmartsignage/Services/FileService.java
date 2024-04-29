@@ -80,6 +80,10 @@ public class FileService {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
             logger.warn("File with ID {} not found", id);
+            return Optional.empty();
+        }
+        else {
+            logger.info("File with ID {} found", id);
         }
 
         // Add log to InfluxDB
@@ -99,7 +103,6 @@ public class FileService {
      * @param customFile The CustomFile to create.
      * @return The created CustomFile, or {@code null} if creation fails.
      */
-    @Transactional
     public CustomFile createDirectory(CustomFile customFile) {
         if (!customFile.getType().equals("directory")) {
             return null;
@@ -145,7 +148,6 @@ public class FileService {
      * @param customFile The CustomFile for which the parent directory path is generated.
      * @return The parent directory path for the given CustomFile.
      */
-
     public String getParentDirectoryPath(CustomFile customFile) {
         StringBuilder pathBuilder = new StringBuilder();
 
@@ -259,11 +261,6 @@ public class FileService {
         logger.info("Deleting file: {}", filePath);
         File fileToDelete = new File(filePath);
 
-        if (!fileToDelete.exists()) {
-            logger.warn("File does not exist: {}", filePath);
-            return false;
-        }
-
         if (fileToDelete.isDirectory()) {
             if (!deleteDirectory(fileToDelete)) {
                 logger.error("Failed to delete directory: {}", fileToDelete.getAbsolutePath());
@@ -308,7 +305,7 @@ public class FileService {
     }
 
     /**
-     * Downloads the file with the specified name.
+     * Downloads the file with the specified id.
      *
      * @param fileId The id of the file to download.
      * @return ResponseEntity with the file resource and headers.
@@ -345,7 +342,6 @@ public class FileService {
      * @param customFile The CustomFile containing the new name.
      * @return The updated CustomFile, or {@code null} if the update fails.
      */
-    @Transactional
     public CustomFile updateFileName(Long id, CustomFile customFile) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {

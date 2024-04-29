@@ -97,16 +97,6 @@ class FileControllerTest {
     }
 
     @Test
-    void testGetFilesAtRootEndpoint404() throws Exception {
-        when(fileService.getFilesAtRoot()).thenReturn(Arrays.asList());
-
-        mvc.perform(get("/api/files/directory/root").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
-
-        verify(fileService, Mockito.times(1)).getFilesAtRoot();
-    }
-
-    @Test
     void testCreateFileEndpoint() throws Exception {
         CustomFile file = new CustomFile();
         file.setId(1L);
