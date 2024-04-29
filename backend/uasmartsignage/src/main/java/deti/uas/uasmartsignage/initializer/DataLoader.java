@@ -155,16 +155,6 @@ public class DataLoader implements CommandLineRunner {
         mediaWidgetContent.setWidget(mediaWidget);
         contentRepository.save(mediaWidgetContent);
 
-        Widget imageWidget = new Widget();
-        imageWidget.setName("Image");
-        imageWidget.setPath("static/widgets/image.widget");
-        widgetRepository.save(imageWidget);
-        Content imageWidgetContent = new Content();
-        imageWidgetContent.setName("image");
-        imageWidgetContent.setType("media");
-        imageWidgetContent.setWidget(imageWidget);
-        contentRepository.save(imageWidgetContent);
-
         Widget timeWidget = new Widget();
         timeWidget.setName("CurrentTime");
         timeWidget.setPath("static/widgets/time.widget");
@@ -219,14 +209,14 @@ public class DataLoader implements CommandLineRunner {
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
 
-        TemplateWidget image = new TemplateWidget();
-        image.setTop(10);
-        image.setLeftPosition(0);
-        image.setHeight(80);
-        image.setWidth(20);
-        image.setTemplate(template1);
-        image.setWidget(imageWidget);
-        templateWidgetRepository.save(image);
+        TemplateWidget media2 = new TemplateWidget();
+        media2.setTop(10);
+        media2.setLeftPosition(0);
+        media2.setHeight(80);
+        media2.setWidth(20);
+        media2.setTemplate(template1);
+        media2.setWidget(mediaWidget);
+        templateWidgetRepository.save(media2);
 
         // create template2
         Template template2 = new Template();
@@ -261,13 +251,13 @@ public class DataLoader implements CommandLineRunner {
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
 
-        image = new TemplateWidget();
-        image.setTop(20);
-        image.setLeftPosition(80);
-        image.setHeight(70);
-        image.setWidth(20);
-        image.setTemplate(template2);
-        image.setWidget(imageWidget);
-        templateWidgetRepository.save(image);
+        media2 = new TemplateWidget();
+        media2.setTop(20);
+        media2.setLeftPosition(80);
+        media2.setHeight(70);
+        media2.setWidth(20);
+        media2.setTemplate(template2);
+        media2.setWidget(mediaWidget);
+        templateWidgetRepository.save(media2);
     }
 }

@@ -5,16 +5,13 @@ import { useEffect, useState } from 'react';
 import mediaService from '../../services/mediaService';
 import DataTable from 'react-data-table-component';
 
-import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile } from "react-icons/md";
+import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies } from "react-icons/md";
 
-function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
+function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widgetId, contents, setContents } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
 
     const [currentFolder, setCurrentFolder] = useState(null);
     const [folderStack, setFolderStack] = useState([]);
-
-    const [file, setFile] = useState(null);
-    const [path, setPath] = useState(null);
 
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -55,7 +52,7 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
             style: {
                 fontSize: '16px',
             },
-        },
+        }
     };
 
 
@@ -92,15 +89,14 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal } ) {
             }
         }
         else{
-            if (row.name === file ? null : row.name !== null){
-                if (path === null ){
-                    console.log("http://localhost:8080/uploads/" + row.name);
-                }
-                else{
-                    // will be changed to row.path
-                    const filePath = window.location.pathname.split("/")[2].replace("&", "/").replace("home/", "") + "/" + row.name;
-                    console.log("http://localhost:8080/uploads/" + filePath);
-                }
+            if (currentFolder === null ){
+                
+                setContents({...contents, [widgetId]: "http://localhost:8080/uploads/" + row.name});
+            }
+            else{
+                mediaService.getFileOrDirectoryById(currentFolder).then((response) => {
+                    setContents({...contents, [widgetId]: "http://localhost:8080" + response.data.path + "/" + row.name});
+                });
             }
         }
     };

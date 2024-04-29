@@ -23,6 +23,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
     const [selectedContent, setSelectedContent] = useState({});
 
     const [showContentsPortal, setShowContentsPortal] = useState(false);
+    const [selectedWidgetId, setSelectedWidgetId] = useState(null);
 
     const weekDays = ["RRule.MO", "RRule.TU", "RRule.WE", "RRule.TH", "RRule.FR", "RRule.SA", "RRule.SU"];
     const timeHour = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
@@ -64,7 +65,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
         const data = {
             template: { id: selectedTemplateId },
             group: { id: selectedGroup.id },
-            content: { selectedContent },
+            content: selectedContent,
             rule: { weekDays : selectedDays,
                     startTime : selectedStartTime,
                     endTime : selectedEndTime,
@@ -267,12 +268,11 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                     </div>
                                 </div>
                             </div>
-                            <div></div>
-                            <div className="w-[60%] text-lg flex flex-col">
+                            <div className="w-[60%] text-lg flex flex-col m-auto">
                                 <div className="flex w-full h-[8%] items-center place-items-center">
-                                    <span className="font-medium text-3xl">Template Preview:</span>
+                                    <span className="font-medium text-3xl pb-1">Template Preview:</span>
                                 </div>
-                                <div className="w-full h-[92%] relative border-4 border-gray-300 rounded-md">
+                                <div className="aspect-video relative border-4 border-gray-300 rounded-md">
                                     {selectedTemplateId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
                                     <div className={`absolute`}
                                         style={{
@@ -285,7 +285,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                             {templateWidget.widget.name === "Media" && 
                                                 <>
                                                     <span className='z-10'>{templateWidget.widget.name}</span>
-                                                    <button onClick={() => setShowContentsPortal(true)} className="bg-[#E9E9E9] border-2 border-black pl-4 pr-4 rounded-lg">
+                                                    <button onClick={() => {setShowContentsPortal(true); setSelectedWidgetId(`${templateWidget.id}`)}} className="bg-[#E9E9E9] border-2 border-black pl-4 pr-4 rounded-lg">
                                                         <span>...</span>
                                                     </button>
                                                 </>
@@ -305,7 +305,10 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                     )}
                                     <ScheduleContentModal
                                         showContentsPortal={showContentsPortal} 
-                                        setShowContentsPortal={setShowContentsPortal} />
+                                        setShowContentsPortal={setShowContentsPortal}
+                                        widgetId={selectedWidgetId}
+                                        contents={selectedContent}
+                                        setContents={setSelectedContent} />
                                 </div>
                             </div>
                         </div>
