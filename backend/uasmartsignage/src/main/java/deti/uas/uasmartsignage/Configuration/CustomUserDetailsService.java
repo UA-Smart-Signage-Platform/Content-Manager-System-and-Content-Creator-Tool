@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.UserRepository;
+
+import java.security.SecureRandom;
 
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -34,6 +37,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         .roles("ADMIN")
         .build();
 
+
     @Autowired
     public CustomUserDetailsService( UserRepository userRepository) {
         users.add(adminUser);
@@ -50,6 +54,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         }
     }
 
+    /**
+     * Loads a user by username
+     * @param username The username of the user
+     * @return The user
+     * @throws UsernameNotFoundException If the user is not found
+    */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return users.stream()
@@ -58,6 +68,13 @@ public class CustomUserDetailsService implements UserDetailsService {
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
+    /**
+     * Loads a user by username and password
+     * @param username The username of the user
+     * @param password The password of the user
+     * @return The user
+     * @throws UsernameNotFoundException If the user is not found
+    */
     public UserDetails loadUserByUsernameAndPassword(String username, String password) throws UsernameNotFoundException {
         return users.stream()
             .filter(user -> user.getUsername().equals(username) && BCrypt.checkpw(password, user.getPassword()))
@@ -74,6 +91,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         users.removeIf(user -> user.getUsername().equals(username));
     }
 
+    /**
+     * Updates the password of a user
+     * @param username The username of the user
+     * @param newPassword The new password
+     * @throws UsernameNotFoundException If the user is not found
+     * @throws BadCredentialsException If the current password is incorrect
+    */
     public void updateUserPassword(String username, String newPassword) throws UsernameNotFoundException {
         Optional<UserDetails> userOptional = users.stream()
             .filter(user -> user.getUsername().equals(username))
@@ -101,18 +125,23 @@ public class CustomUserDetailsService implements UserDetailsService {
                 throw new IllegalArgumentException("User type not supported");
             }
         } else {
-            throw new UsernameNotFoundException("User not found");
+            throw new BadCredentialsException("Bad credentials");
         }
     }
 
+    /**
+     * Generates a random password
+     * @return The random password
+    */
     private String generateRandomPassword() {
         // Define the characters that can be used in the random password
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[{]}|;:,<.>/?";
         StringBuilder password = new StringBuilder();
     
         // Generate a random password of length 20
+        SecureRandom random = new SecureRandom();
         for (int i = 0; i < 20; i++) {
-            int index = (int) (Math.random() * chars.length());
+            int index = random.nextInt(chars.length());
             password.append(chars.charAt(index));
         }
     

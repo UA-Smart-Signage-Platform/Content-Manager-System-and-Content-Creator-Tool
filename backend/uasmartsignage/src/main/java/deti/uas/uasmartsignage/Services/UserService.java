@@ -3,6 +3,7 @@ package deti.uas.uasmartsignage.Services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.security.SecureRandom;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Repositories.UserRepository;
@@ -82,8 +83,9 @@ public class UserService implements UserDetailsService {
         StringBuilder password = new StringBuilder();
     
         // Generate a random password of length 20
+        SecureRandom random = new SecureRandom();
         for (int i = 0; i < 20; i++) {
-            int index = (int) (Math.random() * chars.length());
+            int index = random.nextInt(chars.length());
             password.append(chars.charAt(index));
         }
     

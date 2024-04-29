@@ -41,6 +41,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private jwtUtil jwtUtil;
 
 
+    /**
+     * This method is called for each request that comes to the server
+     * @param request
+     * @param response
+     * @param filterChain
+     * @throws IOException
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // Get the token from the header
@@ -89,7 +96,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    // Calls the UA IDP to get the username from the token
+
+    /**
+     * Calls the UA IDP to get the username from the token
+     * @param token
+     * @return The username
+     * @throws JsonProcessingException
+     */
     private String getUsernameFromToken(String token) throws JsonProcessingException {
         String idpUserinfoEndpoint = "https://wso2-gw.ua.pt/userinfo";
         HttpHeaders headers = new HttpHeaders();
