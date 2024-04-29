@@ -84,11 +84,11 @@ public class TemplateGroupService {
         List<Monitor> monitors = monitorGroup.getMonitors();
         templateGroup.setTemplate(template);
         templateGroup.setGroup(monitorGroup);
-        List<String> filesId = new ArrayList<>();
+        List<String> downloadFiles = new ArrayList<>();
         if (templateGroup.getContent() != null) {
             for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
                 Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-                filesId.add("http://localhost:8080/api/files/download/" + entry.getValue());
+                downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
                 if (file.isPresent()) {
                     entry.setValue(file.get().getName());
                 }
@@ -97,7 +97,7 @@ public class TemplateGroupService {
         try {
             TemplateMessage confirmMessage = new TemplateMessage();
             confirmMessage.setMethod("TEMPLATE");
-            confirmMessage.setFiles(filesId);
+            confirmMessage.setFiles(downloadFiles);
             
             for (Monitor monitor : monitors) {
                 String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
@@ -130,21 +130,19 @@ public class TemplateGroupService {
             return null;
         }
         List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
-        List<String> filesId = new ArrayList<>();
+        List<String> downloadFiles = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
             Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-            filesId.add("http://localhost:8080/api/files/download/" + entry.getValue());
+            downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
             if (file.isPresent()) {
                 entry.setValue(file.get().getName());
             }
         }
-
-
         if (templateGroupById.getTemplate() != templateGroup.getTemplate()) {
             try {
                 TemplateMessage confirmMessage = new TemplateMessage();
                 confirmMessage.setMethod("TEMPLATE");
-                confirmMessage.setFiles(filesId);
+                confirmMessage.setFiles(downloadFiles);
 
                 for (Monitor monitor : monitors) {
                     String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
