@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.repositoryTests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import deti.uas.uasmartsignage.Models.Template;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.JoinColumn;
@@ -33,7 +32,6 @@ class TemplateGroupRepositoryTest {
     private TemplateGroupRepository repository;
 
     @Test
-    //@Disabled   //o mesmo template pode estar associado a diferentes grupos(um grupo n pode ter muitos templates)
     void whenFindAll_thenReturnAllTemplateGroups(){
         Template template1 = new Template();
         template1.setName("template1");
@@ -94,6 +92,27 @@ class TemplateGroupRepositoryTest {
 
         assertThat(found).isNotNull();
         assertThat(found).isEqualTo(templateGroup1);
+    }
+
+    @Test
+    void testSaveTemplateGroup(){
+        Template template1 = new Template();
+        template1.setName("template1");
+        entityManager.persistAndFlush(template1);
+
+        MonitorsGroup group1 = new MonitorsGroup();
+        group1.setName("group1");
+        entityManager.persistAndFlush(group1);
+
+        TemplateGroup templateGroup1 = new TemplateGroup();
+        templateGroup1.setTemplate(template1);
+        templateGroup1.setGroup(group1);
+        templateGroup1.setContent(Map.of(1, "content1"));
+
+        TemplateGroup saved = repository.save(templateGroup1);
+
+        assertThat(saved).isNotNull();
+        assertThat(saved).isEqualTo(templateGroup1);
     }
 
 }

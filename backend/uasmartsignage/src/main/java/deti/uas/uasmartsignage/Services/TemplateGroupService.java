@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,7 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 
-import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,16 +32,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
 
-import deti.uas.uasmartsignage.Services.TemplateService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
 
 
 @Service
@@ -53,19 +46,19 @@ public class TemplateGroupService {
 
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
+    private final TemplateGroupRepository templateGroupRepository;
+    private final ContentService contentService;
 
-    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService) {
+    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, TemplateGroupRepository templateGroupRepository, ContentService contentService) {
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
+        this.templateGroupRepository = templateGroupRepository;
+        this.contentService = contentService;
     }
 
-    @Autowired
-    private TemplateGroupRepository templateGroupRepository;
 
-    @Autowired
-    private ContentService contentService;
 
-    private final Logger logger = LoggerFactory.getLogger(TemplateGroupRepository.class);
+    private final Logger logger = LoggerFactory.getLogger(TemplateGroupService.class);
 
     public TemplateGroup getGroupById(Long id) {
         return templateGroupRepository.findById(id).orElse(null);

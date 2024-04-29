@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.serviceTests;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
