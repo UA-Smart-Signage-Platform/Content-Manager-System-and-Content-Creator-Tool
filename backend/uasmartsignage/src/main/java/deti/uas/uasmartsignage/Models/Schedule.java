@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -26,7 +26,6 @@ public class Schedule {
     @Column(name = "frequency")
     private int frequency;
 
-    @Column(name = "intervalOfTime")
     private int intervalOfTime;
 
     @Column(name = "start_date")
@@ -35,7 +34,6 @@ public class Schedule {
     @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Column(name = "priority")
     private int priority;
 
     @ManyToOne
@@ -63,7 +61,7 @@ public class Schedule {
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)
-    @JsonIgnoreProperties({"schedules", "monitors"})
+    @JsonIgnore
     private MonitorsGroup monitorsGroupForSchedules;
 
 }

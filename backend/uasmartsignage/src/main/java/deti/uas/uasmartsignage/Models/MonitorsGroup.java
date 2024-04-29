@@ -24,11 +24,10 @@ public class MonitorsGroup {
 
     private boolean madeForMonitor;
 
-    @Column
     private String description;
 
     @OneToMany(mappedBy = "group")
-    @JsonIgnoreProperties("group")
+    @JsonIgnoreProperties(value = {"group"},allowSetters = true)
     private List<Monitor> monitors;
 
     @OneToOne(mappedBy = "group", cascade = CascadeType.ALL)
@@ -36,7 +35,8 @@ public class MonitorsGroup {
     private TemplateGroup templateGroup;
 
     @OneToMany(mappedBy = "monitorsGroupForSchedules", cascade = CascadeType.ALL)
-   private List<Schedule> schedules;
+    @JsonIgnoreProperties("monitorsGroupForSchedules")
+    private List<Schedule> schedules;
 
     @Override
     public String toString() {

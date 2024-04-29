@@ -1,11 +1,17 @@
 package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +23,7 @@ import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
 import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,7 +31,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.ResourceUtils;
 
@@ -45,22 +55,39 @@ class FileServiceTest {
     @Mock
     private LogsService logsService;
 
+    @Test
+    @Order(1)
+    void whenGetFilesAtRoot_thenReturnFiles() {
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
+        List<CustomFile> files = new ArrayList<>();
+        files.add(customFile);
 
-    // TODO - create and revise tests
+        when(repository.findAllByParentIsNull()).thenReturn(files);
+
+        List<CustomFile> found = service.getFilesAtRoot();
+
+        assertThat(found).isEqualTo(files);
+        verify(repository, times(1)).findAllByParentIsNull();
+    }
 
     @Test
+    @Order(2)
     void whenGetFileById_thenReturnFile() {
-        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
+        CustomFile customFile = new CustomFile("New directory", "directory", 1L, null);
+        CustomFile saved = new CustomFile();
         when(repository.findById(1L)).thenReturn(Optional.of(customFile));
 
-        CustomFile found = service.getFileOrDirectoryById(1L);
+        Optional<CustomFile> found = service.getFileOrDirectoryById(1L);
+        if (found.isPresent()) {
+            saved = found.get();
+        }
 
-        assertThat(found).isEqualTo(customFile);
+        assertThat(saved).isEqualTo(customFile);
         verify(repository, times(1)).findById(1L);
     }
 
     @Test
-    @Disabled
+    @Order(3)
     void whenSaveFolder_thenFolderIsSaved() {
         CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
 
@@ -70,117 +97,238 @@ class FileServiceTest {
 
         assertThat(saved).isEqualTo(customFile);
         verify(repository, times(1)).save(customFile);
+
+        String parentDirectoryPath = service.getParentDirectoryPath(customFile);
+        String rootPath = System.getProperty("user.dir");
+        File directory = new File(rootPath + parentDirectoryPath + customFile.getName());
+
+        assertThat(directory).exists();
+
+        // Clean up
+        directory.delete();
     }
 
     @Test
-    @Disabled
+    @Order(4)
+    void whenUpdateFileName_thenFileNotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+        CustomFile updated = new CustomFile("Updated directory", "directory", 0L, null);
+        updated.setId(1L);
+
+        CustomFile saved = service.updateFileName(1L,updated);
+
+        assertThat(saved).isNull();
+        verify(repository, times(0)).save(updated);
+    }
+
+    @Test
+    @Order(5)
     void whenSaveFolderInsideFolder_thenFolderIsSavedInsideFolder() {
         CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
-        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 0L, outerFolder);
 
-        when(repository.save(outerFolder)).thenReturn(outerFolder);
-        when(repository.save(innerFolder)).thenReturn(innerFolder);
-
-        CustomFile savedOuter = service.createDirectory(outerFolder);
-        CustomFile savedInner = service.createDirectory(innerFolder);
-
-        assertThat(savedOuter).isEqualTo(outerFolder);
-        assertThat(savedInner).isEqualTo(innerFolder);
-        assertThat(savedOuter.getSubDirectories().size()).isEqualTo(1);
-        verify(repository, times(3)).save(Mockito.any());
-    }
-
-    @Test
-    @Disabled
-    void whenSaveFile_thenFileIsSaved() throws IOException {
-        File file = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file1.png");
-
-        FileInputStream input = new FileInputStream(file);
-        byte[] bytes = new byte[(int) file.length()];
-        input.read(bytes);
-        input.close();
-
-        MockMultipartFile mockMultipartFile = new MockMultipartFile(
-            "file",                     // parameter name
-            file.getName(),                 // file name
-            "image/png",        // content type
-            bytes                           // content as byte array
-        );
-
-        FilesClass filesClass = new FilesClass(null, mockMultipartFile);
-
-        CustomFile saved = service.createFile(filesClass);
-
-        when(repository.save(Mockito.any())).thenReturn(saved);
-
-        verify(repository, times(1)).save(Mockito.any());
-    }
-
-    @Test
-    @Disabled
-    void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() throws IOException {
-        CustomFile outerFolder = new CustomFile("Outer directoroe", "directory", 0L, null);
-        
-        when(repository.save(outerFolder)).thenReturn(outerFolder);
-        when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
-        
         service.createDirectory(outerFolder);
 
-        CustomFile innerFolder = new CustomFile("Inner directoroe", "directory", 0L, outerFolder);
-        innerFolder.setId(2L);
+        String parentDirectoryPathOuterF = service.getParentDirectoryPath(outerFolder);
+        String rootPath = System.getProperty("user.dir");
+        File outerDirectory = new File(rootPath + parentDirectoryPathOuterF + outerFolder.getName());
+
+        assertThat(outerDirectory).exists();
+
+        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 100L, outerFolder);
         when(repository.save(innerFolder)).thenReturn(innerFolder);
-        when(repository.findById(2L)).thenReturn(Optional.of(innerFolder));
 
         CustomFile savedInner = service.createDirectory(innerFolder);
 
-        File file = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file1.png");
-        File file2 = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file2.png");
-        File file3 = ResourceUtils.getFile(System.getProperty("user.dir") + "/src/main/resources/file3.png");
+        assertThat(savedInner).isEqualTo(innerFolder);
+        verify(repository, times(1)).save(innerFolder);
 
-        // Convert file to byte array
-        FileInputStream input = new FileInputStream(file);
-        byte[] bytes = new byte[(int) file.length()];
-        input.read(bytes);
-        input.close();
+        String parentDirectoryPathInnerF = service.getParentDirectoryPath(innerFolder);
+        File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + innerFolder.getName());
 
-        FileInputStream input2 = new FileInputStream(file2);
-        byte[] bytes2 = new byte[(int) file2.length()];
-        input2.read(bytes2);
-        input2.close();
+        assertThat(innerDirectory).exists().hasParent(outerDirectory);
 
-        FileInputStream input3 = new FileInputStream(file3);
-        byte[] bytes3 = new byte[(int) file3.length()];
-        input3.read(bytes3);
-        input3.close();
+        // Clean up
+        if (innerDirectory.exists()) {
+            innerDirectory.delete();
+        }
+        if (outerDirectory.exists()) {
+            outerDirectory.delete();
+        }
+    }
+
+
+    @Test
+    @Order(6)
+    void whenSaveFile_thenFileIsSaved() throws IOException {
+        Path tempFile = Files.createTempFile("test", ".png");
+
+        byte[] content = "Hello, World!".getBytes();
+        Files.write(tempFile, content);
 
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
                 "file",                     // parameter name
-                file.getName(),                 // file name
-                "image/png",        // content type
-                bytes                           // content as byte array
+                tempFile.getFileName().toString(), // file name
+                "image/png",                // content type
+                Files.readAllBytes(tempFile) // content as byte array
         );
 
-        MockMultipartFile mockMultipartFile2 = new MockMultipartFile(
-                "file",          
-                file2.getName(),   
-                "image/png",     
-                bytes2            
-        );
+        FilesClass filesClass = new FilesClass(null, mockMultipartFile);
+        CustomFile saved = service.createFile(filesClass);
 
-        MockMultipartFile mockMultipartFile3 = new MockMultipartFile(
-            "file",        
-            file3.getName(),   
-            "image/png",  
-            bytes3            
-    );
+        File file = new File(System.getProperty("user.dir") + "/uploads/" + saved.getName());
 
-    // (need to revise this logic)
-        //FilesClass filesClass = new FilesClass(savedInner, mockMultipartFile);
-        //FilesClass filesClass2 = new FilesClass(savedInner, mockMultipartFile2);
-        //FilesClass filesClass3 = new FilesClass(null, mockMultipartFile3);
+        verify(repository, times(1)).save(any());
+        assertThat(saved.getName()).isEqualTo(tempFile.getFileName().toString());
 
-        //service.createFile(filesClass);
-        //service.createFile(filesClass2);
-        //service.createFile(filesClass3);
+        //Clean up
+        if (file.exists()) {
+            file.delete();
+        }
     }
+
+    @Test
+    @Order(7)
+    void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() throws IOException {
+        CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
+        outerFolder.setId(1L);
+
+        service.createDirectory(outerFolder);
+
+        String parentDirectoryPathOuterF = service.getParentDirectoryPath(outerFolder);
+        String rootPath = System.getProperty("user.dir");
+        File outerDirectory = new File(rootPath + parentDirectoryPathOuterF + outerFolder.getName());
+
+        assertThat(outerDirectory).exists();
+
+        Path tempFile = Files.createTempFile("test", ".png");
+
+        byte[] content = "Hello, World!".getBytes();
+        Files.write(tempFile, content);
+
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+                "file",                     // parameter name
+                tempFile.getFileName().toString(), // file name
+                "image/png",                // content type
+                Files.readAllBytes(tempFile) // content as byte array
+        );
+
+        long fileSize = Files.size(tempFile);
+
+
+        when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
+
+
+        FilesClass filesClass = new FilesClass(outerFolder.getId(), mockMultipartFile);
+        CustomFile savedInner = service.createFile(filesClass);
+
+
+        String parentDirectoryPathInnerF = service.getParentDirectoryPath(savedInner);
+        File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + savedInner.getName());
+
+        assertThat(innerDirectory).exists().hasParent(outerDirectory);
+        //check if the parent size is updated
+        assertThat(outerFolder.getSize()).isEqualTo(fileSize);
+        verify(repository, times(3)).save(any());
+
+        // Clean up
+        if (innerDirectory.exists()) {
+            innerDirectory.delete();
+        }
+        if (outerDirectory.exists()) {
+            outerDirectory.delete();
+        }
+        Files.deleteIfExists(tempFile);
+    }
+
+    @Test
+    @Order(8)
+    void whenDeleteFile_thenFileIsDeleted() throws IOException {
+        CustomFile customFile = new CustomFile("New directory", "directory", 0L, null);
+        customFile.setId(1L);
+
+        service.createDirectory(customFile);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(customFile));
+
+        service.deleteFile(1L);
+
+        String parentDirectoryPath = service.getParentDirectoryPath(customFile);
+        String rootPath = System.getProperty("user.dir");
+        File directory = new File(rootPath + parentDirectoryPath + customFile.getName());
+
+        // Check if the file was deleted from the repository and from the disk
+        assertThat(repository.findByName(customFile.getName())).isEmpty();
+        assertThat(directory).doesNotExist();
+        verify(repository, times(1)).delete(customFile);
+    }
+
+    @Test
+    @Order(9)
+    void whenDeleteFile_thenFileNotFound() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        boolean deleted = service.deleteFile(1L);
+
+        assertThat(deleted).isFalse();
+        verify(repository, times(0)).delete(any());
+    }
+
+    @Test
+    @Order(10)
+    void testDownloadFileById_FileExistsAndIsReadable() throws IOException {
+
+        // Creating a temporary file
+        Path tempFile = Files.createTempFile("test", ".png");
+        byte[] content = "Hello, World!".getBytes();
+        Files.write(tempFile, content);
+
+        MockMultipartFile mockMultipartFile = new MockMultipartFile(
+                "file",                     // parameter name
+                tempFile.getFileName().toString(), // file name
+                "image/png",                // content type
+                Files.readAllBytes(tempFile) // content as byte array
+        );
+
+        FilesClass filesClass = new FilesClass(null, mockMultipartFile);
+        CustomFile savedFile = service.createFile(filesClass);
+
+        // Paths to the saved file and the root directory
+        Path filePath = Paths.get(savedFile.getPath());
+        String rootPath = System.getProperty("user.dir");
+        String fileDirectory = rootPath + "/uploads/";
+
+        when(repository.findById(1L)).thenReturn(Optional.of(savedFile));
+
+        ResponseEntity<Resource> response = service.downloadFileById(1L);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals(filePath.getFileName().toString(), response.getBody().getFilename());
+
+        HttpHeaders headers = response.getHeaders();
+        assertTrue(headers.containsKey(HttpHeaders.CONTENT_DISPOSITION));
+        assertEquals("attachment; filename=\"" + filePath.getFileName().toString() + "\"",
+               headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
+
+
+        File file = new File(fileDirectory + savedFile.getName());
+        assertTrue(file.exists());
+
+        // Clean up
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    @Test
+    @Order(11)
+    void testDownloadFileById_FileNotFound() throws MalformedURLException {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        ResponseEntity<Resource> response = service.downloadFileById(1L);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
 }
