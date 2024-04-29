@@ -10,7 +10,7 @@ function Monitor(){
     const { state } = useLocation();
     const [monitor,setMonitor] = useState(state);
     const [name,setName] = useState("");
-    const [groupId,setGroupId] = useState();
+    const [groupId,setGroupId] = useState(-1);
     const [groups,setGroups] = useState([]);
     const { id } = useParams();
     const [update,setUpdate] = useState(false);
@@ -21,15 +21,16 @@ function Monitor(){
             setName(response.data.name)
             setGroupId(response.data.group.id)
         })
-        monitorsGroupService.getGroupsNotMadeForMonitor().then((response)=>{
+        monitorsGroupService.getGroups().then((response)=>{
             setGroups(response.data)
         })
     },[])
 
     const handleUpdate = ()=>{
-        monitor.name = name
-        monitor.group = groups.find((element)=>element.id == groupId)
-        monitorService.updateMonitor(id,monitor).then((response)=>{
+        let monitorsend = monitor
+        monitorsend.name = name
+        monitorsend.group = groups.find((element)=>element.id == groupId)
+        monitorService.updateMonitor(id,monitorsend).then((response)=>{
             setMonitor(response.data)
         })
         setUpdate(false)
@@ -91,8 +92,8 @@ function Monitor(){
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
                                             {update?
                                                 <select className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}>
-                                                    {groups.map((group)=>
-                                                    <option key={group.id} value={group.id} selected={groupId== group.id}>{group.name}</option>
+                                                    {groups.filter((group)=>groupId == group.id || group.madeForMonitor === false).map((group)=>
+                                                    <option key={group.id} value={group.id} selected={groupId== group.id}>{!group.madeForMonitor ? group.name:"----"}</option>
                                                 )}
                                                 </select>
                                                 :
