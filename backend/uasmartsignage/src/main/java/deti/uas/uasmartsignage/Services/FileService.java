@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -287,9 +288,8 @@ public class FileService {
      */
     private boolean deleteDirectory(File directory) {
         Path directoryPath = directory.toPath();
-        try {
-            Files.walk(directoryPath)
-                    .sorted(Comparator.reverseOrder())
+        try (Stream<Path> paths = Files.walk(directoryPath)) {
+            paths.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
             return true;

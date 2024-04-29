@@ -225,8 +225,7 @@ class FileServiceTest {
         String parentDirectoryPathInnerF = service.getParentDirectoryPath(savedInner);
         File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + savedInner.getName());
 
-        assertThat(innerDirectory).exists();
-        assertThat(innerDirectory).hasParent(outerDirectory);
+        assertThat(innerDirectory).exists().hasParent(outerDirectory);
         //check if the parent size is updated
         assertThat(outerFolder.getSize()).isEqualTo(fileSize);
         verify(repository, times(3)).save(any());
