@@ -3,9 +3,76 @@ import { MdArrowBack } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import mediaService from '../../services/mediaService';
-import DataTable from 'react-data-table-component';
-
+import DataTable, { createTheme } from 'react-data-table-component';
 import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies } from "react-icons/md";
+import { AnimatePresence, motion } from 'framer-motion';
+
+const conditionalRowStyles = [
+    {
+      when: row => row.selected,
+      style: {
+        backgroundColor: '#a7a8a9'
+      }
+    }
+];
+
+const columns = [
+    {
+        selector: row => headNameStyle(row),
+    },
+    {
+        id: 'isFolder',
+        selector: row => row.type,
+        omit: true,
+    },
+];
+
+const customStyles = {
+    head: {
+        style: {
+            fontSize: '20px',
+        },
+    },
+    rows: {
+        style: {
+            fontSize: '16px',
+        },
+    }
+};
+
+createTheme('solarized', {
+    text: {
+      primary: '#101604',
+    },
+    background: {
+      default: '#fafdf7',
+    },
+    divider: {
+      default: '#073642',
+    },
+  });
+
+const headNameStyle = (row) => {
+    return(
+        <div data-tag="allowRowEvents" className="flex flex-row items-center">
+            {getFileIcon(row.type)}
+            <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+        </div>
+    )
+};
+
+const getFileIcon = (type) => {
+    switch (type) {
+        case "directory":
+            return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
+        case "image/png":
+            return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
+        case "video/mp4":
+            return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
+        default:
+            break;
+    }
+};
 
 function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widgetId, contents, setContents } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
@@ -30,54 +97,6 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
         }
     }, [currentFolder]);
 
-
-    const columns = [
-        {
-            selector: row => headNameStyle(row),
-        },
-        {
-            id: 'isFolder',
-            selector: row => row.type,
-            omit: true,
-        },
-    ];
-
-    const customStyles = {
-        head: {
-            style: {
-                fontSize: '20px',
-            },
-        },
-        rows: {
-            style: {
-                fontSize: '16px',
-            },
-        }
-    };
-
-
-    const headNameStyle = (row) => {
-        return(
-            <div data-tag="allowRowEvents" className="flex flex-row items-center">
-                {getFileIcon(row.type)}
-                <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-            </div>
-        )
-    };
-
-    const getFileIcon = (type) => {
-        switch (type) {
-            case "directory":
-                return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-            case "image/png":
-                return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
-            case "video/mp4":
-                return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-            default:
-                break;
-        }
-    };
-
     const handleRowDoubleClick = (row) => {
         if (row.type === "directory"){
             if (row.name === "...") {
@@ -87,27 +106,25 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
                 setFolderStack([...folderStack, currentFolder]);
                 setCurrentFolder(row.id);
             }
+            setSelectedRow(null);
         }
         else{
-            if (currentFolder === null ){
-                
-                setContents({...contents, [widgetId]: "http://localhost:8080/uploads/" + row.name});
-            }
-            else{
-                mediaService.getFileOrDirectoryById(currentFolder).then((response) => {
-                    setContents({...contents, [widgetId]: "http://localhost:8080" + response.data.path + "/" + row.name});
-                });
-            }
+            setContents({...contents, [widgetId]: row});
+            setShowContentsPortal(false);
         }
     };
 
     const handleRowClick = (row) => {
-        //if (selectedRow !== null){
-            //selectedRow
-        //}
+        filesAndDirectories.map(item => {
+            if (row.id !== item.id) {
+              item.selected = false;
+            }
+            else{
+                row.selected = true;
+            }
+        });
         setSelectedRow(row);
-        console.log(row);
-    };
+    }
 
     const navigateBack = () => {
         if (folderStack.length > 0) {
@@ -119,12 +136,21 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
         }
     };
 
-    return (
-    <>
-        {showContentsPortal && createPortal(
-            <div className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
+    return createPortal (
+    <AnimatePresence>
+        {showContentsPortal && (
+            <motion.div key="backgroundContents"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }} 
+                className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
                     <div className="bg-black h-screen w-screen opacity-75"></div>
-                    <div className="absolute text-gray-50 h-screen w-screen flex items-center">
+                    <motion.div key="contents"
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0.8 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="absolute text-gray-50 h-screen w-screen flex items-center">
                         <div className="bg-[#fafdf7] text-[#101604] h-[75%] w-[55%] mx-auto rounded-xl p-[2%]">
                             <div className="h-[10%] flex">
                                 <button onClick={() => setShowContentsPortal(false)} className="flex flex-row">
@@ -148,23 +174,49 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
                                             data={filesAndDirectories}
                                             onRowClicked={handleRowClick}
                                             onRowDoubleClicked={handleRowDoubleClick}
-                                            customStyles={customStyles}/>
+                                            customStyles={customStyles}
+                                            conditionalRowStyles={conditionalRowStyles}
+                                            theme="solarized"/>
                                     </div>
                                     <div className="h-[20%] flex w-full items-center place-content-end">
                                         <div className="pr-6">
-                                            <button className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">Submit</button>
+                                            {(selectedRow !== null && selectedRow.name !== "..."
+                                                ?
+                                                <button 
+                                                    onClick={() => {setContents({...contents, [widgetId]: selectedRow}); setShowContentsPortal(false)}} 
+                                                    className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">
+                                                        Submit
+                                                </button>
+                                                :
+                                                <button disabled 
+                                                    className="bg-[#96d600] opacity-50 cursor-not-allowed rounded-md p-2 pl-4 pr-4">
+                                                        Submit
+                                                </button>
+                                            )}
                                         </div>
-                                        <button className="bg-[#E9E9E9] rounded-md p-2 pl-4 pr-4">Open</button>
+                                        {((selectedRow !== null && selectedRow.type === "directory")
+                                            ?
+                                            <button 
+                                                onClick={() => handleRowDoubleClick(selectedRow)} 
+                                                className="bg-[#E9E9E9] rounded-md p-2 pl-4 pr-4">
+                                                    Open
+                                                </button>
+                                            :
+                                            <button disabled 
+                                                className="bg-[#E9E9E9] opacity-50 cursor-not-allowed rounded-md p-2 pl-4 pr-4">
+                                                    Open
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-            </div>,
-        document.body
+                    </motion.div>
+            </motion.div>
         )}
-    </>
-    )
+        </AnimatePresence>,
+        document.body
+    );
 }
 
 
