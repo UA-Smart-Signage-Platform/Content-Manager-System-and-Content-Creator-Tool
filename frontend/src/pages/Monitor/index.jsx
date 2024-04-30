@@ -4,32 +4,39 @@ import { MdCreate, MdArrowBack, MdMonitor,MdCheck } from "react-icons/md";
 import { useLocation, useParams } from "react-router";
 import monitorService from "../../services/monitorService";
 import monitorsGroupService from "../../services/monitorsGroupService";
+import axios from "axios";
+import { Link } from "react-router-dom";
 
 
 function Monitor(){
     const { state } = useLocation();
     const [monitor,setMonitor] = useState(state);
     const [name,setName] = useState("");
-    const [groupId,setGroupId] = useState();
+    const [groupId,setGroupId] = useState(-1);
     const [groups,setGroups] = useState([]);
     const { id } = useParams();
     const [update,setUpdate] = useState(false);
 
     useEffect(()=>{
-        monitorService.getMonitorById(id).then((response)=>{
-            setMonitor(response.data)
-            setName(response.data.name)
-            setGroupId(response.data.group.id)
-        })
-        monitorsGroupService.getGroupsNotMadeForMonitor().then((response)=>{
-            setGroups(response.data)
-        })
-    },[])
+        axios.all([monitorService.getMonitorById(id),monitorsGroupService.getGroupsNotMadeForMonitor()]).then(
+            axios.spread((monitorRes,groupsRes)=>{
+                setMonitor(monitorRes.data)
+                setName(monitorRes.data.name)
+                setGroupId(monitorRes.data.group.id)
+                let groupsSetting = groupsRes.data
+                if (groupsSetting.find((element)=>element.id == monitorRes.data.group.id) == undefined){
+                    groupsSetting.push(monitorRes.data.group)
+                }
+                setGroups(groupsSetting)
+            })
+        )
+    },[update])
 
     const handleUpdate = ()=>{
-        monitor.name = name
-        monitor.group = groups.find((element)=>element.id == groupId)
-        monitorService.updateMonitor(id,monitor).then((response)=>{
+        let monitorsend = monitor
+        monitorsend.name = name
+        monitorsend.group = groups.find((element)=>element.id == groupId)
+        monitorService.updateMonitor(id,monitorsend).then((response)=>{
             setMonitor(response.data)
         })
         setUpdate(false)
@@ -46,7 +53,7 @@ function Monitor(){
                 </div>
                 <div id="monitor" className="h-[92%]">
                     <div className="h-[8%] w-full flex flex-row">
-                        <div className="w-[50%] flex text-2xl gap-2 pb-2 items-end"><MdArrowBack className=" size-8"/> Go Back</div>
+                        <Link to="/monitors" className="w-[50%]"><div className="w-[100%] flex text-2xl gap-2 pb-2 items-end"><MdArrowBack className=" size-8"/> Go Back</div></Link>
                         <div className="w-[50%] flex text-2xl gap-2 pb-2 pl-4 items-end"><MdMonitor className=" size-8"/>Preview</div>
                     </div>
                     <div className="h-[92%] w-full flex flex-row gap-5">
@@ -92,7 +99,7 @@ function Monitor(){
                                             {update?
                                                 <select className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}>
                                                     {groups.map((group)=>
-                                                    <option key={group.id} value={group.id} selected={groupId== group.id}>{group.name}</option>
+                                                    <option key={group.id} value={group.id} selected={groupId== group.id}>{!group.madeForMonitor ? group.name:"----"}</option>
                                                 )}
                                                 </select>
                                                 :

@@ -43,7 +43,13 @@ public class MonitorService {
         monitorById.setGroup(monitor.getGroup());
         Monitor returnMonitor = monitorRepository.save(monitorById);
         if (group.isMadeForMonitor()) {
-            monitorGroupRepository.deleteById(group.getId());
+            if (group.getId() == monitorById.getGroup().getId()){
+                group.setName(monitor.getName());
+                monitorGroupRepository.save(group);
+            }
+            else{
+                monitorGroupRepository.deleteById(group.getId());
+            }
         }
         return returnMonitor;
     }
