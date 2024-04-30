@@ -1,10 +1,9 @@
 import { createPortal } from 'react-dom';
-import { MdArrowBack } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import mediaService from '../../services/mediaService';
 import DataTable, { createTheme } from 'react-data-table-component';
-import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies } from "react-icons/md";
+import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdArrowBack } from "react-icons/md";
 import { AnimatePresence, motion } from 'framer-motion';
 
 const conditionalRowStyles = [

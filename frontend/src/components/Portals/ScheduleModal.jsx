@@ -3,7 +3,6 @@ import { MdArrowBack } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../services/templateService";
-import activeTemplateService from "../../services/activeTemplateService";
 import ScheduleContentModal from './ScheduleContentModal';
 import Select from 'react-select'
 import DatePicker from 'react-date-picker';
@@ -29,7 +28,7 @@ const colors = [
 
 function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
     const [templates, setTemplates] = useState([]);
-    const [selectColors,setSelectedColors] = useState([]);
+    const [selectedColors,setSelectedColors] = useState([]);
 
     const [selectedTemplateId, setSelectedTemplateId] = useState(null);
     const [selectedDays, setSelectedDays] = useState([]);
@@ -79,7 +78,6 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
         }
 
         console.log(data);
-        //activeTemplateService.changeActiveTemplate(data);
     };
 
 
@@ -94,12 +92,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
     };
 
     const handleSelectedContent = (event) => {
-        if (selectedContent.hasOwnProperty(event.value)) {
-            setSelectedContent({...selectedContent, [event.value] : event.label });
-        } 
-        else {
-            setSelectedContent({...selectedContent, [event.value] : event.label });
-        }
+        setSelectedContent({...selectedContent, [event.value] : event.label });
     }
 
 
@@ -115,6 +108,38 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
         setSelectedEndTime(["23", "00"]);
         setSelectedDays(weekDays);
     };
+
+    const contentElement = (templateWidget) => {
+        if (templateWidget.widget.name === "Media") {
+            return (
+                <>
+                    <span className='z-10'>{templateWidget.widget.name}</span>
+                    <button 
+                            onClick={() => { setShowContentsPortal(true); setSelectedWidgetId(`${templateWidget.id}`) }} 
+                            className="bg-[#E9E9E9] border-2 border-black pl-4 pr-4 rounded-lg">
+                        <span>...</span>
+                    </button>
+                    {selectedContent[templateWidget.id] !== undefined && (selectedContent[templateWidget.id]).name}
+                </>
+            );
+        } 
+        else if (templateWidget.widget.contents.length > 0) {
+            return (
+                <Select
+                    className="z-20"
+                    placeholder={templateWidget.widget.name + "..."}
+                    isSearchable="true"
+                    onChange={(e) => handleSelectedContent(e)}
+                    options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
+                />
+            );
+        } 
+        else {
+            return (
+                <span>{templateWidget.widget.name}</span>
+            );
+        }
+    }
 
     return createPortal(
         <AnimatePresence>
@@ -147,7 +172,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                             <select id="templateSelect" onChange={(e) => setSelectedTemplateId(e.target.value)} className="bg-[#E9E9E9] rounded-md p-2">
                                                 <option selected disabled hidden>Template</option>
                                                 {templates.length !== 0 && templates.map((template) => 
-                                                    <option value={template.id}>{template.name}</option>
+                                                    <option key={template.id} value={template.id}>{template.name}</option>
                                                 )}
                                             </select>
                                         </div>
@@ -163,7 +188,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                         <div className="h-full w-full bg-[#E9E9E9] rounded-md">
                                             <div className="h-[25%] pt-3 w-full flex flex-row">
                                                 <div className="h-full w-[50%] flex flex-col items-center justify-center">
-                                                    <label className="pb-1">Start Time:</label>
+                                                    <span className="pb-1">Start Time:</span>
                                                     <div className="flex items-center rounded-md border border-gray-300">
                                                         <select value={selectedStartTime[0]} 
                                                                 onChange={(event) => setSelectedStartTime([event.target.value, selectedStartTime[1]])} 
@@ -191,7 +216,7 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                                     </div>
                                                 </div>
                                                 <div className="h-full w-[50%] flex flex-col items-center justify-center">
-                                                    <label className="pb-1">End Time:</label>
+                                                    <span className="pb-1">End Time:</span>
                                                     <div className="flex items-center rounded-md border border-gray-300">
                                                         <select value={selectedEndTime[0]} 
                                                                 onChange={(event) => setSelectedEndTime([event.target.value, selectedEndTime[1]])} 
@@ -228,43 +253,43 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[0])} 
                                                                         value={weekDays[0]} type="checkbox" className="h-5 w-5" />
-                                                                <label>MON</label>
+                                                                <span>MON</span>
                                                             </div>
                                                             <div className="flex flex-col items-center">
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[1])} 
                                                                         value={weekDays[1]} type="checkbox" className="h-5 w-5" />
-                                                                <label>TUE</label>
+                                                                <span>TUE</span>
                                                             </div>
                                                             <div className="flex flex-col items-center">
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[2])} 
                                                                         value={weekDays[2]} type="checkbox" className="h-5 w-5" />
-                                                                <label>WED</label>
+                                                                <span>WED</span>
                                                             </div>
                                                             <div className="flex flex-col items-center">
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[3])} 
                                                                         value={weekDays[3]} type="checkbox" className="h-5 w-5" />
-                                                                <label>THU</label>
+                                                                <span>THU</span>
                                                             </div>
                                                             <div className="flex flex-col items-center">
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[4])} 
                                                                         value={weekDays[4]} type="checkbox" className="h-5 w-5" />
-                                                                <label>FRI</label>
+                                                                <span>FRI</span>
                                                             </div>
                                                             <div className="flex flex-col items-center">
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[5])} 
                                                                         value={weekDays[5]} type="checkbox" className="h-5 w-5" />
-                                                                <label>SAT</label>
+                                                                <span>SAT</span>
                                                             </div>
                                                             <div className="flex flex-col items-center">
                                                                 <input onChange={handleSelectedDays} 
                                                                         checked={selectedDays.includes(weekDays[6])} 
                                                                         value={weekDays[6]} type="checkbox" className="h-5 w-5" />
-                                                                <label>SUN</label>
+                                                                <span>SUN</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -311,36 +336,15 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                 </div>
                                 <div className="aspect-video relative border-4 border-gray-300 rounded-md">
                                     {selectedTemplateId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
-                                    <div className={`absolute`}
+                                    <div key={templateWidget.id} className={`absolute`}
                                         style={{
                                             width: `${templateWidget.width}%`,
                                             height: `${templateWidget.height}%`,
                                             top: `${templateWidget.top}%`,
                                             left: `${templateWidget.leftPosition}%`
                                         }}> 
-                                        <div className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectColors[index]}`}>
-                                            {templateWidget.widget.name === "Media" 
-                                                ?
-                                                    <>
-                                                        <span className='z-10'>{templateWidget.widget.name}</span>
-                                                        <button onClick={() => {setShowContentsPortal(true); setSelectedWidgetId(`${templateWidget.id}`)}} className="bg-[#E9E9E9] border-2 border-black pl-4 pr-4 rounded-lg">
-                                                            <span>...</span>
-                                                        </button>
-                                                        {selectedContent[templateWidget.id] !== undefined && (selectedContent[templateWidget.id]).name}
-                                                    </>
-                                                    :
-                                                    templateWidget.widget.contents.length > 0 
-                                                    ?
-                                                        <Select
-                                                            className="z-20"
-                                                            placeholder={templateWidget.widget.name + "..."}
-                                                            isSearchable="true"
-                                                            onChange={(e) => handleSelectedContent(e)}
-                                                            options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option })) }
-                                                        />
-                                                        :
-                                                        <span>{templateWidget.widget.name}</span>
-                                            }
+                                        <div className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectedColors[index]}`}>
+                                            {contentElement(templateWidget)}
                                         </div>
                                     </div>
                                     )}
