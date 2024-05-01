@@ -46,7 +46,6 @@ class ScheduleRepositoryTest {
         schedule.setNTimes(10);
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(monitorsGroup);
 
         entityManager.persistAndFlush(schedule);
 
@@ -76,7 +75,6 @@ class ScheduleRepositoryTest {
         schedule1.setNTimes(10);
         schedule1.setIntervalOfTime(10);
         schedule1.setLastEditedBy(user);
-        schedule1.setMonitorsGroupForSchedules(monitorsGroup);
 
         Schedule schedule2 = new Schedule();
         schedule2.setDate(LocalDate.parse("2021-06-01"));
@@ -88,7 +86,6 @@ class ScheduleRepositoryTest {
         schedule2.setNTimes(10);
         schedule2.setIntervalOfTime(10);
         schedule2.setLastEditedBy(user);
-        schedule2.setMonitorsGroupForSchedules(monitorsGroup);
 
         entityManager.persistAndFlush(schedule1);
         entityManager.persistAndFlush(schedule2);

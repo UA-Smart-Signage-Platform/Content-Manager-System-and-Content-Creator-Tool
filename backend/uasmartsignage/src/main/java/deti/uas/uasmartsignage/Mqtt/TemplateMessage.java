@@ -16,8 +16,6 @@ public class TemplateMessage {
     private String method;
     private String html;
     private List<String> files;
-    private List<String> schedule;
-
-    
+    private String schedule;
 }
 

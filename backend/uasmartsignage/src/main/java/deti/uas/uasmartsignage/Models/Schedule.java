@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -36,6 +37,11 @@ public class Schedule {
 
     private int priority;
 
+    @ElementCollection
+    @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+    @Column(name = "day")
+    private List<Integer> days;
+
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
@@ -46,9 +52,13 @@ public class Schedule {
 
     private LocalDate createdOn;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    @JsonIgnore
-    private MonitorsGroup monitorsGroupForSchedules;
+    @OneToMany(mappedBy = "schedule")
+    @JsonIgnoreProperties("schedule")
+    private List<TemplateGroup> templateGroups;
 
+
+    @Override
+    public String toString() {
+        return "Schedule [id=" + id + ", frequency=" + frequency + ", nTimes=" + nTimes + ", intervalOfTime=" + intervalOfTime + ", startDate=" + startDate + ", endDate=" + endDate + ", date=" + date + ", priority=" + priority + ", days=" + days + ", createdBy=" + createdBy + ", lastEditedBy=" + lastEditedBy + ", createdOn=" + createdOn + "]";
+    }
 }

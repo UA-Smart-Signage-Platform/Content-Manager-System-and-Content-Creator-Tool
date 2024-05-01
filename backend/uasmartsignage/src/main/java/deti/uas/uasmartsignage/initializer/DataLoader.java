@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.initializer;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,14 +9,18 @@ import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
 import deti.uas.uasmartsignage.Services.FileService;
+import deti.uas.uasmartsignage.Services.ScheduleService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Component;
 
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
@@ -40,12 +45,14 @@ public class DataLoader implements CommandLineRunner {
     private TemplateWidgetRepository templateWidgetRepository;
     private TemplateGroupRepository templateGroupRepository;
     private FileService fileService;
+    private ScheduleService scheduleService;
 
     @Autowired
     public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
             ContentRepository contentRepository, WidgetRepository widgetRepository,
             MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,
-            TemplateGroupRepository templateGroupRepository, FileService fileService) {
+            TemplateGroupRepository templateGroupRepository, FileService fileService,
+            ScheduleService scheduleService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
@@ -54,6 +61,7 @@ public class DataLoader implements CommandLineRunner {
         this.monitorRepository = monitorRepository;
         this.templateGroupRepository = templateGroupRepository;
         this.fileService = fileService;
+        this.scheduleService = scheduleService;
     }
 
     public void run(String... args) throws Exception {
@@ -63,6 +71,7 @@ public class DataLoader implements CommandLineRunner {
 
         this.loadTemplates();
         this.loadGroupsAndMonitors();
+        this.loadSchedules();
         this.loadTemplateGroups();
     }
 
@@ -281,7 +290,25 @@ public class DataLoader implements CommandLineRunner {
         TemplateGroup templateGroup1 = new TemplateGroup();
         templateGroup1.setGroup(deti);
         templateGroup1.setTemplate(template1);
+        Schedule schedule1 = scheduleService.getAllSchedules().get(0);
+        templateGroup1.setSchedule(schedule1);
         templateGroup1 = templateGroupRepository.save(templateGroup1);
+
+    }
+
+    private void loadSchedules() {
+        Schedule schedule = new Schedule();
+        //schedule.setTemplateGroups(new ArrayList<>());
+        List<Integer> days = new ArrayList<>();
+        days.add(1);
+        days.add(2);
+        days.add(3);
+        days.add(4);
+        days.add(5);
+        schedule.setDays(days);
+        schedule.setEndDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setStartDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule = scheduleService.saveSchedule(schedule);
 
     }
 }

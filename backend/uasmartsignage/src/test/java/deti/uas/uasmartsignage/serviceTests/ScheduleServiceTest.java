@@ -53,7 +53,6 @@ class ScheduleServiceTest {
         schedule.setNTimes(10);
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
 
         Schedule schedu = service.getScheduleById(1L);
@@ -82,7 +81,6 @@ class ScheduleServiceTest {
         schedule1.setNTimes(10);
         schedule1.setIntervalOfTime(10);
         schedule1.setLastEditedBy(user);
-        schedule1.setMonitorsGroupForSchedules(group);
 
         Schedule schedule2 = new Schedule();
         schedule2.setDate(LocalDate.parse("2021-06-01"));
@@ -94,7 +92,6 @@ class ScheduleServiceTest {
         schedule2.setNTimes(10);
         schedule2.setIntervalOfTime(10);
         schedule2.setLastEditedBy(user);
-        schedule2.setMonitorsGroupForSchedules(group);
 
         when(repository.findAll()).thenReturn(Arrays.asList(schedule1, schedule2));
 
@@ -122,7 +119,6 @@ class ScheduleServiceTest {
         schedule.setNTimes(10);
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
         when(repository.save(schedule)).thenReturn(schedule);
 
         Schedule schedu = service.saveSchedule(schedule);
@@ -149,7 +145,6 @@ class ScheduleServiceTest {
         schedule.setNTimes(10);
         schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
 
         service.deleteSchedule(1L);
 

@@ -4,6 +4,7 @@ import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
@@ -55,11 +56,13 @@ public class TemplateGroupService {
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
     private final FileService fileService;
+    private final ScheduleService scheduleService;
 
-    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService) {
+    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService) {
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
         this.fileService = fileService;
+        this.scheduleService = scheduleService;
     }
 
     @Autowired
@@ -81,9 +84,16 @@ public class TemplateGroupService {
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
-        List<Monitor> monitors = monitorGroup.getMonitors();
+        Schedule schedule;
+        if (templateGroup.getSchedule().getId() == null) {
+            schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
+        }
+        else {
+            schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
+        }
         templateGroup.setTemplate(template);
         templateGroup.setGroup(monitorGroup);
+        templateGroup.setSchedule(schedule);
         List<String> downloadFiles = new ArrayList<>();
         if (templateGroup.getContent() != null) {
             for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
@@ -98,7 +108,8 @@ public class TemplateGroupService {
             TemplateMessage confirmMessage = new TemplateMessage();
             confirmMessage.setMethod("TEMPLATE");
             confirmMessage.setFiles(downloadFiles);
-            
+            confirmMessage.setSchedule(schedule.toString());
+            List<Monitor> monitors = monitorGroup.getMonitors();
             for (Monitor monitor : monitors) {
                 String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
                 confirmMessage.setHtml(html);
@@ -129,7 +140,13 @@ public class TemplateGroupService {
         if (templateGroupById == null) {
             return null;
         }
-        List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
+        Schedule schedule;
+        if (templateGroup.getSchedule().getId() == null) {
+            schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
+        }
+        else {
+            schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
+        }
         List<String> downloadFiles = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
             Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
@@ -138,17 +155,16 @@ public class TemplateGroupService {
                 entry.setValue(file.get().getName());
             }
         }
-        if (templateGroupById.getTemplate() != templateGroup.getTemplate()) {
+        if (templateGroupById != templateGroup) {
             try {
                 TemplateMessage confirmMessage = new TemplateMessage();
                 confirmMessage.setMethod("TEMPLATE");
                 confirmMessage.setFiles(downloadFiles);
-
+                confirmMessage.setSchedule(schedule.toString());
+                List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
                 for (Monitor monitor : monitors) {
                     String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
                     confirmMessage.setHtml(html);
-
-
                     String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                     MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
                 }
@@ -160,8 +176,8 @@ public class TemplateGroupService {
         }
 
         templateGroupById.setTemplate(templateGroup.getTemplate());
-        templateGroupById.setTemplate(templateGroup.getTemplate());
         templateGroupById.setContent(templateGroup.getContent());
+        templateGroupById.setSchedule(schedule);
         return templateGroupRepository.save(templateGroupById);
     }
 
