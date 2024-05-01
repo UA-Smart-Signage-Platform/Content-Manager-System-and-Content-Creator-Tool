@@ -143,7 +143,6 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
 
     return createPortal(
         <AnimatePresence>
-        {showPortal && (
             <motion.div key="background"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -361,7 +360,6 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                     </div>
                 </motion.div>
             </motion.div>
-        )}
         </AnimatePresence>,
         document.body
     );

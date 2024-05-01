@@ -136,8 +136,7 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
     };
 
     return createPortal (
-    <AnimatePresence>
-        {showContentsPortal && (
+        <AnimatePresence>
             <motion.div key="backgroundContents"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -212,7 +211,6 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
                         </div>
                     </motion.div>
             </motion.div>
-        )}
         </AnimatePresence>,
         document.body
     );
