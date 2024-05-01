@@ -175,7 +175,7 @@ public class TemplateGroupService {
             }
         }
 
-        templateGroupById.setTemplate(templateGroup.getTemplate());
+        templateGroupById.setTemplate(template);
         templateGroupById.setContent(templateGroup.getContent());
         templateGroupById.setSchedule(schedule);
         return templateGroupRepository.save(templateGroupById);
