@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,10 +22,19 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false)
+    @JsonIgnore
+    private MonitorsGroup monitorsGroupForSchedules;
+
     @Column(name = "frequency")
     private int frequency;
 
-    private int intervalOfTime;
+    @Column(name = "startTime")
+    private LocalTime startTime;
+
+    @Column(name = "endTime")
+    private LocalTime endTime;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -34,34 +42,23 @@ public class Schedule {
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    @Column(name = "priority")
     private int priority;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
     private User createdBy;
 
-    @ManyToOne
-    @JoinColumn(name = "last_edited_by")
-    private User lastEditedBy;
-
     @Column(name = "created_on")
     private LocalDate createdOn;
 
+    @ManyToOne
+    @JoinColumn(name = "last_edited_by")
+    private User lastEditedBy;
 
     @ElementCollection
     @CollectionTable(name = "schedule_weekdays", joinColumns = @JoinColumn(name = "schedule_id"))
     @Column(name = "weekdays")
     private List<Integer> weekdays;
-
-    @Column(name = "start_hour")
-    private LocalTime startHours;
-
-    @Column(name = "end_hour")
-    private LocalTime endHours;
-
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    @JsonIgnore
-    private MonitorsGroup monitorsGroupForSchedules;
 
 }

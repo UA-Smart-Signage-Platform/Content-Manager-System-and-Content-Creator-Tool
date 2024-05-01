@@ -42,7 +42,6 @@ class ScheduleRepositoryTest {
         schedule.setEndDate(LocalDate.parse("2024-04-21"));
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
-        schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
         schedule.setMonitorsGroupForSchedules(monitorsGroup);
 
@@ -70,7 +69,6 @@ class ScheduleRepositoryTest {
         schedule1.setEndDate(LocalDate.parse("2024-04-21"));
         schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
-        schedule1.setIntervalOfTime(10);
         schedule1.setLastEditedBy(user);
         schedule1.setMonitorsGroupForSchedules(monitorsGroup);
 
@@ -80,7 +78,6 @@ class ScheduleRepositoryTest {
         schedule2.setEndDate(LocalDate.parse("2024-04-21"));
         schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
-        schedule2.setIntervalOfTime(10);
         schedule2.setLastEditedBy(user);
         schedule2.setMonitorsGroupForSchedules(monitorsGroup);
 
