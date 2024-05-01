@@ -26,7 +26,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
+function ScheduleModal( { setShowPortal, selectedGroup } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -142,7 +142,6 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
     }
 
     return createPortal(
-        <AnimatePresence>
             <motion.div key="background"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -347,20 +346,20 @@ function ScheduleModal( { showPortal, setShowPortal, selectedGroup } ) {
                                         </div>
                                     </div>
                                     )}
-                                    {showContentsPortal && <ScheduleContentModal
-                                        showContentsPortal={showContentsPortal} 
-                                        setShowContentsPortal={setShowContentsPortal}
-                                        widgetId={selectedWidgetId}
-                                        contents={selectedContent}
-                                        setContents={setSelectedContent} />
-                                    }
+                                    <AnimatePresence>
+                                        {showContentsPortal && <ScheduleContentModal
+                                            setShowContentsPortal={setShowContentsPortal}
+                                            widgetId={selectedWidgetId}
+                                            contents={selectedContent}
+                                            setContents={setSelectedContent} />
+                                        }
+                                    </AnimatePresence>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </motion.div>
-            </motion.div>
-        </AnimatePresence>,
+            </motion.div>,
         document.body
     );
 }

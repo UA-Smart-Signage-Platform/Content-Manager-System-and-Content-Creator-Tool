@@ -73,7 +73,7 @@ const getFileIcon = (type) => {
     }
 };
 
-function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widgetId, contents, setContents } ) {
+function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setContents } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
 
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -136,7 +136,6 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
     };
 
     return createPortal (
-        <AnimatePresence>
             <motion.div key="backgroundContents"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -210,8 +209,7 @@ function ScheduleContentModal( { showContentsPortal, setShowContentsPortal, widg
                             </div>
                         </div>
                     </motion.div>
-            </motion.div>
-        </AnimatePresence>,
+            </motion.div>,
         document.body
     );
 }

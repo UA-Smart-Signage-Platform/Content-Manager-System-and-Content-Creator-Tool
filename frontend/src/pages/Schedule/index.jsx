@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PageTitle, ScheduleModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
-import { motion } from "framer-motion"
+import { AnimatePresence, motion } from "framer-motion"
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
@@ -49,11 +49,12 @@ function Schedule(){
                             )}
                         </motion.select>
                     </div>
-                    {showPortal && <ScheduleModal
-                            showPortal={showPortal} 
-                            setShowPortal={setShowPortal}
-                            selectedGroup={groups.at(selectedGroupId)} />
-                    }
+                    <AnimatePresence>
+                        {showPortal && <ScheduleModal
+                                setShowPortal={setShowPortal}
+                                selectedGroup={groups.at(selectedGroupId)} />
+                        }
+                    </AnimatePresence>
                     <div className="w-full h-[90%]">
                         <div className="bg-secondaryLight"></div>
                     </div>
