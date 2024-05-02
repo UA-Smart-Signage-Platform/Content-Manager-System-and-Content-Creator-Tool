@@ -34,7 +34,6 @@ public class ContentService {
         }
         contentById.setName(content.getName());
         contentById.setType(content.getType());
-        contentById.setDescription(content.getDescription());
         contentById.setOptions(content.getOptions());
 
         return contentRepository.save(contentById);
