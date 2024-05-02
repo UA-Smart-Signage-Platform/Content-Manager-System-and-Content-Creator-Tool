@@ -98,6 +98,33 @@ public class FileService {
         return file;
     }
 
+    /***
+     * Retrieves and returns CustomFile with the specified Path from the file repository.
+     * 
+     * @param path The Path of the CustomFile to retrieve.
+     * @return The CustomFile with the specified ID, or null if no such file is found.
+     */
+    public Optional<CustomFile> getFileOrDirectoryByPath(String path){
+        logger.info("Retrieving file with path: {}", path);
+        Optional<CustomFile> file = fileRepository.findByPath(path);
+        if (file.isEmpty()) {
+            logger.warn("File with Path {} found", path);
+            return Optional.empty();
+        } else {
+            logger.info("File with Path {} found", path);
+        }
+
+        // Add log to InfluxDB
+        String operation = "getFileOrDirectoryByPath";
+        String description = "Retrieved file with path: " + path;
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        logger.info(ADDLOGSUCCESS, description);
+        return file;
+
+    }
+
 
     /**
      * Creates CustomFile in the repository. If the file type is "directory", a directory is created.
