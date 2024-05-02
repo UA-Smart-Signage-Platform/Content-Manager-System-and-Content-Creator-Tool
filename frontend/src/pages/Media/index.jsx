@@ -20,7 +20,7 @@ function Media() {
     const [showPortalFile, setShowPortalFile] = useState(false);
     const [showPortalFolder, setShowPortalFolder] = useState(false);
 
-    const { path } = useParams();
+    const path = "home";
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -28,6 +28,7 @@ function Media() {
             mediaService.getFilesAtRootLevel().then((response) => {
                 setFilesAndDirectories(response.data);
                 setFolder(response.data);
+                console.log(response.data)
             })
         }
         else{
