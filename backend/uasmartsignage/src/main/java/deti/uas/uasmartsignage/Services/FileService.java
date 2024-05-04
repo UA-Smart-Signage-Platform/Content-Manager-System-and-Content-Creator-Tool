@@ -156,9 +156,9 @@ public class FileService {
         if (directory.mkdir()) {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
-            fileRepository.save(customFile);
+            CustomFile savedFile = fileRepository.save(customFile);
             logger.info("Directory created: {}",directory.getAbsolutePath());
-            return customFile;
+            return savedFile;
         }
         else {
             logger.info("Failed to create directory: {}",directory.getAbsolutePath());
