@@ -332,6 +332,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                             </button>
                                             :
                                             <div
+                                                role="button"
                                                 onMouseEnter={() => setDisplayInfo(true)}
                                                 onMouseLeave={() => setDisplayInfo(false)}
                                                 className='relative'

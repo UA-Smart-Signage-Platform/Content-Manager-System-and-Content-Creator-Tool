@@ -40,11 +40,11 @@ function StartTitleHtml( {page} ){
                             >
                                 <div className="flex flex-col">
                                     To display contents:
-                                    <span>- Choose desired group</span>
-                                    <span>- Click add rule</span>
-                                    <span>- Choose template and options</span>
-                                    <span>- Select content</span>
-                                    <span>- Submit rule</span>
+                                    <span>- Choose desired group</span>{/* */}
+                                    <span>- Click add rule</span>{/* */}
+                                    <span>- Choose template and options</span>{/* */}
+                                    <span>- Select content</span>{/* */}
+                                    <span>- Submit rule</span>{/* */}
                                     All done!
                                     for a more detailed walkthrough check out this [video]
                                 </div>
