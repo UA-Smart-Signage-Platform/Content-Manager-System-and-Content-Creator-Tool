@@ -143,8 +143,6 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
             );
         }
     }
-console.log("hhhhhh");
-//console.log(templates[0].templateWidgets[0].widget.contents[0].options);
     return createPortal(
             <motion.div key="background"
                     initial={{ opacity: 0 }}
