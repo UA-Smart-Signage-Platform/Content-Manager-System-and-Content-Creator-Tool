@@ -3,7 +3,7 @@ import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineI
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import mediaService from '../../services/mediaService';
-import { useLocation, useMatches, useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate} from 'react-router';
 import { motion } from 'framer-motion';
 
 
@@ -87,27 +87,27 @@ const customStyles = {
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-
+    
     const [currentFolder, setCurrentFolder] = useState(null);
     const [folder, setFolder] = useState(null);
-
+    
     const [updater, setUpdater] = useState(false);
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState(null);
     const [preview, setPreview] = useState(null);
-
+    
     const [showPortalFile, setShowPortalFile] = useState(false);
     const [showPortalFolder, setShowPortalFolder] = useState(false);
-
+    
     const path = useLocation().pathname.replace("/media/home","/uploads").replace(/\/$/, '');
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(path == "/media"){
+        if(path === "/media"){
             navigate("/media/home")
             return
         }
-        if(path == "/uploads"){
+        if(path === "/uploads"){
             mediaService.getFilesAtRootLevel().then((response)=>{
                 setFilesAndDirectories(response.data);
                 setFolder(response.data);
@@ -119,7 +119,7 @@ function Media() {
                 setFolder(response.data);
             })
         }
-    }, [currentFolder, updater,path]);
+    }, [currentFolder, updater,path,navigate]);
 
     const handleRowClick = (row) => {
         if (row.type === "directory"){
@@ -135,7 +135,6 @@ function Media() {
                     setPreview("http://localhost:8080/uploads/" + row.name);
                 }
                 else{
-                    // will be changed to row.path
                     setPreview("http://localhost:8080" + path + "/" + row.name);
                 }
             }
@@ -155,7 +154,7 @@ function Media() {
             <div className="flex flex-row">
                 {path.split("/").slice(1).map((folder, index, array) =>
                     <div>
-                        <motion.button key={index} className={(index+1 !== array.length ? `text-secondary hover:bg-secondaryMedium rounded-lg px-1` : `text-black`)} onClick={() => breadCrumbsNavigate(index)}
+                        <motion.button key={folder.id} className={(index+1 !== array.length ? `text-secondary hover:bg-secondaryMedium rounded-lg px-1` : `text-black`)} onClick={() => breadCrumbsNavigate(index)}
                             whileHover={{scale:1.1}}
                         >
                                 {folder !== "uploads" ? folder : "home"}

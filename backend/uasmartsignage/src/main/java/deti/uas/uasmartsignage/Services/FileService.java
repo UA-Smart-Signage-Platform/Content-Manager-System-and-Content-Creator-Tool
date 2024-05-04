@@ -109,7 +109,7 @@ public class FileService {
         logger.info("Retrieving file with path: {}", path);
         Optional<CustomFile> file = fileRepository.findByPath(path);
         if (file.isEmpty()) {
-            logger.warn("File with Path {} found", path);
+            logger.warn(FILENOTFOUND, path);
             return Optional.empty();
         } else {
             logger.info("File with Path {} found", path);
