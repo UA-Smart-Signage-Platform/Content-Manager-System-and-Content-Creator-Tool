@@ -39,7 +39,7 @@ function StartTitleHtml( {page} ){
                                 className="absolute left-[50%] translate-x-[-50%] min-w-64 max-w-64 bg-black text-white text-xs rounded py-1 px-3"
                             >
                                 <div className="flex flex-col">
-                                    To display contents:
+                                    To display contents:{/* */}
                                     <span>- Choose desired group</span>{/* */}
                                     <span>- Click add rule</span>{/* */}
                                     <span>- Choose template and options</span>{/* */}
