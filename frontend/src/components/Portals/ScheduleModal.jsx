@@ -151,13 +151,14 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    transition={{duration:0.1}}
             className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <motion.div key="content"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    transition={{ duration: 0.1, ease: "easeOut" }}
                     className="absolute text-gray-50 h-screen w-screen flex items-center">
                     <div className="bg-[#fafdf7] text-[#101604] h-[90%] w-[90%] mx-auto rounded-xl p-[1%]">
                         <div className="h-[5%] w-full flex items-center">
@@ -333,6 +334,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                             <div
                                                 onMouseEnter={() => setDisplayInfo(true)}
                                                 onMouseLeave={() => setDisplayInfo(false)}
+                                                className='relative'
                                             >
                                                 <button onClick={handleSubmit} 
                                                     disabled 
@@ -342,7 +344,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                                 {displayInfo &&
                                                     <>
                                                         <motion.div
-                                                            className="absolute min-w-64 max-w-64 bg-black text-white text-sm rounded py-1 px-3"
+                                                            className="absolute min-w-64 max-w-64 bg-black text-white text-sm rounded py-1 px-3 left-[-50%] top-[110%]"
                                                         >
                                                             <div className="flex flex-col">
                                                                 <span>
@@ -359,7 +361,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                                                 </span>
                                                             </div>
                                                         </motion.div>
-                                                        <MdArrowDropUp className="absolute"/>
+                                                        <MdArrowDropUp className="absolute top-[85%] left-[50%] translate-x-[-50%]"/>
                                                     </>
                                                 }
                                             </div>
