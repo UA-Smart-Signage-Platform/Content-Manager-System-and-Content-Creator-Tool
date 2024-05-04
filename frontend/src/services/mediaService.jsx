@@ -15,6 +15,9 @@ const mediaService = {
 
     async createFolder(folder){
         return await client.post("files/directory", folder);
+    },
+    async getDirectoryOrFileByPath(path){
+        return await client.get("files/byPath",{params:{path:path}});
     }
 }
 
