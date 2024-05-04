@@ -179,15 +179,18 @@ public class FileService {
     public String getParentDirectoryPath(CustomFile customFile) {
         StringBuilder pathBuilder = new StringBuilder();
 
-        while (customFile.getParent() != null) {
-            logger.info("Parent directory: {}", customFile.getParent().getName());
-            pathBuilder.insert(0, customFile.getParent().getName() + "/");
-            customFile = customFile.getParent();
+        
+        if (customFile.getParent() != null){
+            CustomFile parent = fileRepository.findById(customFile.getParent().getId()).orElse(null);
+            pathBuilder.append(parent.getPath());
+            pathBuilder.append("/");
+        }
+        else{
+            pathBuilder.append("/uploads/");
         }
 
         //Creating upload dir
         File rootDirectory = new File(USERDIR + File.separator + "uploads");
-        File uploadDir = new File(File.separator + "uploads");
 
         if (!rootDirectory.exists()) {
             if (rootDirectory.mkdir()) {
@@ -199,7 +202,6 @@ public class FileService {
         }
 
         //adding upload path
-        pathBuilder.insert(0, uploadDir + File.separator);
         return pathBuilder.toString();
     }
 
