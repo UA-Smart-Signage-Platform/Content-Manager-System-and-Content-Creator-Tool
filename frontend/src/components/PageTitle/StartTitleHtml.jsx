@@ -35,13 +35,21 @@ function StartTitleHtml( {page} ){
                     <MdInfoOutline className="w-6 cursor-pointer" />
                     {displayInfo &&
                         <>
-                            <motion.span
-                                className="absolute translate-x-[-50%] min-w-32 max-w-32 bg-black text-white text-xs rounded py-1 px-3"
+                            <motion.div
+                                className="absolute left-[50%] translate-x-[-50%] min-w-64 max-w-64 bg-black text-white text-xs rounded py-1 px-3"
                             >
-                                Tooltip center
-                                
-                            </motion.span>
-                            <MdArrowDropUp className="absolute top-0"/>
+                                <div className="flex flex-col">
+                                    To display contents:
+                                    <span>- Choose desired group</span>
+                                    <span>- Click add rule</span>
+                                    <span>- Choose template and options</span>
+                                    <span>- Select content</span>
+                                    <span>- Submit rule</span>
+                                    All done!
+                                    for a more detailed walkthrough check out this [video]
+                                </div>
+                            </motion.div>
+                            <MdArrowDropUp className="absolute top-[45%] left-[50%] translate-x-[-50%]"/>
                         </>
 
                     }

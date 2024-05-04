@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { MdArrowBack } from "react-icons/md";
+import { MdArrowBack, MdArrowDropUp } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../services/templateService";
@@ -40,6 +40,8 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
 
     const [showContentsPortal, setShowContentsPortal] = useState(false);
     const [selectedWidgetId, setSelectedWidgetId] = useState(null);
+
+    const [displayInfo, setDisplayInfo] = useState(false);
 
     useEffect(() => {
         templateService.getTemplates().then((response) => {
@@ -323,9 +325,44 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                             !selectedEndTime.includes(null)
                                             ) 
                                             ?
-                                            <button onClick={handleSubmit} className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">Create rule</button>
+                                            <button onClick={handleSubmit} 
+                                                className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">
+                                                Create rule
+                                            </button>
                                             :
-                                            <button onClick={handleSubmit} disabled className="bg-[#96d600] opacity-50 cursor-not-allowed rounded-md p-2 pl-4 pr-4">Create rule</button>
+                                            <div
+                                                onMouseEnter={() => setDisplayInfo(true)}
+                                                onMouseLeave={() => setDisplayInfo(false)}
+                                            >
+                                                <button onClick={handleSubmit} 
+                                                    disabled 
+                                                    className="bg-[#96d600] opacity-50 cursor-not-allowed rounded-md p-2 pl-4 pr-4">
+                                                    Create rule
+                                                </button>
+                                                {displayInfo &&
+                                                    <>
+                                                        <motion.div
+                                                            className="absolute min-w-64 max-w-64 bg-black text-white text-sm rounded py-1 px-3"
+                                                        >
+                                                            <div className="flex flex-col">
+                                                                <span>
+                                                                    {selectedTemplateId === null ? "Missing template" : ""}
+                                                                </span>
+                                                                <span>
+                                                                    {selectedDays.length === 0 ? "Missing days" : ""}
+                                                                </span>
+                                                                <span>
+                                                                    {selectedStartTime.includes(null) ? "Missing start time" : ""}
+                                                                </span>
+                                                                <span>
+                                                                    {selectedEndTime.includes(null) ? "Missing end time" : ""}
+                                                                </span>
+                                                            </div>
+                                                        </motion.div>
+                                                        <MdArrowDropUp className="absolute"/>
+                                                    </>
+                                                }
+                                            </div>
                                         }
                                         
                                     </div>
