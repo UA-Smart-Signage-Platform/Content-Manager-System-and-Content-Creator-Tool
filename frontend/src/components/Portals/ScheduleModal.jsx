@@ -151,14 +151,14 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{duration:0.1}}
+                    transition={{ duration:0.3 }}
             className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <motion.div key="content"
                     initial={{ scale: 0.8 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0.8 }}
-                    transition={{ duration: 0.1, ease: "easeOut" }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
                     className="absolute text-gray-50 h-screen w-screen flex items-center">
                     <div className="bg-[#fafdf7] text-[#101604] h-[90%] w-[90%] mx-auto rounded-xl p-[1%]">
                         <div className="h-[5%] w-full flex items-center">
