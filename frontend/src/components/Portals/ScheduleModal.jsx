@@ -125,13 +125,16 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
         } 
         else if (templateWidget.widget.contents.length > 0) {
             return (
-                <Select
-                    className="z-20"
-                    placeholder={templateWidget.widget.name + "..."}
-                    isSearchable="true"
-                    onChange={(e) => handleSelectedContent(e)}
-                    options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
-                />
+                <div className="text-sm min-w-[90%] max-w-[90%]">
+                    <Select
+                        className="z-20"
+                        placeholder={templateWidget.widget.name + "..."}
+                        isSearchable="true"
+                        onChange={(e) => handleSelectedContent(e)}
+                        options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
+                        getOptionValue={(option) => option.label}
+                    />
+                </div>
             );
         } 
         else {
@@ -140,7 +143,8 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
             );
         }
     }
-
+console.log("hhhhhh");
+//console.log(templates[0].templateWidgets[0].widget.contents[0].options);
     return createPortal(
             <motion.div key="background"
                     initial={{ opacity: 0 }}
@@ -305,7 +309,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                                             <DatePicker 
                                                                 onChange={(date) => setSelectedEndDate(date)} 
                                                                 value={selectedEndDate} 
-                                                                minDate={new Date()}
+                                                                minDate={selectedStartDate !== null ? selectedStartDate : new Date()}
                                                                 format="dd/MM/y"/>
                                                         </div>
                                                     </div>
