@@ -105,6 +105,7 @@ public class FileService {
      * @return The CustomFile with the specified ID, or null if no such file is found.
      */
     public Optional<CustomFile> getFileOrDirectoryByPath(String path){
+        path = path.replaceAll("[\n\r]", "_");
         logger.info("Retrieving file with path: {}", path);
         Optional<CustomFile> file = fileRepository.findByPath(path);
         if (file.isEmpty()) {
