@@ -47,6 +47,20 @@ public class FileController {
         return ResponseEntity.ok(customFile);
     }
 
+    @Operation(summary = "Get file by path")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File found", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
+    })
+    @GetMapping("/files/byPath")
+    public ResponseEntity<Optional<CustomFile>> getFileOrDirectoryByPath(@RequestParam String path) {
+        Optional<CustomFile> customFile = fileService.getFileOrDirectoryByPath(path);
+        if (customFile.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customFile);
+    }
+
 
     @Operation(summary = "Get all files and folders located in root")
     @ApiResponses(value = {
