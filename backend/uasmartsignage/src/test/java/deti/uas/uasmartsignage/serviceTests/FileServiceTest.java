@@ -125,6 +125,7 @@ class FileServiceTest {
     @Order(5)
     void whenSaveFolderInsideFolder_thenFolderIsSavedInsideFolder() {
         CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
+        outerFolder.setId(1L);
 
         service.createDirectory(outerFolder);
 
@@ -136,6 +137,7 @@ class FileServiceTest {
 
         CustomFile innerFolder = new CustomFile("Inner directory", "directory", 100L, outerFolder);
         when(repository.save(innerFolder)).thenReturn(innerFolder);
+        when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
 
         CustomFile savedInner = service.createDirectory(innerFolder);
 
