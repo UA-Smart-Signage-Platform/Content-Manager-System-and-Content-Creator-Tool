@@ -63,6 +63,13 @@ function StartTitleHtml( {page} ){
                 Monitor
             </span>
         )
+    if (page === "templates")
+        return(
+            <span className="font-bold text-3xl flex flex-row place-content-end items-end">
+                
+                Templates
+            </span>
+        )
 }
 
 export default StartTitleHtml
