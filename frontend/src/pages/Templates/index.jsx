@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import templateservice from "../../services/templateService";
 import { PageTitle } from "../../components";
 import DataTable from "react-data-table-component";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const customStyles = {
     headRow: {
