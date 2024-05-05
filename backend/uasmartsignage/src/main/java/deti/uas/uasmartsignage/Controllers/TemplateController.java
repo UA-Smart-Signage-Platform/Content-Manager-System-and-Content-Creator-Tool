@@ -28,7 +28,7 @@ import deti.uas.uasmartsignage.Services.TemplateService;
 
 @RestController
 @RequestMapping("/api/templates")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class TemplateController {
 
     

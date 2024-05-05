@@ -5,8 +5,10 @@ const client = axios.create({
     timeout: 5000,
     headers: {
         'Content-Type': 'application/json',
-    }
-});
+    },
+    baseURL: process.env. REACT_APP_API_URL,
+    timeout:5000,
+})
 
 // Add a request interceptor
 client.interceptors.request.use(

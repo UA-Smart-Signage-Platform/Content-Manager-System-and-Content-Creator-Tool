@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/monitors")
 public class MonitorController {

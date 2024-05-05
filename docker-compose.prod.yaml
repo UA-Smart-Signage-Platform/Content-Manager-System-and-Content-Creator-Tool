@@ -1,0 +1,65 @@
+version: '3'
+services:
+  postgresdb:
+    image: postgres:15-alpine
+    env_file:
+      - ./prod.env
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+
+# ------------------------------------------------------------------------------------------------------------------
+  web:
+    build:
+      context: ./frontend
+      dockerfile: .docker/Dockerfile.prod
+      args:
+        -  REACT_APP_API_URL=http://localhost:80/api/
+    restart: unless-stopped
+    env_file:
+      - ./prod.env
+    ports:
+      - 80:80
+    depends_on:
+      - postgresdb
+      - springboot
+
+# ------------------------------------------------------------------------------------------------------------------
+  springboot:
+    depends_on:
+      - postgresdb
+    build: 
+      context: ./backend/uasmartsignage
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./prod.env
+    ports:
+      - 8080:8080
+# ------------------------------------------------------------------------------------------------------------------
+  influxdb:
+    image: influxdb:2.1.1
+    env_file:
+      - ./prod.env
+    entrypoint: ["./entrypoint.sh"]
+    volumes:
+        - influxdb_data:/var/lib/influxdb
+    ports:
+        - ${DOCKER_INFLUXDB_INIT_PORT}:${DOCKER_INFLUXDB_INIT_PORT}
+# ------------------------------------------------------------------------------------------------------------------
+  mqtt:
+    image: eclipse-mosquitto:1.6.13
+    env_file:
+      - ./prod.env
+    volumes:
+        - mosquitto_conf:/mosquitto/config 
+        - mosquitto_data:/mosquitto/data
+        - mosquitto_log:/mosquitto/log
+    ports:
+        - 9001:9001
+        - 1883:1883
+    
+volumes:
+    mosquitto_conf:
+    mosquitto_data:
+    mosquitto_log:
+    influxdb_data:
