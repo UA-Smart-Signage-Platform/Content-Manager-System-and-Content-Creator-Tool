@@ -78,7 +78,7 @@ function Templates(){
             setSelectedColors(arr)
         }
 
-    },[templateDisplay]);
+    },[templateDisplay,templates]);
 
     return(
         <div className="h-full w-full flex flex-col">
