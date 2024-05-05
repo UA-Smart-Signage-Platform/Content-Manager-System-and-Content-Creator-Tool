@@ -36,6 +36,10 @@ const router = createBrowserRouter([
         path: "contentcreator",
         element:<Templates/>,
       },
+      {
+        path: "contentcreator/:id",
+        element:<Cct/>
+      }
     ]
   },
 ])

@@ -95,7 +95,7 @@ function Templates(){
                     <DataTable
                         pointerOnHover
                         highlightOnHover
-                        onRowClicked={console.log("nha")}
+                        onRowClicked={(row)=>}
                         onRowMouseEnter={(row) => setTemplateDisplay(row)}
                         columns={columns}
                         data={templates}
