@@ -106,7 +106,7 @@ public class TemplateGroupController {
         if(monitorGroupService.getGroupById(templateGroup.getGroup().getId()) == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        else if(templateService.getTemplateById(templateGroup.getTemplate().getId()) == null){
+        if(templateService.getTemplateById(templateGroup.getTemplate().getId()) == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 

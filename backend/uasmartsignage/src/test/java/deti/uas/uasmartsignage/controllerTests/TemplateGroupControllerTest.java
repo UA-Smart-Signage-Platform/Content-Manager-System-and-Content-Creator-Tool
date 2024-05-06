@@ -174,7 +174,6 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled
     void testUpdateTemplateGroupEndpoint() throws Exception{
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -206,7 +205,6 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled
     void testSetTemplateForTemplateGroupEndpoint() throws Exception{
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -225,11 +223,7 @@ class TemplateGroupControllerTest {
         templateGroup2.setGroup(group);
         templateGroup2.setTemplate(template2);
 
-
         when(service.getGroupById(1L)).thenReturn(templateGroup);
-        when(templateService.getTemplateById(1L)).thenReturn(template2);
-        when(monitorGroupService.getGroupById(1L)).thenReturn(group);
-
         when(service.saveGroup(Mockito.any(TemplateGroup.class))).thenReturn(templateGroup2);
 
         mvc.perform(put("/api/templateGroups/set")

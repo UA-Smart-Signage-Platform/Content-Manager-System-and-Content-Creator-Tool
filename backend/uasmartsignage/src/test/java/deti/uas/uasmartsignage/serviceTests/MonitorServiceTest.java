@@ -20,7 +20,7 @@ import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Services.MonitorService;
 
 @ExtendWith(MockitoExtension.class)
-public class MonitorServiceTest {
+class MonitorServiceTest {
     @Mock
     private MonitorRepository repository;
     @InjectMocks

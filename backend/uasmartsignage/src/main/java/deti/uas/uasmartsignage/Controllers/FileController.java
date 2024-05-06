@@ -16,9 +16,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -37,15 +39,18 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/{id}")
-    public ResponseEntity<CustomFile> getFileOrDirectoryById(@PathVariable Long id) {
-        CustomFile customFile = fileService.getFileOrDirectoryById(id);
-        return new ResponseEntity<>(customFile, HttpStatus.OK);
+    public ResponseEntity<Optional<CustomFile>> getFileOrDirectoryById(@PathVariable Long id) {
+        Optional<CustomFile> customFile = fileService.getFileOrDirectoryById(id);
+        if (customFile.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customFile);
     }
+
 
     @Operation(summary = "Get all files and folders located in root")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all files and folders at root level", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "No files or folders found", content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "200", description = "List of all files and folders at root level", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/directory/root")
     public ResponseEntity<List<CustomFile>> getRootFilesAndDirectories() {
@@ -79,97 +84,38 @@ public class FileController {
         return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);
     }
 
-
-
-
-
-
-    // TODO - need to revise logic and alike...
-
-    //falta apagar o ficheiro do disco
-    @Operation(summary = "Update a file")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File updated", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
-        CustomFile updatedCustomFile = fileService.updateFile(id, customFile);
-        return new ResponseEntity<>(updatedCustomFile, HttpStatus.OK);
-    }
-
-    //falta apagar o ficheiro do disco
     @Operation(summary = "Delete a file")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "File deleted", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/files/{id}")
     public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
-        fileService.deleteFile(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        boolean deleted = fileService.deleteFile(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @Operation(summary = "Download a file")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File downloaded", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-    })
-    @GetMapping("/download/{fileName:.+}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
-        // Define the path to the directory containing the files
-        CustomFile customFile = fileService.getFileByName(fileName);
-        String sFilePath = customFile.getPath();
-
-        // Resolve the path to the requested file
-        Path filePath = Paths.get(sFilePath);
-
-        // Create a Resource representing the file
-        Resource fileResource = new UrlResource(filePath.toUri());
-
-        // Check if the file exists
-        if (fileResource.exists() && fileResource.isReadable()) {
-            // Set up response headers
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
-
-            // Return ResponseEntity with the file resource and headers
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(fileResource);
-        } else {
-            // If the file does not exist, return ResponseEntity with status 404 Not Found
-            return ResponseEntity.notFound().build();
-        }
+    @GetMapping("/files/download/{fileId}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
+        return fileService.downloadFileById(fileId);
     }
 
-    /* @GetMapping("/download/{fileId}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) {
-        CustomFile file = fileService.getFileById(fileId);
-
-        if (file == null) {
-            return ResponseEntity.notFound().build();
+    @Operation(summary = "Update a file")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "File updated", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
+    })
+    @PutMapping("/files/{id}")
+    public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
+        CustomFile updatedFile = fileService.updateFileName(id, customFile);
+        if (updatedFile == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
-        Path filePath = Paths.get(file.getPath());
-        if (!Files.exists(filePath)) {
-            return ResponseEntity.notFound().build(); 
-        }
-
-        try {
-            Resource resource = new UrlResource(filePath.toUri()); 
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getName() + "\"");
-
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentLength(Files.size(filePath)) 
-                    .body(resource);
-        } catch (IOException ex) {
-            // Log the error 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    } */
-
+        return new ResponseEntity<>(updatedFile, HttpStatus.OK);
+    }
 }
