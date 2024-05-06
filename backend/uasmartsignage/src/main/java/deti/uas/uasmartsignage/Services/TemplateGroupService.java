@@ -60,8 +60,10 @@ public class TemplateGroupService {
     private final ScheduleService scheduleService;
     private TemplateGroupRepository templateGroupRepository;
     private ContentService contentService;
+    private final TemplateWidgetService templateWidgetService;
 
-    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService, ContentService contentService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService, ContentService contentService,TemplateGroupRepository templateGroupRepository) {
+        this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
         this.fileService = fileService;
@@ -96,6 +98,12 @@ public class TemplateGroupService {
         List<String> downloadFiles = new ArrayList<>();
         if (templateGroup.getContent() != null) {
             for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
+
+                TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long)entry.getKey());
+                if(!isWidgetContentMedia(widget)){
+                    continue;
+                }
+
                 Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
                 downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
                 if (file.isPresent()) {
@@ -148,6 +156,12 @@ public class TemplateGroupService {
         }
         List<String> downloadFiles = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
+            
+            TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long)entry.getKey());
+            if(!isWidgetContentMedia(widget)){
+                continue;
+            }
+
             Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
             downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
             if (file.isPresent()) {
@@ -180,6 +194,10 @@ public class TemplateGroupService {
         return templateGroupRepository.save(templateGroupById);
     }
 
+    private boolean isWidgetContentMedia(TemplateWidget widget){
+        return widget.getWidget().getContents().get(0).getType().equals("media");
+    }
+
     /**
      * Takes a template and the contents to place in the widgets and returns the full html
      * 
@@ -197,7 +215,7 @@ public class TemplateGroupService {
         try {
             
             // get a base html to add the widgets to
-            String pathToBaseFile = "classpath:" + filePath;
+            String pathToBaseFile = filePath;
             ClassLoader cl = this.getClass().getClassLoader();
             InputStream inputStream = cl.getResourceAsStream(pathToBaseFile);
             Document doc = Jsoup.parse(inputStream, "UTF-8", pathToBaseFile);
@@ -206,7 +224,8 @@ public class TemplateGroupService {
             for (TemplateWidget widget : widgets) {
                 // fill in the variables inside the widgets
                 // using the values inside "contents"
-                String widgetHTML = loadWidget(widget, contents, monitorWidth, monitorHeight);
+
+               String widgetHTML = loadWidget(widget, contents.get(Math.toIntExact(widget.getId())), monitorWidth, monitorHeight);
                 
                 if(widgetHTML == null){
                     continue;
@@ -240,10 +259,10 @@ public class TemplateGroupService {
      * @param monitorHeight The screen height to be considered when calculating widget sizes
      * @return The created HTML in a String, or {@code null} if creation fails.
      */
-    private String loadWidget(TemplateWidget widget, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
+    private String loadWidget(TemplateWidget widget, String value, int monitorWidth, int monitorHeight) {
 
         try {
-            String pathToWidget = "classpath:" +  widget.getWidget().getPath();
+            String pathToWidget = widget.getWidget().getPath();
             ClassLoader cl = this.getClass().getClassLoader();
             InputStream inputStream = cl.getResourceAsStream(pathToWidget);
             String widgetHTML = new String(inputStream.readAllBytes(), "UTF-8");
@@ -253,15 +272,12 @@ public class TemplateGroupService {
                     .replace("[[left]]", String.valueOf(monitorWidth * widget.getLeftPosition() / 100))
                     .replace("[[width]]", String.valueOf(monitorWidth * widget.getWidth() / 100))
                     .replace("[[height]]", String.valueOf(monitorHeight * widget.getHeight() / 100));
-
-            // go through each of the contents
-            // and fill in the variables
-            for(int contentID : contents.keySet()){
-                String value = contents.get(contentID);
-                Content content = contentService.getContentById((long)contentID);
-                widgetHTML = widgetHTML.replace("[[" + content.getName() + "]]", value);
+            
+            if(value != null){
+                Content content = widget.getWidget().getContents().get(0);
+                widgetHTML = widgetHTML.replace("[[" + content.getName() + "]]", value);    
             }
-
+            
             logger.info(String.format("HTML for widget %s was generated successfully", widget.getWidget().getName()));
             return widgetHTML;
 
