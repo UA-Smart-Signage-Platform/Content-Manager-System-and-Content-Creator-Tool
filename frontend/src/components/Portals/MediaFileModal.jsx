@@ -1,6 +1,6 @@
 import { createPortal } from 'react-dom';
-import { MdArrowBack, MdMonitor, MdCheck } from "react-icons/md";
-import { useEffect, useState } from 'react';
+import { MdArrowBack } from "react-icons/md";
+import { useState } from 'react';
 import mediaService from '../../services/mediaService';
 import PropTypes from 'prop-types';
 
@@ -46,7 +46,7 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
                                 <div className="h-[80%] p-[2%] text-lg flex flex-col">
                                     <form onSubmit={submitFile}>
                                         <label htmlFor="file">Select File:</label>
-                                        <input onChange={(e) => setFile(e.target.files[0])} type="file" id="file" name="file" />
+                                        <input autoFocus onChange={(e) => setFile(e.target.files[0])} type="file" id="file" name="file" />
                                         <button className="rounded-md bg-slate-300 mr-auto p-2 mt-10" type="submit">Upload File</button>
                                     </form>
                                 </div>

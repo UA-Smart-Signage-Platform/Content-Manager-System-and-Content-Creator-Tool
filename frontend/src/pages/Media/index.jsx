@@ -3,111 +3,128 @@ import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineI
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import mediaService from '../../services/mediaService';
-import { useNavigate, useParams } from 'react-router';
+import { useLocation, useNavigate} from 'react-router';
+import { motion } from 'framer-motion';
+
+
+const getFileIcon = (type) => {
+    switch (type) {
+        case "directory":
+            return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
+        case "image/":
+            return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
+        case "video/mp4":
+            return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
+        default:
+            break;
+    }
+};
+// code taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+const formatBytes = (bytes, decimals = 2) => {
+    if (!+bytes) return '0 Bytes'
+
+    const k = 1024
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+};
+
+const headNameStyle = (row) => {
+    return(
+        <div data-tag="allowRowEvents" className="flex flex-row items-center">
+            {getFileIcon(row.type)}
+            <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+        </div>
+    )
+};
+
+const columns = [
+    {
+        name: (
+            <div className="flex flex-row">
+                <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
+            </div>
+        ),
+        selector: row => headNameStyle(row),
+        width: '47%',
+    },
+    {
+        id: 'isFolder',
+        selector: row => row.type,
+        omit: true,
+    },
+    {
+        name: 'Size',
+        selector: row => formatBytes(row.size, 0),
+        sortable: true,
+        width: '25%',
+    },
+    {
+        name: 'Date',
+        selector: row => row.date,
+        sortable: true,
+        width: '28%',
+        right: 'true',
+    }
+];
+
+const customStyles = {
+    head: {
+        style: {
+            fontSize: '20px',
+        },
+    },
+    rows: {
+        style: {
+            fontSize: '16px',
+        },
+    },
+};
 
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-
+    
     const [currentFolder, setCurrentFolder] = useState(null);
     const [folder, setFolder] = useState(null);
-
+    
     const [updater, setUpdater] = useState(false);
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState(null);
     const [preview, setPreview] = useState(null);
-
+    
     const [showPortalFile, setShowPortalFile] = useState(false);
     const [showPortalFolder, setShowPortalFolder] = useState(false);
-
-    const { path } = useParams();
+    
+    const path = useLocation().pathname.replace("/media/home","/uploads").replace(/\/$/, '');
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(path === 'home'){
-            mediaService.getFilesAtRootLevel().then((response) => {
+        if(path === "/media"){
+            navigate("/media/home")
+            return
+        }
+        if(path === "/uploads"){
+            mediaService.getFilesAtRootLevel().then((response)=>{
                 setFilesAndDirectories(response.data);
                 setFolder(response.data);
             })
         }
         else{
-            mediaService.getFileOrDirectoryById(currentFolder).then((response) => {
+            mediaService.getDirectoryOrFileByPath(path).then((response)=>{
                 setFilesAndDirectories(response.data.subDirectories);
                 setFolder(response.data);
             })
         }
-    }, [currentFolder, updater]);
-
-    const columns = [
-        {
-            name: (
-                <div className="flex flex-row">
-                    <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
-                </div>
-            ),
-            selector: row => headNameStyle(row),
-            width: '47%',
-        },
-        {
-            id: 'isFolder',
-            selector: row => row.type,
-            omit: true,
-        },
-        {
-            name: 'Size',
-            selector: row => formatBytes(row.size, 0),
-            sortable: true,
-            width: '25%',
-        },
-        {
-            name: 'Date',
-            selector: row => row.date,
-            sortable: true,
-            width: '28%',
-            right: 'true',
-        }
-    ];
-
-    const customStyles = {
-        head: {
-            style: {
-                fontSize: '20px',
-            },
-        },
-        rows: {
-            style: {
-                fontSize: '16px',
-            },
-        },
-    };
-
-
-    const headNameStyle = (row) => {
-        return(
-            <div data-tag="allowRowEvents" className="flex flex-row items-center">
-                {getFileIcon(row.type)}
-                <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-            </div>
-        )
-    };
-
-    const getFileIcon = (type) => {
-        switch (type) {
-            case "directory":
-                return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-            case "image/png":
-                return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
-            case "video/mp4":
-                return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-            default:
-                break;
-        }
-    };
+    }, [currentFolder, updater,path,navigate]);
 
     const handleRowClick = (row) => {
         if (row.type === "directory"){
             setCurrentFolder(row.id);
-            navigate(window.location.pathname + "&" + row.name);
+            navigate(window.location.pathname.replace(/\/$/, '') + "/" + row.name);
         }
         else{
             const change = (row.name === file ? null : row.name);
@@ -118,9 +135,7 @@ function Media() {
                     setPreview("http://localhost:8080/uploads/" + row.name);
                 }
                 else{
-                    // will be changed to row.path
-                    const filePath = window.location.pathname.split("/")[2].replace("&", "/").replace("home/", "") + "/" + row.name;
-                    setPreview("http://localhost:8080/uploads/" + filePath);
+                    setPreview("http://localhost:8080" + path + "/" + row.name);
                 }
             }
             else{
@@ -129,28 +144,22 @@ function Media() {
         }
     };
 
-    // code taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
-    const formatBytes = (bytes, decimals = 2) => {
-        if (!+bytes) return '0 Bytes'
-    
-        const k = 1024
-        const dm = decimals < 0 ? 0 : decimals
-        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    
-        const i = Math.floor(Math.log(bytes) / Math.log(k))
-    
-        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-    };
+    const breadCrumbsNavigate = (index) =>{
+        let newpath = "home/" + path.split("/").slice(2,index + 2).join("/");
+        navigate(newpath)
+    }
 
     const breadCrumbs = () => {
         return (
             <div className="flex flex-row">
-                {path.split("&").map((folder, index, array) =>
+                {path.split("/").slice(1).map((folder, index, array) =>
                     <div>
-                        <button key={index} onClick={() => { navigate("/media/" + folder) }}>
-                                {folder}
-                        </button>
-                        {(array.length > index + 1) && <span className="pr-2 pl-2">&gt;</span>}
+                        <motion.button key={folder.id} className={(index+1 !== array.length ? `text-secondary hover:bg-secondaryMedium rounded-lg px-1` : `text-black`)} onClick={() => breadCrumbsNavigate(index)}
+                            whileHover={{scale:1.1}}
+                        >
+                                {folder !== "uploads" ? folder : "home"}
+                        </motion.button>
+                        {(array.length > index + 1) && <span className="pr-2 pl-2 text-secondary">&gt;</span>}
                     </div>
                 )}
             </div>
@@ -228,6 +237,7 @@ function Media() {
                     <div id="mediaContent" className="flex flex-col w-[50%] ml-[4%] overflow-scroll max-h-[760px]">
                         <DataTable className="p-3" 
                             defaultSortFieldId="isFolder"
+                            theme='solarized'
                             pointerOnHover
                             highlightOnHover
                             pagination

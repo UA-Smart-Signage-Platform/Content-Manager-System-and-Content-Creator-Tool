@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 public interface FileRepository extends JpaRepository<CustomFile, Long> {
     Optional<CustomFile> findByName(String fileName);
 
+    Optional<CustomFile> findByPath(String fileName);
+
     @Query("SELECT file FROM CustomFile file WHERE file.parent IS NULL")
     List<CustomFile> findAllByParentIsNull();
 }
