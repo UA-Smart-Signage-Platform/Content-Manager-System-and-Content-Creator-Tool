@@ -34,7 +34,6 @@ public class ContentRepositoryTest {
         Content content = new Content();
         content.setName("New Content");
         content.setType("type");
-        content.setDescription("description");
         content.setWidget(widget);
         content.setOptions(new ArrayList<>());
         entityManager.persistAndFlush(content);
@@ -59,7 +58,6 @@ public class ContentRepositoryTest {
         Content content1 = new Content();
         content1.setName("New Content 1");
         content1.setType("type");
-        content1.setDescription("description");
         content1.setWidget(widget);
         content1.setOptions(new ArrayList<>());
         entityManager.persistAndFlush(content1);
@@ -67,7 +65,6 @@ public class ContentRepositoryTest {
         Content content2 = new Content();
         content2.setName("New Content 2");
         content2.setType("type");
-        content2.setDescription("description");
         content2.setWidget(widget);
         content2.setOptions(new ArrayList<>());
         entityManager.persistAndFlush(content2);
@@ -82,7 +79,6 @@ public class ContentRepositoryTest {
         Content content1 = new Content();
         content1.setName("New Content 1");
         content1.setType("type");
-        content1.setDescription("description");
         content1.setWidget(null);
         content1.setOptions(new ArrayList<>());
         entityManager.persistAndFlush(content1);

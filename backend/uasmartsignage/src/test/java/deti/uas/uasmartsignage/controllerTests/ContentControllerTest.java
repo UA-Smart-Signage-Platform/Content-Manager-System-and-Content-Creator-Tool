@@ -54,14 +54,12 @@ class ContentControllerTest {
             Content content = new Content();
             content.setName("Content1");
             content.setType("image");
-            content.setDescription("DETI image");
             content.setWidget(widget);
             content.setOptions(new ArrayList<>());
 
             Content content2 = new Content();
             content2.setName("Content2");
             content2.setType("video");
-            content2.setDescription("DETI video");
             content2.setWidget(widget);
             content2.setOptions(new ArrayList<>());
 
@@ -82,7 +80,6 @@ class ContentControllerTest {
             Content content = new Content();
             content.setName("Content");
             content.setType("image");
-            content.setDescription("UA image");
             content.setWidget(widget);
             content.setOptions(new ArrayList<>());
 
@@ -103,7 +100,6 @@ class ContentControllerTest {
             Content content = new Content();
             content.setName("Content");
             content.setType("image");
-            content.setDescription("DETI image");
             content.setWidget(widget);
             content.setOptions(new ArrayList<>());
 
@@ -113,7 +109,7 @@ class ContentControllerTest {
                             .content(objectMapper.writeValueAsString(content)))
                     .andExpect(status().isCreated())
                     .andExpect(jsonPath("$.name", is("Content")))
-                    .andExpect(jsonPath("$.description", is("DETI image")));
+                    .andExpect(jsonPath("$.type", is("image")));
         }
 
 
@@ -125,7 +121,6 @@ class ContentControllerTest {
             Content content = new Content();
             content.setName("New Content");
             content.setType("type");
-            content.setDescription("description");
             content.setWidget(widget);
             content.setOptions(new ArrayList<>());
 
@@ -143,7 +138,6 @@ class ContentControllerTest {
             Content content = new Content();
             content.setName("updated_content");
             content.setType("updated_image");
-            content.setDescription("new DETI image");
             content.setWidget(widget);
             content.setOptions(new ArrayList<>());
 
@@ -153,8 +147,7 @@ class ContentControllerTest {
                             .content(objectMapper.writeValueAsString(content)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.name", is("updated_content")))
-                    .andExpect(jsonPath("$.type", is("updated_image")))
-                    .andExpect(jsonPath("$.description", is("new DETI image")));
+                    .andExpect(jsonPath("$.type", is("updated_image")));
         }
 
         @Test
@@ -173,7 +166,6 @@ class ContentControllerTest {
             Content content = new Content();
             content.setName("Content");
             content.setType("image");
-            content.setDescription("DETI image");
             content.setWidget(widget);
             content.setOptions(new ArrayList<>());
 

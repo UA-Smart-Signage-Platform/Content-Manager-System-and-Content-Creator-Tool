@@ -37,7 +37,6 @@ public class WidgetRepositoryTest {
         Content content = new Content();
         content.setName("content");
         content.setType("type");
-        content.setDescription("description");
         entityManager.persistAndFlush(content);
 
         Template template = new Template();
@@ -66,7 +65,6 @@ public class WidgetRepositoryTest {
         Content content = new Content();
         content.setName("content");
         content.setType("type");
-        content.setDescription("description");
         entityManager.persistAndFlush(content);
 
         Template template = new Template();
@@ -89,7 +87,6 @@ public class WidgetRepositoryTest {
         Content content = new Content();
         content.setName("content");
         content.setType("type");
-        content.setDescription("description");
         entityManager.persistAndFlush(content);
 
         Template template = new Template();

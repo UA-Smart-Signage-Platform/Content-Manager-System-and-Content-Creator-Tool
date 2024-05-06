@@ -35,7 +35,6 @@ class ContentServiceTest {
             Content content = new Content();
             content.setName("New Content");
             content.setType("type");
-            content.setDescription("description");
             content.setWidget(null);
             content.setOptions(new ArrayList<>());
             when(repository.findById(1L)).thenReturn(Optional.of(content));
@@ -51,7 +50,6 @@ class ContentServiceTest {
             Content content = new Content();
             content.setName("New Content");
             content.setType("type");
-            content.setDescription("description");
             content.setWidget(null);
             content.setOptions(new ArrayList<>());
             when(repository.save(content)).thenReturn(content);
@@ -66,7 +64,6 @@ class ContentServiceTest {
             Content content = new Content();
             content.setName("New Content");
             content.setType("type");
-            content.setDescription("description");
             content.setWidget(null);
             content.setOptions(new ArrayList<>());
             service.deleteContent(1L);
@@ -85,14 +82,12 @@ class ContentServiceTest {
                 Content content = new Content();
                 content.setName("New Content");
                 content.setType("type");
-                content.setDescription("description");
                 content.setWidget(widget);
                 content.setOptions(new ArrayList<>());
 
                 Content contentUpdated = new Content();
                 contentUpdated.setName("Updated Content");
                 contentUpdated.setType("type1");
-                contentUpdated.setDescription("description1");
                 contentUpdated.setWidget(widgetUpdated);
                 contentUpdated.setOptions(new ArrayList<>());
 
@@ -110,14 +105,12 @@ class ContentServiceTest {
         Content content = new Content();
         content.setName("New Content");
         content.setType("type");
-        content.setDescription("description");
         content.setWidget(null);
         content.setOptions(new ArrayList<>());
 
         Content content2 = new Content();
         content2.setName("New Content2");
         content2.setType("type2");
-        content2.setDescription("description2");
         content2.setWidget(null);
         content2.setOptions(new ArrayList<>());
 

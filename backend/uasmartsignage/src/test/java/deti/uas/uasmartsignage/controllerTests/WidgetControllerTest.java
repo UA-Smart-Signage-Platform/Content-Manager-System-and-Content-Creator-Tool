@@ -56,7 +56,6 @@ class WidgetControllerTest {
             Content content = new Content();
             content.setName("content");
             content.setType("type");
-            content.setDescription("description");
 
             Widget widget1 = new Widget();
             widget1.setName("widget1");
@@ -82,8 +81,7 @@ class WidgetControllerTest {
             Content content = new Content();
             content.setName("content");
             content.setType("type");
-            content.setDescription("description");
-
+    
             Template template = new Template();
             template.setName("template");
 
@@ -104,7 +102,6 @@ class WidgetControllerTest {
             Content content = new Content();
             content.setName("content");
             content.setType("type");
-            content.setDescription("description");
 
             Template template = new Template();
             template.setName("template");
@@ -127,7 +124,6 @@ class WidgetControllerTest {
             Content content = new Content();
             content.setName("content");
             content.setType("type");
-            content.setDescription("description");
 
             Template template = new Template();
             template.setName("template");
