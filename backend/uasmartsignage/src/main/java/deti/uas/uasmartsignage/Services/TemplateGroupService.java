@@ -12,6 +12,7 @@ import deti.uas.uasmartsignage.Models.TemplateWidget;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -198,8 +199,11 @@ public class TemplateGroupService {
         try {
             
             // get a base html to add the widgets to
-            File baseFile = ResourceUtils.getFile("classpath:" + filePath);
-            Document doc = Jsoup.parse(baseFile, "UTF-8");
+            String pathToBaseFile = "classpath:" + filePath;
+            ClassLoader cl = this.getClass().getClassLoader();
+            InputStream inputStream = cl.getResourceAsStream(pathToBaseFile);
+            Document doc = Jsoup.parse(inputStream, "UTF-8", pathToBaseFile);
+
 
             for (TemplateWidget widget : widgets) {
                 // fill in the variables inside the widgets
@@ -241,8 +245,10 @@ public class TemplateGroupService {
     private String loadWidget(TemplateWidget widget, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
 
         try {
-            File widgetFile = ResourceUtils.getFile("classpath:" + widget.getWidget().getPath());
-            String widgetHTML = new String(Files.readAllBytes(Paths.get(widgetFile.toURI())));
+            String pathToWidget = "classpath:" +  widget.getWidget().getPath();
+            ClassLoader cl = this.getClass().getClassLoader();
+            InputStream inputStream = cl.getResourceAsStream(pathToWidget);
+            String widgetHTML = new String(inputStream.readAllBytes(), "UTF-8");
 
             widgetHTML = widgetHTML
                     .replace("[[top]]", String.valueOf(monitorHeight * widget.getTop() / 100))
