@@ -1,35 +1,18 @@
 import { useEffect, useState } from "react";
-import { PageTitle } from "../../components";
+import { PageTitle, ScheduleModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
-import templateService from "../../services/templateService";
-import activeTemplateService from "../../services/activeTemplateService";
+import { AnimatePresence, motion } from "framer-motion"
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
-    const [templates, setTemplates] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState(null);
-    const [selectedTemplateId, setSelectedTemplateId] = useState(null);
+    const [showPortal, setShowPortal] = useState(false);
 
     useEffect(() => {
         monitorsGroupService.getGroups().then((response) => {
             setGroups(response.data);
         })
-
-        templateService.getTemplates().then((response) => {
-            setTemplates(response.data);
-        })
     }, []);
-
-    const handleSubmit = ()=>{
-        const data = {
-            template: { id: selectedTemplateId },
-            group: { id: selectedGroupId },
-            content: { 1: "leci.mp4", 2: "events.png"},
-        }
-
-        activeTemplateService.changeActiveTemplate(data);
-    }
-
 
     return(
         <div className="h-full flex flex-col">
@@ -38,29 +21,47 @@ function Schedule(){
                             middleTitle={"dashboard"}
                             endTitle={"dashboard"}/>
             </div>
-            <div id="divider" className="flex flex-col h-[92%] mr-3 ml-3 ">
-                <div className="h-[40%] w-[60%] flex place-content-center items-center mr-auto ml-auto mt-10">
-                    <div className="flex flex-col mr-[10%] text-xl">
-                        <label for="groupSelect">Select a group:</label>
-                        <select id="groupSelect" onChange={(e) => setSelectedGroupId(e.target.value)} className="bg-zinc-300 rounded-md p-2 cursor-pointer">
-                            <option selected disabled hidden>Choose here</option>
+            <div id="divider" className="flex h-[92%] mr-3 ml-3 ">
+                <div className="flex flex-col w-[25%] h-full pt-4">
+                    <div className="flex flex-row w-full h-[5%] items-center ">
+                        <motion.button 
+                            whileHover={{ 
+                                scale: 1.1, 
+                                border: "2px solid", 
+                                transition: {
+                                    duration: 0.2,
+                                    ease: "easeInOut",
+                                }, 
+                            }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => {selectedGroupId !== null && setShowPortal(true)}} 
+                            className="bg-secondaryLight rounded-md h-[80%] pr-4 pl-4">
+                            + Add rule
+                        </motion.button>
+                        <motion.select
+                            whileHover={{ border: "2px solid" }}
+                            whileTap={{ border: "2px solid" }}
+                            onChange={(e) => setSelectedGroupId(e.target.value - 1)} 
+                            className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
+                            <option selected disabled hidden>Group</option>
                             {groups.length !== 0 && groups.map((group) => 
                                 <option value={group.id}>{group.name}</option>
                             )}
-                        </select>
+                        </motion.select>
                     </div>
-                    <div className="flex flex-col text-xl">
-                        <label for="templateSelect">Select a template:</label>
-                        <select id="templateSelect" onChange={(e) => setSelectedTemplateId(e.target.value)} className="bg-zinc-300 rounded-md p-2 cursor-pointer">
-                            <option selected disabled hidden>Choose here</option>
-                            {templates.length !== 0 && templates.map((template) => 
-                                <option value={template.id}>{template.name}</option>
-                            )}
-                        </select>
+                    <AnimatePresence>
+                        {showPortal && <ScheduleModal
+                                setShowPortal={setShowPortal}
+                                selectedGroup={groups.at(selectedGroupId)} />
+                        }
+                    </AnimatePresence>
+                    <div className="w-full h-[90%]">
+                        <div className="bg-secondaryLight"></div>
                     </div>
                 </div>
-                <div className="flex place-self-end mr-auto ml-auto mb-10 text-xl">
-                    <button onClick={handleSubmit} className="bg-blue-300 rounded-md p-3">Submit</button>
+                <div id="dividerHr" className="mt-1 mb-1 w-[1px] h-full border-[1px] border-secondary"/>
+                <div className="w-[74%] bg-secondaryLight ml-3 mt-3">
+
                 </div>
             </div>
         </div>

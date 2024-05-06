@@ -57,25 +57,19 @@ class ScheduleControllerTest {
         group.setName("group1");
 
         Schedule schedule1 = new Schedule();
-        schedule1.setDate(LocalDate.parse("2021-06-01"));
-        schedule1.setFrequency("daily");
+        schedule1.setFrequency(10);
         schedule1.setCreatedBy(user);
-        schedule1.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule1.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule1.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
-        schedule1.setNTimes(10);
-        schedule1.setIntervalOfTime(10);
         schedule1.setLastEditedBy(user);
 
         Schedule schedule2 = new Schedule();
-        schedule2.setDate(LocalDate.parse("2021-06-01"));
-        schedule2.setFrequency("weekly");
+        schedule2.setFrequency(5);
         schedule2.setCreatedBy(user);
-        schedule2.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule2.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule2.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
-        schedule2.setNTimes(10);
-        schedule2.setIntervalOfTime(10);
         schedule2.setLastEditedBy(user);
 
         when(service.getAllSchedules()).thenReturn(Arrays.asList(schedule1,schedule2));
@@ -83,8 +77,8 @@ class ScheduleControllerTest {
         mvc.perform(get("/api/schedules").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].frequency", is("daily")))
-            .andExpect(jsonPath("$[1].frequency", is("weekly")));
+            .andExpect(jsonPath("$[0].frequency", is(10)))
+            .andExpect(jsonPath("$[1].frequency", is(5)));
     }
 
     @Test
@@ -97,25 +91,21 @@ class ScheduleControllerTest {
         group.setName("group1");
 
         Schedule schedule = new Schedule();
-        schedule.setDate(LocalDate.parse("2021-06-01"));
-        schedule.setFrequency("daily");
+        schedule.setFrequency(3);
         schedule.setCreatedBy(user);
-        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
-        schedule.setNTimes(10);
-        schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
 
         when(service.getScheduleById(1L)).thenReturn(schedule);
 
         mvc.perform(get("/api/schedules/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.frequency", is("daily")))
+            .andExpect(jsonPath("$.frequency", is(3)))
             .andExpect(jsonPath("$.priority", is(1)));
     }
 
-    //working but problem with objectmapper because cannot convert LocalDate and LocalDateTime
     @Test
     void testSaveScheduleEndpoint() throws Exception{
         User user = new User();
@@ -126,14 +116,9 @@ class ScheduleControllerTest {
         group.setName("group1");
 
         Schedule schedule = new Schedule();
-        //schedule.setDate(LocalDate.parse("2021-06-01"));
-        schedule.setFrequency("daily");
+        schedule.setFrequency(1);
         schedule.setCreatedBy(user);
-        //schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        //schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
         schedule.setPriority(3);
-        schedule.setNTimes(10);
-        schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
 
         when(service.saveSchedule(Mockito.any())).thenReturn(schedule);
@@ -141,7 +126,7 @@ class ScheduleControllerTest {
         mvc.perform(post("/api/schedules").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(schedule)))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.frequency", is("daily")))
+            .andExpect(jsonPath("$.frequency", is(1)))
             .andExpect(jsonPath("$.priority", is(3)));
     }
 
@@ -155,14 +140,11 @@ class ScheduleControllerTest {
         group.setName("group1");
 
         Schedule schedule = new Schedule();
-        schedule.setDate(LocalDate.parse("2021-06-01"));
-        schedule.setFrequency("daily");
+        schedule.setFrequency(1);
         schedule.setCreatedBy(user);
-        schedule.setEndDate(LocalDateTime.parse("2024-04-21T12:00:00"));
-        schedule.setStartDate(LocalDateTime.parse("2024-04-21T14:00:00"));
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
-        schedule.setNTimes(10);
-        schedule.setIntervalOfTime(10);
         schedule.setLastEditedBy(user);
 
         when(service.getScheduleById(1L)).thenReturn(schedule);

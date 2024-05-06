@@ -54,19 +54,6 @@ function Monitors(){
         },
     };
 
-    createTheme('solarized', {
-        text: {
-          primary: '#101604',
-        },
-        background: {
-          default: '#fafdf7',
-        },
-        divider: {
-          default: '#073642',
-        },
-      });
-
-
     const columns = [
         {
             name: 'Name',

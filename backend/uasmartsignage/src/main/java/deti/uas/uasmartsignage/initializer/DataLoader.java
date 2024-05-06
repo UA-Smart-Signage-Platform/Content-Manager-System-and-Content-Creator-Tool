@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.initializer;
 
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,6 +156,13 @@ public class DataLoader implements CommandLineRunner {
         temperatureWidget.setPath("static/widgets/temperature.widget");
         temperatureWidget.setContents(new ArrayList<>());
         widgetRepository.save(temperatureWidget);
+        Content temperatureWidgetContent = new Content();
+        temperatureWidgetContent.setName("station");
+        temperatureWidgetContent.setType("options");
+        List<String> stations = new ArrayList<>(List.of("Olhão, EPPO", "Tavira", "Graciosa / Serra das Fontes (DROTRH)", "Terras de Bouro/Barral (CIM)", "Amares Caldelas (CIM)", "Faja / Ilha das Flores", "Braga (CIM)", "Barcelos (CIM)", "Esposende (CIM)", "Sabugal, Martim Rei", "Viana do Castelo", "Nelas / Vilar Seco (CIM)", "Santa Maria / Praia Formosa (DROTRH)", "S. Miguel, Nordeste", "Oliveira de Frades (CIM)", "Setúbal, Areias", "Madeira, Porto Moniz", "Santa Maria / Maia (DROTRH)", "Madeira, S. Jorge, Santana", "Madeira, Santana", "Mação (CIM)", "Madeira, São Vicente", "Madeira, Bica da Cana", "Madeira, Pico Alto", "Madeira, Areeiro", "Madeira, Pico do Areeiro", "Madeira, Santo da Serra", "Madeira, Monte", "Madeira, Cancela", "Madeira, S. Lourenço", "Viseu (Cidade)", "Madeira, Lombo da Terça", "São Jorge / Pico do Areeiro (DROTRH)", "Madeira, Quinta Grande", "Madeira, Ponta do Sol", "Prazeres (Calheta)", "Madeira, Calheta", "Alcochete / Campo Tiro", "Mealhada / Quinta do Vale (CIM)", "P. Delgada (Obs. A. Chaves)", "São Miguel - Pico Santos De Cima", "Ilhas selvagens", "Pico (Aeródromo)", "Vila Verde (CIM)", "Mortágua / Aeródromo (CIM)", "Coruche / Cruz Do Leão", "Loulé / Cavalos De Caldeirão", "Oeiras / Vila Fria (CMO)", "Penacova / Hombres (CIM)", "Odemira, S.Teotónio", "Lisboa, Amoreiras (LFCL)", "Tondela, Caramulinho (CIM)", "Pico / Cabeço do Teicho (DROTRH)", "Horta (Obs. Principe Alberto)", "Graciosa (Aeródromo)", "V.N.Cerveira (Aeródromo)", "Monção, Valinha", "Lamas de Mouro, P.Ribeiro", "Montalegre", "Vinhais", "São Jorge", "Ponte de Lima", "Chaves (Aeródromo)", "Cabril", "Braga, Merelim", "Vila Nova de Poiares (CIM)", "Ponte de Sôr / Aeródromo", "Cabeceiras de Basto", "Mirandela", "Macedo Cavaleiros, Bagueixe", "Miranda do Douro", "Mogadouro", "Paços Ferreira", "Carrazêda de Ansiães", "Vouzela (CIM)", "S. Gens", "Faial / Cabeço Verde (DROTRH)", "Moncorvo", "Pinhão, Santa Bárbara", "Luzim", "Pico / Cabecinho (DROTRH)", "Moimenta da Beira", "Trancoso, Bandarra", "Arouca", "Faial / Alto do Cabouco (DROTRH)", "F. Castelo Rodrigo, V.Torpim", "Loulé (CML)", "Vila Nova Famalicão (CIM)", "Guarda", "Lisboa, Tapada da Ajuda", "Pampilhosa da Serra, Fajão", "Covilhã (Aeródromo)", "São Miguel / Santana (DROTRH)", "Aldeia Souto (Q. Lageosa)", "Porto, Massarelos", "Almada, P.Rainha", "Lousã (Aeródromo)", "Fundão", "Aveiro (Universidade)", "Dunas de Mira", "Anadia", "Coimbra, Bencanta", "Leiria", "Figueira da Foz, Vila Verde", "Mação/Cardigos (CIM)", "Ansião", "Leiria (Aeródromo)", "São Pedro de Moel", "São Miguel / Lagoa das Furnas (DROTRH)", "Tomar, Valdonas", "Alcobaça", "Amadora", "Rio Maior", "Santarém, Fonte Boa", "Nelas", "Torres Vedras, Dois Portos", "Flores (Aeródromo)", "Corvo (Aeródromo)", "Coruche", "Mação/Envendos(CIM)", "Santa Cruz (Aeródromo)", "Sintra, Colares", "Cabo da Roca", "Angra do Heroísmo", "P. Delgada (Aeródromo)", "Santa Maria (Aeródromo)", "Santa Catarina (Aeródromo)", "Funchal", "Madeira, Funchal, Lido", "Porto Santo", "Cabo Raso", "Barreiro, Lavradio", "Pegões", "Portimão (Praia da Rocha)", "Setúbal", "Cabo Carvoeiro", "Carregal do Sal (CIM)", "Sagres", "Mangualde / Chãs de Tavares  (CIM)", "Lisboa (Geofísico)", "Alcácer do Sal, Barrosinha", "Penalva do Castelo (CIM)", "São Pedro do Sul (CIM)", "Santa Comba Dão (CIM)", "Satão (CIM)", "Sines", "Vila Nova do Paiva (CIM)", "Alvalade", "Viseu / Torredeita (CIM)", "Porto, Pedras Rubras (Aeródromo)", "Coimbra (Aeródromo)", "Aljezur", "Fóia", "Viana Castelo, Chafé", "Faro (Aeródromo)", "Aguiar da Beira (CIM)", "Penela / Serra do Espinhal (CIM)", "Évora (C.Coordenação)", "Viseu (Aeródromo)", "Viseu (C.Coordenação)", "Beja", "Zebreira", "Proença-a-Nova, P.Moitas", "Vila Real", "Penhas Douradas", "Portalegre (cidade)", "Castelo Branco", "Portalegre", "Alvega", "Bragança", "Bragança (Aeródromo)", "Lisboa (G.Coutinho)", "Avis, Benavila", "Mora", "Elvas", "Estremoz", "Reguengos, S. P. do Corval", "Zambujeira", "Terceira / Ribeira das Nove (DROTRH)", "Terceira / Serra do Cume (DROTRH)", "São Miguel / Sete Cidades (DROTRH)", "Viana do Alentejo", "Portel, Oriola", "Porto, Serra do Pilar", "Amareleja", "Castro Daire / Mézio (CIM)", "Arganil / Aeródromo (CIM)", "Cantanhede / Fonte Dom Pedro (CIM)", "Coimbra / Mata de São Pedro (CIM)", "Góis / Quinta da Ribeira (CIM)", "Mértola, Vale Formoso", "Castro Verde, N.Corvo", "Alcoutim, Mart.Longo", "Vila Real de S.António", "Castro Marim (RN Sapal)", "Oliveira do Hospital (CIM)", "Soure (CIM)", "Vila Real (Cidade)", "Albufeira", "Portimão (Aeródromo)"));
+        temperatureWidgetContent.setOptions(stations);
+        temperatureWidgetContent.setWidget(temperatureWidget);
+        contentRepository.save(temperatureWidgetContent);
 
         Widget mediaWidget = new Widget();
         mediaWidget.setName("Media");
@@ -165,16 +173,6 @@ public class DataLoader implements CommandLineRunner {
         mediaWidgetContent.setType("media");
         mediaWidgetContent.setWidget(mediaWidget);
         contentRepository.save(mediaWidgetContent);
-
-        Widget imageWidget = new Widget();
-        imageWidget.setName("Image");
-        imageWidget.setPath("static/widgets/image.widget");
-        widgetRepository.save(imageWidget);
-        Content imageWidgetContent = new Content();
-        imageWidgetContent.setName("image");
-        imageWidgetContent.setType("media");
-        imageWidgetContent.setWidget(imageWidget);
-        contentRepository.save(imageWidgetContent);
 
         Widget timeWidget = new Widget();
         timeWidget.setName("CurrentTime");
@@ -230,14 +228,14 @@ public class DataLoader implements CommandLineRunner {
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
 
-        TemplateWidget image = new TemplateWidget();
-        image.setTop(10);
-        image.setLeftPosition(0);
-        image.setHeight(80);
-        image.setWidth(20);
-        image.setTemplate(template1);
-        image.setWidget(imageWidget);
-        templateWidgetRepository.save(image);
+        TemplateWidget media2 = new TemplateWidget();
+        media2.setTop(10);
+        media2.setLeftPosition(0);
+        media2.setHeight(80);
+        media2.setWidth(20);
+        media2.setTemplate(template1);
+        media2.setWidget(mediaWidget);
+        templateWidgetRepository.save(media2);
 
         // create template2
         Template template2 = new Template();
@@ -272,14 +270,14 @@ public class DataLoader implements CommandLineRunner {
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
 
-        image = new TemplateWidget();
-        image.setTop(20);
-        image.setLeftPosition(80);
-        image.setHeight(70);
-        image.setWidth(20);
-        image.setTemplate(template2);
-        image.setWidget(imageWidget);
-        templateWidgetRepository.save(image);
+        media2 = new TemplateWidget();
+        media2.setTop(20);
+        media2.setLeftPosition(80);
+        media2.setHeight(70);
+        media2.setWidth(20);
+        media2.setTemplate(template2);
+        media2.setWidget(mediaWidget);
+        templateWidgetRepository.save(media2);
     }
 
     private void loadTemplateGroups() {
@@ -298,17 +296,16 @@ public class DataLoader implements CommandLineRunner {
 
     private void loadSchedules() {
         Schedule schedule = new Schedule();
-        //schedule.setTemplateGroups(new ArrayList<>());
+        schedule.setTemplateGroups(new ArrayList<>());
         List<Integer> days = new ArrayList<>();
         days.add(1);
         days.add(2);
         days.add(3);
         days.add(4);
         days.add(5);
-        schedule.setDays(days);
-        schedule.setEndDate(LocalDateTime.parse("2024-04-21T14:00:00"));
-        schedule.setStartDate(LocalDateTime.parse("2024-04-21T12:00:00"));
+        schedule.setWeekdays(days);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule = scheduleService.saveSchedule(schedule);
-
     }
 }
