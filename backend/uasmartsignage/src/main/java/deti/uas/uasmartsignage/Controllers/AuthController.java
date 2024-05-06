@@ -19,14 +19,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Models.AuthenticationRequest;
-import deti.uas.uasmartsignage.Models.AuthenticationResponse;
-import deti.uas.uasmartsignage.Models.ChangePasswordRequest;
-import deti.uas.uasmartsignage.Services.jwtUtil;
 
-import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
-
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Services.jwtUtilService;
+import deti.uas.uasmartsignage.authentication.AuthenticationRequest;
+import deti.uas.uasmartsignage.authentication.AuthenticationResponse;
+import deti.uas.uasmartsignage.authentication.ChangePasswordRequest;
+import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -39,11 +38,11 @@ public class AuthController {
 
     private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
-    private final jwtUtil jwtUtil;
+    private final jwtUtilService jwtUtil;
     private IAuthenticationFacade authenticationFacade;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, jwtUtil jwtUtil, IAuthenticationFacade authenticationFacade) {
+    public AuthController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, jwtUtilService jwtUtil, IAuthenticationFacade authenticationFacade) {
         this.authenticationManager = authenticationManager;
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
@@ -67,10 +66,13 @@ public class AuthController {
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsernameAndPassword(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
+        String username = userDetails.getUsername();
+        String role = userDetails.getAuthorities().iterator().next().getAuthority();
+
 
         final String jwt = jwtUtil.generateToken(userDetails);
 
-        return ResponseEntity.ok(new AuthenticationResponse(jwt));
+        return ResponseEntity.ok(new AuthenticationResponse(jwt, username, role));
     }
 
     @Operation(summary = "Change password")

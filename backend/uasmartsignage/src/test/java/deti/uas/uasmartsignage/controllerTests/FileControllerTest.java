@@ -7,10 +7,9 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Optional;
 
-import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 import deti.uas.uasmartsignage.Controllers.FileController;
 import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.FileService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,8 @@ import static org.hamcrest.Matchers.is;
 import deti.uas.uasmartsignage.Controllers.MonitorController;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
-import deti.uas.uasmartsignage.Services.jwtUtil;
+import deti.uas.uasmartsignage.Services.jwtUtilService;
+import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,7 +56,7 @@ class FileControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @MockBean
-    private jwtUtil jwtUtil;
+    private jwtUtilService jwtUtil;
 
     @MockBean
     private IAuthenticationFacade authenticationFacade;

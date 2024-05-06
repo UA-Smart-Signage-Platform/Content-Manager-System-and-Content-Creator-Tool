@@ -5,12 +5,13 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.AppUser;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
-import deti.uas.uasmartsignage.Services.jwtUtil;
+import deti.uas.uasmartsignage.Services.jwtUtilService;
+import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
+
 import org.hibernate.validator.constraints.time.DurationMax;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -54,7 +55,7 @@ class ScheduleControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @MockBean
-    private deti.uas.uasmartsignage.Services.jwtUtil jwtUtil;
+    private deti.uas.uasmartsignage.Services.jwtUtilService jwtUtil;
 
     @MockBean
     private IAuthenticationFacade authenticationFacade;

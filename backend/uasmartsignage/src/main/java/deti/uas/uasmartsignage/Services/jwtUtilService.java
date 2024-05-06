@@ -16,7 +16,7 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 
 @Service
-public class jwtUtil {
+public class jwtUtilService {
     
     // Generate a secure key for HS256 algorithm
     private final SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS256);

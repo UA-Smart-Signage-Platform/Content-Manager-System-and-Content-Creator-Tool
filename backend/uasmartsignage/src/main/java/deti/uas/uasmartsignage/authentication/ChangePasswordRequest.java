@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.Models;
+package deti.uas.uasmartsignage.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

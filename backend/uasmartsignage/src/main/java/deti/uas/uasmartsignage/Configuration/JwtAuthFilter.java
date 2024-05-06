@@ -18,14 +18,13 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 
-import deti.uas.uasmartsignage.Configuration.CustomUserDetailsService;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-import deti.uas.uasmartsignage.Services.jwtUtil;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Services.jwtUtilService;
 
 
 import java.io.IOException;
@@ -34,11 +33,16 @@ import java.io.IOException;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-    @Autowired
+    
     private CustomUserDetailsService userDetailsService;
 
+    private jwtUtilService jwtUtil;
+
     @Autowired
-    private jwtUtil jwtUtil;
+    public JwtAuthFilter(CustomUserDetailsService userDetailsService, jwtUtilService jwtUtil) {
+        this.userDetailsService = userDetailsService;
+        this.jwtUtil = jwtUtil;
+    }
 
 
     /**

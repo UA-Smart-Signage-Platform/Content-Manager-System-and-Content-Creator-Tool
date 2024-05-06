@@ -1,8 +1,8 @@
 package deti.uas.uasmartsignage.Controllers;
 
-import deti.uas.uasmartsignage.Configuration.IAuthenticationFacade;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 
 import org.apache.catalina.authenticator.SpnegoAuthenticator.AuthenticateAction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,9 +41,6 @@ public class MonitorController {
     })
     @GetMapping
     public ResponseEntity<?> getAllMonitors() {
-
-        //Authentication authentication = authenticationFacade.getAuthentication();
-        //System.out.println(authentication.getName());
         
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(false);
         return new ResponseEntity<>(monitors, HttpStatus.OK);

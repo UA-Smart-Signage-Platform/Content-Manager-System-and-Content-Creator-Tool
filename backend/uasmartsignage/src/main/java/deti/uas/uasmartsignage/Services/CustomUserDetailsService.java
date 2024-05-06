@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.Configuration;
+package deti.uas.uasmartsignage.Services;
 
 import java.util.ArrayList;
 import java.util.List;

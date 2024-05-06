@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.Configuration;
+package deti.uas.uasmartsignage.authentication;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

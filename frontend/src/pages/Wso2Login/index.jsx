@@ -33,24 +33,15 @@ const Wso2Login = () => {
         localStorage.removeItem('userInfo');
   }, []);
 
-  const getInfo = async () => {
-    try {
-      const response = await loginService.getInfo();
-      console.log(response.data);
-      localStorage.setItem('userInfo', JSON.stringify(response.data));
-    } catch (error) {
-      console.error('Error getting info:', error);
-    }
-  };
-
   const handleLogin = async () => {
     try {
       const response = await loginService.login(username, password);
-      const { jwt } = response.data;
+      const jwt = response.data.jwt;
+      const user_data = { username: response.data.username, role: response.data.role };
       
       setWithExpiry('access_token', jwt, 3600 * 1000 * 10);
-      getInfo();
-      
+      localStorage.setItem('userInfo', user_data);
+      console.log('userInfo', user_data);
         
       navigate("/dashboard");
      
