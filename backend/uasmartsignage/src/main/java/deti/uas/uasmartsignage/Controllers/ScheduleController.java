@@ -94,4 +94,12 @@ public class ScheduleController {
         return new ResponseEntity<>(savedSchedule, HttpStatus.CREATED);
     }
 
+    @Operation(summary = "Get all schedules by group id")
+    @ApiResponse(responseCode = "200", description = "List of all schedules", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    @GetMapping("/group/{id}")
+    public ResponseEntity<List<Schedule>> getSchedulesByGroupId(@PathVariable Long id) {
+        List<Schedule> schedules = scheduleService.getSchedulesByGroupId(id);
+        return new ResponseEntity<>(schedules, HttpStatus.OK);
+    }
+
 }
