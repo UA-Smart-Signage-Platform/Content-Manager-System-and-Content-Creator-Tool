@@ -1,12 +1,12 @@
 import { useState,useRef } from "react";
 import { motion,useMotionValue } from "framer-motion";
 
-function MovableDiv( {parentRef,color} ) {
+function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList} ) {
     const divRef = useRef(null);
-    const width = useMotionValue("20%");
-    const height = useMotionValue("20%");
-    const top = useMotionValue("0%");
-    const left = useMotionValue("0%");
+    const width = useMotionValue((widgetList[widget].width)+"%");
+    const height = useMotionValue((widgetList[widget].height)+"%");
+    const top = useMotionValue((widgetList[widget].top)+"%");
+    const left = useMotionValue((widgetList[widget].leftPosition)+"%");
     const [initial,setInitial] = useState({x:0,y:0});
     const [initialWidth,setInitialWidth] = useState(null);
     const [initialHeight,setInitialHeight] = useState(null);
@@ -58,8 +58,11 @@ function MovableDiv( {parentRef,color} ) {
 
     return(
         <motion.div style={{width,height,top,left}}
-                    className={` ${color} h-14 flex flex-col items-center justify-center absolute`}
+                    className={` ${color} h-14 flex flex-col items-center justify-center absolute border-2`}
         >
+            <div className="absolute top-[50%] translate-y-[-50%]">
+                {widgetList[widget].widget.name} {widgetList[widget].id}
+            </div>
             <div className="h-full w-full relative">
                 <motion.div ref={divRef} className="h-full w-full"
                             drag
@@ -71,7 +74,7 @@ function MovableDiv( {parentRef,color} ) {
                             >
                 </motion.div>
                 <motion.div drag
-                            className={`${colorResize} h-[6px] w-[6px] cursor-move place-self-end absolute bottom-[-3px] right-[-3px]`}
+                            className={`${colorResize} h-[6px] w-[6px] cursor-move place-self-end absolute bottom-[-3px] right-[-3px] z-10`}
                             dragSnapToOrigin={true}
                             onDragStart={(event, info) => changeStartSize({x:info.point.x, y:info.point.y})}
                             onDrag={(event, info) => changeSize({x:info.point.x, y:info.point.y})}

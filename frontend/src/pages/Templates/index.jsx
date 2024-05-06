@@ -3,6 +3,7 @@ import templateservice from "../../services/templateService";
 import { PageTitle } from "../../components";
 import DataTable from "react-data-table-component";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
 
 const customStyles = {
     headRow: {
@@ -60,6 +61,7 @@ function Templates(){
     const [templates,setTemplates] = useState([]);
     const [templateDisplay,setTemplateDisplay] = useState(null);
     const [selectedColors,setSelectedColors] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{
@@ -95,7 +97,7 @@ function Templates(){
                     <DataTable
                         pointerOnHover
                         highlightOnHover
-                        onRowClicked={(row)=>}
+                        onRowClicked={(row)=> navigate(`${row.id}`,{state:row})}
                         onRowMouseEnter={(row) => setTemplateDisplay(row)}
                         columns={columns}
                         data={templates}
