@@ -58,19 +58,17 @@ public class TemplateGroupService {
     private final MonitorGroupService monitorGroupService;
     private final FileService fileService;
     private final ScheduleService scheduleService;
+    private TemplateGroupRepository templateGroupRepository;
+    private ContentService contentService;
 
-    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService) {
+    public TemplateGroupService(TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService, ContentService contentService,TemplateGroupRepository templateGroupRepository) {
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
         this.fileService = fileService;
         this.scheduleService = scheduleService;
+        this.contentService = contentService;
+        this.templateGroupRepository = templateGroupRepository;
     }
-
-    @Autowired
-    private TemplateGroupRepository templateGroupRepository;
-
-    @Autowired
-    private ContentService contentService;
 
     private final Logger logger = LoggerFactory.getLogger(TemplateGroupRepository.class);
 
