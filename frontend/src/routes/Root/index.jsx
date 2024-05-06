@@ -11,6 +11,20 @@ const REDIRECT_URI = process.env.REACT_APP_WSO2_REDIRECT_URI;
 const IDP_URI = process.env.REACT_APP_IDP_URI;
 const BASE64 = process.env.REACT_APP_IDP_BASE64;
 
+import { createTheme } from "react-data-table-component";
+
+
+createTheme('solarized', {
+    text: {
+      primary: '#101604',
+    },
+    background: {
+      default: '#fafdf7',
+    },
+    divider: {
+      default: '#073642',
+    },
+  });
 
 function Root(){
     const theme = useThemeStore((state) =>state.theme)

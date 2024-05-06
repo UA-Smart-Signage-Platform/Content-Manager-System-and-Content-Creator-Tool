@@ -98,6 +98,34 @@ public class FileService {
         return file;
     }
 
+    /***
+     * Retrieves and returns CustomFile with the specified Path from the file repository.
+     * 
+     * @param path The Path of the CustomFile to retrieve.
+     * @return The CustomFile with the specified ID, or null if no such file is found.
+     */
+    public Optional<CustomFile> getFileOrDirectoryByPath(String path){
+        path = path.replaceAll("[\n\r]", "_");
+        logger.info("Retrieving file with path: {}", path);
+        Optional<CustomFile> file = fileRepository.findByPath(path);
+        if (file.isEmpty()) {
+            logger.warn(FILENOTFOUND, path);
+            return Optional.empty();
+        } else {
+            logger.info("File with Path {} found", path);
+        }
+
+        // Add log to InfluxDB
+        String operation = "getFileOrDirectoryByPath";
+        String description = "Retrieved file with path: " + path;
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        logger.info(ADDLOGSUCCESS, description);
+        return file;
+
+    }
+
 
     /**
      * Creates CustomFile in the repository. If the file type is "directory", a directory is created.
@@ -129,9 +157,9 @@ public class FileService {
         if (directory.mkdir()) {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
-            fileRepository.save(customFile);
+            CustomFile savedFile = fileRepository.save(customFile);
             logger.info("Directory created: {}",directory.getAbsolutePath());
-            return customFile;
+            return savedFile;
         }
         else {
             logger.info("Failed to create directory: {}",directory.getAbsolutePath());
@@ -152,15 +180,18 @@ public class FileService {
     public String getParentDirectoryPath(CustomFile customFile) {
         StringBuilder pathBuilder = new StringBuilder();
 
-        while (customFile.getParent() != null) {
-            logger.info("Parent directory: {}", customFile.getParent().getName());
-            pathBuilder.insert(0, customFile.getParent().getName() + "/");
-            customFile = customFile.getParent();
+        
+        if (customFile.getParent() != null){
+            CustomFile parent = fileRepository.findById(customFile.getParent().getId()).orElse(null);
+            pathBuilder.append(parent.getPath());
+            pathBuilder.append("/");
+        }
+        else{
+            pathBuilder.append("/uploads/");
         }
 
         //Creating upload dir
         File rootDirectory = new File(USERDIR + File.separator + "uploads");
-        File uploadDir = new File(File.separator + "uploads");
 
         if (!rootDirectory.exists()) {
             if (rootDirectory.mkdir()) {
@@ -172,7 +203,6 @@ public class FileService {
         }
 
         //adding upload path
-        pathBuilder.insert(0, uploadDir + File.separator);
         return pathBuilder.toString();
     }
 
