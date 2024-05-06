@@ -1,21 +1,16 @@
 package deti.uas.uasmartsignage.initializer;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Models.FilesClass;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
+
 import deti.uas.uasmartsignage.Services.FileService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.scheduling.annotation.Schedules;
 import org.springframework.stereotype.Component;
 
 import deti.uas.uasmartsignage.Models.Content;
@@ -45,14 +40,13 @@ public class DataLoader implements CommandLineRunner {
     private TemplateRepository templateRepository;
     private TemplateWidgetRepository templateWidgetRepository;
     private TemplateGroupRepository templateGroupRepository;
-    private FileService fileService;
     private ScheduleService scheduleService;
 
     @Autowired
     public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
             ContentRepository contentRepository, WidgetRepository widgetRepository,
             MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,
-            TemplateGroupRepository templateGroupRepository, FileService fileService,
+            TemplateGroupRepository templateGroupRepository,
             ScheduleService scheduleService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
@@ -61,7 +55,6 @@ public class DataLoader implements CommandLineRunner {
         this.groupRepository = groupRepository;
         this.monitorRepository = monitorRepository;
         this.templateGroupRepository = templateGroupRepository;
-        this.fileService = fileService;
         this.scheduleService = scheduleService;
     }
 
@@ -290,7 +283,7 @@ public class DataLoader implements CommandLineRunner {
         templateGroup1.setTemplate(template1);
         Schedule schedule1 = scheduleService.getAllSchedules().get(0);
         templateGroup1.setSchedule(schedule1);
-        templateGroup1 = templateGroupRepository.save(templateGroup1);
+        templateGroupRepository.save(templateGroup1);
 
     }
 
@@ -306,6 +299,6 @@ public class DataLoader implements CommandLineRunner {
         schedule.setWeekdays(days);
         schedule.setEndDate(LocalDate.parse("2024-04-21"));
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
-        schedule = scheduleService.saveSchedule(schedule);
+        scheduleService.saveSchedule(schedule);
     }
 }
