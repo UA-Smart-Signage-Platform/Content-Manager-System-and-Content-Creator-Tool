@@ -9,7 +9,7 @@ import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
-import deti.uas.uasmartsignage.Services.jwtUtilService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 
 import org.hibernate.validator.constraints.time.DurationMax;
@@ -55,7 +55,7 @@ class ScheduleControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @MockBean
-    private deti.uas.uasmartsignage.Services.jwtUtilService jwtUtil;
+    private deti.uas.uasmartsignage.Services.JwtUtilService jwtUtil;
 
     @MockBean
     private IAuthenticationFacade authenticationFacade;

@@ -24,8 +24,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Services.jwtUtilService;
-
+import deti.uas.uasmartsignage.Services.JwtUtilService;
+import deti.uas.uasmartsignage.exceptions.IdpUsernameFetchException;
 
 import java.io.IOException;
 
@@ -36,10 +36,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     
     private CustomUserDetailsService userDetailsService;
 
-    private jwtUtilService jwtUtil;
+    private JwtUtilService jwtUtil;
 
     @Autowired
-    public JwtAuthFilter(CustomUserDetailsService userDetailsService, jwtUtilService jwtUtil) {
+    public JwtAuthFilter(CustomUserDetailsService userDetailsService, JwtUtilService jwtUtil) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
     }
@@ -107,7 +107,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
      * @return The username
      * @throws JsonProcessingException
      */
-    private String getUsernameFromToken(String token) throws JsonProcessingException {
+    private String getUsernameFromToken(String token) {
         String idpUserinfoEndpoint = "https://wso2-gw.ua.pt/userinfo";
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(token);
@@ -129,7 +129,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             
             return jsonObject.get("email").getAsString();
         } else {
-            throw new RuntimeException("Failed to fetch username from IDP");
+            throw new IdpUsernameFetchException("Failed to fetch username from IDP");
         }
     }
 }

@@ -32,7 +32,7 @@ import static org.hamcrest.Matchers.is;
 import deti.uas.uasmartsignage.Controllers.MonitorController;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
-import deti.uas.uasmartsignage.Services.jwtUtilService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -56,7 +56,7 @@ class FileControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @MockBean
-    private jwtUtilService jwtUtil;
+    private JwtUtilService jwtUtil;
 
     @MockBean
     private IAuthenticationFacade authenticationFacade;

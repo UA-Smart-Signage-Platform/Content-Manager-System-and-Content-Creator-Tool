@@ -7,8 +7,6 @@ import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Services.jwtUtilService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.authentication.AuthenticationRequest;
 import deti.uas.uasmartsignage.authentication.AuthenticationResponse;
 import deti.uas.uasmartsignage.authentication.ChangePasswordRequest;
@@ -36,14 +34,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("/api/login")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
     private final CustomUserDetailsService userDetailsService;
-    private final jwtUtilService jwtUtil;
+    private final JwtUtilService jwtUtil;
     private IAuthenticationFacade authenticationFacade;
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, CustomUserDetailsService userDetailsService, jwtUtilService jwtUtil, IAuthenticationFacade authenticationFacade) {
-        this.authenticationManager = authenticationManager;
+    public AuthController(CustomUserDetailsService userDetailsService, JwtUtilService jwtUtil, IAuthenticationFacade authenticationFacade) {
         this.userDetailsService = userDetailsService;
         this.jwtUtil = jwtUtil;
         this.authenticationFacade = authenticationFacade;
@@ -57,7 +53,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) throws Exception {
+    public ResponseEntity<Object> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest){
         
         try {
             userDetailsService.loadUserByUsernameAndPassword(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -81,7 +77,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/change-password")
-    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
+    public ResponseEntity<Object> changePassword(@RequestBody ChangePasswordRequest changePasswordRequest) {
         try {
             // Load user details to get the current password
             UserDetails userDetails = userDetailsService.loadUserByUsername(changePasswordRequest.getUsername());

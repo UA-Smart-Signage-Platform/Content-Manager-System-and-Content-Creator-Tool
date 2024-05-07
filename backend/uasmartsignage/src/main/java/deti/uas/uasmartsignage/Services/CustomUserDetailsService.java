@@ -3,10 +3,8 @@ package deti.uas.uasmartsignage.Services;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -105,13 +103,12 @@ public class CustomUserDetailsService implements UserDetailsService {
     
         if (userOptional.isPresent()) {
             UserDetails user = userOptional.get();
-            if (user instanceof User) {
-                User existingUser = (User) user;
+            if (user instanceof User existingUser) {
     
                 List<String> roles = existingUser.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .map(role -> role.startsWith("ROLE_") ? role.substring(5) : role)
-                    .collect(Collectors.toList());
+                    .toList();
     
                 UserDetails updatedUser = User.builder()
                     .username(existingUser.getUsername())

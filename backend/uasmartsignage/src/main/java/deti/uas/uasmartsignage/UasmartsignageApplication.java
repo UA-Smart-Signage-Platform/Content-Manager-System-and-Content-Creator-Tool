@@ -14,7 +14,6 @@ import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.Widget;

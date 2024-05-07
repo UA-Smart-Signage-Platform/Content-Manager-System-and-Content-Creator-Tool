@@ -2,7 +2,6 @@ package deti.uas.uasmartsignage.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import deti.uas.uasmartsignage.Models.AppUser;
@@ -29,7 +28,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User created", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
     })
     @PostMapping
-    public ResponseEntity<?> createUser(@RequestBody AppUser user) {
+    public ResponseEntity<AppUser> createUser(@RequestBody AppUser user) {
         
         return ResponseEntity.ok(userService.saveUser(user));
     }
@@ -39,7 +38,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "List of all users", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
     })
     @GetMapping
-    public ResponseEntity<?> getAllUsers() {
+    public ResponseEntity<Iterable<AppUser>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
@@ -48,7 +47,7 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User deleted", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
