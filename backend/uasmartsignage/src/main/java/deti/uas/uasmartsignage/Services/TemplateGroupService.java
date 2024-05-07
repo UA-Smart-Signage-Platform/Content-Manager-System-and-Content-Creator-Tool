@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -150,7 +151,7 @@ public class TemplateGroupService {
      */
     public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup) {
         Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
-        Schedule schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
+        Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
             schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
         }
@@ -310,7 +311,7 @@ public class TemplateGroupService {
             String pathToWidget = widget.getWidget().getPath();
             ClassLoader cl = this.getClass().getClassLoader();
             InputStream inputStream = cl.getResourceAsStream(pathToWidget);
-            String widgetHTML = new String(inputStream.readAllBytes(), "UTF-8");
+            String widgetHTML = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
 
             widgetHTML = widgetHTML
                     .replace("[[top]]", String.valueOf(monitorHeight * widget.getTop() / 100))
