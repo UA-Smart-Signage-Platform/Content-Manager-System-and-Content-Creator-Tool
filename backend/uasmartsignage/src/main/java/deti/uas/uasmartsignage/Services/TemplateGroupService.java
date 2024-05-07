@@ -105,8 +105,26 @@ public class TemplateGroupService {
                 }
 
                 Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-                downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
-                if (file.isPresent()) {
+                if (file.isEmpty()) {
+                    continue;
+                }
+
+                if (file.get().getType().equals("directory")) {
+                    List<CustomFile> files = file.get().getSubDirectories();
+                    String dirFiles = "";
+                    if (files == null) {
+                        continue;
+                    }
+                    for (CustomFile f : files) {
+                        if (!f.getType().equals("directory")) {
+                            downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
+                            dirFiles += f.getName() + ", ";
+                        }
+                    }
+                    entry.setValue(dirFiles);
+                }
+                else {
+                    downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
                     entry.setValue(file.get().getName());
                 }
             }
@@ -156,15 +174,33 @@ public class TemplateGroupService {
         }
         List<String> downloadFiles = new ArrayList<>();
         for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
-            
+
             TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long)entry.getKey());
             if(!isWidgetContentMedia(widget)){
                 continue;
             }
 
             Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-            downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
-            if (file.isPresent()) {
+            if (file.isEmpty()) {
+                continue;
+            }
+
+            if (file.get().getType().equals("directory")) {
+                List<CustomFile> files = file.get().getSubDirectories();
+                String dirFiles = "";
+                if (files == null) {
+                    continue;
+                }
+                for (CustomFile f : files) {
+                    if (!f.getType().equals("directory")) {
+                        downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
+                        dirFiles += f.getName() + ", ";
+                    }
+                }
+                entry.setValue(dirFiles);
+            }
+            else {
+                downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
                 entry.setValue(file.get().getName());
             }
         }
