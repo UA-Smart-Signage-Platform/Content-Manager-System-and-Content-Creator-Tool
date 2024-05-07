@@ -118,10 +118,10 @@ public class TemplateGroupService {
                     for (CustomFile f : files) {
                         if (!f.getType().equals("directory")) {
                             downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                            dirFiles += f.getName() + ", ";
+                            dirFiles += f.getName() + "\",\"";
                         }
                     }
-                    entry.setValue(dirFiles);
+                    entry.setValue(dirFiles.substring(0,dirFiles.length()-3));
                 }
                 else {
                     downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
@@ -194,10 +194,10 @@ public class TemplateGroupService {
                 for (CustomFile f : files) {
                     if (!f.getType().equals("directory")) {
                         downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                        dirFiles += f.getName() + ", ";
+                        dirFiles += f.getName() + "\",\"";
                     }
                 }
-                entry.setValue(dirFiles);
+                entry.setValue(dirFiles.substring(0,dirFiles.length()-3));
             }
             else {
                 downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
