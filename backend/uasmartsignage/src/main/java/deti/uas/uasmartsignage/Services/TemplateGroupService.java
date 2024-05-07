@@ -133,7 +133,7 @@ public class TemplateGroupService {
             TemplateMessage confirmMessage = new TemplateMessage();
             confirmMessage.setMethod("TEMPLATE");
             confirmMessage.setFiles(downloadFiles);
-            confirmMessage.setSchedule(schedule.toString());
+            confirmMessage.setSchedule(schedule.toMqttFormat());
             List<Monitor> monitors = monitorGroup.getMonitors();
             for (Monitor monitor : monitors) {
                 String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
@@ -209,7 +209,7 @@ public class TemplateGroupService {
                 TemplateMessage confirmMessage = new TemplateMessage();
                 confirmMessage.setMethod("TEMPLATE");
                 confirmMessage.setFiles(downloadFiles);
-                confirmMessage.setSchedule(schedule.toString());
+                confirmMessage.setSchedule(schedule.toMqttFormat());
                 List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
                 for (Monitor monitor : monitors) {
                     String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());

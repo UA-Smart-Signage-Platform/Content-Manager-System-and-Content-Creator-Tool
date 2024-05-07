@@ -3,6 +3,7 @@ package deti.uas.uasmartsignage.Models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import deti.uas.uasmartsignage.Mqtt.ScheduleMqtt;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -62,4 +63,10 @@ public class Schedule {
                 + priority + ", startDate=" + startDate + ", startTime=" + startTime + ", templateGroups="
                 + templateGroups + ", weekdays=" + weekdays + "]";
     }
+
+    public ScheduleMqtt toMqttFormat() {
+        ScheduleMqtt schedule = new ScheduleMqtt(startTime.toString(), endTime.toString(), weekdays, startDate + "", endDate + "", priority);
+        return schedule;
+    }
+
 }
