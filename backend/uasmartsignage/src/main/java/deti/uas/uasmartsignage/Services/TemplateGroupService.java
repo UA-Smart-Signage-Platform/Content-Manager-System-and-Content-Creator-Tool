@@ -38,6 +38,7 @@ import deti.uas.uasmartsignage.Configuration.MqttConfig;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -74,60 +75,94 @@ public class TemplateGroupService {
 
     private final Logger logger = LoggerFactory.getLogger(TemplateGroupRepository.class);
 
+    /**
+     * Returns a TemplateGroup with the given id
+     * 
+     * @param id The id of the TemplateGroup to return
+     * @return The TemplateGroup with the given id, or {@code null} if it does not exist
+     */
     public TemplateGroup getGroupById(Long id) {
         return templateGroupRepository.findById(id).orElse(null);
     }
 
+    /**
+     * Returns a TemplateGroup with the given groupID
+     * 
+     * @param groupID The groupID of the TemplateGroup to return
+     * @return The TemplateGroup with the given groupID, or {@code null} if it does not exist
+     */
     public TemplateGroup getTemplateGroupByGroupID(Long groupID) {
         return templateGroupRepository.findByGroupId(groupID);
     }
 
-    public TemplateGroup saveGroup(TemplateGroup templateGroup) {
+    /**
+     * Processes the content of a TemplateGroup, replacing the ids of the contents with the actual file names
+     * 
+     * @param content The content of the TemplateGroup
+     * @return A Map containing the updated content and a list of download files
+     */
+    public Map<String, Object> processTemplateGroupContent(Map<Integer, String> content) {
+        Map<Integer, String> updatedContent = new HashMap<>();
+        List<String> downloadFiles = new ArrayList<>();
+        if (content != null) {
+            for (Map.Entry<Integer, String> entry : content.entrySet()) {
+                TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long) entry.getKey()); 
+                if (!isWidgetContentMedia(widget)) {
+                    continue;
+                }
+    
+                Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
+                if (file.isEmpty()) {
+                    continue;
+                }
+    
+                if ("directory".equals(file.get().getType())) {
+                    List<CustomFile> files = file.get().getSubDirectories();
+                    if (files != null) {
+                        StringBuilder dirFiles = new StringBuilder();
+                        for (CustomFile f : files) {
+                            if (!"directory".equals(f.getType())) {
+                                downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
+                                dirFiles.append(f.getName()).append("\",\"");
+                            }
+                        }
+                        entry.setValue(dirFiles.substring(0, dirFiles.length() - 3));
+                    }
+                } else {
+                    downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
+                    entry.setValue(file.get().getName());
+                }
+                updatedContent.put(entry.getKey(), entry.getValue());
+            }
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("updatedContent", updatedContent);
+        result.put("downloadFiles", downloadFiles);
+        return result;
+    }
+
+    /**
+     * Sends a TemplateGroup to a MonitorsGroup
+     * 
+     * @param templateGroup The TemplateGroup to send
+     * @param monitorGroup The MonitorsGroup to send the TemplateGroup to
+     * @return The TemplateGroup that was sent
+     */
+    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup) {
         Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
-        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
-        Schedule schedule;
+        Schedule schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         if (templateGroup.getSchedule().getId() == null) {
             schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
         }
         else {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
-        templateGroup.setTemplate(template);
-        templateGroup.setGroup(monitorGroup);
-        templateGroup.setSchedule(schedule);
         List<String> downloadFiles = new ArrayList<>();
         if (templateGroup.getContent() != null) {
-            for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
-
-                TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long)entry.getKey());
-                if(!isWidgetContentMedia(widget)){
-                    continue;
-                }
-
-                Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-                if (file.isEmpty()) {
-                    continue;
-                }
-
-                if (file.get().getType().equals("directory")) {
-                    List<CustomFile> files = file.get().getSubDirectories();
-                    String dirFiles = "";
-                    if (files == null) {
-                        continue;
-                    }
-                    for (CustomFile f : files) {
-                        if (!f.getType().equals("directory")) {
-                            downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                            dirFiles += f.getName() + "\",\"";
-                        }
-                    }
-                    entry.setValue(dirFiles.substring(0,dirFiles.length()-3));
-                }
-                else {
-                    downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
-                    entry.setValue(file.get().getName());
-                }
-            }
+            Map<String, Object> contentResult = processTemplateGroupContent(templateGroup.getContent());
+            Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
+            templateGroup.setContent(updatedContent);
+            downloadFiles = (List<String>) contentResult.get("downloadFiles");
         }
         try {
             TemplateMessage confirmMessage = new TemplateMessage();
@@ -138,7 +173,6 @@ public class TemplateGroupService {
             for (Monitor monitor : monitors) {
                 String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
                 confirmMessage.setHtml(html);
-
                 String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
                 MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
             }
@@ -146,90 +180,65 @@ public class TemplateGroupService {
             
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             e.printStackTrace();
+    
         }
-        
-        return templateGroupRepository.save(templateGroup);
+
+        templateGroup.setTemplate(template);
+        templateGroup.setGroup(monitorGroup);
+        templateGroup.setSchedule(schedule);
+        templateGroupRepository.save(templateGroup);
+        return templateGroup;
+    }
+    
+    
+
+    /**
+     * Saves a TemplateGroup
+     * 
+     * @param templateGroup The TemplateGroup to save
+     * @return The saved TemplateGroup
+     */
+    public TemplateGroup saveGroup(TemplateGroup templateGroup) {
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
     }
 
+    /**
+     * Deletes a TemplateGroup with the given id
+     * 
+     * @param id The id of the TemplateGroup to delete
+     */
     public void deleteGroup(Long id) {
         templateGroupRepository.deleteById(id);
     }
 
+    /**
+     * Returns all TemplateGroups
+     * 
+     * @return An Iterable of all TemplateGroups
+     */
     public Iterable<TemplateGroup> getAllGroups() {
         return templateGroupRepository.findAll();
     }
 
+
+    /**
+     * Updates a TemplateGroup with the given id
+     * 
+     * @param id The id of the TemplateGroup to update
+     * @param templateGroup The new TemplateGroup to replace the old one
+     * @return The updated TemplateGroup, or {@code null} if the id does not exist
+     */
     public TemplateGroup updateTemplateGroup(Long id, TemplateGroup templateGroup) {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
-        Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
-        if (templateGroupById == null) {
-            return null;
+        if (templateGroupById != templateGroup){
+            MonitorsGroup monitorGroup = templateGroupById.getGroup();
+            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
         }
-        Schedule schedule;
-        if (templateGroup.getSchedule().getId() == null) {
-            schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
-        }
-        else {
-            schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
-        }
-        List<String> downloadFiles = new ArrayList<>();
-        for (Map.Entry<Integer, String> entry : templateGroup.getContent().entrySet()) {
-
-            TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long)entry.getKey());
-            if(!isWidgetContentMedia(widget)){
-                continue;
-            }
-
-            Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-            if (file.isEmpty()) {
-                continue;
-            }
-
-            if (file.get().getType().equals("directory")) {
-                List<CustomFile> files = file.get().getSubDirectories();
-                String dirFiles = "";
-                if (files == null) {
-                    continue;
-                }
-                for (CustomFile f : files) {
-                    if (!f.getType().equals("directory")) {
-                        downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                        dirFiles += f.getName() + "\",\"";
-                    }
-                }
-                entry.setValue(dirFiles.substring(0,dirFiles.length()-3));
-            }
-            else {
-                downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
-                entry.setValue(file.get().getName());
-            }
-        }
-        if (templateGroupById != templateGroup) {
-            try {
-                TemplateMessage confirmMessage = new TemplateMessage();
-                confirmMessage.setMethod("TEMPLATE");
-                confirmMessage.setFiles(downloadFiles);
-                confirmMessage.setSchedule(schedule.toMqttFormat());
-                List<Monitor> monitors = templateGroupById.getGroup().getMonitors();
-                for (Monitor monitor : monitors) {
-                    String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
-                    confirmMessage.setHtml(html);
-                    String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-                    MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
-                }
-
-            } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-                // Handle exception
-                e.printStackTrace();
-            }
-        }
-
-        templateGroupById.setTemplate(template);
-        templateGroupById.setContent(templateGroup.getContent());
-        templateGroupById.setSchedule(schedule);
-        return templateGroupRepository.save(templateGroupById);
+        return null;
     }
 
+    
     private boolean isWidgetContentMedia(TemplateWidget widget){
         return widget.getWidget().getContents().get(0).getType().equals("media");
     }

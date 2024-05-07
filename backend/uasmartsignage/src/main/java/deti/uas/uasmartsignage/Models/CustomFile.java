@@ -30,7 +30,6 @@ public class CustomFile {
     @Column(unique = true)
     private String path;
 
-
     @ManyToOne
     @JsonIgnoreProperties({"subDirectories", "parent"})
     @JoinColumn(name = "parentId")
