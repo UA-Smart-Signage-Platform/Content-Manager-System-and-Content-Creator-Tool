@@ -25,11 +25,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ResourceUtils;
 
-import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,18 +35,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
-
-import deti.uas.uasmartsignage.Services.TemplateService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
-
 
 @Service
 public class TemplateGroupService {
@@ -60,17 +50,15 @@ public class TemplateGroupService {
     private final MonitorGroupService monitorGroupService;
     private final FileService fileService;
     private final ScheduleService scheduleService;
-    private TemplateGroupRepository templateGroupRepository;
-    private ContentService contentService;
+    private final TemplateGroupRepository templateGroupRepository;
     private final TemplateWidgetService templateWidgetService;
 
-    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService, ContentService contentService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
         this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
         this.fileService = fileService;
         this.scheduleService = scheduleService;
-        this.contentService = contentService;
         this.templateGroupRepository = templateGroupRepository;
     }
 
