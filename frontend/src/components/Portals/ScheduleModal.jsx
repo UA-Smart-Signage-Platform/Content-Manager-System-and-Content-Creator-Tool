@@ -80,7 +80,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     endDate : selectedEndDate}
         }
 
-        activeTemplateService.changeActiveTemplate(data);
+        activeTemplateService.addActiveTemplate(data);
     };
 
 
