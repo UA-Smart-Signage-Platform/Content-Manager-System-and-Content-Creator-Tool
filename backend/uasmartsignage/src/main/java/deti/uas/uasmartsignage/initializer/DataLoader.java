@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.initializer;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -299,6 +300,8 @@ public class DataLoader implements CommandLineRunner {
         schedule.setWeekdays(days);
         schedule.setEndDate(LocalDate.parse("2024-04-21"));
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartTime(LocalTime.parse("00:00"));
+        schedule.setEndTime(LocalTime.parse("23:59"));
         scheduleService.saveSchedule(schedule);
     }
 }

@@ -9,13 +9,10 @@ import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -93,37 +91,79 @@ public class TemplateGroupService {
     public Map<String, Object> processTemplateGroupContent(Map<Integer, String> content) {
         Map<Integer, String> updatedContent = new HashMap<>();
         List<String> downloadFiles = new ArrayList<>();
-        if (content != null) {
-            for (Map.Entry<Integer, String> entry : content.entrySet()) {
-                TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long) entry.getKey()); 
-                if (!isWidgetContentMedia(widget)) {
-                    continue;
-                }
-    
-                Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
-                if (file.isEmpty()) {
-                    continue;
-                }
-    
-                if ("directory".equals(file.get().getType())) {
-                    List<CustomFile> files = file.get().getSubDirectories();
-                    if (files != null) {
-                        StringBuilder dirFiles = new StringBuilder();
-                        for (CustomFile f : files) {
-                            if (!"directory".equals(f.getType())) {
-                                downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                                dirFiles.append(f.getName()).append("\",\"");
-                            }
-                        }
-                        entry.setValue(dirFiles.substring(0, dirFiles.length() - 3));
-                    }
-                } else {
-                    downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
-                    entry.setValue(file.get().getName());
-                }
-                updatedContent.put(entry.getKey(), entry.getValue());
-            }
+        if (content == null) {
+            return Collections.emptyMap();
         }
+        for (Map.Entry<Integer, String> entry : content.entrySet()) {
+            processEntry(entry, updatedContent, downloadFiles);
+        }
+        return buildResultMap(updatedContent, downloadFiles);
+    }
+    
+    /**
+     * Processes a single entry of the content of a TemplateGroup
+     * 
+     * @param entry The entry to process
+     * @param updatedContent The Map to store the updated content
+     * @param downloadFiles The List to store the download files
+     */
+    private void processEntry(Map.Entry<Integer, String> entry, Map<Integer, String> updatedContent, List<String> downloadFiles) {
+        TemplateWidget widget = templateWidgetService.getTemplateWidgetById((long) entry.getKey());
+        if (isWidgetContentMedia(widget)) {
+            Optional<CustomFile> file = fileService.getFileOrDirectoryById(Long.parseLong(entry.getValue()));
+            file.ifPresent(customFile -> {
+                if ("directory".equals(customFile.getType())) {
+                    processDirectory(customFile, entry, downloadFiles, updatedContent);
+                } else {
+                    processFile(customFile, entry, updatedContent, downloadFiles);
+                }
+            });
+        }
+    }
+    
+    /**
+     * Processes a directory
+     * 
+     * @param directory The directory to process
+     * @param entry The entry to process
+     * @param downloadFiles The List to store the download files
+     */
+    private void processDirectory(CustomFile directory, Map.Entry<Integer, String> entry, List<String> downloadFiles, Map<Integer, String> updatedContent) {
+        List<CustomFile> files = directory.getSubDirectories();
+        if (files != null) {
+            StringBuilder dirFiles = new StringBuilder();
+            for (CustomFile f : files) {
+                if (!"directory".equals(f.getType())) {
+                    downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
+                    dirFiles.append(f.getName()).append(",");
+                }
+            }
+            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 1));
+        }
+    }
+    
+    /**
+     * Processes a file
+     * 
+     * @param file The file to process
+     * @param entry The entry to process
+     * @param updatedContent The Map to store the updated content
+     * @param downloadFiles The List to store the download files
+     */
+    private void processFile(CustomFile file, Map.Entry<Integer, String> entry, Map<Integer, String> updatedContent, List<String> downloadFiles) {
+        downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
+        entry.setValue(file.getName());
+        updatedContent.put(entry.getKey(), entry.getValue());
+    }
+    
+    /**
+     * Builds a Map with the updated content and the download files
+     * 
+     * @param updatedContent The updated content
+     * @param downloadFiles The download files
+     * @return The built Map
+     */
+    private Map<String, Object> buildResultMap(Map<Integer, String> updatedContent, List<String> downloadFiles) {
         Map<String, Object> result = new HashMap<>();
         result.put("updatedContent", updatedContent);
         result.put("downloadFiles", downloadFiles);
