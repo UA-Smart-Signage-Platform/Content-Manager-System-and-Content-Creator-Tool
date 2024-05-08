@@ -47,20 +47,30 @@ public class DataInit implements CommandLineRunner{
         deti.setName("DETI");
         deti.setDescription("Monitors from first floor, second and third");
         deti.setMonitors(List.of());
+        deti.setMadeForMonitor(false);
 
         MonitorsGroup dMat = new MonitorsGroup();
         dMat.setName("DMAT");
         dMat.setDescription("Monitors from first floor and bar");
         dMat.setMonitors(List.of());
+        dMat.setMadeForMonitor(false);
 
         MonitorsGroup dBio = new MonitorsGroup();
         dBio.setName("DBIO");
         dBio.setDescription("Monitors from resting area");
         dBio.setMonitors(List.of());
+        dBio.setMadeForMonitor(false);
+
+        MonitorsGroup ISCA = new MonitorsGroup();
+        ISCA.setName("ISCA");
+        ISCA.setDescription("Monitors from the entrance");
+        ISCA.setMonitors(List.of());
+
 
         deti = groupRepository.saveAndFlush(deti);
         dMat = groupRepository.saveAndFlush(dMat);
         dBio = groupRepository.saveAndFlush(dBio);
+        ISCA = groupRepository.saveAndFlush(ISCA);
 
         Monitor hall = new Monitor();
         hall.setUuid("a809f305-ebba-4cc0-a204-724ac97ca655");
@@ -110,6 +120,13 @@ public class DataInit implements CommandLineRunner{
         car2.setPending(true);
         car2.setGroup(dBio);
         monitorRepository.save(car2);
+
+        Monitor car3 = new Monitor();
+        car3.setUuid("0f6a21fa-fbe1-4d9a-9ba1-fce9f1922f6f");
+        car3.setName("car3");
+        car3.setPending(true);
+        car3.setGroup(ISCA);
+        monitorRepository.save(car3);
 
     }
 }
