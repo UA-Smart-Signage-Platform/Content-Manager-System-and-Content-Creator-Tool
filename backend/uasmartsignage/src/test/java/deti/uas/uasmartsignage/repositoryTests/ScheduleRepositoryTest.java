@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 
 @DataJpaTest
@@ -27,9 +27,9 @@ class ScheduleRepositoryTest {
 
     @Test
     void whenFindById_thenReturnSchedule() {
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
         entityManager.persistAndFlush(user);
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
@@ -54,9 +54,9 @@ class ScheduleRepositoryTest {
 
     @Test
     void whenFindAll_thenReturnAllSchedules() {
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
         entityManager.persistAndFlush(user);
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();

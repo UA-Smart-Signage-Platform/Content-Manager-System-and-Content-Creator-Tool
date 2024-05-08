@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
@@ -36,9 +36,9 @@ class ScheduleServiceTest {
 
     @Test void
     getScheduleByIdTestReturnsSchedule(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -54,15 +54,15 @@ class ScheduleServiceTest {
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
 
         Schedule schedu = service.getScheduleById(1L);
-        assertThat(schedu.getCreatedBy().getUsername()).isEqualTo("admin");
+        assertThat(schedu.getCreatedBy().getEmail()).isEqualTo("admin");
         assertThat(schedu.getEndDate()).isEqualTo(LocalDate.parse("2024-04-21"));
     }
 
     @Test
     void whenServiceGetAllThenRepositoryFindAll(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -94,9 +94,9 @@ class ScheduleServiceTest {
 
     @Test void
     whenServiceSaveThenRepositorySave(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -118,9 +118,9 @@ class ScheduleServiceTest {
 
     @Test
     void whenServiceDeleteThenRepositoryDelete(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");

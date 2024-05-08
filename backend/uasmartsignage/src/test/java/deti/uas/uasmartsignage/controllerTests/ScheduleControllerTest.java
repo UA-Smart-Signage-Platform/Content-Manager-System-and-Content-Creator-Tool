@@ -6,13 +6,18 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
+import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
+
 import org.hibernate.validator.constraints.time.DurationMax;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -38,6 +43,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ScheduleController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class ScheduleControllerTest {
     @Autowired
     private MockMvc mvc;
@@ -45,13 +51,23 @@ class ScheduleControllerTest {
     @MockBean
     private ScheduleService service;
 
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
+
+    @MockBean
+    private deti.uas.uasmartsignage.Services.JwtUtilService jwtUtil;
+
+    @MockBean
+    private IAuthenticationFacade authenticationFacade;
+
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     void testGetAllSchedulesEndpoint() throws Exception{
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -85,9 +101,9 @@ class ScheduleControllerTest {
 
     @Test
     void testGetScheduleByIdEndpoint() throws Exception{
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -111,9 +127,9 @@ class ScheduleControllerTest {
 
     @Test
     void testSaveScheduleEndpoint() throws Exception{
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -136,9 +152,9 @@ class ScheduleControllerTest {
 
     @Test
     void testDeleteScheduleEndpoint() throws Exception{
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");

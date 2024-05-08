@@ -47,14 +47,14 @@ public class Schedule {
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdBy;
+    private AppUser createdBy;
 
     @Column(name = "created_on")
     private LocalDate createdOn;
 
     @ManyToOne
     @JoinColumn(name = "last_edited_by")
-    private User lastEditedBy;
+    private AppUser lastEditedBy;
 
     @ElementCollection
     @CollectionTable(name = "schedule_weekdays", joinColumns = @JoinColumn(name = "schedule_id"))

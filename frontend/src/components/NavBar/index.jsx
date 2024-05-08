@@ -5,7 +5,7 @@ import { LuMoon } from "react-icons/lu";
 import  {ReactComponent as Logo}  from "../../static/logo.svg"
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
 
 
@@ -13,6 +13,16 @@ function NavBar() {
     const [isShow,setIsShow] = useState(false);
     const theme = useThemeStore((state) =>state.theme)
     const changeTheme = useThemeStore((state)=> state.changeTheme)
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('id_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('userInfo');
+
+        navigate("/Login");
+    };
 
     return(
         <> 
@@ -66,28 +76,35 @@ function NavBar() {
                 <Link to={"contentcreator"} className="w-full h-[5%] flex items-center">
                     Content Creator Tool
                 </Link>
-                <div className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" 
-                    onClick={()=>{changeTheme(theme === "dark" ? "light":"dark");console.log(theme)}}>
+                <button className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" onClick={handleLogout}>
+                    Logout
+                </button>
+
+                <button className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" onClick={() => changeTheme(theme === "dark" ? "light" : "dark")}>
                     <div className="h-full w-[25px] relative flex items-center">
-                        <AnimatePresence>
-                            {theme === "light" && <motion.div className="absolute"
-                                                    initial={{y:-10,opacity:0,rotate:90}}
-                                                    animate={{y:0,opacity:1,rotate:0}}
-                                                    exit={{y:-10,opacity:0,rotate:90}}
-                                                ><MdOutlineWbSunny className="h-full w-[25px]"/></motion.div>
-                }
-                        </AnimatePresence>
-                        <AnimatePresence>
-                            {theme === "dark" && <motion.div className="absolute"
-                                                    initial={{y:10,opacity:0,rotate:-90}}
-                                                    animate={{y:0,opacity:1,rotate:0}}
-                                                    exit={{y:10,opacity:0,rotate:-90}}
-                                                ><LuMoon className="h-full w-[25px]"/></motion.div>
-                }
-                        </AnimatePresence>
+                        {theme === "light" && (
+                            <motion.div
+                                className="absolute"
+                                initial={{ y: -10, opacity: 0, rotate: 90 }}
+                                animate={{ y: 0, opacity: 1, rotate: 0 }}
+                                exit={{ y: -10, opacity: 0, rotate: 90 }}
+                            >
+                                <MdOutlineWbSunny className="h-full w-[25px]" />
+                            </motion.div>
+                        )}
+                        {theme === "dark" && (
+                            <motion.div
+                                className="absolute"
+                                initial={{ y: 10, opacity: 0, rotate: -90 }}
+                                animate={{ y: 0, opacity: 1, rotate: 0 }}
+                                exit={{ y: 10, opacity: 0, rotate: -90 }}
+                            >
+                                <LuMoon className="h-full w-[25px]" />
+                            </motion.div>
+                        )}
                     </div>
                     Change Theme
-                </div>
+                </button>
             </motion.div>}
         </AnimatePresence>
         </>
