@@ -11,11 +11,12 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TemplateMessage {
+public class ScheduleMqtt {
 
-    private String method;
-    private String html;
-    private List<String> files;
-    private ScheduleMqtt schedule;
+    private String startTime;
+    private String endTime;
+    private List<Integer> weekdays;
+    private String startDate;
+    private String endDate;
+    private Integer priority;
 }
-

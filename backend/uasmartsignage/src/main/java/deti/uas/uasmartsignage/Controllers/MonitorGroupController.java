@@ -105,12 +105,12 @@ public class MonitorGroupController {
             @ApiResponse(responseCode = "404", description = "Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}/template")
-    public ResponseEntity<TemplateGroup> getTemplateByGroup(@PathVariable("id") Long id) {
+    public ResponseEntity<List<TemplateGroup>> getTemplateByGroup(@PathVariable("id") Long id) {
         MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(monitorsGroup.getTemplateGroup(), HttpStatus.OK);
+        return new ResponseEntity<>(monitorsGroup.getTemplateGroups(), HttpStatus.OK);
     }
 
     @Operation(summary = "Create a new group")

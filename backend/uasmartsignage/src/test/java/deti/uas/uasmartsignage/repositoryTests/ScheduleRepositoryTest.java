@@ -43,7 +43,6 @@ class ScheduleRepositoryTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(monitorsGroup);
 
         entityManager.persistAndFlush(schedule);
 
@@ -70,7 +69,6 @@ class ScheduleRepositoryTest {
         schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
         schedule1.setLastEditedBy(user);
-        schedule1.setMonitorsGroupForSchedules(monitorsGroup);
 
         Schedule schedule2 = new Schedule();
         schedule2.setFrequency(5);
@@ -79,7 +77,6 @@ class ScheduleRepositoryTest {
         schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
         schedule2.setLastEditedBy(user);
-        schedule2.setMonitorsGroupForSchedules(monitorsGroup);
 
         entityManager.persistAndFlush(schedule1);
         entityManager.persistAndFlush(schedule2);

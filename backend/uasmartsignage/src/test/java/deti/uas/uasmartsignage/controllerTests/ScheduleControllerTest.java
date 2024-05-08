@@ -79,7 +79,6 @@ class ScheduleControllerTest {
         schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
         schedule1.setLastEditedBy(user);
-        schedule1.setMonitorsGroupForSchedules(group);
 
         Schedule schedule2 = new Schedule();
         schedule2.setFrequency(5);
@@ -88,7 +87,6 @@ class ScheduleControllerTest {
         schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
         schedule2.setLastEditedBy(user);
-        schedule2.setMonitorsGroupForSchedules(group);
 
         when(service.getAllSchedules()).thenReturn(Arrays.asList(schedule1,schedule2));
 
@@ -115,7 +113,6 @@ class ScheduleControllerTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
 
         when(service.getScheduleById(1L)).thenReturn(schedule);
 
@@ -139,7 +136,6 @@ class ScheduleControllerTest {
         schedule.setCreatedBy(user);
         schedule.setPriority(3);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
 
         when(service.saveSchedule(Mockito.any())).thenReturn(schedule);
 
@@ -166,7 +162,6 @@ class ScheduleControllerTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
 
         when(service.getScheduleById(1L)).thenReturn(schedule);
 
