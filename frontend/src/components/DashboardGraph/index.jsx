@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
+    if (active && payload) {
       return (
         <div className="custom-tooltip">
             <p className="label text-textcolor bg-backgroundcolor text-center rounded-md p-2">
@@ -21,6 +22,12 @@ const CustomTooltip = ({ active, payload, label }) => {
       );
     }
 };
+
+CustomTooltip.propTypes = {
+    active: PropTypes.bool.isRequired,
+    payload: PropTypes.object.isRequired,
+    label: PropTypes.object.isRequired
+}
 
 function DashboardGraph( { data, xLabel, yLabel, height, title, linkTo } ) {
     return(
@@ -53,4 +60,14 @@ function DashboardGraph( { data, xLabel, yLabel, height, title, linkTo } ) {
         </>
     )
 }
+
+DashboardGraph.propTypes = {
+    data: PropTypes.array.isRequired,
+    xLabel: PropTypes.string.isRequired,
+    yLabel: PropTypes.string.isRequired,
+    height: PropTypes.string.isRequired,
+    title: PropTypes.node.isRequired,
+    linkTo: PropTypes.string.isRequired
+}
+
 export default DashboardGraph
