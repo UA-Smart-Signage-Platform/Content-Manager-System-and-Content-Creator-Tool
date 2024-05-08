@@ -11,7 +11,7 @@ function Dashboard() {
         data.push( 
             {
                 "hour": index,
-                "monitor": 20 + index,
+                "monitor": index,
             }
             );
     };
@@ -19,7 +19,7 @@ function Dashboard() {
         data2.push( 
             {
                 "day": index + "/4",
-                "monitor": 20 + index,
+                "monitor": index,
             }
             );
     }
@@ -65,16 +65,14 @@ function Dashboard() {
                         </div>
                     </div>
                     <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
-                    <div className="h-[50%]">
-                        <div className="h-[95%] pt-4 pr-4 pl-4">
-                            <DashboardGraph 
-                                    data={data2} 
-                                    xLabel={"day"} 
-                                    yLabel={"monitors"}
-                                    height={"90%"}
-                                    title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (past 30 days)</>}
-                                    linkTo={"/"} />
-                        </div>
+                    <div className="h-[50%] p-4">
+                        <DashboardGraph 
+                                data={data2} 
+                                xLabel={"day"} 
+                                yLabel={"monitors"}
+                                height={"90%"}
+                                title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (past 30 days)</>}
+                                linkTo={"/"} />
                     </div>
                 </div>
             </div>
