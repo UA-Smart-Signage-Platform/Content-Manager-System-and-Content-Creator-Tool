@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import deti.uas.uasmartsignage.Services.FileService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -51,6 +52,8 @@ public class DataLoader implements CommandLineRunner {
     private ScheduleService scheduleService;
     private FileService fileService;
 
+    private Logger logger = org.slf4j.LoggerFactory.getLogger(DataLoader.class);
+
     @Autowired
     public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
             ContentRepository contentRepository, WidgetRepository widgetRepository,
@@ -81,7 +84,7 @@ public class DataLoader implements CommandLineRunner {
                         .map(Path::toFile)
                         .forEach(File::delete);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("Error deleting files in uploads folder");
             }
         }
         
