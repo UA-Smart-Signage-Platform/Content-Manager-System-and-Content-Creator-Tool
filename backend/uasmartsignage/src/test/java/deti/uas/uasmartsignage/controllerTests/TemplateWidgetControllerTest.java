@@ -121,6 +121,13 @@ class TemplateWidgetControllerTest {
     }
 
     @Test
+    void testGetTemplateWidgetById404() throws Exception{
+        mvc.perform(get("/templateWidgets/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testSaveTemplateWidget() throws Exception {
         Template template1 = new Template();
         template1.setName("template1");
@@ -191,6 +198,42 @@ class TemplateWidgetControllerTest {
                 .andExpect(jsonPath("$.top", is(2)));
     }
 
+    @Test
+    void testUpdateWidget404() throws Exception{
+        Template template1 = new Template();
+        template1.setName("template1");
+
+        Template template2 = new Template();
+        template2.setName("template2");
+
+        Widget widget1 = new Widget();
+        widget1.setName("widget1");
+
+        TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setTemplate(template1);
+        templateWidget1.setWidget(widget1);
+        templateWidget1.setTop(1);
+        templateWidget1.setLeftPosition(1);
+        templateWidget1.setWidth(1);
+        templateWidget1.setHeight(1);
+
+
+        TemplateWidget templateWidget2 = new TemplateWidget();
+        templateWidget2.setTemplate(template2);
+        templateWidget2.setWidget(widget1);
+        templateWidget2.setTop(2);
+        templateWidget2.setLeftPosition(2);
+        templateWidget2.setWidth(2);
+        templateWidget2.setHeight(2);
+
+        when(service.updateTemplateWidget(Mockito.anyLong(), Mockito.any(TemplateWidget.class))).thenReturn(null);
+
+        mvc.perform(put("/templateWidgets/100")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(templateWidget1)))
+                .andExpect(status().isNotFound());
+
+    }
 
 
 }
