@@ -1,10 +1,16 @@
 package deti.uas.uasmartsignage.initializer;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-
+import java.util.stream.Stream;
 
 import deti.uas.uasmartsignage.Services.FileService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
@@ -15,6 +21,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import deti.uas.uasmartsignage.Models.Content;
+import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Schedule;
@@ -42,13 +49,14 @@ public class DataLoader implements CommandLineRunner {
     private TemplateWidgetRepository templateWidgetRepository;
     private TemplateGroupRepository templateGroupRepository;
     private ScheduleService scheduleService;
+    private FileService fileService;
 
     @Autowired
     public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
             ContentRepository contentRepository, WidgetRepository widgetRepository,
             MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,
             TemplateGroupRepository templateGroupRepository,
-            ScheduleService scheduleService) {
+            ScheduleService scheduleService, FileService fileService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
@@ -57,12 +65,26 @@ public class DataLoader implements CommandLineRunner {
         this.monitorRepository = monitorRepository;
         this.templateGroupRepository = templateGroupRepository;
         this.scheduleService = scheduleService;
+        this.fileService = fileService;
     }
 
     public void run(String... args) throws Exception {
         if (!groupRepository.findAll().isEmpty()) {
             return;
         }
+
+        // delete all files in the uploads folder if there are no files in the database
+        if(fileService.getFilesAtRoot().isEmpty()){
+            Path path = Paths.get("/app/uploads");
+            try (Stream<Path> paths = Files.walk(path)) {
+                paths.sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        
 
         this.loadTemplates();
         this.loadGroupsAndMonitors();
