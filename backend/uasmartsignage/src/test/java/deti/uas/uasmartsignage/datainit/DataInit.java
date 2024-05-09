@@ -129,5 +129,11 @@ public class DataInit implements CommandLineRunner{
         car3.setGroup(ISCA);
         monitorRepository.save(car3);
 
+        //missing create template
+
+        //Template template = new Template();
+        //template.setName("template");
+
+
     }
 }
