@@ -64,6 +64,7 @@ public class DataInit implements CommandLineRunner{
         MonitorsGroup ISCA = new MonitorsGroup();
         ISCA.setName("ISCA");
         ISCA.setDescription("Monitors from the entrance");
+        ISCA.setMadeForMonitor(true);
         ISCA.setMonitors(List.of());
 
 
@@ -122,7 +123,7 @@ public class DataInit implements CommandLineRunner{
         monitorRepository.save(car2);
 
         Monitor car3 = new Monitor();
-        car3.setUuid("0f6a21fa-fbe1-4d9a-9ba1-fce9f1922f6f");
+        car3.setUuid("0f6a21fa-fbe1-4d9a-9ba1-fce9f1922g5u");
         car3.setName("car3");
         car3.setPending(true);
         car3.setGroup(ISCA);

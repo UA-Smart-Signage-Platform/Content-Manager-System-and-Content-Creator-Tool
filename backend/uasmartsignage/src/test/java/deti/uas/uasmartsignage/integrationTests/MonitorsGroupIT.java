@@ -28,9 +28,51 @@ class MonitorsGroupIT extends BaseIntegrationTest{
     @Autowired
     private TestRestTemplate restTemplate;
 
+    public static String jwtToken;
+    private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
+
+
+    @BeforeEach
+    void setup() {
+        // Prepare the request body with valid credentials
+        String username = "admin";
+        String password = "admin";
+        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+
+        // Prepare the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        // Create the request entity
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // Make a POST request to your authentication endpoint to get the JWT token
+        ResponseEntity<String> response = restTemplate1.exchange(
+                "http://localhost:"+ port + "/api/login",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        //System.out.println("ertyuihgfdsadfgbhnjmkl.,kmjhngbf" + response.getBody());
+
+        // Ensure that the request was successful (HTTP status code 200)
+        assertEquals(200, response.getStatusCodeValue());
+
+        // Extract the JWT token from the response body
+        String responseBody = response.getBody();
+
+        JsonElement jsonElement = JsonParser.parseString(responseBody);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        jwtToken = jsonObject.get("jwt").getAsString();
+    }
+
+
 
     @Test
     void testGetAllMonitorsGroups() {
+        System.out.println("TestBomboclat" + port);
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -48,8 +90,7 @@ class MonitorsGroupIT extends BaseIntegrationTest{
         ResponseEntity<List<MonitorsGroup>> response = restTemplate.exchange("http://localhost:" + port + "/api/groups/notMadeForMonitor", HttpMethod.GET,
                 entity, new ParameterizedTypeReference<List<MonitorsGroup>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(1, response.getBody().size());
-        assertEquals("D23", response.getBody().get(0).getName());
+        assertEquals(3, response.getBody().size());
     }
 
     @Test

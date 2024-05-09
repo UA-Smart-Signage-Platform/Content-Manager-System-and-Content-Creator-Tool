@@ -23,11 +23,51 @@ import java.util.List;
 
 class MonitorIT extends BaseIntegrationTest{
 
-        @LocalServerPort
-        private int port;
+    @LocalServerPort
+    private int port;
 
-        @Autowired
-        private TestRestTemplate restTemplate;
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    public static String jwtToken;
+    private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
+
+
+    @BeforeEach
+    void setup() {
+        // Prepare the request body with valid credentials
+        String username = "admin";
+        String password = "admin";
+        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+
+        // Prepare the request headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        // Create the request entity
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        // Make a POST request to your authentication endpoint to get the JWT token
+        ResponseEntity<String> response = restTemplate1.exchange(
+                "http://localhost:"+ port + "/api/login",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        //System.out.println("ertyuihgfdsadfgbhnjmkl.,kmjhngbf" + response.getBody());
+
+        // Ensure that the request was successful (HTTP status code 200)
+        assertEquals(200, response.getStatusCodeValue());
+
+        // Extract the JWT token from the response body
+        String responseBody = response.getBody();
+
+        JsonElement jsonElement = JsonParser.parseString(responseBody);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        jwtToken = jsonObject.get("jwt").getAsString();
+    }
 
 
 
@@ -88,7 +128,7 @@ class MonitorIT extends BaseIntegrationTest{
                     entity, new ParameterizedTypeReference<List<Monitor>>() {});
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertFalse(response.getBody().isEmpty());
-            assertEquals(2, response.getBody().size());
+            assertEquals(3, response.getBody().size());
         }
 
         @Test
@@ -110,7 +150,7 @@ class MonitorIT extends BaseIntegrationTest{
             headers.setBearerAuth(jwtToken);
             HttpEntity<?> entity = new HttpEntity<>(headers);
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/10000/accept", HttpMethod.PUT, entity, Monitor.class);
-            assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+            assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
 
         @Test

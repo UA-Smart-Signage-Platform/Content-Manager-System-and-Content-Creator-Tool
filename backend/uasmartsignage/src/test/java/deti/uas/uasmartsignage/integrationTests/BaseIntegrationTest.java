@@ -32,6 +32,7 @@ public abstract class BaseIntegrationTest {
     public static PostgreSQLContainer container;
 
     static {
+        System.out.println("Hello caralho");
         container = (PostgreSQLContainer) new PostgreSQLContainer<>("postgres:latest").withReuse(true)
                 .withDatabaseName("uasmartsignageIT")
                 .withUsername("integrationTest")
@@ -48,46 +49,5 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.datasource.url", container::getJdbcUrl);
         registry.add("spring.datasource.username", container::getUsername);
         registry.add("spring.datasource.password", container::getPassword);
-    }
-
-    public static String jwtToken;
-    private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
-
-
-    @BeforeAll
-    static void setup() {
-        // Prepare the request body with valid credentials
-        String username = "admin";
-        String password = "admin";
-        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
-
-        int port1 = getContainerPort();
-        // Prepare the request headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/json");
-
-        // Create the request entity
-        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
-
-        // Make a POST request to your authentication endpoint to get the JWT token
-        ResponseEntity<String> response = restTemplate1.exchange(
-                "http://localhost:"+ port1 + "/api/login",
-                HttpMethod.POST,
-                requestEntity,
-                String.class
-        );
-
-        //System.out.println("ertyuihgfdsadfgbhnjmkl.,kmjhngbf" + response.getBody());
-
-        // Ensure that the request was successful (HTTP status code 200)
-        assertEquals(200, response.getStatusCodeValue());
-
-        // Extract the JWT token from the response body
-        String responseBody = response.getBody();
-
-        JsonElement jsonElement = JsonParser.parseString(responseBody);
-        JsonObject jsonObject = jsonElement.getAsJsonObject();
-
-        jwtToken = jsonObject.get("jwt").getAsString();
     }
 }
