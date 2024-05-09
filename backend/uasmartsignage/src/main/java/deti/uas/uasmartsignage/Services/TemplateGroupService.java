@@ -134,11 +134,11 @@ public class TemplateGroupService {
             StringBuilder dirFiles = new StringBuilder();
             for (CustomFile f : files) {
                 if (!"directory".equals(f.getType())) {
-                    downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                    dirFiles.append(f.getName()).append(",");
+                    downloadFiles.add("http://localhost/api/files/download/" + f.getId());
+                    dirFiles.append(f.getName()).append("\",\"");
                 }
             }
-            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 1));
+            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 3));
         }
     }
     
@@ -151,7 +151,7 @@ public class TemplateGroupService {
      * @param downloadFiles The List to store the download files
      */
     private void processFile(CustomFile file, Map.Entry<Integer, String> entry, Map<Integer, String> updatedContent, List<String> downloadFiles) {
-        downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
+        downloadFiles.add("http://localhost/api/files/download/" + entry.getValue());
         entry.setValue(file.getName());
         updatedContent.put(entry.getKey(), entry.getValue());
     }

@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) //NOSONAR
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/api/login").permitAll()
+                                .requestMatchers("/api/login","/api/files/download/**").permitAll()
                                 .requestMatchers("/api/login/change-password").hasRole(ADMIN_ROLE)
                                 .requestMatchers("/api/users/**").hasRole(ADMIN_ROLE)
                                 .anyRequest().authenticated())
