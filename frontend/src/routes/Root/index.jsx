@@ -4,15 +4,12 @@ import { useThemeStore } from "../../stores/useThemeStore";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import loginService from "../../services/loginService";
-
+import { createTheme } from "react-data-table-component";
 
 const CLIENT_ID = process.env.REACT_APP_WSO2_CLIENT_ID;
 const REDIRECT_URI = process.env.REACT_APP_WSO2_REDIRECT_URI;
 const IDP_URI = process.env.REACT_APP_IDP_URI;
 const BASE64 = process.env.REACT_APP_IDP_BASE64;
-
-import { createTheme } from "react-data-table-component";
-
 
 createTheme('solarized', {
     text: {
