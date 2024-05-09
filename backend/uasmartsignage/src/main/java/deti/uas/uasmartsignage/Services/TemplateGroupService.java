@@ -135,7 +135,7 @@ public class TemplateGroupService {
             for (CustomFile f : files) {
                 if (!"directory".equals(f.getType())) {
                     downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                    dirFiles.append(f.getName()).append(",");
+                    dirFiles.append(f.getName()).append("\",\"");
                 }
             }
             updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 1));

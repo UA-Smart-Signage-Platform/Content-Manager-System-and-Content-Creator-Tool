@@ -28,12 +28,14 @@ public class LogsService {
     private static final Logger logger = LoggerFactory.getLogger(LogsService.class);
 
     private final String org;
-    private final String bucket;
+    private final String backendBucket;
+    private final String monitorBucket;
 
     private static final String SEVERITY = "severity";
     private static final String OPERATION = "operation";
     private static final String DESCRIPTION = "description";
     private static final String OPERATION_SOURCE = "operationSource";
+    private static final String MONITOR = "SourceMonitor";
     private static final String USER = "user";
 
 
@@ -41,7 +43,8 @@ public class LogsService {
         String token = influxDBProperties.getToken();
         String url = influxDBProperties.getUrl();
         this.org = influxDBProperties.getOrg();
-        this.bucket = influxDBProperties.getBucket();
+        this.backendBucket = influxDBProperties.getBucket();
+        this.monitorBucket = influxDBProperties.getSBucket();
         this.influxDBClient = InfluxDBClientFactory.create(url, token.toCharArray());
     }
 
@@ -69,7 +72,7 @@ public class LogsService {
 
             // Write the point to InfluxDB
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
-            writeApi.writePoint(bucket, org, point);
+            writeApi.writePoint(backendBucket, org, point);
             return true;
         } catch (InfluxException e) {
             logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
@@ -82,7 +85,7 @@ public class LogsService {
     public List<BackendLog> getBackendLogs() {
         List<BackendLog> logs = new ArrayList<>();
         // Construct Flux query to retrieve logs
-        String fluxQuery = "from(bucket: \""+ bucket +"\")" +
+        String fluxQuery = "from(bucket: \""+ backendBucket +"\")" +
                 " |> range(start: -48h)" +  // Adjust time range as needed
                 " |> filter(fn: (r) => r._measurement == \"BackendLogs\")";  // Measurement name
 
@@ -133,8 +136,27 @@ public class LogsService {
         return logs;
     }
 
-    public boolean addMonitorLog() {
-        //not implemented yet
+    public boolean addMonitorLog(Severity severity, String Monitor, String operation, String description, Long time) {
+        String measurement = "MonitorLogs";
+        try {
+            // Prepare the InfluxDB point
+            Point point = Point.measurement(measurement)
+                    .addTag(MONITOR, Monitor)
+                    .addField(SEVERITY, severity.toString())
+                    .addField(OPERATION, operation)
+                    .addField(DESCRIPTION, description)
+                    .time(time, WritePrecision.MS); //ask mp to send it in long (miliseconds)
+                    //.time(System.currentTimeMillis(), WritePrecision.MS);
+
+            // Write the point to InfluxDB
+            WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
+            writeApi.writePoint(monitorBucket, org, point);
+            return true;
+        } catch (InfluxException e) {
+            logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred: {}", e.getMessage());
+        }
         return false;
     }
 }
