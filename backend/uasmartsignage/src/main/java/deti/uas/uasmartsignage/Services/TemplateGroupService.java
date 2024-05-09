@@ -138,7 +138,7 @@ public class TemplateGroupService {
                     dirFiles.append(f.getName()).append("\",\"");
                 }
             }
-            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 1));
+            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 3));
         }
     }
     
