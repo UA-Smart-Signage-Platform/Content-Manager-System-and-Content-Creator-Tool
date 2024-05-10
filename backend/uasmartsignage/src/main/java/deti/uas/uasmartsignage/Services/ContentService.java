@@ -42,10 +42,4 @@ public class ContentService {
     public Iterable<Content> getAllContents() {
         return contentRepository.findAll();
     }
-
-    
-
-    
-
-    
 }
