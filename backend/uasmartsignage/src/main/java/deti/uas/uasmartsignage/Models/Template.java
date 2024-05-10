@@ -27,7 +27,7 @@ public class Template {
     private String name;
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("template")
+    @JsonIgnoreProperties({"template","widget"})
     private List<TemplateWidget> templateWidgets;
 
 }

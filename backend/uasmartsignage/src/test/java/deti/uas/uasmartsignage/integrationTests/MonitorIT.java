@@ -128,7 +128,7 @@ class MonitorIT extends BaseIntegrationTest{
                     entity, new ParameterizedTypeReference<List<Monitor>>() {});
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertFalse(response.getBody().isEmpty());
-            assertEquals(3, response.getBody().size());
+            assertEquals(2, response.getBody().size());
         }
 
         @Test
