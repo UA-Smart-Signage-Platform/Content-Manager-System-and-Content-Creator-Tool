@@ -65,8 +65,10 @@ public class FileService {
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
-        else
+        else {
             logger.info(ADDLOGSUCCESS, description);
+        }
+            
         return files;
     }
 
