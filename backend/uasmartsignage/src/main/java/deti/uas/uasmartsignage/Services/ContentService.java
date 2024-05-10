@@ -40,7 +40,7 @@ public class ContentService {
      */
     public Content getContentById(Long id) {
         String operation = "getContentById";
-        String description = "Getting content by id" + id;
+        String description = "Getting content by id " + id;
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
@@ -78,7 +78,7 @@ public class ContentService {
     public void deleteContent(Long id) {
 
         String operation = "deleteContent";
-        String description = "Deleting content by id" + id;
+        String description = "Deleting content by id " + id;
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
@@ -106,7 +106,7 @@ public class ContentService {
         contentById.setOptions(content.getOptions());
 
         String operation = "updateContent";
-        String description = "Updating content by id" + id;
+        String description = "Updating content by id " + id;
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);

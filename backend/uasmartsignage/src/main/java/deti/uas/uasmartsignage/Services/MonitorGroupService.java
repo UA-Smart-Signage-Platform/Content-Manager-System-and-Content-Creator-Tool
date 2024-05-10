@@ -43,7 +43,7 @@ public class MonitorGroupService {
      */
     public MonitorsGroup getGroupById(Long id) {
         String operation = "getGroupById";
-        String description = "Getting group by id" + id;
+        String description = "Getting group by id " + id;
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
@@ -63,7 +63,7 @@ public class MonitorGroupService {
      */
     public MonitorsGroup saveGroup(MonitorsGroup monitorsGroup) {
         String operation = "saveGroup";
-        String description = "Saving group" + monitorsGroup.getName();
+        String description = "Saving group " + monitorsGroup.getName();
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
@@ -83,7 +83,7 @@ public class MonitorGroupService {
     @Transactional
     public void deleteGroup(Long id) {
         String operation = "deleteGroup";
-        String description = "Deleting group by id" + id;
+        String description = "Deleting group by id " + id;
 
         Optional<MonitorsGroup> group = monitorGroupRepository.findById(id);
         if (group.isPresent()) {
@@ -139,7 +139,7 @@ public class MonitorGroupService {
      */
     public MonitorsGroup getGroupByName(String name) {
         String operation = "getGroupByName";
-        String description = "Getting group by name" + name;
+        String description = "Getting group by name " + name;
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
@@ -161,7 +161,7 @@ public class MonitorGroupService {
      */
     public MonitorsGroup updateGroup(Long id, MonitorsGroup monitorsGroup) {
         String operation = "updateGroup";
-        String description = "Updating group by id" + id;
+        String description = "Updating group by id " + id;
 
         MonitorsGroup monitorsGroupById = monitorGroupRepository.getReferenceById(id);
         monitorsGroupById.setName(monitorsGroup.getName());
