@@ -1,10 +1,12 @@
 package deti.uas.uasmartsignage.Services;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Schedule;
+import deti.uas.uasmartsignage.Models.Severity;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 
@@ -16,9 +18,20 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    private final Logger logger = org.slf4j.LoggerFactory.getLogger(WidgetService.class);
+
+    private final String source = this.getClass().getSimpleName();
+
+    private final LogsService logsService;
+
+    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
+    private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
+
+
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, LogsService logsService) {
         this.scheduleRepository = scheduleRepository;
+        this.logsService = logsService;
     }
 
 
@@ -28,7 +41,14 @@ public class ScheduleService {
      * @return Schedule with the given id.
      */
     public Schedule getScheduleById(Long id) {
-            return scheduleRepository.findById(id).orElse(null);
+        String operation = "getScheduleById";
+        String description = "Getting schedule by id " + id;
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        } else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+        return scheduleRepository.findById(id).orElse(null);
     }
 
     /**
@@ -37,6 +57,13 @@ public class ScheduleService {
      * @return The saved Schedule.
      */
     public Schedule saveSchedule(Schedule schedule) {
+        String operation = "saveSchedule";
+        String description = "Saving schedule " + schedule.getId();
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        } else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
         return scheduleRepository.save(schedule);
     }
 
@@ -45,6 +72,13 @@ public class ScheduleService {
      * @param id The id of the Schedule to delete.
      */
     public void deleteSchedule(Long id) {
+        String operation = "deleteSchedule";
+        String description = "Deleting schedule by id " + id;
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        } else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
         scheduleRepository.deleteById(id);
     }
 
@@ -54,6 +88,13 @@ public class ScheduleService {
      * @return The updated Schedule.
      */
     public Schedule updateSchedule(Schedule schedule) {
+        String operation = "updateSchedule";
+        String description = "Updating schedule " + schedule.getId();
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        } else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
         return scheduleRepository.save(schedule);
     }
 
@@ -62,6 +103,13 @@ public class ScheduleService {
      * @return A list of all Schedules.
      */
     public List<Schedule> getAllSchedules() {
+        String operation = "getAllSchedules";
+        String description = "Getting all schedules";
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        } else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
         return scheduleRepository.findAll();
     }
 
@@ -72,6 +120,8 @@ public class ScheduleService {
      * @return A list of Schedules by the id of a Group.
      */
     public List<Schedule> getSchedulesByGroupId(Long id) {
+        String operation = "getSchedulesByGroupId";
+        String description = "Getting schedules by group id " + id;
         List<Schedule> schedules = scheduleRepository.findAll();
         List<Schedule> groupSchedules = new ArrayList<>();
         for (Schedule schedule : schedules) {
@@ -83,6 +133,11 @@ public class ScheduleService {
                     break;
                 }
             }
+        }
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        } else {
+            logger.info(ADDLOGSUCCESS, description);
         }
         return groupSchedules;
     }
