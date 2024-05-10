@@ -2,6 +2,7 @@ package deti.uas.uasmartsignage.Services;
 
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Severity;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,11 +20,19 @@ public class MonitorGroupService {
 
     private final MonitorRepository monitorRepository;
 
+    private final LogsService logsService;
+
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(MonitorGroupService.class);
 
-    public MonitorGroupService(MonitorGroupRepository monitorGroupRepository, MonitorRepository monitorRepository){
+    private final String source = this.getClass().getSimpleName();
+
+    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
+    private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
+
+    public MonitorGroupService(MonitorGroupRepository monitorGroupRepository, MonitorRepository monitorRepository, LogsService logsService){
         this.monitorGroupRepository = monitorGroupRepository;
         this.monitorRepository = monitorRepository;
+        this.logsService = logsService;
     }
 
     /**
@@ -34,6 +42,16 @@ public class MonitorGroupService {
      * @return The MonitorsGroup with the specified ID.
      */
     public MonitorsGroup getGroupById(Long id) {
+        String operation = "getGroupById";
+        String description = "Getting group by id" + id;
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+
         return monitorGroupRepository.findById(id).orElse(null);
     }
 
@@ -44,6 +62,16 @@ public class MonitorGroupService {
      * @return The saved MonitorsGroup.
      */
     public MonitorsGroup saveGroup(MonitorsGroup monitorsGroup) {
+        String operation = "saveGroup";
+        String description = "Saving group" + monitorsGroup.getName();
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+
         return monitorGroupRepository.save(monitorsGroup);
     }
 
@@ -54,6 +82,9 @@ public class MonitorGroupService {
      */
     @Transactional
     public void deleteGroup(Long id) {
+        String operation = "deleteGroup";
+        String description = "Deleting group by id" + id;
+
         Optional<MonitorsGroup> group = monitorGroupRepository.findById(id);
         if (group.isPresent()) {
             if (group.get().getMonitors().isEmpty()) {
@@ -70,6 +101,13 @@ public class MonitorGroupService {
                 monitorRepository.save(monitor);
             }
             monitorGroupRepository.deleteById(id);
+
+            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                logger.error(ADDLOGERROR);
+            }
+            else {
+                logger.info(ADDLOGSUCCESS, description);
+            }
         }
         else {
             logger.warn("Group with ID {} not found", id);
@@ -82,6 +120,14 @@ public class MonitorGroupService {
      * @return A list of all MonitorsGroups stored in the database.
      */
     public List<MonitorsGroup> getAllGroups() {
+        String operation = "getAllGroups";
+        String description = "Getting all groups";
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
         return monitorGroupRepository.findAllByMonitorsPendingFalse();
     }
 
@@ -92,6 +138,16 @@ public class MonitorGroupService {
      * @return The MonitorsGroup with the specified name.
      */
     public MonitorsGroup getGroupByName(String name) {
+        String operation = "getGroupByName";
+        String description = "Getting group by name" + name;
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+
         return monitorGroupRepository.findByName(name);
     }    
 
@@ -104,9 +160,20 @@ public class MonitorGroupService {
      * @return The updated MonitorsGroup.
      */
     public MonitorsGroup updateGroup(Long id, MonitorsGroup monitorsGroup) {
+        String operation = "updateGroup";
+        String description = "Updating group by id" + id;
+
         MonitorsGroup monitorsGroupById = monitorGroupRepository.getReferenceById(id);
         monitorsGroupById.setName(monitorsGroup.getName());
         monitorsGroupById.setDescription(monitorsGroup.getDescription());
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+
         return monitorGroupRepository.save(monitorsGroupById);
     }
 
@@ -116,6 +183,16 @@ public class MonitorGroupService {
      * @return A list of all MonitorsGroups that are not made for a unique monitor.
      */
     public List<MonitorsGroup> getAllGroupsNotMadeForMonitor() {
+        String operation = "getAllGroupsNotMadeForMonitor";
+        String description = "Getting all groups not made for monitor";
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+
         return monitorGroupRepository.findAllByMadeForMonitorFalse();
     }
 }
