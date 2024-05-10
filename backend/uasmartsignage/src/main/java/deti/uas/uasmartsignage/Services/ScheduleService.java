@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 public class ScheduleService {
 
-
     private final ScheduleRepository scheduleRepository;
 
     @Autowired
