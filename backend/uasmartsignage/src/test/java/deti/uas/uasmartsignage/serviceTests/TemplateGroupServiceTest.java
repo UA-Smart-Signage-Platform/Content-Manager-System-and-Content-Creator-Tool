@@ -7,22 +7,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import deti.uas.uasmartsignage.Configuration.MqttConfig;
 import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Mqtt.MqttSubscriberService;
 import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Services.TemplateService;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import static org.mockito.Mockito.*;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Services.TemplateGroupService;
 
 @ExtendWith(MockitoExtension.class)
 class TemplateGroupServiceTest {
+
 
     @Mock
     private TemplateGroupRepository repository;
@@ -36,9 +49,20 @@ class TemplateGroupServiceTest {
     @Mock
     private ContentService contentService;
 
+    @Mock
+    private IMqttClient mqttClient;
+
+    @Mock
+    private MqttConfig mqttConfig;
+
     @InjectMocks
     private TemplateGroupService service;
 
+
+    @BeforeEach
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
 
     @Test
@@ -74,9 +98,9 @@ class TemplateGroupServiceTest {
         assertThat(template.getGroup()).isEqualTo(group2);
     }
 
+
     @Test
-    @Disabled // problem with mqtt
-    void testSaveTemplateGroup(){
+    void testSaveTemplateGroup() throws MqttException, JsonProcessingException {
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -111,12 +135,17 @@ class TemplateGroupServiceTest {
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
 
+        //when(mqttConfig.getInstance()).thenReturn(mqttConfig);
+        //doNothing().when(mqttConfig).publish(anyString(), any(MqttMessage.class));
+
+
         when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
         when(groupService.getGroupById(templateGroup.getGroup().getId())).thenReturn(group);
         when(repository.save(templateGroup)).thenReturn(templateGroup);
-        
+
         TemplateGroup saved_template = service.saveGroup(templateGroup);
 
+        verify(mqttClient, times(1)).publish(anyString(), any(MqttMessage.class));
         assertThat(saved_template).isEqualTo(templateGroup);
     }
 
