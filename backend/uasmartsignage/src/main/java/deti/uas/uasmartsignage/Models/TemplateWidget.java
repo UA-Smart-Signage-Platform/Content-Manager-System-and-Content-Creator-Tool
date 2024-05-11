@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Getter
@@ -49,5 +50,10 @@ public class TemplateWidget {
     @JsonIgnoreProperties("templateWidgets")
     private Widget widget;
     
-    
+    public static class ZIndexComparator implements Comparator<TemplateWidget> {
+        @Override
+        public int compare(TemplateWidget tw1, TemplateWidget tw2) {
+            return Integer.compare(tw1.getZIndex(), tw2.getZIndex());
+        }
+    }
 }

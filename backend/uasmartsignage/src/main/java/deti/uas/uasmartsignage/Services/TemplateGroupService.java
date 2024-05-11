@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -168,6 +169,7 @@ public class TemplateGroupService {
     public String generateHTML(Template template, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
 
         List<TemplateWidget> widgets = template.getTemplateWidgets();
+        widgets.sort(new TemplateWidget.ZIndexComparator());
         String filePath = "static/base.html";
 
         try {
@@ -218,12 +220,14 @@ public class TemplateGroupService {
         try {
             File widgetFile = ResourceUtils.getFile("classpath:" + widget.getWidget().getPath());
             String widgetHTML = new String(Files.readAllBytes(Paths.get(widgetFile.toURI())));
+            String widgetID = UUID.randomUUID().toString().replace("-", "");
 
             widgetHTML = widgetHTML
                     .replace("[[top]]", String.valueOf(monitorHeight * widget.getTop() / 100))
                     .replace("[[left]]", String.valueOf(monitorWidth * widget.getLeftPosition() / 100))
                     .replace("[[width]]", String.valueOf(monitorWidth * widget.getWidth() / 100))
-                    .replace("[[height]]", String.valueOf(monitorHeight * widget.getHeight() / 100));
+                    .replace("[[height]]", String.valueOf(monitorHeight * widget.getHeight() / 100))
+                    .replace("[[widgetID]]", widgetID);
 
             // go through each of the contents
             // and fill in the variables
