@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PageTitle, ScheduleModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import { AnimatePresence, motion } from "framer-motion"
+import { ALL_WEEKDAYS } from 'rrule'
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
@@ -50,9 +51,9 @@ function Schedule(){
                                     {rule.template.name} running {/* */}
                                     weekly from {/* */}
                                     {rule.schedule.startTime[0]}:{rule.schedule.startTime[1]} - {rule.schedule.endTime[0]}:{rule.schedule.endTime[1]} on {/* */}
-                                    {rule.schedule.weekdays.map((day) => {
-                                        <>{day}</>
-                                    })}
+                                    {rule.schedule.weekdays.map((day) => (
+                                        <>{ALL_WEEKDAYS[day]}{/* */} </>
+                                    ))}
                                 </span> 
                             </div>
                         ))}
@@ -62,7 +63,6 @@ function Schedule(){
         }
     }
 
-    console.log(rules);
 
     return(
         <div className="h-full flex flex-col">
