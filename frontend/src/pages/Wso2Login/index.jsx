@@ -25,7 +25,6 @@ const setWithExpiry = (key, value, ttl) => {
 const Wso2Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [showWarning, setShowWarning] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,15 +43,12 @@ const Wso2Login = () => {
       setWithExpiry('access_token', jwt, 3600 * 1000 * 10);
       localStorage.setItem('userInfo', JSON.stringify(user_data));
       console.log('userInfo', user_data);
-      console.log('user_role', user_data.role);
         
       if (password === DEFAULT_PASSWORD) {
         // Redirect to change password page if it's the first login
         navigate("/change-password");
-        setShowWarning(true);
         return
       } else {
-        console.log('userRole', localStorage.getItem('userInfo').role);
         navigate("/dashboard");
       }
      
@@ -63,11 +59,6 @@ const Wso2Login = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100vh', padding: '20px' }}>
-      {showWarning && (
-        <div style={{ width: '100%', marginBottom: '20px', padding: '10px', background: 'yellow', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)', textAlign: 'center' }}>
-          Please change your default password.
-        </div>
-      )}
       <div style={{ width: '45%', marginBottom: '20px' }}>
         <div style={{ padding: '20px', borderRadius: '8px', boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)' }}>
           <div style={{ marginBottom: '15px' }}>

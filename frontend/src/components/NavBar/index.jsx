@@ -20,14 +20,10 @@ function NavBar() {
 
 
     const handleLogout = () => {
-        console.log("user role ", userRole)
-        console.log("user info ", userInfo)
         localStorage.removeItem('access_token');
         localStorage.removeItem('id_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('userInfo');
-        
-
         navigate("/Login");
     };
 

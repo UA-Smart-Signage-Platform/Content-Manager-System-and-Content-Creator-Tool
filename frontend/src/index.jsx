@@ -2,43 +2,77 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
 import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin, Templates, ChangePassword } from './pages';
+import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ element, requiredRoles }) => {
   const userRoles = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).role : null;
   const hasRequiredRole = userRoles && requiredRoles.some(role => userRoles.includes(role));
 
-  return hasRequiredRole ? element : <Navigate to="/login" />;
+  return hasRequiredRole ? element : <Navigate to="/dashboard" />;
 };
 
-const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Root />}>
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="media/*" element={<Media />} />
-          <Route path="schedule" element={<Schedule />} />
-          <Route path="monitors" element={<Monitors />} />
-          <Route path="monitor/:id" element={<Monitor />} />
-          <Route path="contentcreator" element={<ProtectedRoute element={<Templates />} requiredRoles={['ROLE_ADMIN']} />} />
-          <Route path="login" element={<Wso2Login />} />
-          <Route path="admin" element={<ProtectedRoute element={<Admin />} requiredRoles={['ROLE_ADMIN']} />} />
-          <Route path="change-password" element={<ProtectedRoute element={<ChangePassword />} requiredRoles={['ROLE_ADMIN']} />} />
-          <Route path="" element={<Wso2Login />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+ProtectedRoute.propTypes = {
+  element: PropTypes.element.isRequired,
+  requiredRoles: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 
-ReactDOM.render(
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root/>,
+    children:[
+      {
+        path: "dashboard",
+        element:<Dashboard/>
+      },
+      {
+        path: "media/*",
+        element:<Media/>,
+      },
+      {
+        path: "schedule",
+        element:<Schedule/>,
+      },
+      {
+        path: "monitors",
+        element:<Monitors/>,
+      },
+      {
+        path: "monitor/:id",
+        element:<Monitor/>,
+      },
+      {
+        path: "contentcreator",
+        element: <ProtectedRoute element={<Templates/>} requiredRoles={["ROLE_ADMIN"]} />
+      },
+      {
+        path: "login",
+        element:<Wso2Login/>,
+      },
+      {
+        path: "",
+        element:<Wso2Login/>
+      },
+      {
+        path: "admin",
+        element: <ProtectedRoute element={<Admin/>} requiredRoles={["ROLE_ADMIN"]} />
+      },
+      {
+        path: "change-password",
+        element: <ProtectedRoute element={<ChangePassword/>} requiredRoles={["ROLE_ADMIN"]} />
+      },
+    ]
+  },
+])
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+    <RouterProvider router={router}/>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
