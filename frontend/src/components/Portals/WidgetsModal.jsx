@@ -22,7 +22,20 @@ const customStyles = {
     }
 };
 
-function WidgetsModal( { Widgets, WidgetsList, setWidgetList,setShowPortal } ) {
+function WidgetsModal( { Widgets, WidgetsList, setWidgetList,setShowPortal,setAbleSave } ) {
+
+    const addWidget = (widget)=>{
+        setWidgetList(WidgetsList.concat([{
+            widget:widget,
+            height:10,
+            width:10,
+            top:0,
+            leftPosition:0,
+            zindex:WidgetsList.length +1,
+            id:"new" + (WidgetsList.length +1),
+        }]))
+        setShowPortal(false)
+    }
 
     
     return (
@@ -44,6 +57,7 @@ function WidgetsModal( { Widgets, WidgetsList, setWidgetList,setShowPortal } ) {
                                 columns={columns}
                                 customStyles={customStyles}
                                 pagination
+                                onRowClicked={(row)=>addWidget(row)}
                                 theme="solarized"
                             />
                         </div>
@@ -60,6 +74,7 @@ WidgetsModal.propTypes = {
     Widgets: PropTypes.array.isRequired,
     setWidgetList: PropTypes.func.isRequired,
     setShowPortal: PropTypes.func.isRequired,
+    setAbleSave:PropTypes.func.isRequired,
 }
 
 export default WidgetsModal;

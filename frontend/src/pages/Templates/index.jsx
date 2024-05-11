@@ -90,7 +90,8 @@ function Templates(){
             <div className="flex h-[92%]">
                 <div className="h-full w-[30%] p-4 flex flex-col">
                     <div>
-                        <button className=" bg-secondaryMedium p-1 rounded-md">
+                        <button onClick={()=>navigate("/contentcreator/0")}
+                             className=" bg-secondaryMedium p-1 rounded-md">
                             + Create Template
                         </button>
                     </div>
@@ -114,18 +115,21 @@ function Templates(){
                                     height: `${templateWidget.height}%`,
                                     top: `${templateWidget.top}%`,
                                     left: `${templateWidget.leftPosition}%`,
+                                    zIndex: templateWidget.zindex
                                 }}
                                 animate={{
                                     width: `${templateWidget.width}%`,
                                     height: `${templateWidget.height}%`,
                                     top: `${templateWidget.top}%`,
                                     left: `${templateWidget.leftPosition}%`,
+                                    zIndex: templateWidget.zindex
                                 }}
                                 exit={{
                                     width: 0,
                                     height: 0,
                                     top: 0,
                                     left: 0,
+                                    zIndex: templateWidget.zindex
                                 }}
                                 transition={{duration:1}}
                                 > 

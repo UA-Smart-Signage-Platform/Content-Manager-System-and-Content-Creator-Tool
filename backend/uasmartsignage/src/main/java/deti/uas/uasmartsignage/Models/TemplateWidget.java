@@ -24,19 +24,19 @@ public class TemplateWidget {
     private Long id;
 
     @Column(nullable = false)
-    private int top;
+    private float top;
 
     //left conflict with sql
     @Column(nullable = false)
-    private int leftPosition;
+    private float leftPosition;
 
     @Column(nullable = false)
-    private int width;
+    private float width;
 
     @Column(nullable = false)
-    private int height;
+    private float height;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name="zIndex")
     private int zIndex;
 
     @ManyToOne

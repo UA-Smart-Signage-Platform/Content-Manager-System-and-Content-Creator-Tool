@@ -6,6 +6,12 @@ const templateservice = {
     },
     async saveTemplate(template){
         return await client.post("/templates",template)
+    },
+    async getTemplate(id){
+        return await client.get(`/templates/${id}`);
+    },
+    async deleteTemplateWidget(id){
+        return await client.delete(`/templateWidgets/${id}`);
     }
 }
 

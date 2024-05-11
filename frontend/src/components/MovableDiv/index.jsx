@@ -3,10 +3,10 @@ import { motion,useMotionValue } from "framer-motion";
 
 function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} ) {
     const divRef = useRef(null);
-    const width = useMotionValue((widgetList[widget].width)+"%");
-    const height = useMotionValue((widgetList[widget].height)+"%");
-    const top = useMotionValue((widgetList[widget].top)+"%");
-    const left = useMotionValue((widgetList[widget].leftPosition)+"%");
+    const width = useMotionValue((widget.width)+"%");
+    const height = useMotionValue((widget.height)+"%");
+    const top = useMotionValue((widget.top)+"%");
+    const left = useMotionValue((widget.leftPosition)+"%");
     const [initial,setInitial] = useState({x:0,y:0});
     const [initialWidth,setInitialWidth] = useState(null);
     const [initialHeight,setInitialHeight] = useState(null);
@@ -25,7 +25,10 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
             let newLeft = initialWidth + (((size.x - initial.x) * 100)/parentRef.current.offsetWidth)
             let newTop = initialHeight + (((size.y - initial.y) * 100)/parentRef.current.offsetHeight)
             
-            widgetList.map((element,index)=>{
+            widgetList.map((element)=>{
+                if (element.id == widget.id){
+                    return
+                }
                 if (Math.abs(element.leftPosition - newLeft) < 1){
                     newLeft = element.leftPosition;
                 }
@@ -37,6 +40,12 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
                 }
                 if (Math.abs(element.top - (newTop + percentagetoNumber(height.get()))) < 1){
                     newTop = element.top - percentagetoNumber(height.get());
+                }
+                if (Math.abs(element.top + element.height - (newTop)) < 1){
+                    newTop = element.top + element.height;
+                }
+                if (Math.abs(element.leftPosition + element.width - (newLeft)) < 1){
+                    newLeft = element.leftPosition + element.width;
                 }
 
             })
@@ -69,8 +78,8 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
             if (newHeigth > 100){
                 newHeigth = 100
             }
-            width.set(numbertoPercentage(newWidth))
-            height.set(numbertoPercentage(newHeigth))
+            width.set(numbertoPercentage(truncate4numbers(newWidth)))
+            height.set(numbertoPercentage(truncate4numbers(newHeigth)))
         }
     }
 
@@ -83,7 +92,7 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
     const resetActions = () =>{
         setInitialHeight(null);
         setInitialWidth(null);
-        let widgetobj = widgetList[widget]
+        let widgetobj = widget
         widgetobj.leftPosition = truncate4numbers(parseFloat(percentagetoNumber(left.get())));
         widgetobj.top = truncate4numbers(parseFloat(percentagetoNumber(top.get())));
         widgetobj.height = truncate4numbers(parseFloat(percentagetoNumber(height.get())));
@@ -100,11 +109,11 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
     }
 
     return(
-        <motion.div style={{width,height,top,left,zIndex:widgetList[widget].zindex}}
+        <motion.div key={widget.id} id={widget.id} style={{width,height,top,left,zIndex:widget.zindex}}
                     className={` ${color} h-14 flex flex-col items-center justify-center absolute border-2`}
         >
             <div className="absolute top-[50%] translate-y-[-50%]">
-                {widgetList[widget].widget.name} {widgetList[widget].id}
+                {widget.widget.name} {widget.id}
             </div>
             <div className="h-full w-full relative">
                 <motion.div ref={divRef} className="h-full w-full"
