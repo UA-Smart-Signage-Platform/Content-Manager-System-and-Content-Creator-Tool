@@ -205,6 +205,7 @@ public class TemplateGroupService {
             List<Monitor> monitors = monitorGroup.getMonitors();
             for (Monitor monitor : monitors) {
                 List <Map<String, Object>> rulesToSend = new ArrayList<>();
+                List <String> filesToSend = new ArrayList<>();
                 for (Map<String, Object> rule : rules) {
                     Map<String, Object> ruleToSend = new HashMap<>();
                     Template template = (Template) rule.get("template");
@@ -212,10 +213,15 @@ public class TemplateGroupService {
                     String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
                     ruleToSend.put("html", html);
                     ruleToSend.put("schedule", rule.get("schedule"));
-                    ruleToSend.put("files", rule.get("downloadFiles"));
                     rulesToSend.add(ruleToSend);
+                    for (String file : (List<String>) rule.get("downloadFiles")) {
+                        if (!filesToSend.contains(file)) {
+                            filesToSend.add(file);
+                        }
+                    }
                 }
                 rulesMessage.setRules(rulesToSend);
+                rulesMessage.setFiles(filesToSend);
                 String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
                 MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
             }

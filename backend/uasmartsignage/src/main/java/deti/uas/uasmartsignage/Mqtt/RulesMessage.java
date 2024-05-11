@@ -16,5 +16,6 @@ public class RulesMessage {
 
     private String method;
     private List<Map<String,Object>> rules;
+    private List<String> files;
     
 }
