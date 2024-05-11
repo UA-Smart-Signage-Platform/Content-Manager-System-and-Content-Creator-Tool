@@ -81,9 +81,10 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     priority: totalRules}
         }
 
-        activeTemplateService.addRule(data);
-        setUpdater(!updater);
-        setShowPortal(false);
+        activeTemplateService.addRule(data).then(()=>{
+            setUpdater(!updater);
+            setShowPortal(false);
+        });
     };
 
 
