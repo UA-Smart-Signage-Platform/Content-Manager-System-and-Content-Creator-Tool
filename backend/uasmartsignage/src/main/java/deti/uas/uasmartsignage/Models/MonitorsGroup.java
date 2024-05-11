@@ -31,7 +31,7 @@ public class MonitorsGroup {
     private List<Monitor> monitors;
 
     @OneToMany(mappedBy = "group")
-    @JsonIgnoreProperties("group")
+    @JsonIgnoreProperties(value={"group"},allowSetters = true)
     private List<TemplateGroup> templateGroups;
 
     @Override

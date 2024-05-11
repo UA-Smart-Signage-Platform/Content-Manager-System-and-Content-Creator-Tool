@@ -48,7 +48,7 @@ public class Schedule {
     private LocalDate createdOn;
 
     @OneToMany(mappedBy = "schedule")
-    @JsonIgnoreProperties("schedule")
+    @JsonIgnoreProperties(value={"schedule"},allowSetters = true)
     private List<TemplateGroup> templateGroups;
 
     @ElementCollection

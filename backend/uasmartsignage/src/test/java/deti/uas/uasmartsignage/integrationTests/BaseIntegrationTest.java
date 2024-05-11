@@ -31,17 +31,22 @@ public abstract class BaseIntegrationTest {
 
     public static PostgreSQLContainer container;
 
+    public static PostgreSQLMosquittoContainer container1 = new PostgreSQLMosquittoContainer();
+
+    public static int getPostgresPort() {
+        return container1.getPostgresPort();
+    }
+
+    public static int getMosquittoPort() {
+        return container1.getMosquittoPort();
+    }
+
     static {
-        System.out.println("Hello caralho");
         container = (PostgreSQLContainer) new PostgreSQLContainer<>("postgres:latest").withReuse(true)
                 .withDatabaseName("uasmartsignageIT")
                 .withUsername("integrationTest")
                 .withPassword("test");
         container.start();
-    }
-
-    public static int getContainerPort() {
-        return container.getFirstMappedPort();
     }
 
     @DynamicPropertySource

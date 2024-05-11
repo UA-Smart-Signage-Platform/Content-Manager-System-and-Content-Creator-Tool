@@ -3,14 +3,21 @@ package deti.uas.uasmartsignage.integrationTests;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import deti.uas.uasmartsignage.Models.Schedule;
+import deti.uas.uasmartsignage.Models.TemplateGroup;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -52,4 +59,85 @@ public class ScheduleIT extends BaseIntegrationTest{
 
         jwtToken = jsonObject.get("jwt").getAsString();
     }
+
+    @Test
+    @Order(1)
+    void testGetAllSchedules() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<List<Schedule>> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Schedule>>() {});
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+    }
+
+    @Test
+    @Order(2)
+    void testGetScheduleById() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/1", HttpMethod.GET, requestEntity, Schedule.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(LocalDate.parse("2024-04-21"), response.getBody().getStartDate());
+        assertEquals(LocalTime.parse("00:00"), response.getBody().getStartTime());
+    }
+
+    @Test
+    @Order(3)
+    void testSaveSchedule(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<TemplateGroup> response = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups/1", HttpMethod.GET, requestEntity, TemplateGroup.class);
+        TemplateGroup templateGroup = response.getBody();
+
+        Schedule schedule = new Schedule();
+        schedule.setTemplateGroups(List.of(templateGroup));
+        List<Integer> days = new ArrayList<>();
+        days.add(1);
+        days.add(2);
+        days.add(3);
+        days.add(4);
+        days.add(5);
+        schedule.setWeekdays(days);
+        schedule.setEndDate(LocalDate.parse("2024-05-11"));
+        schedule.setStartDate(LocalDate.parse("2024-05-11"));
+        schedule.setStartTime(LocalTime.parse("08:00"));
+        schedule.setEndTime(LocalTime.parse("22:30"));
+
+        HttpEntity<Schedule> requestEntity1 = new HttpEntity<>(schedule, headers);
+
+        ResponseEntity<Schedule> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/schedules", HttpMethod.POST, requestEntity1, Schedule.class);
+        assertEquals(HttpStatus.CREATED, response1.getStatusCode());
+        assertEquals(LocalDate.parse("2024-05-11"), response1.getBody().getStartDate());
+        assertEquals(LocalTime.parse("08:00"), response1.getBody().getStartTime());
+    }
+
+    @Test
+    @Order(4)//missing new endpoint
+    void tesUpdateSchedule(){
+
+    }
+
+    @Test
+    @Order(5)
+    void testDeleteSchedule(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/3", HttpMethod.DELETE, requestEntity, Schedule.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+    }
+
+
 }

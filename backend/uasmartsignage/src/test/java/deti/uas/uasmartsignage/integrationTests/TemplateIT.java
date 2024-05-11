@@ -68,7 +68,7 @@ public class TemplateIT  extends BaseIntegrationTest{
 
         ResponseEntity<List<Template>> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Template>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size()); //could change if any template is added to DataInit
+        assertEquals(3, response.getBody().size()); //could change if any template is added to DataInit
     }
 
     @Test
@@ -79,9 +79,10 @@ public class TemplateIT  extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates/2", HttpMethod.GET, requestEntity, Template.class);
+        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates/1", HttpMethod.GET, requestEntity, Template.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("template1", response.getBody().getName());
+
     }
 
     @Test
@@ -103,9 +104,26 @@ public class TemplateIT  extends BaseIntegrationTest{
 
     @Test
     @Order(4)
-    @Disabled
     void testUpdateTemplate(){
-        //missing implementation
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Template> requestEntity = new HttpEntity<>( headers);
+
+        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates/3", HttpMethod.GET, requestEntity, Template.class);
+        Template template = response.getBody();
+
+        template.setName("updatedTemplate");
+
+        HttpEntity<Template> updateentity = new HttpEntity<>(template, headers);
+
+        ResponseEntity<Template> response2 = restTemplate.exchange("http://localhost:"+ port + "/api/templates/3", HttpMethod.PUT, updateentity, Template.class);
+        assertEquals(HttpStatus.OK, response2.getStatusCode());
+        assertEquals("updatedTemplate", response2.getBody().getName());
+
+
+
     }
 
     @Test

@@ -92,14 +92,13 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
 
     @Test
     @Order(3)
-    @Disabled //problem with gettting template
     void testSaveTemplateWidget() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        /*ResponseEntity<Template> response = restTemplate.exchange("http://localhost:" + port + "/api/templates/1", HttpMethod.GET, new HttpEntity<>(headers), Template.class);
-        Template template1 = response.getBody();*/
+        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:" + port + "/api/templates/1", HttpMethod.GET, new HttpEntity<>(headers), Template.class);
+        Template template1 = response.getBody();
 
         ResponseEntity<Widget> response2 = restTemplate.exchange("http://localhost:" + port + "/widgets/1", HttpMethod.GET, new HttpEntity<>(headers), Widget.class);
         Widget widget1 = response2.getBody();
@@ -109,17 +108,17 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
         media4.setLeftPosition(0);
         media4.setHeight(80);
         media4.setWidth(20);
-        //media4.setTemplate(template1);
+        media4.setTemplate(template1);
         media4.setWidget(widget1);
 
         HttpEntity<TemplateWidget> requestEntity = new HttpEntity<>(media4, headers);
 
         ResponseEntity<TemplateWidget> response3 = restTemplate.exchange("http://localhost:" + port + "/templateWidgets", HttpMethod.POST, requestEntity, TemplateWidget.class);
         assertEquals(HttpStatus.CREATED, response3.getStatusCode());
-        assertEquals(10, response3.getBody().getHeight());
+        assertEquals(80, response3.getBody().getHeight());
         assertEquals(20, response3.getBody().getWidth());
-        //assertEquals(template1, response3.getBody().getTemplate());
-        assertEquals(widget1, response3.getBody().getWidget());
+        assertEquals(template1.getName(), response3.getBody().getTemplate().getName());
+        assertEquals(widget1.getName(), response3.getBody().getWidget().getName());
     }
 
     @Test

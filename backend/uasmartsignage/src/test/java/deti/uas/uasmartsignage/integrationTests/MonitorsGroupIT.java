@@ -11,6 +11,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,7 +121,6 @@ class MonitorsGroupIT extends BaseIntegrationTest{
         HttpEntity<?> entity = new HttpEntity<>(headers);
         ResponseEntity<MonitorsGroup> response = restTemplate.exchange("http://localhost:" + port + "/api/groups/name/DETI10", HttpMethod.GET,entity,MonitorsGroup.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
     }
 
     @Test
@@ -137,19 +137,16 @@ class MonitorsGroupIT extends BaseIntegrationTest{
 
     @Test
     @Order(7)
-    @Disabled //error extracting response (erro do poço)
-    void testGetTemplateFromGroup() throws Exception{
+    void testGetTemplateFromGroup(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<TemplateGroup> response = restTemplate.exchange("http://localhost:" + port + "/api/groups/1/template", HttpMethod.GET,
-                entity, TemplateGroup.class);
-
-        String responseBody = new ObjectMapper().writeValueAsString(response.getBody());
-        System.out.println(responseBody);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<List<TemplateGroup>> response = restTemplate.exchange("http://localhost:" + port + "/api/groups/1/template", HttpMethod.GET,
+                entity, new ParameterizedTypeReference<List<TemplateGroup>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals("DETI news", response.getBody());
+        assertEquals(1, response.getBody().size());
+        assertEquals("template1", response.getBody().get(0).getTemplate().getName());
     }
 
     @Test

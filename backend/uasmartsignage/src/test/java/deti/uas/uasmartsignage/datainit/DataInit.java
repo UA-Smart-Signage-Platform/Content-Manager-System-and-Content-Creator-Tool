@@ -57,6 +57,8 @@ public class DataInit implements CommandLineRunner {
 
         this.loadTemplates();
         this.loadGroupsAndMonitors();
+        this.loadSchedules();
+        this.loadTemplateGroups();
 
     }
 
@@ -315,6 +317,16 @@ public class DataInit implements CommandLineRunner {
         templateGroup1.setSchedule(schedule1);
         templateGroupRepository.save(templateGroup1);
 
+        Template template2 = templateRepository.findByName("template2");
+        MonitorsGroup dMat = groupRepository.findByName("DMAT");
+
+        TemplateGroup templateGroup2 = new TemplateGroup();
+        templateGroup2.setGroup(dMat);
+        templateGroup2.setTemplate(template2);
+        Schedule schedule2 = scheduleService.getAllSchedules().get(1);
+        templateGroup2.setSchedule(schedule2);
+        templateGroupRepository.save(templateGroup2);
+
     }
 
     private void loadSchedules() {
@@ -332,5 +344,20 @@ public class DataInit implements CommandLineRunner {
         schedule.setStartTime(LocalTime.parse("00:00"));
         schedule.setEndTime(LocalTime.parse("23:59"));
         scheduleService.saveSchedule(schedule);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setTemplateGroups(new ArrayList<>());
+        List<Integer> days1 = new ArrayList<>();
+        days1.add(1);
+        days1.add(2);
+        days1.add(3);
+        days1.add(4);
+        days1.add(5);
+        schedule2.setWeekdays(days1);
+        schedule2.setEndDate(LocalDate.parse("2024-04-22"));
+        schedule2.setStartDate(LocalDate.parse("2024-04-22"));
+        schedule2.setStartTime(LocalTime.parse("08:00"));
+        schedule2.setEndTime(LocalTime.parse("22:00"));
+        scheduleService.saveSchedule(schedule2);
     }
 }

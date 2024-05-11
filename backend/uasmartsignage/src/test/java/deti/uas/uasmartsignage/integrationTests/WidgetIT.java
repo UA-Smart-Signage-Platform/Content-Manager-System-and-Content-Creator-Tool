@@ -113,8 +113,8 @@ public class WidgetIT extends BaseIntegrationTest{
         headers.setBearerAuth(jwtToken);
 
         Content content = new Content();
-        content.setName("Test content");
-        content.setType("test");
+        content.setName("Update content");
+        content.setType("update test");
         content.setOptions(List.of("test1", "test2", "test3"));
 
         HttpEntity<Content> requestEntity = new HttpEntity<>(content, headers);
@@ -135,7 +135,7 @@ public class WidgetIT extends BaseIntegrationTest{
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         assertEquals("Updated widget", response2.getBody().getName());
         assertEquals(1,response2.getBody().getContents().size());
-        assertEquals("Test content", response2.getBody().getContents().get(0).getName());
+        assertEquals("Update content", response2.getBody().getContents().get(0).getName());
     }
 
     @Test
