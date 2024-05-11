@@ -1,6 +1,5 @@
 import { createPortal } from 'react-dom';
 import { MdArrowBack } from "react-icons/md";
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 import DataTable from 'react-data-table-component';
 

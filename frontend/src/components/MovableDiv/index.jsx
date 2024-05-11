@@ -25,8 +25,8 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
             let newLeft = initialWidth + (((size.x - initial.x) * 100)/parentRef.current.offsetWidth)
             let newTop = initialHeight + (((size.y - initial.y) * 100)/parentRef.current.offsetHeight)
             
-            widgetList.map((element)=>{
-                if (element.id == widget.id){
+            widgetList.forEach((element)=>{
+                if (element.id === widget.id){
                     return
                 }
                 if (Math.abs(element.leftPosition - newLeft) < 1){

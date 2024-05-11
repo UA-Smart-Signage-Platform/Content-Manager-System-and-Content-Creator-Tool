@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { MovableDiv, PageTitle, WidgetsModal } from "../../components"
-import { Route, useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { IoMdArrowUp, IoMdArrowDown } from "react-icons/io";
 import templateservice from "../../services/templateService";
 import widgetService from "../../services/widgetService";
@@ -24,7 +24,6 @@ function Cct(){
     const { state } = useLocation();
     const [template,setTemplate] = useState(state !== null ? state:null);
     const [widgetList,setWidgetList] = useState(state !== null ? state.templateWidgets:[])
-    const [reload,setReload] = useState(false);
     const [name,SetName] = useState(state !== null ? state.name:"")
     const [ableSave,setAbleSave] = useState(false);
     const [widgtsToRemove,setWidgetsToRemove] = useState([]);
@@ -53,7 +52,7 @@ function Cct(){
             setWidgetList([])
         }
 
-    },[])
+    },[id])
 
     const saveTemplate = ()=>{
         let savingTemplate = template;
