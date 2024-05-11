@@ -11,7 +11,7 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const weekDays = [0,1,2,3,4,5,6];
+const weekDays = [0, 1, 2, 3, 4, 5, 6];
 const timeHour = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
 const timeMinute = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"];
 
@@ -86,7 +86,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater } ) 
 
 
     const handleSelectedDays = (event) => {
-        const { value } = event.target;
+        const value = parseInt(event.target.value);
+
         if (selectedDays.includes(value)) {
             setSelectedDays(selectedDays.filter(day => day !== value));
         } 
