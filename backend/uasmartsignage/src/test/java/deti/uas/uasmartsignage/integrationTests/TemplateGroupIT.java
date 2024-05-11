@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ScheduleIT extends BaseIntegrationTest{
+public class TemplateGroupIT extends BaseIntegrationTest{
     @LocalServerPort
     private int port;
 
@@ -52,4 +52,6 @@ public class ScheduleIT extends BaseIntegrationTest{
 
         jwtToken = jsonObject.get("jwt").getAsString();
     }
+
+
 }

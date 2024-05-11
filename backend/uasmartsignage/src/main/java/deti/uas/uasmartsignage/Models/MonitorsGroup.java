@@ -30,13 +30,9 @@ public class MonitorsGroup {
     @JsonIgnoreProperties({"group"})
     private List<Monitor> monitors;
 
-    @OneToOne(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "group")
     @JsonIgnoreProperties("group")
-    private TemplateGroup templateGroup;
-
-    @OneToMany(mappedBy = "monitorsGroupForSchedules", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("monitorsGroupForSchedules")
-    private List<Schedule> schedules;
+    private List<TemplateGroup> templateGroups;
 
     @Override
     public String toString() {

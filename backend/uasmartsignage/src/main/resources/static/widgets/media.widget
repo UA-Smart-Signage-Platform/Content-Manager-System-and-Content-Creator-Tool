@@ -1,25 +1,45 @@
 <div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px;">
-    <video autoplay muted class="stretch" id="main-video"></video>
+    <video autoplay muted class="stretch" id="video[[top]][[left]][[width]][[height]]"></video>
+    <img class="stretch" style="display: none;" id="image[[top]][[left]][[width]][[height]]">
 </div>
 <script>
-    var videoList = ["[[videos]]"];
+    var videoList[[top]][[left]][[width]][[height]] = ["[[videos]]"];
+    var currentIndex[[top]][[left]][[width]][[height]] = 0;
 
-    var mainVideo = document.getElementById("main-video");
+    function setVideoSource[[top]][[left]][[width]][[height]](videoSrc) {
 
-    function setMainVideoSource(videoSrc) {
-        mainVideo.src = videoSrc;
-        mainVideo.play();
+        let video = document.getElementById("video[[top]][[left]][[width]][[height]]");
+        let image = document.getElementById("image[[top]][[left]][[width]][[height]]");
+
+        if (videoSrc.endsWith('.mp4')) {
+            video.src = videoSrc;
+            video.style.display = 'block';
+            image.style.display = 'none';
+            video.play();
+        } else {
+            image.src = videoSrc;
+            image.style.display = 'block';
+            video.style.display = 'none';
+            startTimer[[top]][[left]][[width]][[height]]();
+        }
+
+        if (currentIndex[[top]][[left]][[width]][[height]] == videoList[[top]][[left]][[width]][[height]].length - 1){
+            currentIndex[[top]][[left]][[width]][[height]] = 0;
+        }
+        else{
+            currentIndex[[top]][[left]][[width]][[height]] += 1;
+        }
     }
 
-    setMainVideoSource(videoList[0]);
+    setVideoSource[[top]][[left]][[width]][[height]](videoList[[top]][[left]][[width]][[height]][0]);
 
-    mainVideo.addEventListener("ended", function() {
-        var currentIndex = videoList.indexOf(mainVideo.src.split('/').pop());
+    function startTimer[[top]][[left]][[width]][[height]]() {
+        setTimeout(function() {
+            setVideoSource[[top]][[left]][[width]][[height]](videoList[[top]][[left]][[width]][[height]][currentIndex[[top]][[left]][[width]][[height]]]);
+        }, 5000); 
+    }
 
-        if (currentIndex !== -1 && currentIndex < videoList.length - 1) {
-            setMainVideoSource(videoList[currentIndex + 1]);
-        } else {
-            setMainVideoSource(videoList[0]);
-        }
+    document.getElementById("video[[top]][[left]][[width]][[height]]").addEventListener("ended", function() {
+        setVideoSource[[top]][[left]][[width]][[height]](videoList[[top]][[left]][[width]][[height]][currentIndex[[top]][[left]][[width]][[height]]]);
     });
 </script>

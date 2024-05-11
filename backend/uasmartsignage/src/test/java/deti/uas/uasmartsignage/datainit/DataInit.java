@@ -6,12 +6,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.*;
 import deti.uas.uasmartsignage.Repositories.*;
 import deti.uas.uasmartsignage.Services.FileService;
+import deti.uas.uasmartsignage.Services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
@@ -28,17 +31,23 @@ public class DataInit implements CommandLineRunner {
     private ContentRepository contentRepository;
     private TemplateRepository templateRepository;
     private TemplateWidgetRepository templateWidgetRepository;
+    private TemplateGroupRepository templateGroupRepository;
+    private ScheduleService scheduleService;
+    private FileService fileService;
 
     @Autowired
     public DataInit(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
                       ContentRepository contentRepository, WidgetRepository widgetRepository,
-                      MonitorGroupRepository groupRepository, MonitorRepository monitorRepository) {
+                      MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,TemplateGroupRepository templateGroupRepository,ScheduleService scheduleService, FileService fileService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
         this.widgetRepository = widgetRepository;
         this.groupRepository = groupRepository;
         this.monitorRepository = monitorRepository;
+        this.templateGroupRepository = templateGroupRepository;
+        this.scheduleService = scheduleService;
+        this.fileService = fileService;
     }
 
     public void run(String... args) throws Exception {
@@ -181,6 +190,12 @@ public class DataInit implements CommandLineRunner {
         newsWidget.setContents(new ArrayList<>());
         widgetRepository.save(newsWidget);
 
+        Widget technewsWidget = new Widget();
+        newsWidget.setName("TechNews");
+        newsWidget.setPath("static/widgets/tech_news.widget");
+        newsWidget.setContents(new ArrayList<>());
+        widgetRepository.save(technewsWidget);
+
         // create template1
         Template template1 = new Template();
         template1.setName("template1");
@@ -286,8 +301,36 @@ public class DataInit implements CommandLineRunner {
         media3.setTemplate(template3);
         media3.setWidget(mediaWidget);
         templateWidgetRepository.save(media3);
+    }
 
+    private void loadTemplateGroups() {
+        Template template1 = templateRepository.findByName("template1");
 
+        MonitorsGroup deti = groupRepository.findByName("DETI");
 
+        TemplateGroup templateGroup1 = new TemplateGroup();
+        templateGroup1.setGroup(deti);
+        templateGroup1.setTemplate(template1);
+        Schedule schedule1 = scheduleService.getAllSchedules().get(0);
+        templateGroup1.setSchedule(schedule1);
+        templateGroupRepository.save(templateGroup1);
+
+    }
+
+    private void loadSchedules() {
+        Schedule schedule = new Schedule();
+        schedule.setTemplateGroups(new ArrayList<>());
+        List<Integer> days = new ArrayList<>();
+        days.add(1);
+        days.add(2);
+        days.add(3);
+        days.add(4);
+        days.add(5);
+        schedule.setWeekdays(days);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartTime(LocalTime.parse("00:00"));
+        schedule.setEndTime(LocalTime.parse("23:59"));
+        scheduleService.saveSchedule(schedule);
     }
 }

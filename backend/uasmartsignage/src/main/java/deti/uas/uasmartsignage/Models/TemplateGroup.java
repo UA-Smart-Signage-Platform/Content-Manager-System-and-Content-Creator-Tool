@@ -28,9 +28,9 @@ public class TemplateGroup {
     @JsonIgnoreProperties("templateGroups")
     private Template template;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
-    @JsonIgnoreProperties("templateGroup")
+    @JsonIgnoreProperties("templateGroups")
     private MonitorsGroup group;
 
     @ElementCollection
@@ -39,5 +39,8 @@ public class TemplateGroup {
     @Column(name = "content_value")
     private Map<Integer, String> content;
 
-
+    @ManyToOne
+    @JoinColumn(name = "scheduleId", nullable = false)
+    @JsonIgnoreProperties("templateGroups")
+    private Schedule schedule;
 }
