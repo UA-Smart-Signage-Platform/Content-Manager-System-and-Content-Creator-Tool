@@ -221,7 +221,7 @@ public class TemplateGroupService {
             }
 
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-            e.printStackTrace();
+            logger.error("Could not send rules to monitors");
         }
 
         
