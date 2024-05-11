@@ -65,7 +65,13 @@ public class Schedule {
     }
 
     public ScheduleMqtt toMqttFormat() {
-        return new ScheduleMqtt(startTime.toString(), endTime.toString(), weekdays, startDate + "", endDate + "", priority);
+        String stringStartDate = "";
+        String stringEndDate = "";
+        if(startDate != null)
+            stringStartDate = startDate.toString();
+        if(endDate != null)
+            stringEndDate = endDate.toString();
+        return new ScheduleMqtt(startTime.toString(), endTime.toString(), weekdays, stringStartDate, stringEndDate, priority);
     }
 
 }
