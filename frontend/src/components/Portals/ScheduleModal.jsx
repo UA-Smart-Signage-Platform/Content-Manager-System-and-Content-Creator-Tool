@@ -27,7 +27,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -77,11 +77,13 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater } ) 
                     startTime : selectedStartTime[0] + ":" + selectedStartTime[1],
                     endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
                     startDate : selectedStartDate,
-                    endDate : selectedEndDate}
+                    endDate : selectedEndDate,
+                    priority: totalRules}
         }
 
         activeTemplateService.addRule(data);
         setUpdater(!updater);
+        setShowPortal(false);
     };
 
 
