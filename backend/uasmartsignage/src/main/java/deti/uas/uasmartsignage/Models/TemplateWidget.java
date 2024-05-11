@@ -36,6 +36,9 @@ public class TemplateWidget {
     @Column(nullable = false)
     private int height;
 
+    @Column(nullable = false)
+    private int zIndex;
+
     @ManyToOne
     @JoinColumn(name = "templateId", nullable = false)
     @JsonIgnoreProperties("templateWidgets")

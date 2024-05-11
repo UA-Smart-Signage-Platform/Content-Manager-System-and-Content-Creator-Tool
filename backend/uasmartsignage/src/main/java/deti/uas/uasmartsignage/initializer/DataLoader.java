@@ -174,6 +174,7 @@ public class DataLoader implements CommandLineRunner {
 
         // create the widget mappings for template 1
         TemplateWidget temperature = new TemplateWidget();
+        temperature.setZIndex(1);
         temperature.setTop(0);
         temperature.setLeftPosition(0);
         temperature.setHeight(10);
@@ -183,6 +184,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(temperature);
 
         TemplateWidget video = new TemplateWidget();
+        video.setZIndex(2);
         video.setTop(10);
         video.setLeftPosition(20);
         video.setHeight(80);
@@ -192,6 +194,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(video);
 
         TemplateWidget clock = new TemplateWidget();
+        clock.setZIndex(3);
         clock.setTop(0);
         clock.setLeftPosition(80);
         clock.setHeight(10);
@@ -201,6 +204,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(clock);
 
         TemplateWidget news = new TemplateWidget();
+        news.setZIndex(4);
         news.setTop(90);
         news.setLeftPosition(0);
         news.setHeight(10);
@@ -210,6 +214,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(news);
 
         TemplateWidget media2 = new TemplateWidget();
+        media2.setZIndex(5);
         media2.setTop(10);
         media2.setLeftPosition(0);
         media2.setHeight(80);
@@ -225,6 +230,7 @@ public class DataLoader implements CommandLineRunner {
 
         // create the widget mappings for template 2
         temperature = new TemplateWidget();
+        temperature.setZIndex(1);
         temperature.setTop(0);
         temperature.setLeftPosition(80);
         temperature.setHeight(20);
@@ -234,6 +240,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(temperature);
 
         video = new TemplateWidget();
+        video.setZIndex(2);
         video.setTop(0);
         video.setLeftPosition(0);
         video.setHeight(90);
@@ -243,6 +250,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(video);
 
         news = new TemplateWidget();
+        news.setZIndex(3);
         news.setTop(90);
         news.setLeftPosition(0);
         news.setHeight(10);
@@ -252,6 +260,7 @@ public class DataLoader implements CommandLineRunner {
         templateWidgetRepository.save(news);
 
         media2 = new TemplateWidget();
+        media2.setZIndex(4);
         media2.setTop(20);
         media2.setLeftPosition(80);
         media2.setHeight(70);
