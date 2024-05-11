@@ -37,7 +37,7 @@ import java.util.HashMap;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
+import deti.uas.uasmartsignage.Mqtt.RulesMessage;
 
 @Service
 public class TemplateGroupService {
@@ -171,6 +171,63 @@ public class TemplateGroupService {
     }
 
     /**
+     * Sends all schedules to a MonitorsGroup
+     * 
+     * @param monitorGroup The MonitorsGroup to send the schedules to
+     */
+    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup) {
+        List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
+        List <Map<String, Object>> rules = new ArrayList<>();
+
+        for (TemplateGroup group : templateGroups) {
+            Map<String, Object> rule = new HashMap<>();
+            Template template = templateService.getTemplateById(group.getTemplate().getId());
+            Schedule schedule = group.getSchedule();
+            List<String> downloadFiles = new ArrayList<>();
+
+            if (group.getContent() != null) {
+                Map<String, Object> contentResult = processTemplateGroupContent(group.getContent());
+                Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
+                group.setContent(updatedContent);
+                downloadFiles = (List<String>) contentResult.get("downloadFiles");
+            }
+
+            rule.put("template", template);
+            rule.put("schedule", schedule.toMqttFormat());
+            rule.put("downloadFiles", downloadFiles);
+            rule.put("group", group);
+            rules.add(rule);
+        }
+
+        try{
+            RulesMessage rulesMessage = new RulesMessage();
+            rulesMessage.setMethod("RULES");
+            List<Monitor> monitors = monitorGroup.getMonitors();
+            for (Monitor monitor : monitors) {
+                List <Map<String, Object>> rulesToSend = new ArrayList<>();
+                for (Map<String, Object> rule : rules) {
+                    Map<String, Object> ruleToSend = new HashMap<>();
+                    Template template = (Template) rule.get("template");
+                    TemplateGroup group = (TemplateGroup) rule.get("group");
+                    String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
+                    ruleToSend.put("html", html);
+                    ruleToSend.put("schedule", rule.get("schedule"));
+                    ruleToSend.put("files", rule.get("downloadFiles"));
+                    rulesToSend.add(ruleToSend);
+                }
+                rulesMessage.setRules(rulesToSend);
+                String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
+                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
+            }
+
+        } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
+            e.printStackTrace();
+        }
+
+        
+    }
+
+    /**
      * Sends a TemplateGroup to a MonitorsGroup
      * 
      * @param templateGroup The TemplateGroup to send
@@ -186,36 +243,15 @@ public class TemplateGroupService {
         else {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
-        List<String> downloadFiles = new ArrayList<>();
-        if (templateGroup.getContent() != null) {
-            Map<String, Object> contentResult = processTemplateGroupContent(templateGroup.getContent());
-            Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
-            templateGroup.setContent(updatedContent);
-            downloadFiles = (List<String>) contentResult.get("downloadFiles");
-        }
-        try {
-            TemplateMessage confirmMessage = new TemplateMessage();
-            confirmMessage.setMethod("TEMPLATE");
-            confirmMessage.setFiles(downloadFiles);
-            confirmMessage.setSchedule(schedule.toMqttFormat());
-            List<Monitor> monitors = monitorGroup.getMonitors();
-            for (Monitor monitor : monitors) {
-                String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
-                confirmMessage.setHtml(html);
-                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
-            }
-
-            
-        } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-            e.printStackTrace();
-    
-        }
+        
 
         templateGroup.setTemplate(template);
         templateGroup.setGroup(monitorGroup);
         templateGroup.setSchedule(schedule);
         templateGroupRepository.save(templateGroup);
+
+        sendAllSchedulesToMonitorGroup(monitorGroup);
+
         return templateGroup;
     }
     
