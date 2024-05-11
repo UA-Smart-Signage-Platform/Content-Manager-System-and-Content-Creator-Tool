@@ -99,13 +99,13 @@ function Schedule(){
             }
             else {
                 return(
-                    <>
+                    <div className="relative">
                         {[].concat(rules).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
                             <motion.div 
-                                animate={{y: index * 30 }}
+                                animate={{y:index * 64}}
                                 key={rule.id} 
-                                className="flex h-[10%] w-full p-2">
-                                <div className="w-[85%] bg-secondaryLight rounded-l-md pt-2 pl-2 pb-2 text-textcolorNotSelected">
+                                className="flex w-full p-2 absolute h-16">
+                                <div className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected">
                                     <span className="text-textcolor">{rule.template.name}</span> running {/* */}
                                     <span className="text-textcolor">weekly</span> from {/* */}
                                     <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
@@ -129,7 +129,7 @@ function Schedule(){
                                 </div>
                             </motion.div>
                         ))}
-                    </>
+                    </div>
                 );
             }
         }
