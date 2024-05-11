@@ -1,7 +1,7 @@
 import { useState,useRef } from "react";
 import { motion,useMotionValue } from "framer-motion";
 
-function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList} ) {
+function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} ) {
     const divRef = useRef(null);
     const width = useMotionValue((widgetList[widget].width)+"%");
     const height = useMotionValue((widgetList[widget].height)+"%");
@@ -10,15 +10,38 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList} ) {
     const [initial,setInitial] = useState({x:0,y:0});
     const [initialWidth,setInitialWidth] = useState(null);
     const [initialHeight,setInitialHeight] = useState(null);
-    const [status,setStatus] = useState({})
     const [colorResize,setColorResize] = useState("bg-black") 
+
+    const percentagetoNumber = (percentage) =>{
+        return Number(percentage.replace("%",""))
+    }
+
+    const numbertoPercentage = (number) =>{
+        return number.toString().concat("%")
+    }
 
     const updatePositionValues = (size) => {
         if (initialHeight !== null && initialWidth !== null){
             let newLeft = initialWidth + (((size.x - initial.x) * 100)/parentRef.current.offsetWidth)
             let newTop = initialHeight + (((size.y - initial.y) * 100)/parentRef.current.offsetHeight)
-            left.set(newLeft > 0 ? newLeft < (100-Number(width.get().replace("%",""))) ? newLeft.toString().concat("%") : (100-Number(width.get().replace("%",""))).toString().concat("%") : "0%")
-            top.set(newTop > 0 ? newTop < (100-Number(height.get().replace("%",""))) ? newTop.toString().concat("%") : (100-Number(height.get().replace("%",""))).toString().concat("%") : "0%")
+            
+            widgetList.map((element,index)=>{
+                if (Math.abs(element.leftPosition - newLeft) < 1){
+                    newLeft = element.leftPosition;
+                }
+                if (Math.abs(element.top - newTop) < 1){
+                    newTop = element.top;
+                }
+                if (Math.abs(element.leftPosition - (newLeft + percentagetoNumber(width.get()))) < 1){
+                    newLeft = element.leftPosition - percentagetoNumber(width.get());
+                }
+                if (Math.abs(element.top - (newTop + percentagetoNumber(height.get()))) < 1){
+                    newTop = element.top - percentagetoNumber(height.get());
+                }
+
+            })
+            left.set(newLeft > 0 ? newLeft < (100-percentagetoNumber(width.get())) ? numbertoPercentage(newLeft) : numbertoPercentage(100-percentagetoNumber(width.get())) : "0%")
+            top.set(newTop > 0 ? newTop < (100-percentagetoNumber(height.get())) ? numbertoPercentage(newTop) : numbertoPercentage(100-percentagetoNumber(height.get())) : "0%")
         }
     }
 
@@ -37,27 +60,47 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList} ) {
 
     const changeSize = (size)=>{
         if (initialHeight !== null && initialWidth !== null){
-            width.set((initialWidth + (((size.x - initial.x) * 100)/parentRef.current.offsetWidth)).toString().concat("%"))
-            height.set((initialHeight + (((size.y - initial.y) * 100)/parentRef.current.offsetHeight)).toString().concat("%"))
+            let newWidth = (initialWidth + (((size.x - initial.x) * 100)/parentRef.current.offsetWidth));
+            let newHeigth = (initialHeight + (((size.y - initial.y) * 100)/parentRef.current.offsetHeight));
+            
+            if (newWidth > 100){
+                newWidth = 100
+            }
+            if (newHeigth > 100){
+                newHeigth = 100
+            }
+            width.set(numbertoPercentage(newWidth))
+            height.set(numbertoPercentage(newHeigth))
         }
+    }
+
+    const truncate4numbers = (number)=>{
+        let mult = number * 10000
+        mult = Math.trunc(mult)
+        return mult / 10000
     }
 
     const resetActions = () =>{
         setInitialHeight(null);
         setInitialWidth(null);
-        let stat = {
-            height:height.get(),
-            width:width.get(),
-            top:top.get(),
-            left:left.get()
-           }
-        setStatus(stat);
+        let widgetobj = widgetList[widget]
+        widgetobj.leftPosition = truncate4numbers(parseFloat(percentagetoNumber(left.get())));
+        widgetobj.top = truncate4numbers(parseFloat(percentagetoNumber(top.get())));
+        widgetobj.height = truncate4numbers(parseFloat(percentagetoNumber(height.get())));
+        widgetobj.width = truncate4numbers(parseFloat(percentagetoNumber(width.get())));
+        setWidgetList(widgetList.map((element,i)=>{
+            if (element.id !== widgetobj.id){
+                return element
+            }else{
+                return widgetobj
+            }
+        }))
         setColorResize("bg-black")
-        console.log(stat);
+        setSave(true)
     }
 
     return(
-        <motion.div style={{width,height,top,left}}
+        <motion.div style={{width,height,top,left,zIndex:widgetList[widget].zindex}}
                     className={` ${color} h-14 flex flex-col items-center justify-center absolute border-2`}
         >
             <div className="absolute top-[50%] translate-y-[-50%]">
