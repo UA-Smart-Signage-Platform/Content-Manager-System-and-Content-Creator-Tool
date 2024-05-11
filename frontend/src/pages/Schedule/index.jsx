@@ -3,6 +3,8 @@ import { PageTitle, ScheduleModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import { AnimatePresence, motion } from "framer-motion"
 import { ALL_WEEKDAYS } from 'rrule'
+import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
+import scheduleService from "../../services/scheduleService";
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
@@ -11,6 +13,7 @@ function Schedule(){
     const [showGroupNeeded, setShowGroupNeeded] = useState(false);
     const [updater, setUpdater] = useState(false);
     const [rules, setRules] = useState([]);
+    const [changesMade, setChangesMade] = useState(false);
 
     useEffect(() => {
         monitorsGroupService.getGroups().then((response) => {
@@ -26,6 +29,58 @@ function Schedule(){
         }
     }, [selectedGroupId, updater]);
     
+
+    const priorityDown = (rule) => {
+        const priority = rule.schedule.priority;
+
+        if (priority === rules.length - 1){
+            return;
+        }
+
+        let arr = rules.map((element) => {
+            if (element.schedule.priority === priority){
+                element.schedule.priority++;
+            }
+            else if (element.schedule.priority - 1 === priority){
+                element.schedule.priority--;
+            }
+            return element;
+        })
+
+        setRules(arr);
+        setChangesMade(true);
+    };
+
+    const priorityUp = (rule) => {
+        const priority = rule.schedule.priority;
+
+        if (priority === 0){
+            return;
+        }
+
+        let arr = rules.map((element) => {
+            if (element.schedule.priority === priority){
+                element.schedule.priority--;
+            }
+            else if (element.schedule.priority + 1 === priority){
+                element.schedule.priority++;
+            }
+            return element;
+        })
+
+        setRules(arr);
+        setChangesMade(true);
+    };
+
+    const handleUpdateRules = () => {
+        const arr = [];
+        rules.forEach(element => {
+            arr.push(element.schedule);
+        });
+
+        scheduleService.updateSchedule(arr);
+    };
+
     const displayRules = () => {
         if (selectedGroupId === null){
             return(
@@ -45,23 +100,40 @@ function Schedule(){
             else {
                 return(
                     <>
-                        {rules.map((rule) => (
-                            <div key={rule.id} className="flex w-[90%] p-2">
-                                <span className="w-full h-full bg-secondaryLight rounded-md p-2">
-                                    {rule.template.name} running {/* */}
-                                    weekly from {/* */}
-                                    {rule.schedule.startTime[0]}:{rule.schedule.startTime[1]} - {rule.schedule.endTime[0]}:{rule.schedule.endTime[1]} on {/* */}
-                                    {rule.schedule.weekdays.map((day) => (
-                                        <>{ALL_WEEKDAYS[day]}{/* */} </>
+                        {[].concat(rules).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
+                            <motion.div 
+                                animate={{y: index * 30 }}
+                                key={rule.id} 
+                                className="flex h-[10%] w-full p-2">
+                                <div className="w-[85%] bg-secondaryLight rounded-l-md pt-2 pl-2 pb-2 text-textcolorNotSelected">
+                                    <span className="text-textcolor">{rule.template.name}</span> running {/* */}
+                                    <span className="text-textcolor">weekly</span> from {/* */}
+                                    <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
+                                    <span className="text-textcolor">{rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}</span> on days {/* */}
+                                    {rule.schedule.weekdays.map((day, index) => (
+                                        <span className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
                                     ))}
-                                </span> 
-                            </div>
+                                </div>
+                                <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
+                                    <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
+                                    <div className="flex gap-2 m-auto">
+                                        <motion.button onClick={()=> priorityDown(rule)} whileHover={{scale:1.2}}
+                                                className=" border border-black rounded size-5 flex justify-center items-center">
+                                            <IoMdArrowDown/>
+                                        </motion.button>
+                                        <motion.button onClick={()=> priorityUp(rule)} whileHover={{scale:1.2}}
+                                                className=" border border-black rounded size-5 flex justify-center items-center">
+                                            <IoMdArrowUp/>
+                                        </motion.button>
+                                    </div>
+                                </div>
+                            </motion.div>
                         ))}
                     </>
                 );
             }
         }
-    }
+    };
 
 
     return(
@@ -92,6 +164,13 @@ function Schedule(){
                         </div>
                         
                         <div className="flex w-[50%] h-full items-center relative">
+                            {selectedGroupId !== null &&
+                                <button disabled={changesMade ? false : true}
+                                    onClick={() => handleUpdateRules()} 
+                                    className={`bg-primary p-1 pr-4 pl-4 rounded-md ${changesMade ? "" : "opacity-45 cursor-not-allowed"}`}>
+                                Save
+                            </button>
+                            }
                             <motion.select
                                 whileHover={{ border: "2px solid" }}
                                 whileTap={{ border: "2px solid" }}
@@ -114,10 +193,11 @@ function Schedule(){
                                 setShowPortal={setShowPortal}
                                 selectedGroup={groups.at(selectedGroupId)}
                                 updater={updater}
-                                setUpdater={setUpdater} />
+                                setUpdater={setUpdater}
+                                totalRules={rules.length} />
                         }
                     </AnimatePresence>
-                    <div className="w-full h-[95%] pt-3">
+                    <div className="flex flex-col w-full h-[95%] pt-3">
                         {displayRules()}
                     </div>
                 </div>
