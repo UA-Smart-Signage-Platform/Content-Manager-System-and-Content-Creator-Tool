@@ -27,7 +27,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -80,7 +80,8 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     endDate : selectedEndDate}
         }
 
-        activeTemplateService.addActiveTemplate(data);
+        activeTemplateService.addRule(data);
+        setUpdater(!updater);
     };
 
 
