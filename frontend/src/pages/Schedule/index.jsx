@@ -7,6 +7,7 @@ function Schedule(){
     const [groups, setGroups] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState(null);
     const [showPortal, setShowPortal] = useState(false);
+    const [showGroupNeeded, setShowGroupNeeded] = useState(false);
 
     useEffect(() => {
         monitorsGroupService.getGroups().then((response) => {
@@ -23,31 +24,41 @@ function Schedule(){
             </div>
             <div id="divider" className="flex h-[92%] mr-3 ml-3 ">
                 <div className="flex flex-col w-[25%] h-full pt-4">
-                    <div className="flex flex-row w-full h-[5%] items-center ">
-                        <motion.button 
-                            whileHover={{ 
-                                scale: 1.1, 
-                                border: "2px solid", 
-                                transition: {
-                                    duration: 0.2,
-                                    ease: "easeInOut",
-                                }, 
-                            }}
-                            whileTap={{ scale: 0.9 }}
-                            onClick={() => {selectedGroupId !== null && setShowPortal(true)}} 
-                            className="bg-secondaryLight rounded-md h-[80%] pr-4 pl-4">
-                            + Add rule
-                        </motion.button>
-                        <motion.select
-                            whileHover={{ border: "2px solid" }}
-                            whileTap={{ border: "2px solid" }}
-                            onChange={(e) => setSelectedGroupId(e.target.value - 1)} 
-                            className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
-                            <option selected disabled hidden>Group</option>
-                            {groups.length !== 0 && groups.map((group) => 
-                                <option value={group.id}>{group.name}</option>
-                            )}
-                        </motion.select>
+                    <div className="flex flex-row w-full h-[5%]  ">
+                        <div className="flex w-[50%] h-full items-center">
+                            <motion.button 
+                                whileHover={{ 
+                                    scale: 1.1, 
+                                    border: "2px solid", 
+                                    transition: {
+                                        duration: 0.2,
+                                        ease: "easeInOut",
+                                    }, 
+                                }}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => { selectedGroupId === null ? setShowGroupNeeded(true) : setShowPortal(true) }}
+                                className="bg-secondaryLight rounded-md h-[80%] pr-4 pl-4">
+                                + Add rule
+                            </motion.button>
+                        </div>
+                        
+                        <div className="flex w-[50%] h-full items-center relative">
+                            <motion.select
+                                whileHover={{ border: "2px solid" }}
+                                whileTap={{ border: "2px solid" }}
+                                onChange={(e) => {setSelectedGroupId(e.target.value - 1); setShowGroupNeeded(false)}} 
+                                className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
+                                <option selected disabled hidden>Group</option>
+                                {groups.length !== 0 && groups.map((group) => 
+                                    <option value={group.id}>{group.name}</option>
+                                )}
+                            </motion.select>
+                            {showGroupNeeded && 
+                                <div className="absolute text-md text-red h-full top-10 right-1">
+                                    You must select a group
+                                </div>
+                            }
+                        </div>
                     </div>
                     <AnimatePresence>
                         {showPortal && <ScheduleModal
