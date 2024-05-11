@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 
 @Service
@@ -17,6 +18,9 @@ public class TemplateService {
     }
 
     public Template saveTemplate(Template template) {
+        for ( TemplateWidget templateWidget : template.getTemplateWidgets()) {
+            templateWidget.setTemplate(template);
+        }
         return templateRepository.save(template);
     }
 
