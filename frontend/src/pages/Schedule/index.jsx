@@ -197,7 +197,7 @@ function Schedule(){
                                 totalRules={rules.length} />
                         }
                     </AnimatePresence>
-                    <div className="flex flex-col w-full h-[95%] pt-3">
+                    <div className="flex flex-col w-full h-[95%] pt-3 overflow-scroll">
                         {displayRules()}
                     </div>
                 </div>
