@@ -4,6 +4,7 @@ import { PageTitle } from "../../components";
 import DataTable from "react-data-table-component";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
+import { FiTrash2 } from "react-icons/fi";
 
 const customStyles = {
     headRow: {
@@ -33,19 +34,6 @@ const customStyles = {
     },
 };
 
-const columns = [
-    {
-        name: 'Name',
-        selector: row => row.name,
-        sortable: true,
-    },
-    {
-        name: "widget count",
-        selector: row => row.templateWidgets.length,
-        sortable:true,
-    }
-];
-
 const colors = [
     'bg-pink-200 border-pink-400',
     'bg-rose-200 border-rose-400',
@@ -63,12 +51,39 @@ function Templates(){
     const [selectedColors,setSelectedColors] = useState([]);
     const navigate = useNavigate();
 
+    const columns = [
+        {
+            name: 'Name',
+            selector: row => row.name,
+            sortable: true,
+        },
+        {
+            name: "widget count",
+            selector: row => row.templateWidgets.length,
+            sortable:true,
+        },
+        {
+            name: "",
+            selector: row => <button onClick={()=>deleteTemplate(row.id)} className=" border border-black rounded-sm size-5 flex items-center justify-center"><FiTrash2/></button>,
+            sortable:false,
+        }
+    ];
+    
+    const deleteTemplate = (id) =>{
+        templateservice.deleteTemplate(id).then(()=>{
+            templateservice.getTemplates().then((response)=>{
+                setTemplates(response.data)
+                setTemplateDisplay(response.data[0])
+            })
+        })
+    }
+
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{
             setTemplates(response.data)
             setTemplateDisplay(response.data[0])
         })
-    },[])
+    },[updater])
 
     useEffect(()=>{
         if (templates.length !== 0 && templateDisplay !== null){

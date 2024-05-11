@@ -12,6 +12,9 @@ const templateservice = {
     },
     async deleteTemplateWidget(id){
         return await client.delete(`/templateWidgets/${id}`);
+    },
+    async deleteTemplate(id){
+        return await client.delete(`/templates/${id}`)
     }
 }
 
