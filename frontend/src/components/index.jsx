@@ -11,3 +11,4 @@ export {default as MediaFolderModal} from './Portals/MediaFolderModal';
 export {default as PendingMonitorsModal} from './Portals/PendingMonitorsModal';
 export {default as ScheduleModal} from './Portals/ScheduleModal';
 export {default as ScheduleDeleteModal} from './Portals/ScheduleDeleteModal';
+export {default as MediaDeleteModal} from './Portals/MediaDeleteModal'

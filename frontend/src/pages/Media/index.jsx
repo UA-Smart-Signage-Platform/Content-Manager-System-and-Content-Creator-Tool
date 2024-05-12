@@ -1,10 +1,11 @@
-import { PageTitle, MediaFileModal, MediaFolderModal } from '../../components';
+import { PageTitle, MediaFileModal, MediaFolderModal, MediaDeleteModal } from '../../components';
 import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile } from "react-icons/md";
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import mediaService from '../../services/mediaService';
 import { useLocation, useNavigate} from 'react-router';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { FiTrash2 } from "react-icons/fi";
 
 
 const getFileIcon = (type) => {
@@ -41,36 +42,6 @@ const headNameStyle = (row) => {
     )
 };
 
-const columns = [
-    {
-        name: (
-            <div className="flex flex-row">
-                <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
-            </div>
-        ),
-        selector: row => headNameStyle(row),
-        width: '47%',
-    },
-    {
-        id: 'isFolder',
-        selector: row => row.type,
-        omit: true,
-    },
-    {
-        name: 'Size',
-        selector: row => formatBytes(row.size, 0),
-        sortable: true,
-        width: '25%',
-    },
-    {
-        name: 'Date',
-        selector: row => row.date,
-        sortable: true,
-        width: '28%',
-        right: 'true',
-    }
-];
-
 const customStyles = {
     head: {
         style: {
@@ -98,15 +69,59 @@ function Media() {
     
     const [showPortalFile, setShowPortalFile] = useState(false);
     const [showPortalFolder, setShowPortalFolder] = useState(false);
+    const [deletePortal,setDeletePortal] = useState(false);
     
     const path = useLocation().pathname.replace("/media/home","/uploads").replace(/\/$/, '');
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if(path === "/media"){
-            navigate("/media/home")
-            return
+    const columns = [
+        {
+            name: (
+                <div className="flex flex-row">
+                    <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
+                </div>
+            ),
+            selector: row => headNameStyle(row),
+            width: '35%',
+        },
+        {
+            id: 'isFolder',
+            selector: row => row.type,
+            omit: true,
+        },
+        {
+            name: 'Size',
+            selector: row => formatBytes(row.size, 0),
+            sortable: true,
+            width: '25%',
+        },
+        {
+            name: 'Date',
+            selector: row => row.date,
+            sortable: true,
+            width: '25%',
+            right: 'true',
+        },
+        {
+            selector: row => <><button onClick={()=>setDeletePortal(true)} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                                <FiTrash2 className='size-5'/>
+                            </button>
+                            <AnimatePresence>
+                                {deletePortal && <MediaDeleteModal
+                                    message={"Are you sure you want to delete this file/folder?"}
+                                    funcToExecute={()=>deleteFile(row.id)}
+                                    cancelFunc={()=>{setDeletePortal(false)}}
+                                    />}
+                            </AnimatePresence>
+                            </>,
+            sortable:false,
+            width: '15%'
         }
+    ];
+
+    const fetchData = ()=>{
+        setPreview(null)
+        setFile(null)
         if(path === "/uploads"){
             mediaService.getFilesAtRootLevel().then((response)=>{
                 setFilesAndDirectories(response.data);
@@ -119,6 +134,21 @@ function Media() {
                 setFolder(response.data);
             })
         }
+    }
+
+    const deleteFile = (id)=>{
+        setDeletePortal(false)
+        mediaService.deleteFileOrFolder(id).then(()=>{
+            fetchData();
+        })
+    }
+
+    useEffect(() => {
+        if(path === "/media"){
+            navigate("/media/home")
+            return
+        }
+        fetchData()
     }, [currentFolder, updater,path,navigate]);
 
     const handleRowClick = (row) => {
