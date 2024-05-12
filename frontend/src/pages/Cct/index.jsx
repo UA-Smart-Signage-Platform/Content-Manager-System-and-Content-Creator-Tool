@@ -75,7 +75,6 @@ function Cct(){
     }
 
     const zIndexUp = (id) =>{
-        console.log(widgetList)
         let zindex = widgetList.find((element)=> element.id === id).zindex
         if (zindex === widgetList.length){
             return
