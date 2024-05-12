@@ -66,7 +66,7 @@ public class TemplateIT  extends BaseIntegrationTest{
 
         ResponseEntity<List<Template>> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Template>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size()); //could change if any template is added to DataInit
+        assertEquals(4, response.getBody().size()); //could change if any template is added to DataInit
     }
 
     @Test
@@ -91,13 +91,13 @@ public class TemplateIT  extends BaseIntegrationTest{
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         Template template = new Template();
-        template.setName("template4");
+        template.setName("template5");
 
         HttpEntity<Template> requestEntity = new HttpEntity<>(template, headers);
 
         ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates", HttpMethod.POST, requestEntity, Template.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertEquals("template4", response.getBody().getName());
+        assertEquals("template5", response.getBody().getName());
     }
 
     @Test
@@ -132,6 +132,6 @@ public class TemplateIT  extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates/3", HttpMethod.DELETE, requestEntity, Template.class);
+        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates/4", HttpMethod.DELETE, requestEntity, Template.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode()); }
 }

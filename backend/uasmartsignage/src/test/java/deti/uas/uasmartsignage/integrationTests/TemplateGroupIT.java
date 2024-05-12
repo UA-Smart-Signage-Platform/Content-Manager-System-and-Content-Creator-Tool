@@ -70,7 +70,7 @@ public class TemplateGroupIT extends BaseIntegrationTest{
 
         ResponseEntity<List<TemplateGroup>> response = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<TemplateGroup>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size());
+        assertEquals(3, response.getBody().size());
     }
 
     @Test

@@ -77,7 +77,7 @@ public class DataInit implements CommandLineRunner {
         dEca.setName("DECA");
         dEca.setDescription("Monitors from the entrance");
         dEca.setMonitors(List.of());
-        dEca.setMadeForMonitor(false);
+        dEca.setMadeForMonitor(true);
 
         deti = groupRepository.saveAndFlush(deti);
         dMat = groupRepository.saveAndFlush(dMat);
@@ -299,6 +299,19 @@ public class DataInit implements CommandLineRunner {
         media3.setTemplate(template3);
         media3.setWidget(mediaWidget);
         templateWidgetRepository.save(media3);
+
+        Template template4 = new Template();
+        template4.setName("template4");
+        templateRepository.save(template4);
+
+        /*TemplateWidget media4 = new TemplateWidget();
+        media4.setTop(10);
+        media4.setLeftPosition(0);
+        media4.setHeight(80);
+        media4.setWidth(20);
+        media4.setTemplate(template4);
+        media4.setWidget(mediaWidget);
+        templateWidgetRepository.save(media4);*/
     }
 
     private void loadTemplateGroups() {
@@ -322,6 +335,16 @@ public class DataInit implements CommandLineRunner {
         Schedule schedule2 = scheduleService.getAllSchedules().get(1);
         templateGroup2.setSchedule(schedule2);
         templateGroupRepository.save(templateGroup2);
+
+        MonitorsGroup dBio = groupRepository.findByName("DBIO");
+        Template template3 = templateRepository.findByName("template3");
+
+        TemplateGroup templateGroup3 = new TemplateGroup();
+        templateGroup3.setGroup(dBio);
+        templateGroup3.setTemplate(template3);
+        Schedule schedule3 = scheduleService.getAllSchedules().get(0);
+        templateGroup3.setSchedule(schedule3);
+        templateGroupRepository.save(templateGroup3);
 
     }
 

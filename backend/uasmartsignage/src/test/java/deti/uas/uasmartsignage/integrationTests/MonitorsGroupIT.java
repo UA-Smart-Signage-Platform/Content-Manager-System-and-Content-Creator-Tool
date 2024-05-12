@@ -143,7 +143,7 @@ class MonitorsGroupIT extends BaseIntegrationTest{
                 entity, new ParameterizedTypeReference<List<TemplateGroup>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(1, response.getBody().size());
-        assertEquals("template1", response.getBody().get(0).getTemplate().getName());
+        assertEquals("template2", response.getBody().get(0).getTemplate().getName());
     }
 
     @Test
