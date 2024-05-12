@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
-import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin, Templates, ChangePassword } from './pages';
+import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin, Templates, ChangePassword, Cct } from './pages';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ element, requiredRoles }) => {
@@ -64,6 +64,10 @@ const router = createBrowserRouter([
         path: "change-password",
         element: <ProtectedRoute element={<ChangePassword/>} requiredRoles={["ROLE_ADMIN"]} />
       },
+      {
+        path: "contentcreator/:id",
+        element:<Cct/>
+      }
     ]
   },
 ])

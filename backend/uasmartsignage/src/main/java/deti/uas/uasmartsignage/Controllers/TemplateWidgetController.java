@@ -15,7 +15,8 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/templateWidgets")
+@RequestMapping("/api/templateWidgets")
+@CrossOrigin(origins = "*")
 public class TemplateWidgetController {
 
     private TemplateWidgetService templateWidgetService;

@@ -387,7 +387,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                             width: `${templateWidget.width}%`,
                                             height: `${templateWidget.height}%`,
                                             top: `${templateWidget.top}%`,
-                                            left: `${templateWidget.leftPosition}%`
+                                            left: `${templateWidget.leftPosition}%`,
+                                            zIndex: templateWidget.zindex,
                                         }}> 
                                         <div className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectedColors[index]}`}>
                                             {contentElement(templateWidget)}
