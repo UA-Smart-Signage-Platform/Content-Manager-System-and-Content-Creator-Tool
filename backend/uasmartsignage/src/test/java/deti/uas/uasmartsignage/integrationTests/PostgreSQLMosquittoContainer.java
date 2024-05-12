@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.integrationTests;
 
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.utility.DockerImageName;
 

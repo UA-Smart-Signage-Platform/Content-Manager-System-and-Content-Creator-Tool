@@ -1,11 +1,4 @@
 package deti.uas.uasmartsignage.datainit;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -18,9 +11,7 @@ import deti.uas.uasmartsignage.Services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @Profile("test")
@@ -86,7 +77,7 @@ public class DataInit implements CommandLineRunner {
         dEca.setName("DECA");
         dEca.setDescription("Monitors from the entrance");
         dEca.setMonitors(List.of());
-        dEca.setMadeForMonitor(true);
+        dEca.setMadeForMonitor(false);
 
         deti = groupRepository.saveAndFlush(deti);
         dMat = groupRepository.saveAndFlush(dMat);
@@ -142,7 +133,12 @@ public class DataInit implements CommandLineRunner {
         car2.setGroup(dBio);
         monitorRepository.save(car2);
 
-
+        Monitor tst = new Monitor();
+        tst.setUuid("123");
+        tst.setName("car2222");
+        tst.setPending(false);
+        tst.setGroup(dEca);
+        monitorRepository.save(tst);
 
     }
 

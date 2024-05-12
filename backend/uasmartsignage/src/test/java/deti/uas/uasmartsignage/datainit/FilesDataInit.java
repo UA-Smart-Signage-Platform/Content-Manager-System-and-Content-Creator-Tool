@@ -1,14 +1,6 @@
 package deti.uas.uasmartsignage.datainit;
 
-
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.List;
-
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Repositories.FileRepository;
@@ -20,8 +12,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 
@@ -32,11 +22,6 @@ public class FilesDataInit implements CommandLineRunner{
     private MonitorGroupRepository groupRepository;
     private FileRepository fileRepository;
     private FileService fileService;
-
-    private Path tempFile;
-    private Path tempFile1;
-    private Path tempFile2;
-    private Path tempFile3;
 
 
     @Autowired
