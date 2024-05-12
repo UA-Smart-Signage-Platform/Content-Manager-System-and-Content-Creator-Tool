@@ -4,7 +4,9 @@ import monitorsGroupService from "../../services/monitorsGroupService";
 import { AnimatePresence, motion } from "framer-motion"
 import { ALL_WEEKDAYS } from 'rrule'
 import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
+import { FiTrash2 } from "react-icons/fi";
 import scheduleService from "../../services/scheduleService";
+import activeTemplateService from "../../services/activeTemplateService";
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
@@ -72,6 +74,12 @@ function Schedule(){
         setChangesMade(true);
     };
 
+    const removeRule = (rule) => {
+        activeTemplateService.deleteRule(rule.id).then(() => {
+            setUpdater(!updater);
+        });
+    };
+
     const handleUpdateRules = () => {
         const arr = [];
         rules.forEach(element => {
@@ -99,32 +107,40 @@ function Schedule(){
             }
             else {
                 return(
-                    <div className="relative">
+                    <div className="relative w-full h-full">
                         {[].concat(rules).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
                             <motion.div 
-                                animate={{y:index * 64}}
+                                animate={{y:index * 96}}
                                 key={rule.id} 
-                                className="flex w-full p-2 absolute h-16">
-                                <div className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected">
+                                className="flex w-full p-2 absolute h-24">
+                                <div className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center">
                                     <span className="text-textcolor">{rule.template.name}</span> running {/* */}
                                     <span className="text-textcolor">weekly</span> from {/* */}
                                     <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
-                                    <span className="text-textcolor">{rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}</span> on days {/* */}
+                                    <span className="text-textcolor">{rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}</span><br/> during {/* */}
                                     {rule.schedule.weekdays.map((day, index) => (
                                         <span className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
                                     ))}
                                 </div>
                                 <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
                                     <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
-                                    <div className="flex gap-2 m-auto">
-                                        <motion.button onClick={()=> priorityDown(rule)} whileHover={{scale:1.2}}
-                                                className=" border border-black rounded size-5 flex justify-center items-center">
-                                            <IoMdArrowDown/>
-                                        </motion.button>
-                                        <motion.button onClick={()=> priorityUp(rule)} whileHover={{scale:1.2}}
-                                                className=" border border-black rounded size-5 flex justify-center items-center">
-                                            <IoMdArrowUp/>
-                                        </motion.button>
+                                    <div className="flex flex-col w-full gap-2 m-auto">
+                                            <div className="flex flex-row  gap-2 m-auto">
+                                                <motion.button onClick={()=> priorityDown(rule)} whileHover={{scale:1.2}}
+                                                        className=" border border-black rounded size-5 flex justify-center items-center">
+                                                    <IoMdArrowDown/>
+                                                </motion.button>
+                                                <motion.button onClick={()=> priorityUp(rule)} whileHover={{scale:1.2}}
+                                                        className=" border border-black rounded size-5 flex justify-center items-center">
+                                                    <IoMdArrowUp/>
+                                                </motion.button>
+                                            </div>
+                                            <div className="flex items-center object-center place-content-center">
+                                                <motion.button onClick={()=>removeRule(rule)} whileHover={{scale:1.2}}
+                                                        className=" border border-black rounded size-5 flex justify-center items-center">
+                                                    <FiTrash2 />
+                                                </motion.button>
+                                            </div>
                                     </div>
                                 </div>
                             </motion.div>
