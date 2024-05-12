@@ -99,7 +99,9 @@ function PendingMonitorsModal( { showPortal, setShowPortal, monitorsUpdater, set
 
 PendingMonitorsModal.propTypes = {
     showPortal: PropTypes.bool.isRequired,
-    setShowPortal: PropTypes.func.isRequired
+    setShowPortal: PropTypes.func.isRequired,
+    monitorsUpdater: PropTypes.bool.isRequired,
+    setMonitorsUpdater: PropTypes.func.isRequired
 }
 
 export default PendingMonitorsModal;

@@ -1,6 +1,7 @@
 import EndTitleHtml from './EndTitleHtml';
 import MiddleTitleHtml from './MiddleTitleHtml';
 import StartTitleHtml from './StartTitleHtml';
+import PropTypes from 'prop-types';
 
 function PageTitle({ startTitle, middleTitle, endTitle, updater, setUpdater }) {
     return (
@@ -19,6 +20,14 @@ function PageTitle({ startTitle, middleTitle, endTitle, updater, setUpdater }) {
             <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
         </div>
     )
+}
+
+PageTitle.propTypes = {
+    startTitle: PropTypes.string.isRequired,
+    middleTitle: PropTypes.string.isRequired,
+    endTitle: PropTypes.string.isRequired,
+    updater: PropTypes.bool.isRequired,
+    setUpdater: PropTypes.func.isRequired
 }
 
 export default PageTitle;
