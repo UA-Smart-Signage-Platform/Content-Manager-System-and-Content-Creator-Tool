@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.integrationTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.google.gson.JsonElement;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ContentIT extends BaseIntegrationTest{

@@ -7,7 +7,6 @@ import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

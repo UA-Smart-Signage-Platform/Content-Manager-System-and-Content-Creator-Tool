@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Content;
-import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;

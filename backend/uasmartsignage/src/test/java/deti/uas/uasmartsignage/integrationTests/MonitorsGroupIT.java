@@ -1,17 +1,13 @@
 package deti.uas.uasmartsignage.integrationTests;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,13 +69,14 @@ class MonitorsGroupIT extends BaseIntegrationTest{
         HttpEntity<?> entity = new HttpEntity<>(headers);
         ResponseEntity<List<MonitorsGroup>> response = restTemplate.exchange("http://localhost:" + port + "/api/groups", HttpMethod.GET,
                 entity, new ParameterizedTypeReference<List<MonitorsGroup>>() {});
+        System.out.println("response" + response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, response.getBody().size());
+        assertEquals(4, response.getBody().size());
     }
 
     @Test
     @Order(2)
-    void testGetMonitorsGroupsThatAreNotAssociatedWithOnlyOneMonitor() throws Exception{
+    void testGetMonitorsGroupsNotMadeForMonitors() throws Exception{
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -176,24 +173,22 @@ class MonitorsGroupIT extends BaseIntegrationTest{
 
         ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.GET, new HttpEntity<>(headers), Monitor.class);
         Monitor deca = response.getBody();
-        System.out.println("dfghjkgygyv" + deca);
 
-
+        //already formatted group
         ResponseEntity<MonitorsGroup> response10 = restTemplate.exchange("http://localhost:" + port + "/api/groups/3", HttpMethod.GET,
                 new HttpEntity<>(headers), MonitorsGroup.class);
         MonitorsGroup group = response10.getBody();
         System.out.println("see get group" + group);
         group.setName("DECA2");
         group.setMonitors(List.of(deca));
+
         HttpEntity<MonitorsGroup> entity10 = new HttpEntity<>(group, headers);
-        System.out.println("dfghjk" + group);
         ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.PUT,
                 entity10, MonitorsGroup.class);
-        System.out.println("dfghjk"+response1.getBody());
         assertEquals(HttpStatus.OK, response1.getStatusCode());
         assertEquals("DECA2", response1.getBody().getName());
         assertEquals(1, response1.getBody().getMonitors().size());
-        //assertEquals("hall", response1.getBody().getMonitors().get(0).getName());
+        assertEquals("car2222", response1.getBody().getMonitors().get(0).getName());
 
     }
 

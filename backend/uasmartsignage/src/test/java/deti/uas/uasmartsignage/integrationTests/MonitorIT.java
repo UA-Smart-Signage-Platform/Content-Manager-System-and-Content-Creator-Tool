@@ -15,10 +15,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
-import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
-
-
 import java.util.List;
 
 class MonitorIT extends BaseIntegrationTest{
@@ -115,7 +111,7 @@ class MonitorIT extends BaseIntegrationTest{
             assertEquals(HttpStatus.OK, response.getStatusCode());
             System.out.println(response.getBody());
             assertFalse(response.getBody().isEmpty());
-            assertEquals(5, response.getBody().size());
+            assertEquals(6, response.getBody().size());
         }
 
         @Test
