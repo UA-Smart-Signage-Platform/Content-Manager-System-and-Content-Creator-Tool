@@ -34,6 +34,7 @@ function WidgetsModal( { Widgets, WidgetsList, setWidgetList,setShowPortal,setAb
             id:"new" + (WidgetsList.length +1),
         }]))
         setShowPortal(false)
+        setAbleSave(true)
     }
 
     
