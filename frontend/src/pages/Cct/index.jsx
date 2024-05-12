@@ -48,7 +48,7 @@ function Cct(){
                 id:null,
                 name:"newTemplate",
             })
-            SetName("newTemplate")
+            setName("newTemplate")
             setWidgetList([])
         }
 

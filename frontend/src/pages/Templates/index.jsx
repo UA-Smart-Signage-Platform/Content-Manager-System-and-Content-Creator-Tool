@@ -63,7 +63,6 @@ function Templates(){
             sortable:true,
         },
         {
-            name: "",
             selector: row => <button onClick={()=>deleteTemplate(row.id)} className=" border border-black rounded-sm size-5 flex items-center justify-center"><FiTrash2/></button>,
             sortable:false,
         }
