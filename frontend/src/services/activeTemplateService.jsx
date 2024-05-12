@@ -1,11 +1,12 @@
 import client from "./client";
 
 const activeTemplateService = {
-    async changeActiveTemplate(data){
-        return await client.put("/templateGroups/set", data);
-    },
-    async addActiveTemplate(data){
+    async addRule(data){
         return await client.post("/templateGroups", data);
+    },
+
+    async deleteRule(id){
+        return await client.delete(`/templateGroups/${id}`)
     }
 }
 

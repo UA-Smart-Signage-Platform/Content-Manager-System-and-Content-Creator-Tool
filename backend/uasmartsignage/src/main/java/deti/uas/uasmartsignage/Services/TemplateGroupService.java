@@ -62,6 +62,9 @@ public class TemplateGroupService {
 
     private final Logger logger = LoggerFactory.getLogger(TemplateGroupRepository.class);
 
+    private static final String DOWNLOAD_FILES = "downloadFiles";
+    private static final String SCHEDULE = "schedule";
+
     /**
      * Returns a TemplateGroup with the given id
      * 
@@ -166,7 +169,7 @@ public class TemplateGroupService {
     private Map<String, Object> buildResultMap(Map<Integer, String> updatedContent, List<String> downloadFiles) {
         Map<String, Object> result = new HashMap<>();
         result.put("updatedContent", updatedContent);
-        result.put("downloadFiles", downloadFiles);
+        result.put(DOWNLOAD_FILES, downloadFiles);
         return result;
     }
 
@@ -189,12 +192,12 @@ public class TemplateGroupService {
                 Map<String, Object> contentResult = processTemplateGroupContent(group.getContent());
                 Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
                 group.setContent(updatedContent);
-                downloadFiles = (List<String>) contentResult.get("downloadFiles");
+                downloadFiles = (List<String>) contentResult.get(DOWNLOAD_FILES);
             }
 
             rule.put("template", template);
-            rule.put("schedule", schedule.toMqttFormat());
-            rule.put("downloadFiles", downloadFiles);
+            rule.put(SCHEDULE, schedule.toMqttFormat());
+            rule.put(DOWNLOAD_FILES, downloadFiles);
             rule.put("group", group);
             rules.add(rule);
         }
@@ -212,9 +215,9 @@ public class TemplateGroupService {
                     TemplateGroup group = (TemplateGroup) rule.get("group");
                     String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
                     ruleToSend.put("html", html);
-                    ruleToSend.put("schedule", rule.get("schedule"));
+                    ruleToSend.put(SCHEDULE, rule.get(SCHEDULE));
                     rulesToSend.add(ruleToSend);
-                    for (String file : (List<String>) rule.get("downloadFiles")) {
+                    for (String file : (List<String>) rule.get(DOWNLOAD_FILES)) {
                         if (!filesToSend.contains(file)) {
                             filesToSend.add(file);
                         }
