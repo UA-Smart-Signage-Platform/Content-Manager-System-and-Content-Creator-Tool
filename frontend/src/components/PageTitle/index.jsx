@@ -2,7 +2,7 @@ import EndTitleHtml from './EndTitleHtml';
 import MiddleTitleHtml from './MiddleTitleHtml';
 import StartTitleHtml from './StartTitleHtml';
 
-function PageTitle({ startTitle, middleTitle, endTitle }) {
+function PageTitle({ startTitle, middleTitle, endTitle, updater, setUpdater }) {
     return (
         <div className="flex flex-col h-full">
             <div id="centerItems" className="items-end h-full w-full flex">
@@ -13,7 +13,7 @@ function PageTitle({ startTitle, middleTitle, endTitle }) {
                     <MiddleTitleHtml page={middleTitle} />
                 </div>
                 <div id="endTitle" className="flex ml-auto mb-3 mr-1">
-                    < EndTitleHtml page={endTitle} />
+                    < EndTitleHtml page={endTitle} updater={updater} setUpdater={setUpdater} />
                 </div>
             </div>
             <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
