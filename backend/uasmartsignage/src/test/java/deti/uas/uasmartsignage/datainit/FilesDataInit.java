@@ -72,6 +72,5 @@ public class FilesDataInit implements CommandLineRunner{
         ff1.setFile(file1);
         ff1.setParentId(1L);
         fileService.createFile(ff1);
-
     }
 }

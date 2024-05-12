@@ -78,8 +78,6 @@ class FileServiceIT{
                 String.class
         );
 
-        //System.out.println("ertyuihgfdsadfgbhnjmkl.,kmjhngbf" + response.getBody());
-
         // Ensure that the request was successful (HTTP status code 200)
         assertEquals(200, response.getStatusCodeValue());
 
@@ -102,7 +100,7 @@ class FileServiceIT{
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<CustomFile> response = restTemplate.exchange("http://localhost:" +  port  + "/api/files/3", HttpMethod.GET,entity, CustomFile.class);
+        ResponseEntity<CustomFile> response = restTemplate.exchange("http://localhost:" +  port  + "/api/files/3", HttpMethod.GET, entity, CustomFile.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, Objects.requireNonNull(response.getBody()).getId());
         assertEquals("test1.png", response.getBody().getName());
@@ -124,8 +122,7 @@ class FileServiceIT{
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/directory/root", HttpMethod.GET,entity,String.class);
-        System.out.println(response.getBody());
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/directory/root", HttpMethod.GET, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
@@ -210,12 +207,8 @@ class FileServiceIT{
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);
 
-        System.out.println("enity"+entity);
-
         ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/1",HttpMethod.GET,entity ,CustomFile.class);
         CustomFile testDir = getResponse.getBody();
-
-        System.out.println("testDir"+testDir);
 
         CustomFile directory = new CustomFile();
         directory.setName("New Directory");
@@ -228,16 +221,12 @@ class FileServiceIT{
         // Create the HTTP entity with headers and request body
         HttpEntity<CustomFile> requestEntity = new HttpEntity<>(directory, headers);
 
-        System.out.println("requestEntity"+requestEntity);
-
         ResponseEntity<CustomFile> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/files/directory",
                 HttpMethod.POST,
                 requestEntity,
                 CustomFile.class
         );
-
-        System.out.println("response"+response.getBody());
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         CustomFile createdDirectory = response.getBody();
