@@ -60,6 +60,34 @@ public class MqttSubscriberService {
         }
     }
 
+    @PostConstruct
+    public void subscribeToKeepAliveTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
+        logger.info("Subscribing to keep alive topic");
+        try {
+            MqttConfig.getInstance().subscribe("keepalive", (topic, mqttMessage) -> {
+                String payload = new String(mqttMessage.getPayload());
+                logger.info("Received message on topic {}: {}", topic, payload);
+
+                try {
+                    KeepAliveMessage keepAliveMessage = objectMapper.readValue(payload, KeepAliveMessage.class);
+                    handleKeepAliveMessage(keepAliveMessage);
+                } catch (IOException e) {
+                    logger.error("Error parsing keep alive message: {}", e.getMessage());
+                }
+
+            });
+        } catch (MqttException e) {
+            logger.error("Error subscribing to keep alive topic: {}", e.getMessage());
+        }
+    }
+
+    private void handleKeepAliveMessage(KeepAliveMessage keepAliveMessage) {
+        logger.info("Received keep alive message: {}", keepAliveMessage);
+        logger.info("Method: {}", keepAliveMessage.getMethod());
+        logger.info("UUID: {}", keepAliveMessage.getUuid());
+        
+    }
+
     private void handleRegistrationMessage(RegistrationMessage registrationMessage) {
         logger.info("Received registration message: {}", registrationMessage);
         logger.info("Method: {}", registrationMessage.getMethod());
