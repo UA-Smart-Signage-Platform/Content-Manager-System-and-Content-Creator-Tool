@@ -1,6 +1,7 @@
 import { MdOutlineSearch, MdAdd } from "react-icons/md";
 import PendingMonitorsModal from "../Portals/PendingMonitorsModal";
 import { useState } from "react";
+import PropTypes from 'prop-types';
 
 function EndTitleHtml( { page, updater, setUpdater } ) {
     const [showPortal, setShowPortal] = useState(false);
