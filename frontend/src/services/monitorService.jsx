@@ -8,7 +8,7 @@ const monitorService = {
     async getMonitorById(id){
         return await client.get(`/monitors/${id}`)
     },
-    
+
     async acceptMonitor() {
         return await client.post("/monitors")
     },
