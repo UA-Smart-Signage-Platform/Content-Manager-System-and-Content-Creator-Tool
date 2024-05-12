@@ -30,7 +30,6 @@ import java.util.Objects;
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=integration-test"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Order(1)
 class FileIT {
 
     @Container

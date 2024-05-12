@@ -182,7 +182,7 @@ class MonitorsGroupIT extends BaseIntegrationTest{
         ResponseEntity<MonitorsGroup> response10 = restTemplate.exchange("http://localhost:" + port + "/api/groups/3", HttpMethod.GET,
                 new HttpEntity<>(headers), MonitorsGroup.class);
         MonitorsGroup group = response10.getBody();
-        System.out.println("see get group" + group);//está a vir sem a lista de monitors
+        System.out.println("see get group" + group);
         group.setName("DECA2");
         group.setMonitors(List.of(deca));
         HttpEntity<MonitorsGroup> entity10 = new HttpEntity<>(group, headers);
