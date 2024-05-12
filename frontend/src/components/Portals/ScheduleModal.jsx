@@ -158,7 +158,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration:0.3 }}
-            className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
+            className="fixed z-20 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <motion.div key="content"
                     initial={{ scale: 0.8 }}
