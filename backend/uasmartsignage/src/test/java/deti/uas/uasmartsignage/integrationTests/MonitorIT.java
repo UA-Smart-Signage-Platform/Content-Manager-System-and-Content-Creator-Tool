@@ -196,7 +196,7 @@ class MonitorIT extends BaseIntegrationTest{
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors", HttpMethod.POST, entity2, Monitor.class);
             assertEquals(HttpStatus.CREATED, response.getStatusCode());
             assertEquals("monitor10", response.getBody().getName());
-            assertEquals("DECA2", response.getBody().getGroup().getName());
+            assertEquals("DECA", response.getBody().getGroup().getName());
         }
 
         @Test
@@ -235,7 +235,7 @@ class MonitorIT extends BaseIntegrationTest{
             assertEquals(HttpStatus.OK, response3.getStatusCode());
 
             assertEquals("update_monitor", response3.getBody().getName());
-            assertEquals("DECA2", response3.getBody().getGroup().getName());
+            assertEquals("DECA", response3.getBody().getGroup().getName());
         }
 
 }
