@@ -1,5 +1,6 @@
-import { useState,useRef } from "react";
+import React, { useState,useRef } from "react";
 import { motion,useMotionValue } from "framer-motion";
+import PropTypes from 'prop-types';
 
 function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} ) {
     const divRef = useRef(null);
@@ -146,6 +147,15 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
             </div>
         </motion.div>
     )
+}
+
+MovableDiv.propTypes = {
+    parentRef: PropTypes.object.isRequired,
+    color: PropTypes.string.isRequired,
+    widget: PropTypes.object.isRequired,
+    widgetList:PropTypes.array.isRequired,
+    setWidgetList:PropTypes.func.isRequired,
+    setSave:PropTypes.func.isRequired,
 }
 
 export default MovableDiv;

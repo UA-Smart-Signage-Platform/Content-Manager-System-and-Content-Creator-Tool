@@ -72,9 +72,10 @@ function WidgetsModal( { Widgets, WidgetsList, setWidgetList,setShowPortal,setAb
 
 WidgetsModal.propTypes = {
     Widgets: PropTypes.array.isRequired,
-    setWidgetList: PropTypes.func.isRequired,
-    setShowPortal: PropTypes.func.isRequired,
+    WidgetsList: PropTypes.array.isRequired,
     setAbleSave:PropTypes.func.isRequired,
+    setWidgetList:PropTypes.func.isRequired,
+    setShowPortal:PropTypes.func.isRequired,
 }
 
 export default WidgetsModal;
