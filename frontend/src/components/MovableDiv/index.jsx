@@ -49,8 +49,17 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
                 }
 
             })
-            left.set(newLeft > 0 ? newLeft < (100-percentagetoNumber(width.get())) ? numbertoPercentage(newLeft) : numbertoPercentage(100-percentagetoNumber(width.get())) : "0%")
-            top.set(newTop > 0 ? newTop < (100-percentagetoNumber(height.get())) ? numbertoPercentage(newTop) : numbertoPercentage(100-percentagetoNumber(height.get())) : "0%")
+            if(newLeft > 0){
+                left.set(newLeft < (100-percentagetoNumber(width.get()))? numbertoPercentage(newLeft) : numbertoPercentage(100-percentagetoNumber(width.get())))
+            }else{
+                left.set("0%")
+            }
+
+            if(newTop > 0){
+                top.set(newTop < (100-percentagetoNumber(height.get())) ? numbertoPercentage(newTop) : numbertoPercentage(100-percentagetoNumber(height.get())))
+            }else{
+                top.set("0%")
+            }
         }
     }
 
