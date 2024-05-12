@@ -141,7 +141,7 @@ function Cct(){
                     <PageTitle startTitle={"templates"}/>
                 </div>
                 <div className="h-[92%] flex">
-                    {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets} WidgetsList={widgetList} setWidgetList={setWidgetList}/>}
+                    {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets} WidgetsList={widgetList} setWidgetList={setWidgetList} setAbleSave={setAbleSave}/>}
                     <div className="h-full w-[20%]">
                         <div className="font-bold pt-3 px-2 flex justify-between">
                             <input className="text-xl border-b-2 border-black" value={name} onChange={(e)=>{setName(e.target.value);setAbleSave(true)}}/>
