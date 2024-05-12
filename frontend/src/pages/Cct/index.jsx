@@ -24,9 +24,9 @@ function Cct(){
     const { state } = useLocation();
     const [template,setTemplate] = useState(state !== null ? state:null);
     const [widgetList,setWidgetList] = useState(state !== null ? state.templateWidgets:[])
-    const [name,SetName] = useState(state !== null ? state.name:"")
+    const [name,setName] = useState(state !== null ? state.name:"")
     const [ableSave,setAbleSave] = useState(false);
-    const [widgtsToRemove,setWidgetsToRemove] = useState([]);
+    const [widgetsToRemove,setWidgetsToRemove] = useState([]);
     const [widgets,setWidgets] = useState([]);
     const [portal,setPortal] = useState(false);
     const constrainRef = useRef(null);
@@ -41,7 +41,7 @@ function Cct(){
             templateservice.getTemplate(id).then((response)=>{
                 setTemplate(response.data)
                 setWidgetList(response.data.templateWidgets)
-                SetName(response.data.name)
+                setName(response.data.name)
             })
         }else{
             setTemplate({
@@ -65,7 +65,7 @@ function Cct(){
         savingTemplate.name = name;
 
         templateservice.saveTemplate(savingTemplate).then((response)=>{
-            let arr = widgtsToRemove.map((id)=>{
+            let arr = widgetsToRemove.map((id)=>{
                 return templateservice.deleteTemplateWidget(id)
             })
             Promise.all(arr).then(
@@ -123,7 +123,7 @@ function Cct(){
             return element
         })
         setWidgetList(arr.filter((element)=> element.id !== id))
-        setWidgetsToRemove(widgtsToRemove.concat([id]))
+        setWidgetsToRemove(widgetsToRemove.concat([id]))
         if(!ableSave){
             setAbleSave(true)
         }
@@ -145,7 +145,7 @@ function Cct(){
                     {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets} WidgetsList={widgetList} setWidgetList={setWidgetList}/>}
                     <div className="h-full w-[20%]">
                         <div className="font-bold pt-3 px-2 flex justify-between">
-                            <input className="text-xl border-b-2 border-black" value={name} onChange={(e)=>{SetName(e.target.value);setAbleSave(true)}}/>
+                            <input className="text-xl border-b-2 border-black" value={name} onChange={(e)=>{setName(e.target.value);setAbleSave(true)}}/>
                             <button disabled={!ableSave}
                                     onClick={saveTemplate}
                                     className=" bg-secondaryMedium p-1 rounded-md font-normal disabled:text-secondary disabled:bg-secondaryMedium">
