@@ -1,21 +1,22 @@
 import { useEffect, useState } from "react";
-import { PageTitle, ScheduleModal } from "../../components";
+import { PageTitle, ScheduleModal, ScheduleDeleteModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import { AnimatePresence, motion } from "framer-motion"
 import { ALL_WEEKDAYS } from 'rrule'
 import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
 import { FiTrash2 } from "react-icons/fi";
 import scheduleService from "../../services/scheduleService";
-import activeTemplateService from "../../services/activeTemplateService";
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
     const [selectedGroupId, setSelectedGroupId] = useState(null);
     const [showPortal, setShowPortal] = useState(false);
+    const [showDeletePortal, setShowDeletePortal] = useState(false);
     const [showGroupNeeded, setShowGroupNeeded] = useState(false);
     const [updater, setUpdater] = useState(false);
     const [rules, setRules] = useState([]);
     const [changesMade, setChangesMade] = useState(false);
+    const [ruleToDelete, setRuleToDelete] = useState(null);
 
     useEffect(() => {
         monitorsGroupService.getGroups().then((response) => {
@@ -74,12 +75,6 @@ function Schedule(){
         setChangesMade(true);
     };
 
-    const removeRule = (rule) => {
-        activeTemplateService.deleteRule(rule.id).then(() => {
-            setUpdater(!updater);
-        });
-    };
-
     const handleUpdateRules = () => {
         const arr = [];
         rules.forEach(element => {
@@ -126,17 +121,17 @@ function Schedule(){
                                 <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
                                 <div className="flex flex-col w-full gap-2 m-auto">
                                         <div className="flex flex-row  gap-2 m-auto">
-                                            <motion.button onClick={()=> priorityDown(rule)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => priorityDown(rule)} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <IoMdArrowDown/>
                                             </motion.button>
-                                            <motion.button onClick={()=> priorityUp(rule)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => priorityUp(rule)} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <IoMdArrowUp/>
                                             </motion.button>
                                         </div>
                                         <div className="flex items-center object-center place-content-center">
-                                            <motion.button onClick={()=>removeRule(rule)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => {setRuleToDelete(rule); setShowDeletePortal(true)}} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <FiTrash2 />
                                             </motion.button>
@@ -210,6 +205,12 @@ function Schedule(){
                                 updater={updater}
                                 setUpdater={setUpdater}
                                 totalRules={rules.length} />
+                        }
+                        {showDeletePortal && <ScheduleDeleteModal 
+                                setShowPortal={setShowDeletePortal}
+                                rule={ruleToDelete}
+                                updater={updater}
+                                setUpdater={setUpdater} />
                         }
                     </AnimatePresence>
                     <div className="flex flex-col w-full h-[95%] pt-3 overflow-scroll">
