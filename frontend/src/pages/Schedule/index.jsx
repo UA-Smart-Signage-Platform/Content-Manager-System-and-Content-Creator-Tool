@@ -87,6 +87,7 @@ function Schedule(){
         });
 
         scheduleService.updateSchedule(arr);
+        setChangesMade(false);
     };
 
     const displayRules = () => {
@@ -97,57 +98,55 @@ function Schedule(){
                 </div>
             );
         }
+        else if (rules.length === 0){
+            return(
+                <div className="flex pt-[15%] place-content-center w-full h-full">
+                    <span className="pt-[10%] text-xl font-light">This group contains no rules</span>
+                </div>
+            );
+        }
         else {
-            if (rules.length === 0){
-                return(
-                    <div className="flex pt-[15%] place-content-center w-full h-full">
-                        <span className="pt-[10%] text-xl font-light">This group contains no rules</span>
-                    </div>
-                );
-            }
-            else {
-                return(
-                    <div className="relative w-full h-full">
-                        {[].concat(rules).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
-                            <motion.div 
-                                animate={{y:index * 96}}
-                                key={rule.id} 
-                                className="flex w-full p-2 absolute h-24">
-                                <div className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center">
-                                    <span className="text-textcolor">{rule.template.name}</span> running {/* */}
-                                    <span className="text-textcolor">weekly</span> from {/* */}
-                                    <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
-                                    <span className="text-textcolor">{rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}</span><br/> during {/* */}
-                                    {rule.schedule.weekdays.map((day, index) => (
-                                        <span className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
-                                    ))}
+            return(
+                <div className="relative w-full h-full">
+                    {[].concat(rules).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
+                        <motion.div 
+                            animate={{y:index * 96}}
+                            key={rule.id} 
+                            className="flex w-full p-2 absolute h-24">
+                            <div className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center">
+                                <span className="text-textcolor">{rule.template.name}</span> running {/* */}
+                                <span className="text-textcolor">weekly</span> from {/* */}
+                                <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
+                                <span className="text-textcolor">{rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}</span><br/> during {/* */}
+                                {rule.schedule.weekdays.map((day, index) => (
+                                    <span key={ALL_WEEKDAYS[day]} className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
+                                ))}
+                            </div>
+                            <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
+                                <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
+                                <div className="flex flex-col w-full gap-2 m-auto">
+                                        <div className="flex flex-row  gap-2 m-auto">
+                                            <motion.button onClick={()=> priorityDown(rule)} whileHover={{scale:1.2}}
+                                                    className=" border border-black rounded size-5 flex justify-center items-center">
+                                                <IoMdArrowDown/>
+                                            </motion.button>
+                                            <motion.button onClick={()=> priorityUp(rule)} whileHover={{scale:1.2}}
+                                                    className=" border border-black rounded size-5 flex justify-center items-center">
+                                                <IoMdArrowUp/>
+                                            </motion.button>
+                                        </div>
+                                        <div className="flex items-center object-center place-content-center">
+                                            <motion.button onClick={()=>removeRule(rule)} whileHover={{scale:1.2}}
+                                                    className=" border border-black rounded size-5 flex justify-center items-center">
+                                                <FiTrash2 />
+                                            </motion.button>
+                                        </div>
                                 </div>
-                                <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
-                                    <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
-                                    <div className="flex flex-col w-full gap-2 m-auto">
-                                            <div className="flex flex-row  gap-2 m-auto">
-                                                <motion.button onClick={()=> priorityDown(rule)} whileHover={{scale:1.2}}
-                                                        className=" border border-black rounded size-5 flex justify-center items-center">
-                                                    <IoMdArrowDown/>
-                                                </motion.button>
-                                                <motion.button onClick={()=> priorityUp(rule)} whileHover={{scale:1.2}}
-                                                        className=" border border-black rounded size-5 flex justify-center items-center">
-                                                    <IoMdArrowUp/>
-                                                </motion.button>
-                                            </div>
-                                            <div className="flex items-center object-center place-content-center">
-                                                <motion.button onClick={()=>removeRule(rule)} whileHover={{scale:1.2}}
-                                                        className=" border border-black rounded size-5 flex justify-center items-center">
-                                                    <FiTrash2 />
-                                                </motion.button>
-                                            </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
-                );
-            }
+                            </div>
+                        </motion.div>
+                    ))}
+                </div>
+            );
         }
     };
 
@@ -181,7 +180,7 @@ function Schedule(){
                         
                         <div className="flex w-[50%] h-full items-center relative">
                             {selectedGroupId !== null &&
-                                <button disabled={changesMade ? false : true}
+                                <button disabled={!changesMade}
                                     onClick={() => handleUpdateRules()} 
                                     className={`bg-primary p-1 pr-4 pl-4 rounded-md ${changesMade ? "" : "opacity-45 cursor-not-allowed"}`}>
                                 Save
@@ -190,7 +189,7 @@ function Schedule(){
                             <motion.select
                                 whileHover={{ border: "2px solid" }}
                                 whileTap={{ border: "2px solid" }}
-                                onChange={(e) => {setSelectedGroupId(e.target.value - 1); setShowGroupNeeded(false)}} 
+                                onChange={(e) => {setSelectedGroupId(e.target.value - 1); setShowGroupNeeded(false); setChangesMade(false)}} 
                                 className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
                                 <option selected disabled hidden>Group</option>
                                 {groups.length !== 0 && groups.map((group) => 
