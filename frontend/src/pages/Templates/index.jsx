@@ -83,7 +83,7 @@ function Templates(){
             setTemplates(response.data)
             setTemplateDisplay(response.data[0])
         })
-    },[updater])
+    },[])
 
     useEffect(()=>{
         if (templates.length !== 0 && templateDisplay !== null){

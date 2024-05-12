@@ -24,7 +24,7 @@ function Monitor(){
                 setName(monitorRes.data.name)
                 setGroupId(monitorRes.data.group.id)
                 let groupsSetting = groupsRes.data
-                if (groupsSetting.find((element)=>element.id == monitorRes.data.group.id) == undefined){
+                if (groupsSetting.find((element)=>element.id === monitorRes.data.group.id) === undefined){
                     groupsSetting.push(monitorRes.data.group)
                 }
                 setGroups(groupsSetting)
@@ -35,7 +35,7 @@ function Monitor(){
     const handleUpdate = ()=>{
         let monitorsend = monitor
         monitorsend.name = name
-        monitorsend.group = groups.find((element)=>element.id == groupId)
+        monitorsend.group = groups.find((element)=>element.id === groupId)
         monitorService.updateMonitor(id,monitorsend).then((response)=>{
             setMonitor(response.data)
         })
@@ -99,7 +99,7 @@ function Monitor(){
                                             {update?
                                                 <select className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}>
                                                     {groups.map((group)=>
-                                                    <option key={group.id} value={group.id} selected={groupId== group.id}>{!group.madeForMonitor ? group.name:"----"}</option>
+                                                    <option key={group.id} value={group.id} selected={groupId=== group.id}>{!group.madeForMonitor ? group.name:"----"}</option>
                                                 )}
                                                 </select>
                                                 :
