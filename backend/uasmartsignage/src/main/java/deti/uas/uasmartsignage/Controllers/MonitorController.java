@@ -24,7 +24,7 @@ public class MonitorController {
     private MonitorService monitorService;
 
     @Autowired
-    public MonitorController(MonitorService monitorService){
+    public MonitorController(MonitorService monitorService) {
         this.monitorService = monitorService;
     }
 
@@ -34,6 +34,7 @@ public class MonitorController {
     })
     @GetMapping
     public ResponseEntity<?> getAllMonitors() {
+        
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(false);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }

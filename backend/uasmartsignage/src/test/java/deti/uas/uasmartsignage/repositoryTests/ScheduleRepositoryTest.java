@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 
 @DataJpaTest
@@ -27,9 +27,9 @@ class ScheduleRepositoryTest {
 
     @Test
     void whenFindById_thenReturnSchedule() {
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
         entityManager.persistAndFlush(user);
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
@@ -43,7 +43,6 @@ class ScheduleRepositoryTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(monitorsGroup);
 
         entityManager.persistAndFlush(schedule);
 
@@ -54,9 +53,9 @@ class ScheduleRepositoryTest {
 
     @Test
     void whenFindAll_thenReturnAllSchedules() {
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
         entityManager.persistAndFlush(user);
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
@@ -70,7 +69,6 @@ class ScheduleRepositoryTest {
         schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
         schedule1.setLastEditedBy(user);
-        schedule1.setMonitorsGroupForSchedules(monitorsGroup);
 
         Schedule schedule2 = new Schedule();
         schedule2.setFrequency(5);
@@ -79,7 +77,6 @@ class ScheduleRepositoryTest {
         schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
         schedule2.setLastEditedBy(user);
-        schedule2.setMonitorsGroupForSchedules(monitorsGroup);
 
         entityManager.persistAndFlush(schedule1);
         entityManager.persistAndFlush(schedule2);

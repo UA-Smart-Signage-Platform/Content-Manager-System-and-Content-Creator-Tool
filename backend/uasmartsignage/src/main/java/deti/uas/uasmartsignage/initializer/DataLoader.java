@@ -1,27 +1,39 @@
 package deti.uas.uasmartsignage.initializer;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Models.FilesClass;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
 import deti.uas.uasmartsignage.Services.FileService;
+import deti.uas.uasmartsignage.Services.ScheduleService;
+
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import deti.uas.uasmartsignage.Models.Content;
+import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
 import deti.uas.uasmartsignage.Repositories.WidgetRepository;
@@ -29,23 +41,34 @@ import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 @Component
 @Profile("!test")
 public class DataLoader implements CommandLineRunner {
+
     private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
     private WidgetRepository widgetRepository;
     private ContentRepository contentRepository;
     private TemplateRepository templateRepository;
     private TemplateWidgetRepository templateWidgetRepository;
+    private TemplateGroupRepository templateGroupRepository;
+    private ScheduleService scheduleService;
+    private FileService fileService;
+
+    private Logger logger = org.slf4j.LoggerFactory.getLogger(DataLoader.class);
 
     @Autowired
     public DataLoader(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
             ContentRepository contentRepository, WidgetRepository widgetRepository,
-            MonitorGroupRepository groupRepository, MonitorRepository monitorRepository) {
+            MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,
+            TemplateGroupRepository templateGroupRepository,
+            ScheduleService scheduleService, FileService fileService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
         this.widgetRepository = widgetRepository;
         this.groupRepository = groupRepository;
         this.monitorRepository = monitorRepository;
+        this.templateGroupRepository = templateGroupRepository;
+        this.scheduleService = scheduleService;
+        this.fileService = fileService;
     }
 
     public void run(String... args) throws Exception {
@@ -53,9 +76,23 @@ public class DataLoader implements CommandLineRunner {
             return;
         }
 
+        // delete all files in the uploads folder if there are no files in the database
+        if(fileService.getFilesAtRoot().isEmpty()){
+            Path path = Paths.get("/app/uploads");
+            try (Stream<Path> paths = Files.walk(path)) {
+                paths.sorted(Comparator.reverseOrder())
+                        .map(Path::toFile)
+                        .forEach(File::delete);
+            } catch (IOException e) {
+                logger.error("Error deleting files in uploads folder");
+            }
+        }
+        
+
         this.loadTemplates();
         this.loadGroupsAndMonitors();
-  
+        this.loadSchedules();
+        this.loadTemplateGroups();
     }
 
     private void loadGroupsAndMonitors(){
@@ -127,6 +164,7 @@ public class DataLoader implements CommandLineRunner {
         car2.setPending(true);
         car2.setGroup(dBio);
         monitorRepository.save(car2);
+
     }
 
     private void loadTemplates() {
@@ -268,5 +306,36 @@ public class DataLoader implements CommandLineRunner {
         media2.setTemplate(template2);
         media2.setWidget(mediaWidget);
         templateWidgetRepository.save(media2);
+    }
+
+    private void loadTemplateGroups() {
+        Template template1 = templateRepository.findByName("template1");
+
+        MonitorsGroup deti = groupRepository.findByName("DETI");
+
+        TemplateGroup templateGroup1 = new TemplateGroup();
+        templateGroup1.setGroup(deti);
+        templateGroup1.setTemplate(template1);
+        Schedule schedule1 = scheduleService.getAllSchedules().get(0);
+        templateGroup1.setSchedule(schedule1);
+        templateGroupRepository.save(templateGroup1);
+
+    }
+
+    private void loadSchedules() {
+        Schedule schedule = new Schedule();
+        schedule.setTemplateGroups(new ArrayList<>());
+        List<Integer> days = new ArrayList<>();
+        days.add(1);
+        days.add(2);
+        days.add(3);
+        days.add(4);
+        days.add(5);
+        schedule.setWeekdays(days);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartTime(LocalTime.parse("00:00"));
+        schedule.setEndTime(LocalTime.parse("23:59"));
+        scheduleService.saveSchedule(schedule);
     }
 }
