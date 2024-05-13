@@ -218,6 +218,7 @@ function Schedule(){
                                                     message={"Are you sure you want to delete this Rule?"}
                                                     funcToExecute={deleteRule}
                                                     cancelFunc={()=>setShowDeletePortal(false)}
+                                                    confirmMessage={"Yes"}
                                              />
                         }
                     </AnimatePresence>

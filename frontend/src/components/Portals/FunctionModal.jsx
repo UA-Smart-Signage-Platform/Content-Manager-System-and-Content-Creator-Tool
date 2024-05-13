@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import PropTypes from 'prop-types';
 
-function FunctionModal( { cancelFunc,funcToExecute,message } ) {
+function FunctionModal( { cancelFunc,funcToExecute,message,confirmMessage } ) {
     return createPortal (
         <motion.div key="backgroundContents"
                 initial={{ opacity: 0 }}
@@ -23,7 +23,7 @@ function FunctionModal( { cancelFunc,funcToExecute,message } ) {
                     <div className="flex flex-row h-[50%] justify-evenly items-center">
                         <div>
                             <button onClick={funcToExecute} className="flex bg-[#D12E2E] text-white rounded-md p-2 pr-5 pl-5">
-                                <span className="text-xl">Yes</span>
+                                <span className="text-xl">{confirmMessage}</span>
                             </button>
                         </div>
                         <div>

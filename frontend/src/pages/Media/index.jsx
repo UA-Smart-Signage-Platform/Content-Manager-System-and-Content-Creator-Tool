@@ -112,6 +112,7 @@ function Media() {
                                     message={"Are you sure you want to delete this file/folder?"}
                                     funcToExecute={()=>deleteFile()}
                                     cancelFunc={()=>{setDeletePortal(false)}}
+                                    confirmMessage={"Yes"}
                                     />}
                             </AnimatePresence>
                             </>,
