@@ -16,10 +16,12 @@ import deti.uas.uasmartsignage.exceptions.MqttException;
 import jakarta.annotation.PostConstruct;
 
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Models.Monitor;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Severity;
 
 @Component
 @Profile("!test & !integration-test")
@@ -31,12 +33,15 @@ public class MqttSubscriberService {
 
     private final MonitorGroupService monitorGroupService;
 
+    private final LogsService logsService;
+
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
 
-    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService) {
+    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService) {
         this.objectMapper = objectMapper;
         this.monitorService = monitorService;
         this.monitorGroupService = monitorGroupService;
+        this.logsService = logsService;
     }
 
     @PostConstruct
@@ -86,6 +91,12 @@ public class MqttSubscriberService {
         logger.info("Method: {}", keepAliveMessage.getMethod());
         logger.info("UUID: {}", keepAliveMessage.getUuid());
         
+        if (!logsService.addKeepAliveLog(Severity.INFO, keepAliveMessage.getUuid(), keepAliveMessage.getMethod(), "Keep alive message received" )) {
+            logger.error("Failed to add log to InfluxDB");
+        } else {
+            logger.info("Added log to InfluxDB: {}", keepAliveMessage.getUuid());
+        }
+
     }
 
     private void handleRegistrationMessage(RegistrationMessage registrationMessage) {

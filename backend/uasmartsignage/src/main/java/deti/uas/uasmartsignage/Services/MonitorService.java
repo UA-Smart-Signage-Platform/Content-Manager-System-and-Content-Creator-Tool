@@ -43,6 +43,15 @@ public class MonitorService {
         String operation = "getMonitorById";
         String description = "Getting monitor by id " + id;
 
+        Monitor monitor = monitorRepository.findById(id).orElse(null);
+
+        if (monitor == null) {
+            return null;
+        }
+
+        boolean online = logsService.keepAliveIn10min(monitor);
+        monitor.setOnline(online);
+
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
@@ -50,7 +59,7 @@ public class MonitorService {
             logger.info(ADDLOGSUCCESS, description);
         }
 
-        return monitorRepository.findById(id).orElse(null);
+        return monitor;
     }
 
     /**
@@ -158,13 +167,21 @@ public class MonitorService {
     public List<Monitor> getAllMonitorsByPending(boolean pending) {
         String operation = "getAllMonitorsByPending";
         String description = "Getting all monitors by pending " + pending;
+
+        List<Monitor> monitors = monitorRepository.findByPending(pending);
+
+        for (Monitor monitor : monitors) {
+            boolean online = logsService.keepAliveIn10min(monitor);
+            monitor.setOnline(online);
+        }
+
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
         else {
             logger.info(ADDLOGSUCCESS, description);
         }
-        return monitorRepository.findByPending(pending);
+        return monitors;
     }
 
     /**
@@ -175,6 +192,15 @@ public class MonitorService {
     public List<Monitor> getMonitorsByGroup(long groupId) {
         String operation = "getMonitorsByGroup";
         String description = "Getting all monitors by group " + groupId;
+
+        List<Monitor> monitors = monitorRepository.findByPendingAndGroup_Id(false,groupId);
+
+        for (Monitor monitor : monitors) {
+            boolean online = logsService.keepAliveIn10min(monitor);
+            monitor.setOnline(online);
+        }
+
+
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
@@ -182,7 +208,7 @@ public class MonitorService {
             logger.info(ADDLOGSUCCESS, description);
         }
         
-        return monitorRepository.findByPendingAndGroup_Id(false,groupId);
+        return monitors;
     }
 
 }

@@ -12,6 +12,7 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
 import deti.uas.uasmartsignage.Models.BackendLog;
+import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Severity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,12 +137,54 @@ public class LogsService {
         return logs;
     }
 
-    public boolean addMonitorLog(Severity severity, String Monitor, String operation, String description, Long time) {
+    public boolean addKeepAliveLog(Severity severity, String Monitor, String operation, String description) {
+        String measurement = "KeepAliveLogs";
+        try {
+            Point point = Point.measurement(measurement)
+                    .addTag(MONITOR, Monitor)
+                    .addField(SEVERITY, severity.toString())
+                    .addField(OPERATION, operation)
+                    .addField(DESCRIPTION, description)
+                    .time(System.currentTimeMillis(), WritePrecision.MS);
+
+            WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
+            writeApi.writePoint(monitorBucket, org, point);
+            return true;
+        } catch (InfluxException e) {
+            logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("An unexpected error occurred: {}", e.getMessage());
+        }
+        return false;
+    }
+
+
+    public boolean keepAliveIn10min(Monitor monitor) {
+        String monitorUUID = monitor.getUuid();
+
+        String fluxQuery = "from(bucket: \""+ monitorBucket +"\")" +
+                " |> range(start: -10m)" +  // Adjust time range as needed
+                " |> filter(fn: (r) => r._measurement == \"KeepAliveLogs\")" +  
+                " |> filter(fn: (r) => r.SourceMonitor == \"" + monitorUUID + "\")";
+    
+        QueryApi queryApi = influxDBClient.getQueryApi();
+        List<FluxTable> tables = queryApi.query(fluxQuery, org);
+
+        if (tables.isEmpty()) {
+            return false;
+        }
+
+        return true;
+    }
+    
+
+    // Not implemented 
+    public boolean addMonitorLog(Severity severity, String uuid, String operation, String description, Long time) {
         String measurement = "MonitorLogs";
         try {
             // Prepare the InfluxDB point
             Point point = Point.measurement(measurement)
-                    .addTag(MONITOR, Monitor)
+                    .addTag(MONITOR, uuid)
                     .addField(SEVERITY, severity.toString())
                     .addField(OPERATION, operation)
                     .addField(DESCRIPTION, description)

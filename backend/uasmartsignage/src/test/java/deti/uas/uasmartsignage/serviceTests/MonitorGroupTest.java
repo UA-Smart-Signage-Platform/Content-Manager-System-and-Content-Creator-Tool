@@ -5,6 +5,7 @@ import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,6 +30,9 @@ class MonitorGroupTest {
 
     @Mock
     private MonitorRepository monitorRepository;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private MonitorGroupService service;

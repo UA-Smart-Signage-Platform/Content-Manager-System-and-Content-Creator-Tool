@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
@@ -15,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
@@ -25,6 +25,9 @@ class TemplateGroupServiceTest {
 
     @Mock
     private TemplateGroupRepository repository;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private TemplateGroupService service;

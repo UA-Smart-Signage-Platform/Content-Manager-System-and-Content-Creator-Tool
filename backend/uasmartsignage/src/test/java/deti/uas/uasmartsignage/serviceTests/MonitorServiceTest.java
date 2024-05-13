@@ -17,12 +17,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorService;
 
 @ExtendWith(MockitoExtension.class)
 class MonitorServiceTest {
     @Mock
     private MonitorRepository repository;
+
+    @Mock
+    private LogsService logsService;
+
     @InjectMocks
     private MonitorService service;
 
