@@ -1,15 +1,15 @@
 <div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px;">
-    <video autoplay muted class="stretch" id="video[[top]][[left]][[width]][[height]]"></video>
-    <img class="stretch" style="display: none;" id="image[[top]][[left]][[width]][[height]]">
+    <video autoplay muted class="stretch" id="video[[widgetID]]"></video>
+    <img class="stretch" style="display: none;" id="image[[widgetID]]">
 </div>
 <script>
-    var videoList[[top]][[left]][[width]][[height]] = ["[[videos]]"];
-    var currentIndex[[top]][[left]][[width]][[height]] = 0;
+    var videoList[[widgetID]] = ["[[videos]]"];
+    var currentIndex[[widgetID]] = 0;
 
-    function setVideoSource[[top]][[left]][[width]][[height]](videoSrc) {
+    function setVideoSource[[widgetID]](videoSrc) {
 
-        let video = document.getElementById("video[[top]][[left]][[width]][[height]]");
-        let image = document.getElementById("image[[top]][[left]][[width]][[height]]");
+        let video = document.getElementById("video[[widgetID]]");
+        let image = document.getElementById("image[[widgetID]]");
 
         if (videoSrc.endsWith('.mp4')) {
             video.src = videoSrc;
@@ -20,26 +20,26 @@
             image.src = videoSrc;
             image.style.display = 'block';
             video.style.display = 'none';
-            startTimer[[top]][[left]][[width]][[height]]();
+            startTimer[[widgetID]]();
         }
 
-        if (currentIndex[[top]][[left]][[width]][[height]] == videoList[[top]][[left]][[width]][[height]].length - 1){
-            currentIndex[[top]][[left]][[width]][[height]] = 0;
+        if (currentIndex[[widgetID]] == videoList[[widgetID]].length - 1){
+            currentIndex[[widgetID]] = 0;
         }
         else{
-            currentIndex[[top]][[left]][[width]][[height]] += 1;
+            currentIndex[[widgetID]] += 1;
         }
     }
 
-    setVideoSource[[top]][[left]][[width]][[height]](videoList[[top]][[left]][[width]][[height]][0]);
+    setVideoSource[[widgetID]](videoList[[widgetID]][0]);
 
-    function startTimer[[top]][[left]][[width]][[height]]() {
+    function startTimer[[widgetID]]() {
         setTimeout(function() {
-            setVideoSource[[top]][[left]][[width]][[height]](videoList[[top]][[left]][[width]][[height]][currentIndex[[top]][[left]][[width]][[height]]]);
+            setVideoSource[[widgetID]](videoList[[widgetID]][currentIndex[[widgetID]]]);
         }, 5000); 
     }
 
-    document.getElementById("video[[top]][[left]][[width]][[height]]").addEventListener("ended", function() {
-        setVideoSource[[top]][[left]][[width]][[height]](videoList[[top]][[left]][[width]][[height]][currentIndex[[top]][[left]][[width]][[height]]]);
+    document.getElementById("video[[widgetID]]").addEventListener("ended", function() {
+        setVideoSource[[widgetID]](videoList[[widgetID]][currentIndex[[widgetID]]]);
     });
 </script>
