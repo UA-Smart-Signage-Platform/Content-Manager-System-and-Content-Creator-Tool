@@ -1,4 +1,4 @@
-import { PageTitle, MediaFileModal, MediaFolderModal, MediaDeleteModal } from '../../components';
+import { PageTitle, MediaFileModal, MediaFolderModal, FunctionModal } from '../../components';
 import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile } from "react-icons/md";
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
@@ -70,6 +70,7 @@ function Media() {
     const [showPortalFile, setShowPortalFile] = useState(false);
     const [showPortalFolder, setShowPortalFolder] = useState(false);
     const [deletePortal,setDeletePortal] = useState(false);
+    const [toDelete,setToDelete] = useState(null);
     
     const path = useLocation().pathname.replace("/media/home","/uploads").replace(/\/$/, '');
     const navigate = useNavigate();
@@ -103,13 +104,13 @@ function Media() {
             right: 'true',
         },
         {
-            selector: row => <><button onClick={()=>setDeletePortal(true)} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+            selector: row => <><button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
                                 <FiTrash2 className='size-5'/>
                             </button>
                             <AnimatePresence>
-                                {deletePortal && <MediaDeleteModal
+                                {deletePortal && <FunctionModal
                                     message={"Are you sure you want to delete this file/folder?"}
-                                    funcToExecute={()=>deleteFile(row.id)}
+                                    funcToExecute={()=>deleteFile()}
                                     cancelFunc={()=>{setDeletePortal(false)}}
                                     />}
                             </AnimatePresence>
@@ -136,9 +137,9 @@ function Media() {
         }
     }
 
-    const deleteFile = (id)=>{
-        setDeletePortal(false)
-        mediaService.deleteFileOrFolder(id).then(()=>{
+    const deleteFile = ()=>{
+        setDeletePortal(false);
+        mediaService.deleteFileOrFolder(toDelete).then(()=>{
             fetchData();
         })
     }

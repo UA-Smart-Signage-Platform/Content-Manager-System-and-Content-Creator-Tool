@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import PropTypes from 'prop-types';
 
-function MediaDeleteModal( { cancelFunc,funcToExecute,message } ) {
+function FunctionModal( { cancelFunc,funcToExecute,message } ) {
     return createPortal (
         <motion.div key="backgroundContents"
                 initial={{ opacity: 0 }}
@@ -39,10 +39,10 @@ function MediaDeleteModal( { cancelFunc,funcToExecute,message } ) {
     );
 }
 
-MediaDeleteModal.propTypes = {
+FunctionModal.propTypes = {
     cancelFunc: PropTypes.func.isRequired,
     message: PropTypes.string,
     funcToExecute: PropTypes.func.isRequired,
 }
 
-export default MediaDeleteModal;
+export default FunctionModal;
