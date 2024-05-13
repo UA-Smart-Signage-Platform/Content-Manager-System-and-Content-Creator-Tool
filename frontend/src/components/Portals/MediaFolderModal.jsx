@@ -18,6 +18,7 @@ function MediaFolderModal( { showPortal, setShowPortal, currentFolder, updater, 
 
         await mediaService.createFolder(folder);
         setUpdater(!updater);
+        setFolderName("")
         setShowPortal(false);
     }
     return (
@@ -39,7 +40,7 @@ function MediaFolderModal( { showPortal, setShowPortal, currentFolder, updater, 
                             </div>
                             <div className="h-[80%] p-[2%] text-lg flex flex-col">
                                 <label htmlFor="folderName">Folder name:</label>
-                                <input onChange={(event) => setFolderName(event.target.value)} className="rounded-md bg-slate-300 pl-2 pr-2 w-[55%]" type="text" placeholder="Name..." id="folderName" name="folderName" />
+                                <input onChange={(event) => setFolderName(event.target.value.trim().replace("/",""))} value={folderName} className="rounded-md bg-slate-300 pl-2 pr-2 w-[55%]" type="text" placeholder="Name..." id="folderName" name="folderName" />
                                 <button onClick={submitFolder} className="rounded-md bg-slate-300 mr-auto p-2 mt-10" type="submit">Create folder</button>
                             </div>
                         </div>

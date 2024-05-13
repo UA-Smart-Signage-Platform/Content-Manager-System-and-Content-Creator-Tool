@@ -1,15 +1,8 @@
 import { motion } from "framer-motion";
 import { createPortal } from "react-dom";
 import PropTypes from 'prop-types';
-import activeTemplateService from "../../services/activeTemplateService";
 
-function ScheduleDeleteModal( { setShowPortal, rule, updater, setUpdater } ) {
-    const deleteRule = () => {
-        activeTemplateService.deleteRule(rule.id).then(() => {
-            setUpdater(!updater);
-        });
-    }
-
+function FunctionModal( { cancelFunc,funcToExecute,message,confirmMessage } ) {
     return createPortal (
         <motion.div key="backgroundContents"
                 initial={{ opacity: 0 }}
@@ -25,16 +18,16 @@ function ScheduleDeleteModal( { setShowPortal, rule, updater, setUpdater } ) {
                 className="absolute text-gray-50 h-screen w-screen flex items-center">
                 <div className="bg-[#fafdf7] text-[#101604] h-[35%] w-[25%] mx-auto rounded-xl p-[2%] flex flex-col">
                     <div className="flex h-[50%] place-content-center items-center text-center">
-                        <span className="text-2xl">Are you sure you want to delete this rule?</span>
+                        <span className="text-2xl">{message}</span>
                     </div>
                     <div className="flex flex-row h-[50%] justify-evenly items-center">
                         <div>
-                            <button onClick={() => {setShowPortal(false); deleteRule()}} className="flex bg-[#D12E2E] text-white rounded-md p-2 pr-5 pl-5">
-                                <span className="text-xl">Delete</span>
+                            <button onClick={funcToExecute} className="flex bg-[#D12E2E] text-white rounded-md p-2 pr-5 pl-5">
+                                <span className="text-xl">{confirmMessage}</span>
                             </button>
                         </div>
                         <div>
-                            <button onClick={() => setShowPortal(false)} className="flex bg-[#d7dad6] rounded-md p-2 pr-5 pl-5">
+                            <button onClick={cancelFunc} className="flex bg-[#d7dad6] rounded-md p-2 pr-5 pl-5">
                                 <span className="text-xl">Cancel</span>
                             </button>
                         </div>
@@ -46,11 +39,10 @@ function ScheduleDeleteModal( { setShowPortal, rule, updater, setUpdater } ) {
     );
 }
 
-ScheduleDeleteModal.propTypes = {
-    setShowPortal: PropTypes.func.isRequired,
-    rule: PropTypes.object.isRequired,
-    updater: PropTypes.bool.isRequired,
-    setUpdater: PropTypes.func.isRequired,
+FunctionModal.propTypes = {
+    cancelFunc: PropTypes.func.isRequired,
+    message: PropTypes.string,
+    funcToExecute: PropTypes.func.isRequired,
 }
 
-export default ScheduleDeleteModal;
+export default FunctionModal;

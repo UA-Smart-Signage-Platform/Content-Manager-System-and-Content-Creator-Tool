@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { PageTitle, ScheduleModal, ScheduleDeleteModal } from "../../components";
+import { PageTitle, ScheduleModal, FunctionModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import { AnimatePresence, motion } from "framer-motion"
 import { ALL_WEEKDAYS } from 'rrule'
 import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
 import { FiTrash2 } from "react-icons/fi";
 import scheduleService from "../../services/scheduleService";
+import activeTemplateService from "../../services/activeTemplateService";
 
 function Schedule(){
     const [groups, setGroups] = useState([]);
@@ -85,6 +86,13 @@ function Schedule(){
         setChangesMade(false);
     };
 
+    const deleteRule = () => {
+        activeTemplateService.deleteRule(ruleToDelete).then(() => {
+            setUpdater(!updater);
+        });
+        setShowDeletePortal(false);
+    }
+
     const displayRules = () => {
         if (selectedGroupId === null){
             return(
@@ -131,7 +139,7 @@ function Schedule(){
                                             </motion.button>
                                         </div>
                                         <div className="flex items-center object-center place-content-center">
-                                            <motion.button onClick={() => {setRuleToDelete(rule); setShowDeletePortal(true)}} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => {setRuleToDelete(rule.id); setShowDeletePortal(true)}} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <FiTrash2 />
                                             </motion.button>
@@ -206,11 +214,12 @@ function Schedule(){
                                 setUpdater={setUpdater}
                                 totalRules={rules.length} />
                         }
-                        {showDeletePortal && <ScheduleDeleteModal 
-                                setShowPortal={setShowDeletePortal}
-                                rule={ruleToDelete}
-                                updater={updater}
-                                setUpdater={setUpdater} />
+                        {showDeletePortal && <FunctionModal
+                                                    message={"Are you sure you want to delete this Rule?"}
+                                                    funcToExecute={deleteRule}
+                                                    cancelFunc={()=>setShowDeletePortal(false)}
+                                                    confirmMessage={"Yes"}
+                                             />
                         }
                     </AnimatePresence>
                     <div className="flex flex-col w-full h-[95%] pt-3 overflow-scroll">
