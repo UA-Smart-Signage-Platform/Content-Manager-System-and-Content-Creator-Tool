@@ -132,10 +132,10 @@ public class TemplateGroupService {
                     confirmMessage.setHtml(html);
 
                     String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-                    MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
+                    //MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
                 }
 
-            } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
+            } catch (JsonProcessingException  e) {
                 // Handle exception
                 e.printStackTrace();
             }

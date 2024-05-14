@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
+import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import deti.uas.uasmartsignage.Models.*;
 import deti.uas.uasmartsignage.Mqtt.MqttSubscriberService;
 import deti.uas.uasmartsignage.Services.ContentService;
@@ -60,20 +62,12 @@ class TemplateGroupServiceTest {
     @Mock
     private MqttMessage mqttMessage;
 
+    @Mock
+    private TemplateMessage templateMessage;
+
     @InjectMocks
     private TemplateGroupService service;
 
-    public static final String MESSAGE = "message";
-    public static final String TOPIC_NAME = "topic";
-    public static final String DEFAULT_TOPIC_NAME = "default topic";
-
-
-    @BeforeEach
-    public void init() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        //when(mqttConfig.getInstance()).thenReturn(mqttClient);
-        //doNothing().when(mqttClient).connect();
-    }
 
 
     @Test
@@ -163,6 +157,21 @@ class TemplateGroupServiceTest {
 
     @Test
     void testSaveTemplateGroup() throws MqttException, JsonProcessingException {
+
+        MockitoAnnotations.openMocks(this);
+
+        // Mock MqttConfig.getInstance() to return the mock mqttClient
+        when(mqttConfig.getInstance()).thenReturn(mqttClient);
+
+        // Mock any necessary behavior of mqttClient
+        when(mqttClient.isConnected()).thenReturn(true);
+
+
+        when(templateMessage.getMethod()).thenReturn("TEMPLATE");
+        doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
+
+
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -197,8 +206,8 @@ class TemplateGroupServiceTest {
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
 
-        //doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
-        //when(mqttConfig.getInstance()).thenReturn(mqttClient);
+
+
 
 
         when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
