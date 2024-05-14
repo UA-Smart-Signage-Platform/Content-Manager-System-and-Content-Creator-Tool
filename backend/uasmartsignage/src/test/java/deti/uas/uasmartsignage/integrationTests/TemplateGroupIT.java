@@ -7,21 +7,51 @@ import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class TemplateGroupIT extends BaseIntegrationTest{
+@Testcontainers
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=integration-test"})
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+public class TemplateGroupIT{
+
+    private static final String DOCKER_COMPOSE_FILE_PATH = "src/test/resources/docker-compose-test.yml";
+    private static final String POSTGRES_SERVICE_NAME = "postgres";
+    private static final String MQTT_SERVICE_NAME = "mqtt";
+
+    @Container
+    private static DockerComposeContainer environment =
+            new DockerComposeContainer(new File(DOCKER_COMPOSE_FILE_PATH))
+                    .withExposedService(POSTGRES_SERVICE_NAME, 5432)
+                    .withExposedService(MQTT_SERVICE_NAME, 1883);
+
+    @BeforeAll
+    static void setUp() {
+        environment.start();
+    }
+
+    @AfterAll
+    static void tearDown() {
+        environment.stop();
+    }
+
     @LocalServerPort
     private int port;
 

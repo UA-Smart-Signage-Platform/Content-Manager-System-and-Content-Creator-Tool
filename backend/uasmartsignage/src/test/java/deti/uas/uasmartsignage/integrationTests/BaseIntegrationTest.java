@@ -17,13 +17,6 @@ public abstract class BaseIntegrationTest {
 
     public static PostgreSQLMosquittoContainer container1 = new PostgreSQLMosquittoContainer();
 
-    public static int getPostgresPort() {
-        return container1.getPostgresPort();
-    }
-
-    public static int getMosquittoPort() {
-        return container1.getMosquittoPort();
-    }
 
     static {
         container = (PostgreSQLContainer) new PostgreSQLContainer<>("postgres:latest").withReuse(true)
