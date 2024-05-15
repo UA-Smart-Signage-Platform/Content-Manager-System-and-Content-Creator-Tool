@@ -3,7 +3,6 @@ package deti.uas.uasmartsignage.repositoryTests;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 

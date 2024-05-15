@@ -3,7 +3,6 @@ package deti.uas.uasmartsignage.Services;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.ContentRepository;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
