@@ -206,10 +206,17 @@ public class TemplateGroupService {
         try{
             RulesMessage rulesMessage = new RulesMessage();
             rulesMessage.setMethod("RULES");
+            List<Monitor> monitors = new ArrayList<>();
             // If it is a new monitor, we only send the rules to the last monitor
-            if (sendoToNewMonitor) {
+            if (Boolean.TRUE.equals(sendoToNewMonitor)) {
                 // Get the last monitor (just added)
                 Monitor monitor = monitorGroup.getMonitors().get(monitorGroup.getMonitors().size() - 1);
+                monitors.add(monitor);
+            }
+            else {
+                monitors = monitorGroup.getMonitors();
+            }
+            for (Monitor monitor : monitors) {
                 List <Map<String, Object>> rulesToSend = new ArrayList<>();
                 List <String> filesToSend = new ArrayList<>();
                 for (Map<String, Object> rule : rules) {
@@ -225,39 +232,12 @@ public class TemplateGroupService {
                             filesToSend.add(file);
                         }
                     }
-
                 }
                 rulesMessage.setRules(rulesToSend);
                 rulesMessage.setFiles(filesToSend);
                 String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
                 MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
             }
-            else {
-                List<Monitor> monitors = monitorGroup.getMonitors();
-                for (Monitor monitor : monitors) {
-                    List <Map<String, Object>> rulesToSend = new ArrayList<>();
-                    List <String> filesToSend = new ArrayList<>();
-                    for (Map<String, Object> rule : rules) {
-                        Map<String, Object> ruleToSend = new HashMap<>();
-                        Template template = (Template) rule.get("template");
-                        TemplateGroup group = (TemplateGroup) rule.get("group");
-                        String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
-                        ruleToSend.put("html", html);
-                        ruleToSend.put(SCHEDULE, rule.get(SCHEDULE));
-                        rulesToSend.add(ruleToSend);
-                        for (String file : (List<String>) rule.get(DOWNLOAD_FILES)) {
-                            if (!filesToSend.contains(file)) {
-                                filesToSend.add(file);
-                            }
-                        }
-                    }
-                    rulesMessage.setRules(rulesToSend);
-                    rulesMessage.setFiles(filesToSend);
-                    String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
-                    MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
-                }
-            }
-
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             logger.error("Could not send rules to monitors");
         }
