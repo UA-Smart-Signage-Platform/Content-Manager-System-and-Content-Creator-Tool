@@ -172,11 +172,7 @@ public class LogsService {
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(fluxQuery, org);
 
-        if (tables.isEmpty()) {
-            return false;
-        }
-
-        return true;
+        return !tables.isEmpty();
     }
     
 
