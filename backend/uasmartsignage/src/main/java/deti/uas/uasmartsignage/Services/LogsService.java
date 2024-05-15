@@ -40,7 +40,7 @@ public class LogsService {
     private static final String USER = "user";
 
     private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
-    private static final String UnexpectedError = "An unexpected error occurred: {}";
+    private static final String UNEXPECTEDERROR = "An unexpected error occurred: {}";
 
 
     public LogsService(InfluxDBProperties influxDBProperties) {
@@ -81,7 +81,7 @@ public class LogsService {
         } catch (InfluxException e) {
             logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error(UnexpectedError, e.getMessage());
+            logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
     }
@@ -155,7 +155,7 @@ public class LogsService {
         } catch (InfluxException e) {
             logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error(UnexpectedError, e.getMessage());
+            logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
     }
@@ -195,7 +195,7 @@ public class LogsService {
         } catch (InfluxException e) {
             logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error(UnexpectedError, e.getMessage());
+            logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
     }
