@@ -8,6 +8,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Comparator;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -21,17 +23,20 @@ public class TemplateWidget {
     private Long id;
 
     @Column(nullable = false)
-    private int top;
+    private float top;
 
     //left conflict with sql
     @Column(nullable = false)
-    private int leftPosition;
+    private float leftPosition;
 
     @Column(nullable = false)
-    private int width;
+    private float width;
 
     @Column(nullable = false)
-    private int height;
+    private float height;
+
+    @Column(nullable = false, name="zIndex")
+    private int zIndex;
 
     @ManyToOne
     @JoinColumn(name = "templateId", nullable = false)
@@ -43,5 +48,10 @@ public class TemplateWidget {
     @JsonIgnoreProperties("templateWidgets")
     private Widget widget;
     
-    
+    public static class ZIndexComparator implements Comparator<TemplateWidget> {
+        @Override
+        public int compare(TemplateWidget tw1, TemplateWidget tw2) {
+            return Integer.compare(tw1.getZIndex(), tw2.getZIndex());
+        }
+    }
 }

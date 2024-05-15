@@ -18,6 +18,9 @@ const mediaService = {
     },
     async getDirectoryOrFileByPath(path){
         return await client.get("files/byPath",{params:{path:path}});
+    },
+    async deleteFileOrFolder(id){
+        return await client.delete(`files/${id}`)
     }
 }
 

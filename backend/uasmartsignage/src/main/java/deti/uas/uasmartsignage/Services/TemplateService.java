@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.Severity;
 import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 
 @Service
@@ -68,6 +69,10 @@ public class TemplateService {
             logger.info(ADDLOGSUCCESS, description);
         }
 
+        for ( TemplateWidget templateWidget : template.getTemplateWidgets()) {
+            templateWidget.setTemplate(template);
+        }
+        
         return templateRepository.save(template);
     }
 

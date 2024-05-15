@@ -30,7 +30,7 @@ function StartTitleHtml( {page} ){
                     whileHover={{ scale: 1.2 }}
                     onMouseEnter={() => setDisplayInfo(true)}
                     onMouseLeave={() => setDisplayInfo(false)}
-                    className="ml-2 relative"
+                    className="ml-2 relative z-20"
                 >
                     <MdInfoOutline className="w-6 cursor-pointer" />
                     {displayInfo &&

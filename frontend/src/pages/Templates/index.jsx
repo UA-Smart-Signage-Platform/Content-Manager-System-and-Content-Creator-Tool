@@ -3,6 +3,8 @@ import templateservice from "../../services/templateService";
 import { PageTitle } from "../../components";
 import DataTable from "react-data-table-component";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router";
+import { FiTrash2 } from "react-icons/fi";
 
 const customStyles = {
     headRow: {
@@ -32,19 +34,6 @@ const customStyles = {
     },
 };
 
-const columns = [
-    {
-        name: 'Name',
-        selector: row => row.name,
-        sortable: true,
-    },
-    {
-        name: "widget count",
-        selector: row => row.templateWidgets.length,
-        sortable:true,
-    }
-];
-
 const colors = [
     'bg-pink-200 border-pink-400',
     'bg-rose-200 border-rose-400',
@@ -60,6 +49,33 @@ function Templates(){
     const [templates,setTemplates] = useState([]);
     const [templateDisplay,setTemplateDisplay] = useState(null);
     const [selectedColors,setSelectedColors] = useState([]);
+    const navigate = useNavigate();
+
+    const columns = [
+        {
+            name: 'Name',
+            selector: row => row.name,
+            sortable: true,
+        },
+        {
+            name: "widget count",
+            selector: row => row.templateWidgets.length,
+            sortable:true,
+        },
+        {
+            selector: row => <button onClick={()=>deleteTemplate(row.id)} className=" border border-black rounded-sm size-5 flex items-center justify-center"><FiTrash2/></button>,
+            sortable:false,
+        }
+    ];
+    
+    const deleteTemplate = (id) =>{
+        templateservice.deleteTemplate(id).then(()=>{
+            templateservice.getTemplates().then((response)=>{
+                setTemplates(response.data)
+                setTemplateDisplay(response.data[0])
+            })
+        })
+    }
 
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{
@@ -88,14 +104,15 @@ function Templates(){
             <div className="flex h-[92%]">
                 <div className="h-full w-[30%] p-4 flex flex-col">
                     <div>
-                        <button className=" bg-secondaryMedium p-1 rounded-md">
+                        <button onClick={()=>navigate("/contentcreator/0")}
+                             className=" bg-secondaryMedium p-1 rounded-md">
                             + Create Template
                         </button>
                     </div>
                     <DataTable
                         pointerOnHover
                         highlightOnHover
-                        onRowClicked={console.log("nha")}
+                        onRowClicked={(row)=> navigate(`${row.id}`,{state:row})}
                         onRowMouseEnter={(row) => setTemplateDisplay(row)}
                         columns={columns}
                         data={templates}
@@ -112,18 +129,21 @@ function Templates(){
                                     height: `${templateWidget.height}%`,
                                     top: `${templateWidget.top}%`,
                                     left: `${templateWidget.leftPosition}%`,
+                                    zIndex: templateWidget.zindex
                                 }}
                                 animate={{
                                     width: `${templateWidget.width}%`,
                                     height: `${templateWidget.height}%`,
                                     top: `${templateWidget.top}%`,
                                     left: `${templateWidget.leftPosition}%`,
+                                    zIndex: templateWidget.zindex
                                 }}
                                 exit={{
                                     width: 0,
                                     height: 0,
                                     top: 0,
                                     left: 0,
+                                    zIndex: templateWidget.zindex
                                 }}
                                 transition={{duration:1}}
                                 > 
