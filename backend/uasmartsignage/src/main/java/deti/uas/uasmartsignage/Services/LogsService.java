@@ -39,6 +39,9 @@ public class LogsService {
     private static final String MONITOR = "SourceMonitor";
     private static final String USER = "user";
 
+    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
+    private static final String UnexpectedError = "An unexpected error occurred: {}";
+
 
     public LogsService(InfluxDBProperties influxDBProperties) {
         String token = influxDBProperties.getToken();
@@ -76,9 +79,9 @@ public class LogsService {
             writeApi.writePoint(backendBucket, org, point);
             return true;
         } catch (InfluxException e) {
-            logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
+            logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error("An unexpected error occurred: {}", e.getMessage());
+            logger.error(UnexpectedError, e.getMessage());
         }
         return false;
     }
@@ -137,11 +140,11 @@ public class LogsService {
         return logs;
     }
 
-    public boolean addKeepAliveLog(Severity severity, String Monitor, String operation) {
+    public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {
         String measurement = "KeepAliveLogs";
         try {
             Point point = Point.measurement(measurement)
-                    .addTag(MONITOR, Monitor)
+                    .addTag(MONITOR, monitor)
                     .addField(SEVERITY, severity.toString())
                     .addField(OPERATION, operation)
                     .time(System.currentTimeMillis(), WritePrecision.MS);
@@ -150,9 +153,9 @@ public class LogsService {
             writeApi.writePoint(monitorBucket, org, point);
             return true;
         } catch (InfluxException e) {
-            logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
+            logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error("An unexpected error occurred: {}", e.getMessage());
+            logger.error(UnexpectedError, e.getMessage());
         }
         return false;
     }
@@ -188,16 +191,15 @@ public class LogsService {
                     .addField(OPERATION, operation)
                     .addField(DESCRIPTION, description)
                     .time(time, WritePrecision.MS); //ask mp to send it in long (miliseconds)
-                    //.time(System.currentTimeMillis(), WritePrecision.MS);
 
             // Write the point to InfluxDB
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
             writeApi.writePoint(monitorBucket, org, point);
             return true;
         } catch (InfluxException e) {
-            logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
+            logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error("An unexpected error occurred: {}", e.getMessage());
+            logger.error(UnexpectedError, e.getMessage());
         }
         return false;
     }

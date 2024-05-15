@@ -18,7 +18,7 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
-    private final Logger logger = org.slf4j.LoggerFactory.getLogger(WidgetService.class);
+    private final Logger logger = org.slf4j.LoggerFactory.getLogger(ScheduleService.class);
 
     private final String source = this.getClass().getSimpleName();
 
