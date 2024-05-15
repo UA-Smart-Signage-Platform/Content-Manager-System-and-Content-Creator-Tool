@@ -19,9 +19,11 @@ import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 
 @ExtendWith(MockitoExtension.class)
 class MonitorServiceTest {
+
     @Mock
     private MonitorRepository repository;
 
@@ -30,6 +32,9 @@ class MonitorServiceTest {
 
     @InjectMocks
     private MonitorService service;
+
+    @Mock
+    private TemplateGroupService templateGroupService;
 
     @Test void
     getMonitorByIdTestReturnsMonitor(){

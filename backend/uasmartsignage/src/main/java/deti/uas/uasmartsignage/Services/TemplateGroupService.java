@@ -179,7 +179,7 @@ public class TemplateGroupService {
      * 
      * @param monitorGroup The MonitorsGroup to send the schedules to
      */
-    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup) {
+    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup, Boolean sendoToNewMonitor) {
         List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
         List <Map<String, Object>> rules = new ArrayList<>();
 
@@ -206,8 +206,10 @@ public class TemplateGroupService {
         try{
             RulesMessage rulesMessage = new RulesMessage();
             rulesMessage.setMethod("RULES");
-            List<Monitor> monitors = monitorGroup.getMonitors();
-            for (Monitor monitor : monitors) {
+            // If it is a new monitor, we only send the rules to the last monitor
+            if (sendoToNewMonitor) {
+                // Get the last monitor (just added)
+                Monitor monitor = monitorGroup.getMonitors().get(monitorGroup.getMonitors().size() - 1);
                 List <Map<String, Object>> rulesToSend = new ArrayList<>();
                 List <String> filesToSend = new ArrayList<>();
                 for (Map<String, Object> rule : rules) {
@@ -223,11 +225,37 @@ public class TemplateGroupService {
                             filesToSend.add(file);
                         }
                     }
+
                 }
                 rulesMessage.setRules(rulesToSend);
                 rulesMessage.setFiles(filesToSend);
                 String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
                 MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
+            }
+            else {
+                List<Monitor> monitors = monitorGroup.getMonitors();
+                for (Monitor monitor : monitors) {
+                    List <Map<String, Object>> rulesToSend = new ArrayList<>();
+                    List <String> filesToSend = new ArrayList<>();
+                    for (Map<String, Object> rule : rules) {
+                        Map<String, Object> ruleToSend = new HashMap<>();
+                        Template template = (Template) rule.get("template");
+                        TemplateGroup group = (TemplateGroup) rule.get("group");
+                        String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
+                        ruleToSend.put("html", html);
+                        ruleToSend.put(SCHEDULE, rule.get(SCHEDULE));
+                        rulesToSend.add(ruleToSend);
+                        for (String file : (List<String>) rule.get(DOWNLOAD_FILES)) {
+                            if (!filesToSend.contains(file)) {
+                                filesToSend.add(file);
+                            }
+                        }
+                    }
+                    rulesMessage.setRules(rulesToSend);
+                    rulesMessage.setFiles(filesToSend);
+                    String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
+                    MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
+                }
             }
 
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
@@ -260,7 +288,7 @@ public class TemplateGroupService {
         templateGroup.setSchedule(schedule);
         templateGroupRepository.save(templateGroup);
 
-        sendAllSchedulesToMonitorGroup(monitorGroup);
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
 
         return templateGroup;
     }
@@ -284,7 +312,18 @@ public class TemplateGroupService {
      * @param id The id of the TemplateGroup to delete
      */
     public void deleteGroup(Long id) {
+        TemplateGroup templateGroup = templateGroupRepository.findById(id).orElse(null);
+
+        if (templateGroup == null) {
+            return;
+        }
+
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+        monitorGroup.getTemplateGroups().remove(templateGroup);
+        monitorGroupService.saveGroup(monitorGroup);
         templateGroupRepository.deleteById(id);
+
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
     }
 
     /**

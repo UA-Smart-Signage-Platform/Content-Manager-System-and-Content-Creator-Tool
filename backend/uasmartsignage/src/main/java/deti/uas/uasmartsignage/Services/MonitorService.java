@@ -17,6 +17,8 @@ public class MonitorService {
 
     private final MonitorGroupRepository monitorGroupRepository;
 
+    private final TemplateGroupService templateGroupService;
+
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(MonitorService.class);
 
     private final String source = this.getClass().getSimpleName();
@@ -27,10 +29,11 @@ public class MonitorService {
     private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
 
 
-    public MonitorService(MonitorRepository monitorRepository, MonitorGroupRepository monitorGroupRepository, LogsService logsService){
+    public MonitorService(MonitorRepository monitorRepository, MonitorGroupRepository monitorGroupRepository, LogsService logsService, TemplateGroupService templateGroupService){
         this.monitorRepository = monitorRepository;
         this.monitorGroupRepository = monitorGroupRepository;
         this.logsService = logsService;
+        this.templateGroupService = templateGroupService;
     }
 
     /**
@@ -117,6 +120,7 @@ public class MonitorService {
         monitorById.setName(monitor.getName());
         monitorById.setGroup(monitor.getGroup());
         Monitor returnMonitor = monitorRepository.save(monitorById);
+
         if (group.isMadeForMonitor()) {
             if (group.getId() == monitorById.getGroup().getId()){
                 group.setName(monitor.getName());
@@ -126,6 +130,9 @@ public class MonitorService {
                 monitorGroupRepository.deleteById(group.getId());
             }
         }
+
+        // Send all template groups etc to the monitor group
+        templateGroupService.sendAllSchedulesToMonitorGroup(group, true);
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
