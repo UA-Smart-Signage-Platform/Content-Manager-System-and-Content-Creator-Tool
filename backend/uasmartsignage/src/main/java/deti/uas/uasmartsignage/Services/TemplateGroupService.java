@@ -282,7 +282,6 @@ public class TemplateGroupService {
      * @return The created HTML in a String, or {@code null} if creation fails.
      */
     public String generateHTML(Template template, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
-
         List<TemplateWidget> widgets = template.getTemplateWidgets();
         String filePath = "static/base.html";
 

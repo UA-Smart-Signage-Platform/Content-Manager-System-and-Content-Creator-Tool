@@ -27,8 +27,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final List<UserDetails> users = new ArrayList<>();
 
-    
-
     private final UserDetails adminUser = User.builder()
         .username("admin")
         .password(BCrypt.hashpw("admin", BCrypt.gensalt()))

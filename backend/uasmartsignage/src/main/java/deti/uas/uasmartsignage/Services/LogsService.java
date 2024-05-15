@@ -137,14 +137,13 @@ public class LogsService {
         return logs;
     }
 
-    public boolean addKeepAliveLog(Severity severity, String Monitor, String operation, String description) {
+    public boolean addKeepAliveLog(Severity severity, String Monitor, String operation) {
         String measurement = "KeepAliveLogs";
         try {
             Point point = Point.measurement(measurement)
                     .addTag(MONITOR, Monitor)
                     .addField(SEVERITY, severity.toString())
                     .addField(OPERATION, operation)
-                    .addField(DESCRIPTION, description)
                     .time(System.currentTimeMillis(), WritePrecision.MS);
 
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
@@ -178,7 +177,7 @@ public class LogsService {
     }
     
 
-    // Not implemented 
+    // Not implemented neither in MP or Frontend
     public boolean addMonitorLog(Severity severity, String uuid, String operation, String description, Long time) {
         String measurement = "MonitorLogs";
         try {

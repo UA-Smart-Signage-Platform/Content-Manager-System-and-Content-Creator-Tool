@@ -91,7 +91,7 @@ public class MqttSubscriberService {
         logger.info("Method: {}", keepAliveMessage.getMethod());
         logger.info("UUID: {}", keepAliveMessage.getUuid());
         
-        if (!logsService.addKeepAliveLog(Severity.INFO, keepAliveMessage.getUuid(), keepAliveMessage.getMethod(), "Keep alive message received" )) {
+        if (!logsService.addKeepAliveLog(Severity.INFO, keepAliveMessage.getUuid(), keepAliveMessage.getMethod())) {
             logger.error("Failed to add log to InfluxDB");
         } else {
             logger.info("Added log to InfluxDB: {}", keepAliveMessage.getUuid());
