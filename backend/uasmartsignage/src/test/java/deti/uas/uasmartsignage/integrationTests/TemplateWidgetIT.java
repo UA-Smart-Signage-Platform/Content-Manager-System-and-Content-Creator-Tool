@@ -127,8 +127,6 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        /*ResponseEntity<Template> response = restTemplate.exchange("http://localhost:" + port + "/api/templates/1", HttpMethod.GET, new HttpEntity<>(headers), Template.class);
-        Template template1 = response.getBody();*/
 
         ResponseEntity<Widget> response2 = restTemplate.exchange("http://localhost:" + port + "/widgets/1", HttpMethod.GET, new HttpEntity<>(headers), Widget.class);
         Widget widget1 = response2.getBody();
@@ -138,7 +136,6 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
         TemplateWidget media = response3.getBody();
 
         media.setTop(20);
-        //media.setTemplate(template1);
         media.setWidget(widget1);
 
         HttpEntity<TemplateWidget> requestEntity = new HttpEntity<>(media, headers);
@@ -146,7 +143,6 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
         ResponseEntity<TemplateWidget> response4 = restTemplate.exchange("http://localhost:" + port + "/templateWidgets/10", HttpMethod.PUT, requestEntity, TemplateWidget.class);
         assertEquals(HttpStatus.OK, response4.getStatusCode());
         assertEquals(20, response4.getBody().getTop());
-        //assertEquals(template1, response4.getBody().getTemplate());
         assertEquals(widget1.getName(), response4.getBody().getWidget().getName());
         assertEquals(80,response4.getBody().getHeight());
 

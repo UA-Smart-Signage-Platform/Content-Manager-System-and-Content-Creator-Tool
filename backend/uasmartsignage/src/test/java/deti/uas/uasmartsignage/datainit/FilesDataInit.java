@@ -35,6 +35,7 @@ public class FilesDataInit implements CommandLineRunner{
 
     public void run(String ...args) throws Exception{
         if (!groupRepository.findAll().isEmpty()){
+            System.out.println("Data already exists");
             return;
         }
 

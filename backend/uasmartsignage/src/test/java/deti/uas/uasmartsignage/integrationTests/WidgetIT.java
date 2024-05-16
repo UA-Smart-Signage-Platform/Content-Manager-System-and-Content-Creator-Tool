@@ -121,7 +121,6 @@ public class WidgetIT extends BaseIntegrationTest{
         ResponseEntity<Content> response = restTemplate.exchange("http://localhost:" + port + "/content", HttpMethod.POST, requestEntity, Content.class);
         Content content1 = response.getBody();
 
-
         ResponseEntity<Widget> response1 = restTemplate.exchange("http://localhost:" + port + "/widgets/1", HttpMethod.GET, new HttpEntity<>(headers), Widget.class);
         Widget widget = response1.getBody();
 

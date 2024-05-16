@@ -15,9 +15,6 @@ public abstract class BaseIntegrationTest {
 
     public static PostgreSQLContainer container;
 
-    public static PostgreSQLMosquittoContainer container1 = new PostgreSQLMosquittoContainer();
-
-
     static {
         container = (PostgreSQLContainer) new PostgreSQLContainer<>("postgres:latest").withReuse(true)
                 .withDatabaseName("uasmartsignageIT")

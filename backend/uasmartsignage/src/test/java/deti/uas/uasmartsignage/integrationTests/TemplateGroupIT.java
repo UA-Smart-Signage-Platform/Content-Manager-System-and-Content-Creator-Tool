@@ -3,10 +3,7 @@ package deti.uas.uasmartsignage.integrationTests;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Models.TemplateGroup;
+import deti.uas.uasmartsignage.Models.*;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,16 +21,17 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=integration-test"})
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=test"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TemplateGroupIT{
 
-    private static final String DOCKER_COMPOSE_FILE_PATH = "src/test/resources/docker-compose-test.yml";
-    private static final String POSTGRES_SERVICE_NAME = "postgres";
+    private static final String DOCKER_COMPOSE_FILE_PATH = "src/test/resources/docker-compose.yml";
+    private static final String POSTGRES_SERVICE_NAME = "postgres_db";
     private static final String MQTT_SERVICE_NAME = "mqtt";
 
     @Container
@@ -41,6 +39,20 @@ public class TemplateGroupIT{
             new DockerComposeContainer(new File(DOCKER_COMPOSE_FILE_PATH))
                     .withExposedService(POSTGRES_SERVICE_NAME, 5432)
                     .withExposedService(MQTT_SERVICE_NAME, 1883);
+
+    @DynamicPropertySource
+    static void dynamicProperties(DynamicPropertyRegistry registry) {
+        String postgresHost = environment.getServiceHost(POSTGRES_SERVICE_NAME, 5432);
+        Integer postgresPort = environment.getServicePort(POSTGRES_SERVICE_NAME, 5432);
+        registry.add("spring.datasource.url", () -> "jdbc:postgresql://" + postgresHost + ":" + postgresPort + "/uas");
+        registry.add("spring.datasource.username", () -> "spring");
+        registry.add("spring.datasource.password", () -> "springpass");
+
+        String mqttHost = environment.getServiceHost(MQTT_SERVICE_NAME, 1883);
+        Integer mqttPort = environment.getServicePort(MQTT_SERVICE_NAME, 1883);
+        registry.add("spring.mqtt.broker", () -> "tcp://"+ mqttHost + ":" + mqttPort);
+
+    }
 
     @BeforeAll
     static void setUp() {
@@ -74,7 +86,7 @@ public class TemplateGroupIT{
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
         ResponseEntity<String> response = restTemplate1.exchange(
-                "http://localhost:"+ port + "/api/login",
+                "http://localhost:" + port + "/api/login",
                 HttpMethod.POST,
                 requestEntity,
                 String.class
@@ -98,7 +110,9 @@ public class TemplateGroupIT{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<List<TemplateGroup>> response = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<TemplateGroup>>() {});
+        ResponseEntity<List<TemplateGroup>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/templateGroups", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<TemplateGroup>>() {
+                });
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, response.getBody().size());
     }
@@ -119,7 +133,7 @@ public class TemplateGroupIT{
     }
 
     @Test
-    @Order(3)//is missing something in the body so it gives an error on the service
+    @Order(3)
     void testSaveTemplateGroup(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
@@ -138,6 +152,7 @@ public class TemplateGroupIT{
         templateGroup1.setGroup(dbio);
         templateGroup1.setTemplate(template1);
         templateGroup1.setSchedule(schedule);
+        templateGroup1.setContent(Map.of(1, "content"));
 
         HttpEntity<TemplateGroup> requestEntity = new HttpEntity<>(templateGroup1, headers);
 
@@ -148,7 +163,7 @@ public class TemplateGroupIT{
     }
 
     @Test
-    @Order(4)//when save is working maybe use that so that does not mess with other tests
+    @Order(4)
     void testUpdateTemplateGroup(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);

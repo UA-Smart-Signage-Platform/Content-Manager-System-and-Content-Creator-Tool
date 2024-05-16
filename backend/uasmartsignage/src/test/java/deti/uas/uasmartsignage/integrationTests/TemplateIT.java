@@ -66,7 +66,7 @@ public class TemplateIT  extends BaseIntegrationTest{
 
         ResponseEntity<List<Template>> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Template>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(4, response.getBody().size()); //could change if any template is added to DataInit
+        assertEquals(4, response.getBody().size());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class TemplateIT  extends BaseIntegrationTest{
 
     @Test
     @Order(3)
-    void testSaveTemplate(){//will have some changes
+    void testSaveTemplate(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);

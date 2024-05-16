@@ -108,7 +108,6 @@ public class ContentIT extends BaseIntegrationTest{
         assertEquals("Test content", response.getBody().getName());
         assertEquals(3, response.getBody().getOptions().size());
         assertEquals("test", response.getBody().getType());
-        //assertEquals("Weather", response.getBody().getWidget().getName());
     }
 
     @Test
@@ -133,7 +132,6 @@ public class ContentIT extends BaseIntegrationTest{
 
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         assertEquals("Updated content", response2.getBody().getName());
-        //assertEquals("updated", response2.getBody().getType());
     }
 
     @Test

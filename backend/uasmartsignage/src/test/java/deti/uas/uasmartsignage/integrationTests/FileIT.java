@@ -207,7 +207,6 @@ class FileIT {
         directory.setSize(0L);
         directory.setParent(testDir);
 
-        // Set up the request headers
 
         // Create the HTTP entity with headers and request body
         HttpEntity<CustomFile> requestEntity = new HttpEntity<>(directory, headers);
@@ -298,10 +297,7 @@ class FileIT {
         HttpEntity<?> entity = new HttpEntity<>(headers1);
         ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/3", HttpMethod.GET,entity,CustomFile.class);
 
-        System.out.println("response   :"+ getResponse.getBody());
         CustomFile file = getResponse.getBody();
-
-        System.out.println("SADFGHJKJL:"+ file);
 
         file.setName("UpdatedFile.txt");
 

@@ -90,7 +90,6 @@ class MonitorsGroupIT {
         HttpEntity<?> entity = new HttpEntity<>(headers);
         ResponseEntity<List<MonitorsGroup>> response = restTemplate.exchange("http://localhost:" + port + "/api/groups", HttpMethod.GET,
                 entity, new ParameterizedTypeReference<List<MonitorsGroup>>() {});
-        System.out.println("response" + response.getBody());
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(4, response.getBody().size());
     }
@@ -195,11 +194,10 @@ class MonitorsGroupIT {
         ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.GET, new HttpEntity<>(headers), Monitor.class);
         Monitor deca = response.getBody();
 
-        //already formatted group
         ResponseEntity<MonitorsGroup> response10 = restTemplate.exchange("http://localhost:" + port + "/api/groups/3", HttpMethod.GET,
                 new HttpEntity<>(headers), MonitorsGroup.class);
         MonitorsGroup group = response10.getBody();
-        System.out.println("see get group" + group);
+
         group.setName("DECA2");
         group.setMonitors(List.of(deca));
 

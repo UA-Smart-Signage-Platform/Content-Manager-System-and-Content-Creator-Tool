@@ -41,6 +41,6 @@ public class TemplateGroup {
 
     @ManyToOne
     @JoinColumn(name = "scheduleId", nullable = false)
-    @JsonIgnoreProperties("templateGroups")
+    @JsonIgnoreProperties(value={"templateGroups"}, allowSetters = true)
     private Schedule schedule;
 }

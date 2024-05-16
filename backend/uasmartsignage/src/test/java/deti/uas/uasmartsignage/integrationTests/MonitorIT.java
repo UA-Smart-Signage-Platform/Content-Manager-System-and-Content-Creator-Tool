@@ -31,19 +31,15 @@ class MonitorIT extends BaseIntegrationTest{
 
     @BeforeEach
     void setup() {
-        // Prepare the request body with valid credentials
         String username = "admin";
         String password = "admin";
         String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
 
-        // Prepare the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");
 
-        // Create the request entity
         HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        // Make a POST request to your authentication endpoint to get the JWT token
         ResponseEntity<String> response = restTemplate1.exchange(
                 "http://localhost:"+ port + "/api/login",
                 HttpMethod.POST,
@@ -51,12 +47,8 @@ class MonitorIT extends BaseIntegrationTest{
                 String.class
         );
 
-        //System.out.println("ertyuihgfdsadfgbhnjmkl.,kmjhngbf" + response.getBody());
-
-        // Ensure that the request was successful (HTTP status code 200)
         assertEquals(200, response.getStatusCodeValue());
 
-        // Extract the JWT token from the response body
         String responseBody = response.getBody();
 
         JsonElement jsonElement = JsonParser.parseString(responseBody);
@@ -72,9 +64,10 @@ class MonitorIT extends BaseIntegrationTest{
         @Order(1)
         void testGetMonitorByIdEndpoint() {
             HttpHeaders headers = new HttpHeaders();
-            System.out.println("wfdgdc"+jwtToken);
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
+
             ResponseEntity<Monitor> response = restTemplate.exchange(
                     "http://localhost:" + port + "/api/monitors/1",
                     HttpMethod.GET,
@@ -91,8 +84,8 @@ class MonitorIT extends BaseIntegrationTest{
         @Order(2)
         void testGetMonitorByIdEndpointNotFound() {
             HttpHeaders headers = new HttpHeaders();
-            System.out.println("wfdgdc"+jwtToken);
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1000000",HttpMethod.GET, entity, String.class);
@@ -104,12 +97,12 @@ class MonitorIT extends BaseIntegrationTest{
         void testGetAllMonitorsEndpoint() {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             ResponseEntity<List<Monitor>> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors", HttpMethod.GET,
                     entity, new ParameterizedTypeReference<List<Monitor>>() {});
             assertEquals(HttpStatus.OK, response.getStatusCode());
-            System.out.println(response.getBody());
             assertFalse(response.getBody().isEmpty());
             assertEquals(6, response.getBody().size());
         }
@@ -119,7 +112,9 @@ class MonitorIT extends BaseIntegrationTest{
         void testGetAllMonitorsByPendingEndpoint() {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
+
             ResponseEntity<List<Monitor>> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/pending", HttpMethod.GET,
                     entity, new ParameterizedTypeReference<List<Monitor>>() {});
             assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -132,6 +127,7 @@ class MonitorIT extends BaseIntegrationTest{
         void testDeleteMonitorEndpoint() {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
 
             ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/2", HttpMethod.DELETE, entity, String.class);
@@ -144,7 +140,9 @@ class MonitorIT extends BaseIntegrationTest{
         void testAcceptPendingMonitorEndpoint404() {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
+
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/10000/accept", HttpMethod.PUT, entity, Monitor.class);
             assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
         }
@@ -153,9 +151,10 @@ class MonitorIT extends BaseIntegrationTest{
         @Order(7)
         void testAcceptPendingMonitorEndpoint200() {
             HttpHeaders headers = new HttpHeaders();
-            System.out.println("wfdgdc"+jwtToken);
             headers.setBearerAuth(jwtToken);
+
             HttpEntity<?> entity = new HttpEntity<>(headers);
+
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/accept/7", HttpMethod.PUT, entity, Monitor.class);
             assertEquals(HttpStatus.OK, response.getStatusCode());
             assertFalse(response.getBody().isPending());
@@ -165,20 +164,6 @@ class MonitorIT extends BaseIntegrationTest{
         @Test
         @Order(8)
         void testCreateMonitorEndpoint() {
-
-            /*MonitorsGroup group = new MonitorsGroup();
-            group.setName("update1");
-            group.setMonitors(List.of());
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(jwtToken);
-            HttpEntity<MonitorsGroup> entity = new HttpEntity<>(group, headers);
-
-            ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups", HttpMethod.POST, entity, MonitorsGroup.class);*/
-
-           // assertEquals(HttpStatus.CREATED, response1.getStatusCode());
-            //assertEquals("update1", response1.getBody().getName());
-
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(jwtToken);
             HttpEntity<?> entity = new HttpEntity<>( headers);
@@ -201,13 +186,7 @@ class MonitorIT extends BaseIntegrationTest{
 
         @Test
         @Order(9)
-        //missing change group
         void testUpdateMonitorEndpoint() {
-            /*MonitorsGroup group = new MonitorsGroup();
-            group.setName("updated_group");
-            group.setMonitors(List.of());
-            group.setId(4L);*/
-
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(jwtToken);
             HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -216,11 +195,6 @@ class MonitorIT extends BaseIntegrationTest{
             ResponseEntity<Monitor> response = restTemplate.exchange("http://localhost:" + port + "/api/monitors/1", HttpMethod.GET, entity, Monitor.class);
             Monitor monitor = response.getBody();
             monitor.setName("update_monitor");
-
-            //HttpEntity<MonitorsGroup> entity2 = new HttpEntity<>(group,headers);
-
-            //ResponseEntity<MonitorsGroup> response_post = restTemplate.exchange("http://localhost:" + port + "/api/groups", HttpMethod.POST, entity2, MonitorsGroup.class);
-            //assertEquals(HttpStatus.CREATED, response_post.getStatusCode());
 
             ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.GET, entity , MonitorsGroup.class);
             assertEquals(HttpStatus.OK, response1.getStatusCode());
