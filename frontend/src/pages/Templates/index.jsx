@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import templateservice from "../../services/templateService";
 import { PageTitle } from "../../components";
 import DataTable from "react-data-table-component";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { FiTrash2 } from "react-icons/fi";
+import { IoWarningOutline } from "react-icons/io5";
 
 const customStyles = {
     headRow: {
@@ -49,6 +50,7 @@ function Templates(){
     const [templates,setTemplates] = useState([]);
     const [templateDisplay,setTemplateDisplay] = useState(null);
     const [selectedColors,setSelectedColors] = useState([]);
+    const [warning,setWarning] = useState(false);
     const navigate = useNavigate();
 
     const columns = [
@@ -63,7 +65,7 @@ function Templates(){
             sortable:true,
         },
         {
-            selector: row => <button onClick={()=>deleteTemplate(row.id)} className=" border border-black rounded-sm size-5 flex items-center justify-center"><FiTrash2/></button>,
+            selector: row => <button disabled={row.templateGroups.length !== 0} onClick={()=>deleteTemplate(row.id)} className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400"><FiTrash2/></button>,
             sortable:false,
         }
     ];
@@ -98,6 +100,15 @@ function Templates(){
 
     return(
         <div className="h-full w-full flex flex-col">
+            <AnimatePresence>
+                {warning && <motion.div className=" bg-rose-500 text-white p-4 absolute rounded-lg flex items-center justify-center gap-3 left-[15%]"
+                                        initial={{y:-100}}
+                                        animate={{y:0}}
+                                        exit={{y:-100}}
+                >
+                    <IoWarningOutline className="size-6"/>Cant Edit/Delete Template In Use
+                </motion.div>}
+            </AnimatePresence>
             <div className="h-[8%]">
                 <PageTitle startTitle={"templates"}/>
             </div>
@@ -112,8 +123,9 @@ function Templates(){
                     <DataTable
                         pointerOnHover
                         highlightOnHover
-                        onRowClicked={(row)=> navigate(`${row.id}`,{state:row})}
-                        onRowMouseEnter={(row) => setTemplateDisplay(row)}
+                        onRowClicked={(row)=> {if(row.templateGroups.length === 0)navigate(`${row.id}`,{state:row})}}
+                        onRowMouseEnter={(row) => {setTemplateDisplay(row);if(row.templateGroups.length !== 0) setWarning(true)}}
+                        onRowMouseLeave={(row)=>setWarning(false)}
                         columns={columns}
                         data={templates}
                         theme="solarized"
