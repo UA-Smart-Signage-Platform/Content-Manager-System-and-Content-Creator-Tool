@@ -21,7 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.User;
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
@@ -35,9 +35,9 @@ class ScheduleServiceTest {
 
     @Test void
     getScheduleByIdTestReturnsSchedule(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -49,19 +49,18 @@ class ScheduleServiceTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
 
         Schedule schedu = service.getScheduleById(1L);
-        assertThat(schedu.getCreatedBy().getUsername()).isEqualTo("admin");
+        assertThat(schedu.getCreatedBy().getEmail()).isEqualTo("admin");
         assertThat(schedu.getEndDate()).isEqualTo(LocalDate.parse("2024-04-21"));
     }
 
     @Test
     void whenServiceGetAllThenRepositoryFindAll(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -73,7 +72,6 @@ class ScheduleServiceTest {
         schedule1.setStartDate(LocalDate.parse("2024-04-21"));
         schedule1.setPriority(1);
         schedule1.setLastEditedBy(user);
-        schedule1.setMonitorsGroupForSchedules(group);
 
         Schedule schedule2 = new Schedule();
         schedule2.setFrequency(10);
@@ -82,7 +80,6 @@ class ScheduleServiceTest {
         schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(1);
         schedule2.setLastEditedBy(user);
-        schedule2.setMonitorsGroupForSchedules(group);
 
         when(repository.findAll()).thenReturn(Arrays.asList(schedule1, schedule2));
 
@@ -93,9 +90,9 @@ class ScheduleServiceTest {
 
     @Test void
     whenServiceSaveThenRepositorySave(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -107,7 +104,6 @@ class ScheduleServiceTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
         when(repository.save(schedule)).thenReturn(schedule);
 
         Schedule schedu = service.saveSchedule(schedule);
@@ -117,9 +113,9 @@ class ScheduleServiceTest {
 
     @Test
     void whenServiceDeleteThenRepositoryDelete(){
-        User user = new User();
-        user.setUsername("admin");
-        user.setRole(1);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
@@ -131,7 +127,6 @@ class ScheduleServiceTest {
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
-        schedule.setMonitorsGroupForSchedules(group);
 
         service.deleteSchedule(1L);
 

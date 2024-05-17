@@ -1,6 +1,9 @@
 package deti.uas.uasmartsignage.Models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import deti.uas.uasmartsignage.Mqtt.ScheduleMqtt;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,43 +25,53 @@ public class Schedule {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "group_id", nullable = false)
-    @JsonIgnore
-    private MonitorsGroup monitorsGroupForSchedules;
-
-    @Column(name = "frequency")
     private int frequency;
 
-    @Column(name = "startTime")
     private LocalTime startTime;
 
-    @Column(name = "endTime")
     private LocalTime endTime;
 
-    @Column(name = "start_date")
     private LocalDate startDate;
 
-    @Column(name = "end_date")
     private LocalDate endDate;
 
-    @Column(name = "priority")
     private int priority;
 
     @ManyToOne
     @JoinColumn(name = "created_by")
-    private User createdBy;
-
-    @Column(name = "created_on")
-    private LocalDate createdOn;
+    private AppUser createdBy;
 
     @ManyToOne
     @JoinColumn(name = "last_edited_by")
-    private User lastEditedBy;
+    private AppUser lastEditedBy;
+
+    private LocalDate createdOn;
+
+    @OneToMany(mappedBy = "schedule")
+    @JsonIgnoreProperties("schedule")
+    private List<TemplateGroup> templateGroups;
 
     @ElementCollection
     @CollectionTable(name = "schedule_weekdays", joinColumns = @JoinColumn(name = "schedule_id"))
     @Column(name = "weekdays")
     private List<Integer> weekdays;
+
+    @Override
+    public String toString() {
+        return "Schedule [createdBy=" + createdBy + ", createdOn=" + createdOn + ", endDate=" + endDate + ", endTime="
+                + endTime + ", frequency=" + frequency + ", id=" + id + ", lastEditedBy=" + lastEditedBy + ", priority="
+                + priority + ", startDate=" + startDate + ", startTime=" + startTime + ", templateGroups="
+                + templateGroups + ", weekdays=" + weekdays + "]";
+    }
+
+    public ScheduleMqtt toMqttFormat() {
+        String stringStartDate = "";
+        String stringEndDate = "";
+        if(startDate != null)
+            stringStartDate = startDate.toString();
+        if(endDate != null)
+            stringEndDate = endDate.toString();
+        return new ScheduleMqtt(startTime.toString(), endTime.toString(), weekdays, stringStartDate, stringEndDate, priority);
+    }
 
 }

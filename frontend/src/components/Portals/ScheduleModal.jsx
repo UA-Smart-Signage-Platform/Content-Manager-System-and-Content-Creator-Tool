@@ -3,6 +3,7 @@ import { MdArrowBack, MdArrowDropUp } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../services/templateService";
+import activeTemplateService from '../../services/activeTemplateService';
 import ScheduleContentModal from './ScheduleContentModal';
 import Select from 'react-select'
 import DatePicker from 'react-date-picker';
@@ -10,7 +11,7 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const weekDays = ["RRule.MO", "RRule.TU", "RRule.WE", "RRule.TH", "RRule.FR", "RRule.SA", "RRule.SU"];
+const weekDays = [0, 1, 2, 3, 4, 5, 6];
 const timeHour = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
 const timeMinute = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"];
 
@@ -26,7 +27,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -72,19 +73,24 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
             template: { id: selectedTemplateId },
             group: { id: selectedGroup.id },
             content: selectedContent,
-            rule: { weekDays : selectedDays,
-                    startTime : selectedStartTime,
-                    endTime : selectedEndTime,
+            schedule: { weekdays : selectedDays,
+                    startTime : selectedStartTime[0] + ":" + selectedStartTime[1],
+                    endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
                     startDate : selectedStartDate,
-                    endDate : selectedEndDate}
+                    endDate : selectedEndDate,
+                    priority: totalRules}
         }
 
-        console.log(data);
+        activeTemplateService.addRule(data).then(()=>{
+            setUpdater(!updater);
+            setShowPortal(false);
+        });
     };
 
 
     const handleSelectedDays = (event) => {
-        const { value } = event.target;
+        const value = parseInt(event.target.value);
+
         if (selectedDays.includes(value)) {
             setSelectedDays(selectedDays.filter(day => day !== value));
         } 
@@ -152,7 +158,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration:0.3 }}
-            className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
+            className="fixed z-20 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <motion.div key="content"
                     initial={{ scale: 0.8 }}
@@ -381,7 +387,8 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                             width: `${templateWidget.width}%`,
                                             height: `${templateWidget.height}%`,
                                             top: `${templateWidget.top}%`,
-                                            left: `${templateWidget.leftPosition}%`
+                                            left: `${templateWidget.leftPosition}%`,
+                                            zIndex: templateWidget.zindex,
                                         }}> 
                                         <div className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectedColors[index]}`}>
                                             {contentElement(templateWidget)}

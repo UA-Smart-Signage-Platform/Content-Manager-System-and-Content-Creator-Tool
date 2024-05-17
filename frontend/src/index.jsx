@@ -1,11 +1,23 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import { createBrowserRouter,RouterProvider } from 'react-router-dom';
+import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Root } from './routes';
-import { Dashboard, Monitors, Media, Monitor, Schedule, Templates } from './pages';
+import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin, Templates, ChangePassword, Cct } from './pages';
+import PropTypes from 'prop-types';
 
+const ProtectedRoute = ({ element, requiredRoles }) => {
+  const userRoles = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).role : null;
+  const hasRequiredRole = userRoles && requiredRoles.some(role => userRoles.includes(role));
+
+  return hasRequiredRole ? element : <Navigate to="/dashboard" />;
+};
+
+ProtectedRoute.propTypes = {
+  element: PropTypes.element.isRequired,
+  requiredRoles: PropTypes.arrayOf(PropTypes.string).isRequired
+};
 
 const router = createBrowserRouter([
   {
@@ -34,8 +46,28 @@ const router = createBrowserRouter([
       },
       {
         path: "contentcreator",
-        element:<Templates/>,
+        element: <ProtectedRoute element={<Templates/>} requiredRoles={["ROLE_ADMIN"]} />
       },
+      {
+        path: "login",
+        element:<Wso2Login/>,
+      },
+      {
+        path: "",
+        element:<Wso2Login/>
+      },
+      {
+        path: "admin",
+        element: <ProtectedRoute element={<Admin/>} requiredRoles={["ROLE_ADMIN"]} />
+      },
+      {
+        path: "change-password",
+        element: <ProtectedRoute element={<ChangePassword/>} requiredRoles={["ROLE_ADMIN"]} />
+      },
+      {
+        path: "contentcreator/:id",
+        element:<Cct/>
+      }
     ]
   },
 ])

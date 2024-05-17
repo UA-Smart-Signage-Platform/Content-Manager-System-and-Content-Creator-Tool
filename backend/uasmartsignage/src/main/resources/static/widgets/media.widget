@@ -1,25 +1,45 @@
 <div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px;">
-    <video autoplay muted class="stretch" id="main-video"></video>
+    <video autoplay muted class="stretch" id="video[[widgetID]]"></video>
+    <img class="stretch" style="display: none;" id="image[[widgetID]]">
 </div>
 <script>
-    var videoList = ["[[videos]]"];
+    var videoList[[widgetID]] = ["[[videos]]"];
+    var currentIndex[[widgetID]] = 0;
 
-    var mainVideo = document.getElementById("main-video");
+    function setVideoSource[[widgetID]](videoSrc) {
 
-    function setMainVideoSource(videoSrc) {
-        mainVideo.src = videoSrc;
-        mainVideo.play();
+        let video = document.getElementById("video[[widgetID]]");
+        let image = document.getElementById("image[[widgetID]]");
+
+        if (videoSrc.endsWith('.mp4')) {
+            video.src = videoSrc;
+            video.style.display = 'block';
+            image.style.display = 'none';
+            video.play();
+        } else {
+            image.src = videoSrc;
+            image.style.display = 'block';
+            video.style.display = 'none';
+            startTimer[[widgetID]]();
+        }
+
+        if (currentIndex[[widgetID]] == videoList[[widgetID]].length - 1){
+            currentIndex[[widgetID]] = 0;
+        }
+        else{
+            currentIndex[[widgetID]] += 1;
+        }
     }
 
-    setMainVideoSource(videoList[0]);
+    setVideoSource[[widgetID]](videoList[[widgetID]][0]);
 
-    mainVideo.addEventListener("ended", function() {
-        var currentIndex = videoList.indexOf(mainVideo.src.split('/').pop());
+    function startTimer[[widgetID]]() {
+        setTimeout(function() {
+            setVideoSource[[widgetID]](videoList[[widgetID]][currentIndex[[widgetID]]]);
+        }, 5000); 
+    }
 
-        if (currentIndex !== -1 && currentIndex < videoList.length - 1) {
-            setMainVideoSource(videoList[currentIndex + 1]);
-        } else {
-            setMainVideoSource(videoList[0]);
-        }
+    document.getElementById("video[[widgetID]]").addEventListener("ended", function() {
+        setVideoSource[[widgetID]](videoList[[widgetID]][currentIndex[[widgetID]]]);
     });
 </script>

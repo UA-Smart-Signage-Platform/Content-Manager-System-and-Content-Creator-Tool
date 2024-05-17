@@ -67,6 +67,17 @@ public class ScheduleController {
 
     @Operation
     @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Schedules updated", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "Schedules not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
+    @PutMapping
+    public ResponseEntity<List<Schedule>> updateSchedules(@RequestBody List<Schedule> schedules){
+        List<Schedule> scheduleSavedList = scheduleService.updateSchedules(schedules);
+        return new ResponseEntity<>(scheduleSavedList, HttpStatus.OK);
+    }
+
+    @Operation
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Schedule deleted", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
@@ -92,6 +103,14 @@ public class ScheduleController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(savedSchedule, HttpStatus.CREATED);
+    }
+
+    @Operation(summary = "Get all schedules by group id")
+    @ApiResponse(responseCode = "200", description = "List of all schedules", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    @GetMapping("/group/{id}")
+    public ResponseEntity<List<Schedule>> getSchedulesByGroupId(@PathVariable Long id) {
+        List<Schedule> schedules = scheduleService.getSchedulesByGroupId(id);
+        return new ResponseEntity<>(schedules, HttpStatus.OK);
     }
 
 }

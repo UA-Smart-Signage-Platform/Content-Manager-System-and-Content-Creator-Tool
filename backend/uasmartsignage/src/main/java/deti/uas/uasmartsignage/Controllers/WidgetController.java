@@ -17,7 +17,8 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/widgets")
+@RequestMapping("/api/widgets")
+@CrossOrigin(origins = "*")
 public class WidgetController {
 
     private WidgetService widgetService;

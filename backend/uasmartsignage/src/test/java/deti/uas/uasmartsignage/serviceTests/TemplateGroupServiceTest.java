@@ -1,41 +1,38 @@
 package deti.uas.uasmartsignage.serviceTests;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.List;
-import java.util.Map;
+
 import java.util.Optional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import deti.uas.uasmartsignage.Configuration.MqttConfig;
-import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Mqtt.MqttSubscriberService;
-import deti.uas.uasmartsignage.Services.ContentService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
-import deti.uas.uasmartsignage.Services.TemplateService;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import static org.mockito.Mockito.*;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
-import org.eclipse.paho.client.mqttv3.MqttCallback;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.MqttMessage;
 
+import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Services.TemplateService;
+import deti.uas.uasmartsignage.Services.MonitorGroupService;
+import deti.uas.uasmartsignage.Services.ContentService;
+import deti.uas.uasmartsignage.Configuration.MqttConfig;
+import deti.uas.uasmartsignage.Models.Monitor;
+import deti.uas.uasmartsignage.Models.Widget;
+import deti.uas.uasmartsignage.Models.TemplateWidget;
+import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
+import java.util.List;
+import java.util.Map;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
+
 
 @ExtendWith(MockitoExtension.class)
 class TemplateGroupServiceTest {
@@ -54,13 +51,7 @@ class TemplateGroupServiceTest {
     private ContentService contentService;
 
     @Mock
-    private IMqttClient mqttClient;
-
-    @Mock
     private MqttConfig mqttConfig;
-
-    @Mock
-    private MqttMessage mqttMessage;
 
     @Mock
     private TemplateMessage templateMessage;
