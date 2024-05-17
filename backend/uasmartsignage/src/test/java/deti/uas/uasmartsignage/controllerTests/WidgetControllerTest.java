@@ -10,11 +10,14 @@ import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Services.ContentService;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.Services.WidgetService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -38,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(WidgetController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class WidgetControllerTest {
 
         @Autowired
@@ -45,6 +49,12 @@ class WidgetControllerTest {
 
         @MockBean
         private WidgetService service;
+
+        @MockBean
+        private CustomUserDetailsService userDetailsService;
+
+        @MockBean
+        private JwtUtilService jwtUtil;
 
         @MockBean
         private ContentService contentService;//can be erased in the controller??
@@ -69,7 +79,7 @@ class WidgetControllerTest {
 
             when(service.getAllWidgets()).thenReturn(Arrays.asList(widget1,widget2));
 
-            mvc.perform(get("/widgets").contentType(MediaType.APPLICATION_JSON))
+            mvc.perform(get("/api/widgets").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].name", is("widget1")))
@@ -92,7 +102,7 @@ class WidgetControllerTest {
 
             when(service.getWidgetById(1L)).thenReturn(widget);
 
-            mvc.perform(get("/widgets/1").contentType(MediaType.APPLICATION_JSON))
+            mvc.perform(get("/api/widgets/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("widget")));
         }
@@ -113,7 +123,7 @@ class WidgetControllerTest {
 
             when(service.saveWidget(Mockito.any(Widget.class))).thenReturn(widget);
 
-            mvc.perform(post("/widgets").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
+            mvc.perform(post("/api/widgets").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is("widget")));
         }
@@ -135,7 +145,7 @@ class WidgetControllerTest {
 
             //when(service.getWidgetById(1L)).thenReturn(widget);
 
-            mvc.perform(delete("/widgets/1").contentType(MediaType.APPLICATION_JSON))
+            mvc.perform(delete("/api/widgets/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
         }
 
@@ -147,7 +157,7 @@ class WidgetControllerTest {
 
             when(service.updateWidget(Mockito.anyLong(), Mockito.any())).thenReturn(widget);
 
-            mvc.perform(put("/widgets/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
+            mvc.perform(put("/api/widgets/1").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("updated_widget")))
                 .andExpect(jsonPath("$.path", is("new_path")));
@@ -157,7 +167,7 @@ class WidgetControllerTest {
         void testGetWidgetByIdEndpoint404() throws Exception{
             when(service.getWidgetById(1L)).thenReturn(null);
 
-            mvc.perform(get("/widgets/1").contentType(MediaType.APPLICATION_JSON))
+            mvc.perform(get("/api/widgets/1").contentType(MediaType.APPLICATION_JSON))
                     .andExpect(status().isNotFound());
         }
 
@@ -169,7 +179,7 @@ class WidgetControllerTest {
 
             when(service.updateWidget(Mockito.anyLong(), Mockito.any())).thenReturn(null);
 
-            mvc.perform(put("/widgets/10000").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
+            mvc.perform(put("/api/widgets/10000").contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(widget)))
                 .andExpect(status().isNotFound());
         }
 }

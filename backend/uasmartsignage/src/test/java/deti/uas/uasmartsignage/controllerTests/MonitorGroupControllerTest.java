@@ -7,10 +7,13 @@ import java.util.List;
 
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -37,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MonitorGroupController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class MonitorGroupControllerTest {
 
     @Autowired
@@ -44,6 +48,12 @@ class MonitorGroupControllerTest {
 
     @MockBean
     private MonitorGroupService service;
+
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
+
+    @MockBean
+    private JwtUtilService jwtUtil;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -220,15 +230,17 @@ class MonitorGroupControllerTest {
         monitorsGroup.setName("group1");
         monitorsGroup.setId(1L);
         monitorsGroup.setMadeForMonitor(false);
-        monitorsGroup.setTemplateGroup(templateGroup);
+        monitorsGroup.setTemplateGroups(List.of(templateGroup));
         monitorsGroup.setMonitors(Arrays.asList(monitor, monitor2));
+
+
 
         when(service.getGroupById(1L)).thenReturn(monitorsGroup);
 
         mvc.perform(get("/api/groups/1/template")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.template.name", is("template1")));
+                .andExpect(jsonPath("$[0].template.name", is("template1")));
     }
 
     @Test

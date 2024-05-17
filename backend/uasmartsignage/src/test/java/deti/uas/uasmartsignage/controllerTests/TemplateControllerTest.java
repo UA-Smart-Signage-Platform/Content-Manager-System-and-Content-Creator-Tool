@@ -9,10 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -36,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TemplateController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class TemplateControllerTest {
 
             @Autowired
@@ -44,6 +48,11 @@ class TemplateControllerTest {
             @MockBean
             private TemplateService service;
 
+            @MockBean
+            private CustomUserDetailsService userDetailsService;
+
+            @MockBean
+            private JwtUtilService jwtUtil;
 
             private ObjectMapper objectMapper = new ObjectMapper();
 

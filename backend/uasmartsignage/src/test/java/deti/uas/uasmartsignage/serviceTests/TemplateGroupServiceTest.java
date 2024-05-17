@@ -7,6 +7,8 @@ import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
+import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Services.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,18 +16,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
-import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Services.TemplateService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
-import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Models.Widget;
-import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +38,9 @@ class TemplateGroupServiceTest {
 
     @Mock
     private MonitorGroupService groupService;
+
+    @Mock
+    private ScheduleService scheduleService;
 
     @Mock
     private ContentService contentService;
@@ -75,6 +70,9 @@ class TemplateGroupServiceTest {
         monitor1.setWidth(12);
         monitor1.setHeight(12);
 
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+
         MonitorsGroup group = new MonitorsGroup();
         group.setName("group1");
         group.setMonitors(List.of(monitor,monitor1));
@@ -96,6 +94,7 @@ class TemplateGroupServiceTest {
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule);
         when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
 
         TemplateGroup retrievedTemplateGroup = service.getGroupById(1L);
@@ -105,6 +104,9 @@ class TemplateGroupServiceTest {
 
     @Test
     void testGetTemplateGroupByGroupID(){
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -138,6 +140,7 @@ class TemplateGroupServiceTest {
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule);
         when(repository.findByGroupId(group.getId())).thenReturn(templateGroup);
 
         TemplateGroup get_template = service.getTemplateGroupByGroupID(group.getId());
@@ -161,7 +164,8 @@ class TemplateGroupServiceTest {
         //when(templateMessage.getMethod()).thenReturn("TEMPLATE");
         //doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
 
-
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
 
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
@@ -196,6 +200,9 @@ class TemplateGroupServiceTest {
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule);
+
+        group.setTemplateGroups(List.of(templateGroup));
 
         
 
@@ -210,6 +217,9 @@ class TemplateGroupServiceTest {
 
     @Test
     void testDeleteTemplateGroup(){
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -243,6 +253,7 @@ class TemplateGroupServiceTest {
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule);
 
         service.deleteGroup(1L);
         assertFalse(repository.existsById(1L));
@@ -252,6 +263,9 @@ class TemplateGroupServiceTest {
 
     @Test
     void testUpdateTemplateGroup(){
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -286,6 +300,7 @@ class TemplateGroupServiceTest {
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
         templateGroup.setContent(Map.of(1,"Content1"));
+        templateGroup.setSchedule(schedule);
 
         when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
         when(repository.save(templateGroup)).thenReturn(templateGroup);

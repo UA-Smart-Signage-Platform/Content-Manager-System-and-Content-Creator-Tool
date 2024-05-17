@@ -7,15 +7,14 @@ import java.util.*;
 
 
 import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Services.ContentService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
-import deti.uas.uasmartsignage.Services.TemplateService;
+import deti.uas.uasmartsignage.Services.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -28,7 +27,6 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import deti.uas.uasmartsignage.Controllers.TemplateGroupController;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -41,6 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TemplateGroupController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class TemplateGroupControllerTest {
 
     @Autowired
@@ -61,6 +60,11 @@ class TemplateGroupControllerTest {
     @MockBean
     private ContentService contentService;
 
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
+
+    @MockBean
+    private JwtUtilService jwtUtil;
 
 
     private ObjectMapper objectMapper = new ObjectMapper();

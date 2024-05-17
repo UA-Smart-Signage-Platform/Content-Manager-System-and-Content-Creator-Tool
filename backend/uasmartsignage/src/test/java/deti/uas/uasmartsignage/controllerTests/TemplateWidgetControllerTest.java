@@ -10,12 +10,15 @@ import java.util.Map;
 
 
 import deti.uas.uasmartsignage.Controllers.TemplateGroupController;
+import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
+import deti.uas.uasmartsignage.Services.JwtUtilService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -44,12 +47,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(TemplateWidgetController.class)
 @ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
 class TemplateWidgetControllerTest {
     @Autowired
     private MockMvc mvc;
 
     @MockBean
     private TemplateWidgetService service;
+
+    @MockBean
+    private CustomUserDetailsService userDetailsService;
+
+    @MockBean
+    private JwtUtilService jwtUtil;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -87,7 +97,7 @@ class TemplateWidgetControllerTest {
 
         when(service.getAllTemplateWidgets()).thenReturn(templateWidgets);
 
-        mvc.perform(get("/templateWidgets")
+        mvc.perform(get("/api/templateWidgets")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
@@ -113,16 +123,16 @@ class TemplateWidgetControllerTest {
 
         when(service.getTemplateWidgetById(1L)).thenReturn(templateWidget1);
 
-        mvc.perform(get("/templateWidgets/1")
+        mvc.perform(get("/api/templateWidgets/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.template.name", is(template1.getName())))
-                .andExpect(jsonPath("$.top", is(1)));
+                .andExpect(jsonPath("$.top", is(1.0)));
     }
 
     @Test
     void testGetTemplateWidgetById404() throws Exception{
-        mvc.perform(get("/templateWidgets/1")
+        mvc.perform(get("/api/templateWidgets/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -145,17 +155,17 @@ class TemplateWidgetControllerTest {
 
         when(service.saveTemplateWidget(Mockito.any(TemplateWidget.class))).thenReturn(templateWidget1);
 
-        mvc.perform(post("/templateWidgets")
+        mvc.perform(post("/api/templateWidgets")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(templateWidget1)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.template.name", is(template1.getName())))
-                .andExpect(jsonPath("$.width", is(10)));
+                .andExpect(jsonPath("$.width", is(10.0)));
     }
 
     @Test
     void testDeleteTemplateWidget() throws Exception {
-        mvc.perform(delete("/templateWidgets/1")
+        mvc.perform(delete("/api/templateWidgets/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -190,12 +200,12 @@ class TemplateWidgetControllerTest {
 
         when(service.updateTemplateWidget(Mockito.anyLong(), Mockito.any(TemplateWidget.class))).thenReturn(templateWidget2);
 
-        mvc.perform(put("/templateWidgets/1")
+        mvc.perform(put("/api/templateWidgets/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(templateWidget1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.template.name", is(template2.getName())))
-                .andExpect(jsonPath("$.top", is(2)));
+                .andExpect(jsonPath("$.top", is(2.0)));
     }
 
     @Test
@@ -228,7 +238,7 @@ class TemplateWidgetControllerTest {
 
         when(service.updateTemplateWidget(Mockito.anyLong(), Mockito.any(TemplateWidget.class))).thenReturn(null);
 
-        mvc.perform(put("/templateWidgets/100")
+        mvc.perform(put("/api/templateWidgets/100")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(templateWidget1)))
                 .andExpect(status().isNotFound());

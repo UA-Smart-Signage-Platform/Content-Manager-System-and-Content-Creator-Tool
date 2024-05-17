@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.repositoryTests;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import deti.uas.uasmartsignage.Models.Schedule;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.JoinColumn;
@@ -33,6 +34,10 @@ class TemplateGroupRepositoryTest {
 
     @Test
     void whenFindAll_thenReturnAllTemplateGroups(){
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+        entityManager.persistAndFlush(schedule);
+
         Template template1 = new Template();
         template1.setName("template1");
         entityManager.persistAndFlush(template1);
@@ -53,12 +58,14 @@ class TemplateGroupRepositoryTest {
         templateGroup1.setTemplate(template1);
         templateGroup1.setGroup(group1);
         templateGroup1.setContent(Map.of(1, "content1"));
+        templateGroup1.setSchedule(schedule);
         entityManager.persistAndFlush(templateGroup1);
 
         TemplateGroup templateGroup2 = new TemplateGroup();
         templateGroup2.setTemplate(template1);
         templateGroup2.setGroup(group2);
         templateGroup2.setContent(Map.of(2, "content2"));
+        templateGroup2.setSchedule(schedule);
         entityManager.persistAndFlush(templateGroup2);
 
         List<TemplateGroup> found = repository.findAll();
@@ -70,6 +77,10 @@ class TemplateGroupRepositoryTest {
 
     @Test
     void testFindByGroupId(){
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+        entityManager.persistAndFlush(schedule);
+
         Template template1 = new Template();
         template1.setName("template1");
         entityManager.persistAndFlush(template1);
@@ -86,6 +97,7 @@ class TemplateGroupRepositoryTest {
         templateGroup1.setTemplate(template1);
         templateGroup1.setGroup(group1);
         templateGroup1.setContent(Map.of(1, "content1"));
+        templateGroup1.setSchedule(schedule);
         entityManager.persistAndFlush(templateGroup1);
 
         TemplateGroup found = repository.findByGroupId(group1.getId());
@@ -96,6 +108,10 @@ class TemplateGroupRepositoryTest {
 
     @Test
     void testSaveTemplateGroup(){
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+        entityManager.persistAndFlush(schedule);
+
         Template template1 = new Template();
         template1.setName("template1");
         entityManager.persistAndFlush(template1);
@@ -108,6 +124,7 @@ class TemplateGroupRepositoryTest {
         templateGroup1.setTemplate(template1);
         templateGroup1.setGroup(group1);
         templateGroup1.setContent(Map.of(1, "content1"));
+        templateGroup1.setSchedule(schedule);
 
         TemplateGroup saved = repository.save(templateGroup1);
 

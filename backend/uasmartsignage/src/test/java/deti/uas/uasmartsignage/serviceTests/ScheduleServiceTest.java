@@ -134,6 +134,69 @@ class ScheduleServiceTest {
         assertFalse(repository.existsById(1L));
 
     }
-    //missing update(not know what can be updated)
+
+    @Test
+    void testUpdateSchedules(){
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setId(2L);
+        schedule2.setFrequency(4);
+        schedule2.setCreatedBy(user);
+        schedule2.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule2.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule2.setPriority(4);
+        schedule2.setLastEditedBy(user);
+
+        when(repository.findById(1L)).thenReturn(Optional.of(schedule));
+
+        when(repository.findById(2L)).thenReturn(Optional.of(schedule2));
+
+        List<Schedule> schedules = Arrays.asList(schedule, schedule2);
+
+        List<Schedule> updatedSchedules = service.updateSchedules(schedules);
+
+        assertThat(updatedSchedules).hasSize(2);
+    }
+
+    @Test
+    void testUpdateSchedule(){
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+
+        when(repository.save(schedule)).thenReturn(schedule);
+
+        Schedule updatedSchedule = service.updateSchedule(schedule);
+
+        assertThat(updatedSchedule).isEqualTo(schedule);
+    }
+
 
 }

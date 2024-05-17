@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import deti.uas.uasmartsignage.Models.TemplateWidget;
+import deti.uas.uasmartsignage.Models.Widget;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,8 +44,30 @@ class TemplateServiceTest {
 
     @Test
     void whenServiceSaveThenRepositorySave(){
+        Widget widget = new Widget();
+        widget.setName("widget");
+
         Template template = new Template();
         template.setName("template");
+
+        TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setWidth(1);
+        templateWidget.setHeight(1);
+        templateWidget.setZIndex(1);
+        templateWidget.setLeftPosition(1);
+        templateWidget.setTemplate(template);
+        templateWidget.setWidget(widget);
+
+        TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setWidth(1);
+        templateWidget1.setHeight(1);
+        templateWidget1.setZIndex(1);
+        templateWidget1.setLeftPosition(1);
+        templateWidget1.setTemplate(template);
+        templateWidget1.setWidget(widget);
+
+        template.setTemplateWidgets(List.of(templateWidget, templateWidget1));
+
         when(repository.save(template)).thenReturn(template);
 
         Template template1 = service.saveTemplate(template);
