@@ -3,6 +3,8 @@ package deti.uas.uasmartsignage.integrationTests;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import deti.uas.uasmartsignage.Models.TemplateWidget;
+import deti.uas.uasmartsignage.Models.Widget;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -85,19 +87,51 @@ public class TemplateIT  extends BaseIntegrationTest{
 
     @Test
     @Order(3)
-    void testSaveTemplate(){
+    void testSaveTemplate() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
+        // Fetch an existing Widget
+        ResponseEntity<Widget> widgetResponse = restTemplate.exchange(
+                "http://localhost:" + port + "/api/widgets/1",
+                HttpMethod.GET,
+                new HttpEntity<>(headers),
+                Widget.class);
+        Widget widget = widgetResponse.getBody();
+
+        // Prepare a TemplateWidget
+        TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setTop(0);
+        templateWidget.setLeftPosition(0);
+        templateWidget.setWidth(100);
+        templateWidget.setHeight(100);
+        templateWidget.setZIndex(1);
+        templateWidget.setWidget(widget);
+
+        // We don't save the TemplateWidget separately; instead, we link it to the Template and save the Template
         Template template = new Template();
         template.setName("template5");
+        template.setTemplateWidgets(List.of(templateWidget));
 
         HttpEntity<Template> requestEntity = new HttpEntity<>(template, headers);
 
-        ResponseEntity<Template> response = restTemplate.exchange("http://localhost:"+ port + "/api/templates", HttpMethod.POST, requestEntity, Template.class);
+        // Save the Template (which includes the TemplateWidget)
+        ResponseEntity<Template> response = restTemplate.exchange(
+                "http://localhost:" + port + "/api/templates",
+                HttpMethod.POST,
+                requestEntity,
+                Template.class);
+
+        // Assertions to verify the result
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("template5", response.getBody().getName());
+        assertEquals(1, response.getBody().getTemplateWidgets().size());
+        assertEquals(templateWidget.getTop(), response.getBody().getTemplateWidgets().get(0).getTop());
+        assertEquals(templateWidget.getLeftPosition(), response.getBody().getTemplateWidgets().get(0).getLeftPosition());
+        assertEquals(templateWidget.getWidth(), response.getBody().getTemplateWidgets().get(0).getWidth());
+        assertEquals(templateWidget.getHeight(), response.getBody().getTemplateWidgets().get(0).getHeight());
+        assertEquals(templateWidget.getZIndex(), response.getBody().getTemplateWidgets().get(0).getZIndex());
     }
 
     @Test

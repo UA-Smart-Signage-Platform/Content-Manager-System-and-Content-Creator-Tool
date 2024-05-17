@@ -66,7 +66,7 @@ public class WidgetIT extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<List<Widget>> response = restTemplate.exchange("http://localhost:" + port + "/widgets", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Widget>>() {});
+        ResponseEntity<List<Widget>> response = restTemplate.exchange("http://localhost:" + port + "/api/widgets", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<Widget>>() {});
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(6, response.getBody().size());
     }
@@ -79,7 +79,7 @@ public class WidgetIT extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Widget> response = restTemplate.exchange("http://localhost:" + port + "/widgets/1", HttpMethod.GET, requestEntity, Widget.class);
+        ResponseEntity<Widget> response = restTemplate.exchange("http://localhost:" + port + "/api/widgets/1", HttpMethod.GET, requestEntity, Widget.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Weather", response.getBody().getName());
         assertEquals("static/widgets/weather.widget", response.getBody().getPath());
@@ -99,7 +99,7 @@ public class WidgetIT extends BaseIntegrationTest{
 
         HttpEntity<Widget> requestEntity = new HttpEntity<>(weatherWidget, headers);
 
-        ResponseEntity<Widget> response = restTemplate.exchange("http://localhost:" + port + "/widgets", HttpMethod.POST, requestEntity, Widget.class);
+        ResponseEntity<Widget> response = restTemplate.exchange("http://localhost:" + port + "/api/widgets", HttpMethod.POST, requestEntity, Widget.class);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("Sports", response.getBody().getName());
         assertEquals("static/widgets/sports.widget", response.getBody().getPath());
@@ -121,7 +121,7 @@ public class WidgetIT extends BaseIntegrationTest{
         ResponseEntity<Content> response = restTemplate.exchange("http://localhost:" + port + "/content", HttpMethod.POST, requestEntity, Content.class);
         Content content1 = response.getBody();
 
-        ResponseEntity<Widget> response1 = restTemplate.exchange("http://localhost:" + port + "/widgets/1", HttpMethod.GET, new HttpEntity<>(headers), Widget.class);
+        ResponseEntity<Widget> response1 = restTemplate.exchange("http://localhost:" + port + "/api/widgets/1", HttpMethod.GET, new HttpEntity<>(headers), Widget.class);
         Widget widget = response1.getBody();
 
         widget.setName("Updated widget");
@@ -129,7 +129,7 @@ public class WidgetIT extends BaseIntegrationTest{
 
         HttpEntity<Widget> requestEntity2 = new HttpEntity<>(widget, headers);
 
-        ResponseEntity<Widget> response2 = restTemplate.exchange("http://localhost:" + port + "/widgets/1", HttpMethod.PUT, requestEntity2, Widget.class);
+        ResponseEntity<Widget> response2 = restTemplate.exchange("http://localhost:" + port + "/api/widgets/1", HttpMethod.PUT, requestEntity2, Widget.class);
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         assertEquals("Updated widget", response2.getBody().getName());
         assertEquals(1,response2.getBody().getContents().size());
@@ -144,7 +144,7 @@ public class WidgetIT extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<?> response = restTemplate.exchange("http://localhost:" + port + "/widgets/6", HttpMethod.DELETE, requestEntity, String.class);
+        ResponseEntity<?> response = restTemplate.exchange("http://localhost:" + port + "/api/widgets/6", HttpMethod.DELETE, requestEntity, String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 

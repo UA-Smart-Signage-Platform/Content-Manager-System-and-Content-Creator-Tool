@@ -122,9 +122,25 @@ public class ScheduleIT extends BaseIntegrationTest{
     }
 
     @Test
-    @Order(4)//missing new endpoint
+    @Order(4)
     void tesUpdateSchedule(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
 
+        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/1", HttpMethod.GET, new HttpEntity<>(headers), Schedule.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Schedule schedule = response.getBody();
+        schedule.setStartDate(LocalDate.parse("2024-05-11"));
+        schedule.setStartTime(LocalTime.parse("08:30"));
+
+        HttpEntity<Schedule> requestEntity = new HttpEntity<>(schedule, headers);
+
+        ResponseEntity<Schedule> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/1", HttpMethod.PUT, requestEntity, Schedule.class);
+
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+        assertEquals(LocalDate.parse("2024-05-11"), response1.getBody().getStartDate());
+        assertEquals(LocalTime.parse("08:30"), response1.getBody().getStartTime());
     }
 
     @Test
