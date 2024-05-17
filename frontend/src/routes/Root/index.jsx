@@ -11,9 +11,6 @@ const REDIRECT_URI = process.env.REACT_APP_WSO2_REDIRECT_URI;
 const IDP_URI = process.env.REACT_APP_IDP_URI;
 const BASE64 = process.env.REACT_APP_IDP_BASE64;
 
-
-
-
 createTheme('solarized', {
     text: {
       primary: '#101604',

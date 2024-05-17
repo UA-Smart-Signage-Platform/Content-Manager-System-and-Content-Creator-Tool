@@ -23,6 +23,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
@@ -52,7 +53,7 @@ public class TemplateGroupService {
     private final TemplateGroupRepository templateGroupRepository;
     private final TemplateWidgetService templateWidgetService;
 
-    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
         this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;

@@ -132,7 +132,8 @@ public class MonitorService {
         }
 
         // Send all template groups etc to the monitor group
-        templateGroupService.sendAllSchedulesToMonitorGroup(group, true);
+        MonitorsGroup monitorGroup = monitorGroupRepository.findById(monitor.getGroup().getId()).orElse(null);
+        templateGroupService.sendAllSchedulesToMonitorGroup(monitorGroup, true);
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);

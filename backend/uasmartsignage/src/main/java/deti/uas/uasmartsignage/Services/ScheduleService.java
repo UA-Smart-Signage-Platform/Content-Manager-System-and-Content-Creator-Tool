@@ -2,6 +2,7 @@ package deti.uas.uasmartsignage.Services;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
@@ -18,6 +19,8 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
 
+    private final TemplateGroupService templateGroupService;
+
     private final Logger logger = org.slf4j.LoggerFactory.getLogger(ScheduleService.class);
 
     private final String source = this.getClass().getSimpleName();
@@ -28,10 +31,10 @@ public class ScheduleService {
     private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
 
 
-    @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository, LogsService logsService) {
+    public ScheduleService(ScheduleRepository scheduleRepository, LogsService logsService,@Lazy TemplateGroupService templateGroupService) {
         this.scheduleRepository = scheduleRepository;
         this.logsService = logsService;
+        this.templateGroupService = templateGroupService;
     }
 
 
