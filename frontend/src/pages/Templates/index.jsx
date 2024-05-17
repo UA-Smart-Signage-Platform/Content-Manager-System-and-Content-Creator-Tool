@@ -81,7 +81,6 @@ function Templates(){
 
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{
-            console.log(response.data)
             setTemplates(response.data)
             setTemplateDisplay(response.data[0])
         })
