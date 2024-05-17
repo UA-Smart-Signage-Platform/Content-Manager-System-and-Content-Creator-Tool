@@ -9,7 +9,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
 
 
-function NavBar() {
+function NavBar({setLogged}) {
     const [isShow,setIsShow] = useState(false);
     const theme = useThemeStore((state) =>state.theme)
     const changeTheme = useThemeStore((state)=> state.changeTheme)
@@ -25,6 +25,7 @@ function NavBar() {
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('userInfo');
         navigate("/Login");
+        setLogged(false);
     };
 
     return(

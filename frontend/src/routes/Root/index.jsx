@@ -32,6 +32,7 @@ function Root(){
     const location = useLocation();
     const navigate = useNavigate();
     const [currentPath, setCurrentPath] = useState(location.pathname);
+    const [logged,setLogged] = useState(false);
 
     const getInfo = async () => {
         try {
@@ -182,7 +183,11 @@ function Root(){
                         navigate("/login");
                     }
                 } else if (params_code && !token) {
+                  console.log("adada")
                     getAccessToken(params_code);
+                } else{
+                  console.log("nha")
+                  setLogged(true)
                 }
             } catch (error) {
                 console.error("Error handling token:", error);
@@ -198,10 +203,12 @@ function Root(){
         <div className={`h-screen flex ${theme} text-textcolor bg-backgroundcolor`}>
             <div id="body" className="h-[100vh] w-full">
                 <div id="page-content" className="ml-[65px] p-4 pr-20 h-full">
+                  {(logged || location.pathname == "/login") &&
                     <Outlet/>
+                  }
                 </div>
             </div>
-            <NavBar/>
+            <NavBar setLogged={setLogged}/>
         </div>
     )
 }
