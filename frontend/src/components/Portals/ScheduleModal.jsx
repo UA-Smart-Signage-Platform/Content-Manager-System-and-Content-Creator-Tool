@@ -11,7 +11,7 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const weekDays = [0,1,2,3,4,5,6];
+const weekDays = [0, 1, 2, 3, 4, 5, 6];
 const timeHour = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
 const timeMinute = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"];
 
@@ -27,7 +27,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -77,15 +77,20 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     startTime : selectedStartTime[0] + ":" + selectedStartTime[1],
                     endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
                     startDate : selectedStartDate,
-                    endDate : selectedEndDate}
+                    endDate : selectedEndDate,
+                    priority: totalRules}
         }
 
-        activeTemplateService.addActiveTemplate(data);
+        activeTemplateService.addRule(data).then(()=>{
+            setUpdater(!updater);
+            setShowPortal(false);
+        });
     };
 
 
     const handleSelectedDays = (event) => {
-        const { value } = event.target;
+        const value = parseInt(event.target.value);
+
         if (selectedDays.includes(value)) {
             setSelectedDays(selectedDays.filter(day => day !== value));
         } 
@@ -153,7 +158,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration:0.3 }}
-            className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
+            className="fixed z-20 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <motion.div key="content"
                     initial={{ scale: 0.8 }}
@@ -382,7 +387,8 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                             width: `${templateWidget.width}%`,
                                             height: `${templateWidget.height}%`,
                                             top: `${templateWidget.top}%`,
-                                            left: `${templateWidget.leftPosition}%`
+                                            left: `${templateWidget.leftPosition}%`,
+                                            zIndex: templateWidget.zindex,
                                         }}> 
                                         <div className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectedColors[index]}`}>
                                             {contentElement(templateWidget)}

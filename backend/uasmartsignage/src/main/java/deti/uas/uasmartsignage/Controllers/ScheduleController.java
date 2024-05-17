@@ -67,6 +67,17 @@ public class ScheduleController {
 
     @Operation
     @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Schedules updated", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "Schedules not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
+    @PutMapping
+    public ResponseEntity<List<Schedule>> updateSchedules(@RequestBody List<Schedule> schedules){
+        List<Schedule> scheduleSavedList = scheduleService.updateSchedules(schedules);
+        return new ResponseEntity<>(scheduleSavedList, HttpStatus.OK);
+    }
+
+    @Operation
+    @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Schedule deleted", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "404", description = "Schedule not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })

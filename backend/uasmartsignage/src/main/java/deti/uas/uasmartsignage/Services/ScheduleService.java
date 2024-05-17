@@ -58,6 +58,27 @@ public class ScheduleService {
         return scheduleRepository.save(schedule);
     }
 
+
+    /**
+     * Updates all Schedules in the database.
+     * 
+     * @param schedules The list of Schedules to update.
+     * @return The updated list with the updated Schedules.
+     */
+    public List<Schedule> updateSchedules(List<Schedule> schedules) {
+        List<Schedule> savedSchedules = new ArrayList<>();
+
+        for (Schedule schedule : schedules) {
+            Schedule newSchedule = scheduleRepository.findById(schedule.getId()).get();
+            newSchedule.setPriority(schedule.getPriority());
+
+            scheduleRepository.save(newSchedule);
+            savedSchedules.add(newSchedule);
+        }
+
+        return savedSchedules;
+    }
+
     /**
      * Retrieves and returns a list of all Schedules.
      * @return A list of all Schedules.

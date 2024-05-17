@@ -2,10 +2,7 @@ import axios from "axios";
 
 const client = axios.create({
     baseURL: 'http://localhost:8080/api/',
-    timeout: 5000,
-    headers: {
-        'Content-Type': 'application/json',
-    }
+    timeout: 5000
 });
 
 // Add a request interceptor
