@@ -158,17 +158,17 @@ class TemplateGroupServiceTest {
     @Test
     void testSaveTemplateGroup() throws MqttException, JsonProcessingException {
 
-        MockitoAnnotations.openMocks(this);
+        //MockitoAnnotations.openMocks(this);
 
         // Mock MqttConfig.getInstance() to return the mock mqttClient
-        when(mqttConfig.getInstance()).thenReturn(mqttClient);
+        //when(mqttConfig.getInstance()).thenReturn(mqttClient);
 
         // Mock any necessary behavior of mqttClient
-        when(mqttClient.isConnected()).thenReturn(true);
+        //when(mqttClient.isConnected()).thenReturn(true);
 
 
-        when(templateMessage.getMethod()).thenReturn("TEMPLATE");
-        doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
+        //when(templateMessage.getMethod()).thenReturn("TEMPLATE");
+        //doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
 
 
 
@@ -206,9 +206,7 @@ class TemplateGroupServiceTest {
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
 
-
-
-
+        
 
         when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
         when(groupService.getGroupById(templateGroup.getGroup().getId())).thenReturn(group);
@@ -262,7 +260,6 @@ class TemplateGroupServiceTest {
     }
 
     @Test
-    @Disabled
     void testUpdateTemplateGroup(){
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
@@ -297,6 +294,7 @@ class TemplateGroupServiceTest {
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setContent(Map.of(1,"Content1"));
 
         when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
         when(repository.save(templateGroup)).thenReturn(templateGroup);
@@ -304,10 +302,5 @@ class TemplateGroupServiceTest {
         TemplateGroup updated_template = service.updateTemplateGroup(1L, templateGroup);
 
         assertThat(updated_template).isEqualTo(templateGroup);
-
-
-
-
-
     }
 }
