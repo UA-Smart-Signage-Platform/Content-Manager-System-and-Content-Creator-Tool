@@ -126,7 +126,7 @@ function Schedule(){
                             animate={{y:index * 96}}
                             key={rule.id} 
                             className="flex w-full p-2 absolute h-24">
-                            <div onClick={() => handleUpdateSingleRule(`${rule.id}`)}
+                            <button onClick={() => handleUpdateSingleRule(`${rule.id}`)}
                                 className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center cursor-pointer">
                                 <span className="text-textcolor">{rule.template.name}</span> running {/* */}
                                 <span className="text-textcolor">weekly</span> from {/* */}
@@ -135,7 +135,7 @@ function Schedule(){
                                 {rule.schedule.weekdays.map((day, index) => (
                                     <span key={ALL_WEEKDAYS[day]} className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
                                 ))}
-                            </div>
+                            </button>
                             <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
                                 <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
                                 <div className="flex flex-col w-full gap-2 m-auto">

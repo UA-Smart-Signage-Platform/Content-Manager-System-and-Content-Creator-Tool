@@ -49,7 +49,9 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         templateService.getTemplates().then((response) => {
             setTemplates(response.data);
         })
+    }, []);
 
+    useEffect(() => {
         if (ruleId !== null){
             activeTemplateService.getRule(ruleId).then((response) => {
                 const data = response.data;
@@ -87,7 +89,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 
             })
         }
-    }, []);
+    })
 
     useEffect(()=>{
         if (templates.length !== 0 && selectedTemplateId !== null){
