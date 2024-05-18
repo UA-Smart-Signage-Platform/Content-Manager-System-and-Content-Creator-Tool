@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../services/templateService";
 import activeTemplateService from '../../services/activeTemplateService';
+import mediaService from '../../services/mediaService';
 import ScheduleContentModal from './ScheduleContentModal';
 import Select from 'react-select'
 import DatePicker from 'react-date-picker';
@@ -27,7 +28,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules, titleMessage, ruleId, edit, setEdit } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -48,8 +49,36 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         templateService.getTemplates().then((response) => {
             setTemplates(response.data);
         })
-    }, []);
 
+        if (ruleId !== null){
+            activeTemplateService.getRule(ruleId).then((response) => {
+                const data = response.data;
+                const schedule = data.schedule;
+                const content = data.content;
+
+                setSelectedTemplateId(data.template.id);
+                setSelectedStartTime(schedule.startTime);
+                setSelectedEndTime(schedule.endTime);
+                setSelectedDays(schedule.weekdays);
+
+                for (const [widgetId, contentId] of Object.entries(content)) {
+                    mediaService.getFileOrDirectoryById(contentId).then((response) => { 
+                        setSelectedContent(previousData => ({...previousData, [widgetId] : response.data }));
+                    })
+                };
+
+                /*
+                if (schedule.startDate !== null){
+                    setSelectedStartDate(schedule.startDate);
+                }
+
+                if (schedule.endDate !== null){
+                    setSelectedEndDate(schedule.endDate);
+                }
+                */
+            })
+        }
+    }, []);
 
     useEffect(()=>{
         if (templates.length !== 0){
@@ -81,10 +110,19 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     priority: totalRules}
         }
 
-        activeTemplateService.addRule(data).then(()=>{
-            setUpdater(!updater);
-            setShowPortal(false);
-        });
+        if (edit){
+            activeTemplateService.updateRule(ruleId, data).then(() => {
+                setUpdater(!updater);
+                setShowPortal(false);
+                setEdit(false);
+            });
+        }
+        else {
+            activeTemplateService.addRule(data).then(()=>{
+                setUpdater(!updater);
+                setShowPortal(false);
+            });
+        }
     };
 
 
@@ -141,6 +179,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                         onChange={(e) => handleSelectedContent(e)}
                         options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
                         getOptionValue={(option) => option.label}
+                        menuPortalTarget={document.body} 
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                     />
                 </div>
             );
@@ -168,7 +208,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     className="absolute text-gray-50 h-screen w-screen flex items-center">
                     <div className="bg-[#fafdf7] text-[#101604] h-[90%] w-[90%] mx-auto rounded-xl p-[1%]">
                         <div className="h-[5%] w-full flex items-center">
-                            <button onClick={() => setShowPortal(false)} className="flex flex-row">
+                            <button onClick={() => { setShowPortal(false); setEdit(false) }} className="flex flex-row">
                                 <MdArrowBack className="w-7 h-7 mr-2"/> 
                                 <span className="text-xl">Go back</span>
                             </button>
@@ -176,7 +216,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                         <div className="h-[90%] w-full flex flex-row">
                             <div className="w-[40%] text-xl">
                                 <div className="w-full h-full flex flex-col items-center content-center place-items-center place-content-center">
-                                    <span className="text-2xl">Creating new rule for <span className="font-medium">{selectedGroup.name}</span></span>
+                                    <span className="text-2xl">{titleMessage}<span className="font-medium">{selectedGroup.name}</span></span>
                                     <div className="text-lg flex flex-row w-full justify-evenly">
                                         <div className="flex pt-5">
                                             <select id="templateSelect" onChange={(e) => setSelectedTemplateId(e.target.value)} className="bg-[#E9E9E9] rounded-md p-2">
@@ -334,7 +374,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                             ?
                                             <button onClick={handleSubmit} 
                                                 className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">
-                                                Create rule
+                                                {edit ? "Update rule" : "Create rule"}
                                             </button>
                                             :
                                             <div
@@ -345,7 +385,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                                 <button onClick={handleSubmit} 
                                                     disabled 
                                                     className="bg-[#96d600] opacity-50 cursor-not-allowed rounded-md p-2 pl-4 pr-4">
-                                                    Create rule
+                                                    {edit ? "Update rule" : "Create rule"}
                                                 </button>
                                                 {displayInfo &&
                                                     <>
@@ -415,7 +455,6 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
 
 
 ScheduleModal.propTypes = {
-    showPortal: PropTypes.bool.isRequired,
     setShowPortal: PropTypes.func.isRequired
 }
 
