@@ -89,8 +89,6 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
     }, []);
 
-    console.log(selectedContent);
-
     useEffect(()=>{
         if (templates.length !== 0 && selectedTemplateId !== null){
             let template = templates.at(selectedTemplateId-1).templateWidgets.length;
@@ -105,7 +103,9 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
 
     const handleSubmit = () => {
         Object.keys(selectedContent).forEach(key => {
-            selectedContent[key] = selectedContent[key].id;
+            if (selectedContent[key].id !== undefined){
+                selectedContent[key] = selectedContent[key].id;
+            }
         });
 
         const data = {
