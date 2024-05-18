@@ -1,7 +1,6 @@
 package deti.uas.uasmartsignage.Controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;

@@ -89,6 +89,4 @@ public class UserService implements UserDetailsService {
         return password.toString();
     }
 
-
-    
 }

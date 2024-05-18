@@ -1,23 +1,12 @@
 package deti.uas.uasmartsignage.datainit;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
-import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
-import deti.uas.uasmartsignage.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
 
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
@@ -27,17 +16,11 @@ import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 public class DataInit implements CommandLineRunner{
     private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
-    private FileService fileService;
-    private FileRepository fileRepository;
-    private ScheduleRepository scheduleRepository;
 
     @Autowired
-    public DataInit(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository, FileService fileService, ScheduleRepository scheduleRepository, FileRepository fileRepository){
+    public DataInit(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository){
         this.groupRepository = groupRepository;
         this.monitorRepository = monitorRepository;
-        this.fileService = fileService;
-        this.scheduleRepository = scheduleRepository;
-        this.fileRepository = fileRepository;
     }
 
 
