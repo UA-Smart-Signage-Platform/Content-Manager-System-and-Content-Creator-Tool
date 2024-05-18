@@ -139,8 +139,8 @@ function NavBar({setLogged}) {
     )
 }
 
-NavBar.PropTypes ={
-    setLogged:PropTypes.func.isRequired,
-}
+NavBar.PropTypes = {
+    setLogged: PropTypes.func.isRequired,
+};
 
 export default NavBar;
