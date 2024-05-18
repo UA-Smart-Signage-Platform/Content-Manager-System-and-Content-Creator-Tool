@@ -114,8 +114,9 @@ public class ScheduleService {
         List<MonitorsGroup> monitorGroups = new ArrayList<>();
 
         for (Schedule schedule : schedules) {
+            Schedule currentSchedule = scheduleRepository.findById(schedule.getId()).get();
             List <MonitorsGroup> groups = new ArrayList<>();
-            for (TemplateGroup templateGroup : schedule.getTemplateGroups()) {
+            for (TemplateGroup templateGroup : currentSchedule.getTemplateGroups()) {
                 MonitorsGroup group = templateGroup.getGroup();
                 if (!groups.contains(group)) {
                     groups.add(group);
