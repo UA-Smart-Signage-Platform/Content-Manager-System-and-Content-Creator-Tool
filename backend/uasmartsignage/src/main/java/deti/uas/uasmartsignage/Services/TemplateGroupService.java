@@ -254,8 +254,18 @@ public class TemplateGroupService {
      * @return The TemplateGroup that was sent
      */
     public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
-        TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
-        Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
+        TemplateGroup templateGroupById;
+        if (id != null){
+            templateGroupById = templateGroupRepository.findById(id).orElse(null);
+        } else {
+            templateGroupById = templateGroup;
+        }
+        if (templateGroupById == null) {
+            return null;
+        }
+        
+        Template template = templateService.getTemplateById(templateGroupById.getTemplate().getId());
+        
         Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
             schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
@@ -264,14 +274,11 @@ public class TemplateGroupService {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
         
-
         templateGroupById.setTemplate(template);
         templateGroupById.setGroup(monitorGroup);
         templateGroupById.setSchedule(schedule);
         templateGroupRepository.save(templateGroupById);
-
         sendAllSchedulesToMonitorGroup(monitorGroup, false);
-
         return templateGroupById;
     }
     
