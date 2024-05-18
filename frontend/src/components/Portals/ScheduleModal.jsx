@@ -49,27 +49,25 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         templateService.getTemplates().then((response) => {
             setTemplates(response.data);
         })
-    }, []);
 
-    useEffect(() => {
         if (ruleId !== null){
             activeTemplateService.getRule(ruleId).then((response) => {
                 const data = response.data;
                 const schedule = data.schedule;
                 const content = data.content;
+                const hourStart = schedule.startTime[0].toString();
+                const minuteStart = schedule.startTime[1].toString();
+                const hourEnd = schedule.endTime[0].toString();
+                const minuteEnd = schedule.endTime[1].toString();
+
 
                 setSelectedTemplateId(data.template.id);
                 setSelectedDays(schedule.weekdays);
-
-                const hourStart = schedule.startTime[0].toString();
-                const minuteStart = schedule.startTime[1].toString();
                 setSelectedStartTime([hourStart.length === 1 ? "0".concat(hourStart) : hourStart,
                                         minuteStart.length === 1 ? "0".concat(minuteStart) : minuteStart]);
-
-                const hourEnd = schedule.endTime[0].toString();
-                const minuteEnd = schedule.endTime[1].toString();
                 setSelectedEndTime([hourEnd.length === 1 ? "0".concat(hourEnd) : hourEnd,
                                         minuteEnd.length === 1 ? "0".concat(minuteEnd) : minuteEnd]);
+
 
                 for (const [widgetId, contentId] of Object.entries(content)) {
                     mediaService.getFileOrDirectoryById(contentId).then((response) => { 
@@ -86,10 +84,10 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 if (schedule.endDate !== null){
                     setSelectedEndDate(new Date(schedule.endDate));
                 }
-                
             })
         }
-    })
+    }, []);
+
 
     useEffect(()=>{
         if (templates.length !== 0 && selectedTemplateId !== null){
