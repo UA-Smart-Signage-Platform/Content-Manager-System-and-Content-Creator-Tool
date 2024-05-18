@@ -74,7 +74,9 @@ function Templates(){
         templateservice.deleteTemplate(id).then(()=>{
             templateservice.getTemplates().then((response)=>{
                 setTemplates(response.data)
-                setTemplateDisplay(response.data[0])
+                if(response.data.length !== 0){
+                    setTemplateDisplay(response.data[0])
+                }
             })
         })
     }
@@ -82,7 +84,9 @@ function Templates(){
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{
             setTemplates(response.data)
-            setTemplateDisplay(response.data[0])
+            if(response.data.length !== 0){
+                setTemplateDisplay(response.data[0])
+            }
         })
     },[])
 

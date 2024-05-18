@@ -82,7 +82,7 @@ public class MonitorGroupService {
      * @return A list of all MonitorsGroups stored in the database.
      */
     public List<MonitorsGroup> getAllGroups() {
-        return monitorGroupRepository.findAllByMonitorsPendingFalse();
+        return monitorGroupRepository.findAllByMonitorsPendingFalseOrMonitorsIsEmpty();
     }
 
     /**

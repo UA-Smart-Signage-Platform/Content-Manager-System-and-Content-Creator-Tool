@@ -39,7 +39,7 @@ class MonitorsGroupRepositoryTest {
         m2.setGroup(g2);
         monitorRepository.save(m2);
 
-        List<MonitorsGroup> result = repository.findAllByMonitorsPendingFalse();
+        List<MonitorsGroup> result = repository.findAllByMonitorsPendingFalseOrMonitorsIsEmpty();
 
         assertThat(result).hasSize(1).extracting(MonitorsGroup::getName).contains("g1");
     }
