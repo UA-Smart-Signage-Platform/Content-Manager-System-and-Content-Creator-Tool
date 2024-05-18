@@ -179,6 +179,7 @@ public class TemplateGroupService {
      * Sends all schedules to a MonitorsGroup
      * 
      * @param monitorGroup The MonitorsGroup to send the schedules to
+     * @param sendoToNewMonitor A boolean indicating if the schedules are being sent to a new monitor
      */
     public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup, Boolean sendoToNewMonitor) {
         List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
@@ -251,6 +252,7 @@ public class TemplateGroupService {
      * 
      * @param templateGroup The TemplateGroup to send
      * @param monitorGroup The MonitorsGroup to send the TemplateGroup to
+     * @param id The id of the TemplateGroup to send
      * @return The TemplateGroup that was sent
      */
     public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
