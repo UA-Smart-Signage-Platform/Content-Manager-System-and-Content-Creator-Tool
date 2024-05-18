@@ -128,7 +128,7 @@ public class MonitorGroupService {
         else {
             logger.info(ADDLOGSUCCESS, description);
         }
-        return monitorGroupRepository.findAllByMonitorsPendingFalse();
+        return monitorGroupRepository.findAllByMonitorsPendingFalseOrMonitorsIsEmpty();
     }
 
     /**

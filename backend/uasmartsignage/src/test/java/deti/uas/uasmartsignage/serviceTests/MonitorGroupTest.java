@@ -124,12 +124,12 @@ class MonitorGroupTest {
         monitorsGroup3.setId(3L);
         monitorsGroup3.setMonitors(Arrays.asList(monitor, monitor2, monitor3));
 
-        when(monitorGroupRepository.findAllByMonitorsPendingFalse()).thenReturn(List.of(monitorsGroup));
+        when(monitorGroupRepository.findAllByMonitorsPendingFalseOrMonitorsIsEmpty()).thenReturn(List.of(monitorsGroup));
 
         List<MonitorsGroup> found = service.getAllGroups();
 
         assertThat(found).isEqualTo(List.of(monitorsGroup));
-        verify(monitorGroupRepository, times(1)).findAllByMonitorsPendingFalse();
+        verify(monitorGroupRepository, times(1)).findAllByMonitorsPendingFalseOrMonitorsIsEmpty();
     }
 
     @Test

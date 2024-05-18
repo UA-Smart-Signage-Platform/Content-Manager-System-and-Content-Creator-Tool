@@ -29,6 +29,10 @@ public class Template {
     @JsonIgnoreProperties("template")
     private List<TemplateWidget> templateWidgets;
 
+    @OneToMany(mappedBy = "template")
+    @JsonIgnoreProperties("template")
+    private List<TemplateGroup> templateGroups;
+
 }
 
 

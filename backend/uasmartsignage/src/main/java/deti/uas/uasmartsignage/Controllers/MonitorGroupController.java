@@ -31,28 +31,20 @@ public class MonitorGroupController {
     @Operation(summary = "Get all groups")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of all groups", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "No groups found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping
     public ResponseEntity<List<MonitorsGroup>> getAllGroups() {
         List<MonitorsGroup> monitorsGroups =  monitorGroupService.getAllGroups();
-        if (monitorsGroups.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
     }
 
     @Operation(summary = "Get all groups without the ones made for unique monitor")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of all groups", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "No groups found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/notMadeForMonitor")
     public ResponseEntity<List<MonitorsGroup>> getAllGroupsNotMadeForMonitor() {
         List<MonitorsGroup> monitorsGroups = monitorGroupService.getAllGroupsNotMadeForMonitor();
-        if (monitorsGroups.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
     }
 
