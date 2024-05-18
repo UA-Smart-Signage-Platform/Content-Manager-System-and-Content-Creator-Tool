@@ -123,6 +123,9 @@ public class TemplateGroupService {
                 }
             });
         }
+        else{
+            updatedContent.put(entry.getKey(), entry.getValue());
+        }
     }
     
     /**
