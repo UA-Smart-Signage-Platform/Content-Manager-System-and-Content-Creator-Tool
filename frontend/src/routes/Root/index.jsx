@@ -37,7 +37,6 @@ function Root(){
     const getInfo = async () => {
         try {
           const response = await loginService.getInfo();
-          console.log(response.data);
           localStorage.setItem('userInfo', JSON.stringify(response.data));
           return response.data;
         } catch (error) {
@@ -59,7 +58,6 @@ function Root(){
         })
             .then((response) => response.json())
             .then(async (data) => {
-            console.log("data", data);
             let seconds = data.expires_in;
             
             try {
@@ -67,10 +65,8 @@ function Root(){
                 setWithExpiry('access_token', data.access_token, seconds * 1000)
             
               const permissions = await getInfo();
-              console.log("permissions", permissions);
               
               if (!permissions || permissions.error || permissions === undefined) {
-                  console.log("No permissions or error");
                   localStorage.removeItem('access_token');
                   navigate("/login");
                   return;
@@ -87,7 +83,6 @@ function Root(){
           } catch (error) {
               console.error('Error getting info:', error);
               localStorage.removeItem('access_token');
-              console.log(localStorage.getItem('access_token'));
               navigate("/login");
           }
           
@@ -96,7 +91,6 @@ function Root(){
 
       const getRefreshedToken = async () => {
         const refresh_token = localStorage.getItem('refresh_token');
-        console.log("refresh_token", refresh_token);
         if (!refresh_token) {
             navigate("/login");
             return;
@@ -116,7 +110,6 @@ function Root(){
             }
     
             const data = await response.json();
-            console.log("refreshed data", data);
             
             let seconds = data.expires_in;
     
@@ -154,9 +147,7 @@ function Root(){
           return "";
         }
         const item = JSON.parse(itemStr);
-        console.log(item);
         const now = new Date();
-        console.log("time: ", now.getTime());
         if (now.getTime() > item.expiry) {
           return "";
         }
@@ -171,11 +162,8 @@ function Root(){
                 const token = await getWithExpiry("access_token");
                 const params = new URLSearchParams(location.search);
                 const params_code = params.get('code');
-
-                console.log("currentPath", currentPath);
                 
                 if (!token && !params_code && currentPath !== '/') {
-                    console.log("blablabla");
                     await getRefreshedToken();
                     const newToken = await getWithExpiry("access_token");
                     
@@ -183,10 +171,8 @@ function Root(){
                         navigate("/login");
                     }
                 } else if (params_code && !token) {
-                  console.log("adada")
                     getAccessToken(params_code);
                 } else{
-                  console.log("nha")
                   setLogged(true)
                 }
             } catch (error) {

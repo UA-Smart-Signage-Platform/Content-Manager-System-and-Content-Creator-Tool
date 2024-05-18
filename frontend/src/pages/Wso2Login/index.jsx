@@ -42,7 +42,6 @@ const Wso2Login = () => {
       
       setWithExpiry('access_token', jwt, 3600 * 1000 * 10);
       localStorage.setItem('userInfo', JSON.stringify(user_data));
-      console.log('userInfo', user_data);
         
       if (password === DEFAULT_PASSWORD) {
         // Redirect to change password page if it's the first login
