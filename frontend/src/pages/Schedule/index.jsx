@@ -223,12 +223,13 @@ function Schedule(){
                     <AnimatePresence>
                         {showPortal && <ScheduleModal
                                 setShowPortal={setShowPortal}
-                                selectedGroup={groups.at(selectedGroupId)}
+                                selectedGroup={groups.find(x => x.id === selectedGroupId + 1)}
                                 updater={updater}
                                 setUpdater={setUpdater}
                                 totalRules={rules.length}
                                 titleMessage={scheduleModalTitle}
                                 ruleId={ruleId}
+                                setRuleId={setRuleId}
                                 edit={edit}
                                 setEdit={setEdit} />
                         }
