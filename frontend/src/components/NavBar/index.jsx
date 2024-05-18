@@ -139,7 +139,7 @@ function NavBar({setLogged}) {
     )
 }
 
-NavBar.PropTypes = {
+NavBar.propTypes = {
     setLogged: PropTypes.func.isRequired,
 };
 
