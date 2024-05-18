@@ -253,7 +253,8 @@ public class TemplateGroupService {
      * @param monitorGroup The MonitorsGroup to send the TemplateGroup to
      * @return The TemplateGroup that was sent
      */
-    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup) {
+    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
+        TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
         Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
@@ -264,14 +265,14 @@ public class TemplateGroupService {
         }
         
 
-        templateGroup.setTemplate(template);
-        templateGroup.setGroup(monitorGroup);
-        templateGroup.setSchedule(schedule);
-        templateGroupRepository.save(templateGroup);
+        templateGroupById.setTemplate(template);
+        templateGroupById.setGroup(monitorGroup);
+        templateGroupById.setSchedule(schedule);
+        templateGroupRepository.save(templateGroupById);
 
         sendAllSchedulesToMonitorGroup(monitorGroup, false);
 
-        return templateGroup;
+        return templateGroupById;
     }
     
     
@@ -284,7 +285,7 @@ public class TemplateGroupService {
      */
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
-        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
+        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup, templateGroup.getId());
     }
 
     /**
@@ -328,7 +329,7 @@ public class TemplateGroupService {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         if (templateGroupById != templateGroup){
             MonitorsGroup monitorGroup = templateGroupById.getGroup();
-            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
+            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup,id);
         }
         return null;
     }

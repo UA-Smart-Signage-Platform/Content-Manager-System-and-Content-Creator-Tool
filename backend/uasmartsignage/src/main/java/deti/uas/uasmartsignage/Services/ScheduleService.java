@@ -111,12 +111,30 @@ public class ScheduleService {
     public List<Schedule> updateSchedules(List<Schedule> schedules) {
         List<Schedule> savedSchedules = new ArrayList<>();
 
+        List<MonitorsGroup> monitorGroups = new ArrayList<>();
+
         for (Schedule schedule : schedules) {
+            List <MonitorsGroup> groups = new ArrayList<>();
+            for (TemplateGroup templateGroup : schedule.getTemplateGroups()) {
+                MonitorsGroup group = templateGroup.getGroup();
+                if (!groups.contains(group)) {
+                    groups.add(group);
+                }
+            }
+            for (MonitorsGroup group : groups) {
+                if (!monitorGroups.contains(group)) {
+                    monitorGroups.add(group);
+                }
+            }
             Schedule newSchedule = scheduleRepository.findById(schedule.getId()).get();
             newSchedule.setPriority(schedule.getPriority());
 
             scheduleRepository.save(newSchedule);
             savedSchedules.add(newSchedule);
+        }
+
+        for (MonitorsGroup monitorGroup : monitorGroups) {
+            templateGroupService.sendAllSchedulesToMonitorGroup(monitorGroup, false);
         }
 
         return savedSchedules;

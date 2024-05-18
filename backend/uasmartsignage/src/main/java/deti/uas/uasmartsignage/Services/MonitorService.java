@@ -127,7 +127,14 @@ public class MonitorService {
                 monitorGroupRepository.save(group);
             }
             else{
-                monitorGroupRepository.deleteById(group.getId());
+                if (group.getTemplateGroups().isEmpty()){
+                    monitorGroupRepository.deleteById(group.getId());
+                } else {
+                    for (int i = 0; i < group.getTemplateGroups().size(); i++) {
+                        templateGroupService.deleteGroup(group.getTemplateGroups().get(i).getId());
+                    }
+                    monitorGroupRepository.deleteById(group.getId());
+                }
             }
         }
 

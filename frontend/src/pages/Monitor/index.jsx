@@ -35,7 +35,7 @@ function Monitor(){
     const handleUpdate = ()=>{
         let monitorsend = monitor
         monitorsend.name = name
-        monitorsend.group = groups.find((element)=>element.id == groupId)
+        monitorsend.group = { id: groups.find(element => element.id == groupId).id };
         monitorService.updateMonitor(id,monitorsend).then((response)=>{
             setMonitor(response.data)
         })
