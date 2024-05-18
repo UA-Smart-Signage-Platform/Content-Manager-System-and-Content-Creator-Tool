@@ -28,7 +28,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules, titleMessage, ruleId, edit, setEdit } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules, titleMessage, ruleId, setRuleId, edit, setEdit } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -57,9 +57,17 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 const content = data.content;
 
                 setSelectedTemplateId(data.template.id);
-                setSelectedStartTime(schedule.startTime);
-                setSelectedEndTime(schedule.endTime);
                 setSelectedDays(schedule.weekdays);
+
+                const hourStart = schedule.startTime[0].toString();
+                const minuteStart = schedule.startTime[1].toString();
+                setSelectedStartTime([hourStart.length === 1 ? "0".concat(hourStart) : hourStart,
+                                        minuteStart.length === 1 ? "0".concat(minuteStart) : minuteStart]);
+
+                const hourEnd = schedule.endTime[0].toString();
+                const minuteEnd = schedule.endTime[1].toString();
+                setSelectedEndTime([hourEnd.length === 1 ? "0".concat(hourEnd) : hourEnd,
+                                        minuteEnd.length === 1 ? "0".concat(minuteEnd) : minuteEnd]);
 
                 for (const [widgetId, contentId] of Object.entries(content)) {
                     mediaService.getFileOrDirectoryById(contentId).then((response) => { 
@@ -67,21 +75,24 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     })
                 };
 
-                /*
+
                 if (schedule.startDate !== null){
-                    setSelectedStartDate(schedule.startDate);
+                    setSelectedStartDate(new Date(schedule.startDate));
                 }
 
+
                 if (schedule.endDate !== null){
-                    setSelectedEndDate(schedule.endDate);
+                    setSelectedEndDate(new Date(schedule.endDate));
                 }
-                */
+                
             })
         }
     }, []);
 
+    console.log(selectedContent);
+
     useEffect(()=>{
-        if (templates.length !== 0){
+        if (templates.length !== 0 && selectedTemplateId !== null){
             let template = templates.at(selectedTemplateId-1).templateWidgets.length;
             let arr = [];
             for (let i = 0; i < template; i++){
@@ -89,7 +100,6 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             }
             setSelectedColors(arr)
         }
-
     },[selectedTemplateId]);
 
 
@@ -113,8 +123,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         if (edit){
             activeTemplateService.updateRule(ruleId, data).then(() => {
                 setUpdater(!updater);
-                setShowPortal(false);
                 setEdit(false);
+                setShowPortal(false);
             });
         }
         else {
@@ -124,7 +134,6 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             });
         }
     };
-
 
     const handleSelectedDays = (event) => {
         const value = parseInt(event.target.value);
@@ -191,7 +200,14 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             );
         }
     }
+
+    const resetEverything = () => {
+        setRuleId(null);
+        setEdit(false);
+        setShowPortal(false); 
+    }
     
+
     return createPortal(
             <motion.div key="background"
                     initial={{ opacity: 0 }}
@@ -208,7 +224,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     className="absolute text-gray-50 h-screen w-screen flex items-center">
                     <div className="bg-[#fafdf7] text-[#101604] h-[90%] w-[90%] mx-auto rounded-xl p-[1%]">
                         <div className="h-[5%] w-full flex items-center">
-                            <button onClick={() => { setShowPortal(false); setEdit(false) }} className="flex flex-row">
+                            <button onClick={() => { resetEverything() }} className="flex flex-row">
                                 <MdArrowBack className="w-7 h-7 mr-2"/> 
                                 <span className="text-xl">Go back</span>
                             </button>
@@ -219,7 +235,10 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                     <span className="text-2xl">{titleMessage}<span className="font-medium">{selectedGroup.name}</span></span>
                                     <div className="text-lg flex flex-row w-full justify-evenly">
                                         <div className="flex pt-5">
-                                            <select id="templateSelect" onChange={(e) => setSelectedTemplateId(e.target.value)} className="bg-[#E9E9E9] rounded-md p-2">
+                                            <select id="templateSelect" 
+                                                value={selectedTemplateId}
+                                                onChange={(e) => setSelectedTemplateId(e.target.value)} 
+                                                className="bg-[#E9E9E9] rounded-md p-2">
                                                 <option selected disabled hidden>Template</option>
                                                 {templates.length !== 0 && templates.map((template) => 
                                                     <option key={template.id} value={template.id}>{template.name}</option>
@@ -421,7 +440,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                     <span className="font-medium text-3xl pb-1">Template Preview:</span>
                                 </div>
                                 <div className="aspect-video relative border-4 border-gray-300 rounded-md">
-                                    {selectedTemplateId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
+                                    {selectedTemplateId !== null && templates.length !== 0 && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
                                     <div key={templateWidget.id} className={`absolute`}
                                         style={{
                                             width: `${templateWidget.width}%`,
