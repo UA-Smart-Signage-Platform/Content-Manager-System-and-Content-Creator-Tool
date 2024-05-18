@@ -4,7 +4,8 @@ import { useLocation, useNavigate, useParams } from "react-router";
 import { IoMdArrowUp, IoMdArrowDown } from "react-icons/io";
 import templateservice from "../../services/templateService";
 import widgetService from "../../services/widgetService";
-import { motion } from "framer-motion";
+import { motion,AnimatePresence } from "framer-motion";
+import { IoWarningOutline } from "react-icons/io5";
 import { FiTrash2 } from "react-icons/fi";
 
 const colors = [
@@ -22,10 +23,13 @@ const colors = [
 
 function Cct(){
     const { state } = useLocation();
+    const [templates,setTemplates] = useState([]);
+    const [sameName,setSameName] = useState(false);
     const [template,setTemplate] = useState(state !== null ? state:null);
     const [widgetList,setWidgetList] = useState(state !== null ? state.templateWidgets:[])
     const [name,setName] = useState(state !== null ? state.name:"")
     const [ableSave,setAbleSave] = useState(false);
+    const [ableSaveName,setAbleSaveName] = useState(true);
     const [widgetsToRemove,setWidgetsToRemove] = useState([]);
     const [widgets,setWidgets] = useState([]);
     const [portal,setPortal] = useState(false);
@@ -36,6 +40,10 @@ function Cct(){
     useEffect(()=>{
         widgetService.getWidgets().then((response)=>{
             setWidgets(response.data)
+        })
+        templateservice.getTemplates().then((response)=>{
+            console.log(response.data)
+            setTemplates(response.data)
         })
         if (id.toString() !== "0"){
             templateservice.getTemplate(id).then((response)=>{
@@ -127,6 +135,23 @@ function Cct(){
             setAbleSave(true)
         }
     }
+
+    const handleNameChange = (e)=>{
+        let name = e.target.value
+        setName(name);
+        let unique = templates.every((element)=>{
+            return (element.name !== name || element.id === template.id)
+        })
+        console.log(unique)
+        if(unique){
+            setAbleSaveName(false);
+            setSameName(false);
+        }else{
+            setAbleSaveName(true);
+            setSameName(true);
+        }
+        
+    }
     
     if (template == null){
         return(
@@ -137,6 +162,15 @@ function Cct(){
     }else{
         return(
             <div className="flex flex-col h-full w-full">
+                <AnimatePresence>
+                    {sameName && <motion.div className=" bg-rose-500 text-white p-4 absolute rounded-lg flex items-center justify-center gap-3 left-[15%]"
+                                            initial={{y:-200}}
+                                            animate={{y:0}}
+                                            exit={{y:-200}}
+                    >
+                        <IoWarningOutline className="size-6"/>Same name as other template
+                    </motion.div>}
+                </AnimatePresence>
                 <div className="h-[8%]">
                     <PageTitle startTitle={"templates"}/>
                 </div>
@@ -144,8 +178,8 @@ function Cct(){
                     {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets} WidgetsList={widgetList} setWidgetList={setWidgetList} setAbleSave={setAbleSave}/>}
                     <div className="h-full w-[20%]">
                         <div className="font-bold pt-3 px-2 flex justify-between">
-                            <input className="text-xl border-b-2 border-black" value={name} onChange={(e)=>{setName(e.target.value);setAbleSave(true)}}/>
-                            <button disabled={!ableSave}
+                            <input className="text-xl border-b-2 border-black" value={name} onChange={handleNameChange}/>
+                            <button disabled={!ableSave && ableSaveName}
                                     onClick={saveTemplate}
                                     className=" bg-secondaryMedium p-1 rounded-md font-normal disabled:text-secondary disabled:bg-secondaryMedium">
                                 + Save
