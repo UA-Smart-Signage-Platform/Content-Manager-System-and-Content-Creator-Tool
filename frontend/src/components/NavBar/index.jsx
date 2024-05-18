@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
+import PropTypes from 'prop-types';
 
 
 function NavBar({setLogged}) {
@@ -136,6 +137,10 @@ function NavBar({setLogged}) {
         </AnimatePresence>
         </>
     )
+}
+
+NavBar.PropTypes ={
+    setLogged:PropTypes.func.isRequired,
 }
 
 export default NavBar;
