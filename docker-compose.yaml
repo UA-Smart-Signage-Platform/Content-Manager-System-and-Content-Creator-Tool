@@ -75,6 +75,8 @@ services:
         context: ./frontend
         dockerfile: .docker/Dockerfile
       restart: unless-stopped
+      env_file:
+        - .env
       volumes:
         - "./frontend/:/app"
       ports:
