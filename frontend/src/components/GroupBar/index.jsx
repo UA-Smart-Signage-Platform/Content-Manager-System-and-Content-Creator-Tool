@@ -157,6 +157,8 @@ function GroupBar( {id, changeId, page} ) {
                                             <button onClick={()=>setEditGroup(group)}><MdCreate className="h-5 size-5 cursor-pointer"/></button>
                                             <button disabled={group.templateGroups.length !== 0} onClick={() => handleDelete(group.id)}
                                                     onMouseOver={()=>{if(group.templateGroups.length !== 0)setWarning(true)}}
+                                                    onFocus={()=>{if(group.templateGroups.length !== 0)setWarning(true)}}
+                                                    onBlur={()=>setWarning(false)}
                                                     onMouseLeave={()=>setWarning(false)}
                                             ><IoMdTrash className="h-5 size-5 cursor-pointer"/></button>
                                         </div> 

@@ -111,6 +111,8 @@ function Monitor(){
                                             {update?
                                                 <select disabled={monitor.group.templateGroups.length !== 0} className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}
                                                         onMouseOver={()=>{if(monitor.group.templateGroups.length !== 0)setWarning(true)}}
+                                                        onFocus={()=>{if(monitor.group.templateGroups.length !== 0)setWarning(true)}}
+                                                        onBlur={()=>setWarning(false)}
                                                         onMouseLeave={()=>setWarning(false)}
                                                 >
                                                     {groups.map((group)=>
