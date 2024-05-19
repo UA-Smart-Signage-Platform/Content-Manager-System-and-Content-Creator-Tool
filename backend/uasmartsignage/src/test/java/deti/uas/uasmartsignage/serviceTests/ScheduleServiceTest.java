@@ -8,11 +8,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import org.junit.jupiter.api.Disabled;
+import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,15 +18,20 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {
     @Mock
     private ScheduleRepository repository;
+
+    @Mock
+    private TemplateGroupService templateGroupService;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private ScheduleService service;
@@ -137,11 +140,44 @@ class ScheduleServiceTest {
 
     @Test
     void testUpdateSchedules(){
+        Monitor monitor = new Monitor();
+        monitor.setName("monitor");
+        monitor.setPending(false);
+        monitor.setWidth(1);
+        monitor.setHeight(1);
+
+        Monitor monitor1 = new Monitor();
+        monitor1.setName("monitor1");
+        monitor1.setPending(false);
+        monitor1.setWidth(12);
+        monitor1.setHeight(12);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+        group.setMonitors(List.of(monitor,monitor1));
+
+        Widget widget = new Widget();
+        widget.setName("widget1");
+
+        TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setWidget(widget);
+
+        TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setWidget(widget);
+
+        Template template = new Template();
+        template.setName("template1");
+        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
+
+
+        TemplateGroup templateGroup = new TemplateGroup();
+        templateGroup.setGroup(group);
+        templateGroup.setTemplate(template);
         AppUser user = new AppUser();
         user.setEmail("admin");
         user.setRole("ADMIN");
 
-        MonitorsGroup group = new MonitorsGroup();
+        MonitorsGroup group1 = new MonitorsGroup();
         group.setName("group1");
 
         Schedule schedule = new Schedule();
@@ -151,6 +187,7 @@ class ScheduleServiceTest {
         schedule.setEndDate(LocalDate.parse("2024-04-21"));
         schedule.setStartDate(LocalDate.parse("2024-04-21"));
         schedule.setPriority(1);
+        schedule.setTemplateGroups(List.of(templateGroup));
         schedule.setLastEditedBy(user);
 
         Schedule schedule2 = new Schedule();
@@ -160,6 +197,7 @@ class ScheduleServiceTest {
         schedule2.setEndDate(LocalDate.parse("2024-04-21"));
         schedule2.setStartDate(LocalDate.parse("2024-04-21"));
         schedule2.setPriority(4);
+        schedule2.setTemplateGroups(List.of(templateGroup));
         schedule2.setLastEditedBy(user);
 
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));

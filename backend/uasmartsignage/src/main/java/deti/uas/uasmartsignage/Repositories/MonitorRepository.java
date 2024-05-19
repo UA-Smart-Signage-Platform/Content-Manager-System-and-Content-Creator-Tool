@@ -12,4 +12,5 @@ public interface MonitorRepository extends JpaRepository<Monitor, Long> {
     Monitor findByName(String name);
     List<Monitor> findByPendingAndGroup_Id(boolean pending,long groupId);
     List<Monitor> findByPending(boolean pending);
+    Monitor findByUuid(String uuid);
 }

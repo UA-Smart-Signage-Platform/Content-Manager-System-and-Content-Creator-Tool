@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +27,9 @@ import deti.uas.uasmartsignage.Services.TemplateService;
 class TemplateServiceTest {
     @Mock
     private TemplateRepository repository;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private TemplateService service;

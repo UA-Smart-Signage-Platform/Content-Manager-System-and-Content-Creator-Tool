@@ -11,6 +11,7 @@ import java.util.Optional;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.TemplateWidgetService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,9 @@ import deti.uas.uasmartsignage.Services.TemplateService;
 class TemplateWidgetServiceTest {
     @Mock
     private TemplateWidgetRepository repository;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private TemplateWidgetService service;

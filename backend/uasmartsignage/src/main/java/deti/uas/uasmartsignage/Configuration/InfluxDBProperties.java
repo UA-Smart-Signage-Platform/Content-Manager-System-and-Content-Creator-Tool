@@ -15,5 +15,6 @@ public class InfluxDBProperties {
     private String token;
     private String org;
     private String bucket;
+    private String sBucket;
 }
 

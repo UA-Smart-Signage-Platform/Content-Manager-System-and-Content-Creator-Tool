@@ -16,10 +16,12 @@ import deti.uas.uasmartsignage.exceptions.MqttException;
 import jakarta.annotation.PostConstruct;
 
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Models.Monitor;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Severity;
 
 @Component
 @Profile("!test & !integration-test")
@@ -31,12 +33,15 @@ public class MqttSubscriberService {
 
     private final MonitorGroupService monitorGroupService;
 
+    private final LogsService logsService;
+
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
 
-    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService) {
+    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService) {
         this.objectMapper = objectMapper;
         this.monitorService = monitorService;
         this.monitorGroupService = monitorGroupService;
+        this.logsService = logsService;
     }
 
     @PostConstruct
@@ -60,6 +65,40 @@ public class MqttSubscriberService {
         }
     }
 
+    @PostConstruct
+    public void subscribeToKeepAliveTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
+        logger.info("Subscribing to keep alive topic");
+        try {
+            MqttConfig.getInstance().subscribe("keepalive", (topic, mqttMessage) -> {
+                String payload = new String(mqttMessage.getPayload());
+                logger.info("Received message on topic {}: {}", topic, payload);
+
+                try {
+                    KeepAliveMessage keepAliveMessage = objectMapper.readValue(payload, KeepAliveMessage.class);
+                    handleKeepAliveMessage(keepAliveMessage);
+                } catch (IOException e) {
+                    logger.error("Error parsing keep alive message: {}", e.getMessage());
+                }
+
+            });
+        } catch (MqttException e) {
+            logger.error("Error subscribing to keep alive topic: {}", e.getMessage());
+        }
+    }
+
+    private void handleKeepAliveMessage(KeepAliveMessage keepAliveMessage) {
+        logger.info("Received keep alive message: {}", keepAliveMessage);
+        logger.info("Method: {}", keepAliveMessage.getMethod());
+        logger.info("UUID: {}", keepAliveMessage.getUuid());
+        
+        if (!logsService.addKeepAliveLog(Severity.INFO, keepAliveMessage.getUuid(), keepAliveMessage.getMethod())) {
+            logger.error("Failed to add log to InfluxDB");
+        } else {
+            logger.info("Added log to InfluxDB: {}", keepAliveMessage.getUuid());
+        }
+
+    }
+
     private void handleRegistrationMessage(RegistrationMessage registrationMessage) {
         logger.info("Received registration message: {}", registrationMessage);
         logger.info("Method: {}", registrationMessage.getMethod());
@@ -68,34 +107,27 @@ public class MqttSubscriberService {
         logger.info("Height: {}", registrationMessage.getHeight());
         logger.info("UUID: {}", registrationMessage.getUuid());
 
-        MonitorsGroup monitorsGroup = new MonitorsGroup();
-        monitorsGroup.setName(registrationMessage.getName());
-        monitorsGroup.setMadeForMonitor(true);
-        monitorGroupService.saveGroup(monitorsGroup);
+        Monitor monitorExists = monitorService.getMonitorByUuid(registrationMessage.getUuid());
 
-        Monitor monitor = new Monitor();
-        monitor.setName(registrationMessage.getName());
-        monitor.setGroup(monitorsGroup);
-        monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
-        monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
-        monitor.setUuid(registrationMessage.getUuid());
-        monitor.setPending(true);
+        if (monitorExists != null) {
+            logger.info("Monitor already exists with UUID: {}", registrationMessage.getUuid());
 
-        monitorService.saveMonitor(monitor);
+        } else {
+            MonitorsGroup monitorsGroup = new MonitorsGroup();
+            monitorsGroup.setName(registrationMessage.getName());
+            monitorsGroup.setMadeForMonitor(true);
+            monitorGroupService.saveGroup(monitorsGroup);
 
-        // Send confirmation message back
-        try {
-            ConfirmRegistrationMessage confirmMessage = new ConfirmRegistrationMessage();
-            confirmMessage.setMethod("CONFIRM_REGISTER");
-            
-            String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
+            Monitor monitor = new Monitor();
+            monitor.setName(registrationMessage.getName());
+            monitor.setGroup(monitorsGroup);
+            monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
+            monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
+            monitor.setUuid(registrationMessage.getUuid());
+            monitor.setPending(true);
 
-            MqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
-        } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-            logger.error("Error sending confirmation message: {}", e.getMessage());
+            monitorService.saveMonitor(monitor);
         }
-
-
 
     }
     

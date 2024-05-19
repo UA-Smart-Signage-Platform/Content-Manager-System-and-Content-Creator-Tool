@@ -1,7 +1,7 @@
 package deti.uas.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.*;
 
 
@@ -18,15 +18,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
-import deti.uas.uasmartsignage.Configuration.MqttConfig;
-import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
-import java.util.List;
-import java.util.Map;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-
+import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import deti.uas.uasmartsignage.Services.TemplateService;
+import deti.uas.uasmartsignage.Services.MonitorGroupService;
+import deti.uas.uasmartsignage.Models.Template;
+import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import java.util.List;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 class TemplateGroupServiceTest {
@@ -34,6 +36,9 @@ class TemplateGroupServiceTest {
 
     @Mock
     private TemplateGroupRepository repository;
+
+    @Mock
+    private LogsService logsService;
 
     @Mock
     private TemplateService templateService;
@@ -47,17 +52,9 @@ class TemplateGroupServiceTest {
     @Mock
     private TemplateWidgetService templateWidgetService;
 
-    @Mock
-    private ContentService contentService;
-
-    @Mock
-    private MqttConfig mqttConfig;
-
-    @Mock
-    private TemplateMessage templateMessage;
-
     @InjectMocks
     private TemplateGroupService service;
+
 
 
 

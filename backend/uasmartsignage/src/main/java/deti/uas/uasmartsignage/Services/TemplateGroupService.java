@@ -23,6 +23,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
@@ -52,7 +53,7 @@ public class TemplateGroupService {
     private final TemplateGroupRepository templateGroupRepository;
     private final TemplateWidgetService templateWidgetService;
 
-    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
         this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
@@ -123,6 +124,9 @@ public class TemplateGroupService {
                 }
             });
         }
+        else{
+            updatedContent.put(entry.getKey(), entry.getValue());
+        }
     }
     
     /**
@@ -139,10 +143,10 @@ public class TemplateGroupService {
             for (CustomFile f : files) {
                 if (!"directory".equals(f.getType())) {
                     downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
-                    dirFiles.append(f.getName()).append(",");
+                    dirFiles.append(f.getName()).append("\",\"");
                 }
             }
-            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 1));
+            updatedContent.put(entry.getKey(), dirFiles.substring(0, dirFiles.length() - 3));
         }
     }
     
@@ -178,8 +182,9 @@ public class TemplateGroupService {
      * Sends all schedules to a MonitorsGroup
      * 
      * @param monitorGroup The MonitorsGroup to send the schedules to
+     * @param sendoToNewMonitor A boolean indicating if the schedules are being sent to a new monitor
      */
-    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup) {
+    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup, Boolean sendoToNewMonitor) {
         List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
         List <Map<String, Object>> rules = new ArrayList<>();
 
@@ -206,7 +211,16 @@ public class TemplateGroupService {
         try{
             RulesMessage rulesMessage = new RulesMessage();
             rulesMessage.setMethod("RULES");
-            List<Monitor> monitors = monitorGroup.getMonitors();
+            List<Monitor> monitors = new ArrayList<>();
+            // If it is a new monitor, we only send the rules to the last monitor
+            if (Boolean.TRUE.equals(sendoToNewMonitor)) {
+                // Get the last monitor (just added)
+                Monitor monitor = monitorGroup.getMonitors().get(monitorGroup.getMonitors().size() - 1);
+                monitors.add(monitor);
+            }
+            else {
+                monitors = monitorGroup.getMonitors();
+            }
             for (Monitor monitor : monitors) {
                 List <Map<String, Object>> rulesToSend = new ArrayList<>();
                 List <String> filesToSend = new ArrayList<>();
@@ -229,7 +243,6 @@ public class TemplateGroupService {
                 String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
                 MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
             }
-
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             logger.error("Could not send rules to monitors");
         }
@@ -242,10 +255,22 @@ public class TemplateGroupService {
      * 
      * @param templateGroup The TemplateGroup to send
      * @param monitorGroup The MonitorsGroup to send the TemplateGroup to
+     * @param id The id of the TemplateGroup to send
      * @return The TemplateGroup that was sent
      */
-    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup) {
-        Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
+    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
+        TemplateGroup templateGroupById;
+        if (id != null){
+            templateGroupById = templateGroupRepository.findById(id).orElse(null);
+        } else {
+            templateGroupById = templateGroup;
+        }
+        if (templateGroupById == null) {
+            return null;
+        }
+        
+        Template template = templateService.getTemplateById(templateGroupById.getTemplate().getId());
+        
         Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
             schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
@@ -254,15 +279,12 @@ public class TemplateGroupService {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
         
-
-        templateGroup.setTemplate(template);
-        templateGroup.setGroup(monitorGroup);
-        templateGroup.setSchedule(schedule);
-        templateGroupRepository.save(templateGroup);
-
-        sendAllSchedulesToMonitorGroup(monitorGroup);
-
-        return templateGroup;
+        templateGroupById.setTemplate(template);
+        templateGroupById.setGroup(monitorGroup);
+        templateGroupById.setSchedule(schedule);
+        templateGroupRepository.save(templateGroupById);
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+        return templateGroupById;
     }
     
     
@@ -275,8 +297,7 @@ public class TemplateGroupService {
      */
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
-        System.out.println("monitorGroup"+ monitorGroup);
-        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
+        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup, templateGroup.getId());
     }
 
     /**
@@ -285,7 +306,18 @@ public class TemplateGroupService {
      * @param id The id of the TemplateGroup to delete
      */
     public void deleteGroup(Long id) {
+        TemplateGroup templateGroup = templateGroupRepository.findById(id).orElse(null);
+
+        if (templateGroup == null) {
+            return;
+        }
+
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+        monitorGroup.getTemplateGroups().remove(templateGroup);
+        monitorGroupService.saveGroup(monitorGroup);
         templateGroupRepository.deleteById(id);
+
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
     }
 
     /**
@@ -309,7 +341,7 @@ public class TemplateGroupService {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         if (templateGroupById != templateGroup){
             MonitorsGroup monitorGroup = templateGroupById.getGroup();
-            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
+            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup,id);
         }
         return null;
     }
@@ -329,7 +361,6 @@ public class TemplateGroupService {
      * @return The created HTML in a String, or {@code null} if creation fails.
      */
     public String generateHTML(Template template, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
-
         List<TemplateWidget> widgets = template.getTemplateWidgets();
         //widgets.sort(new TemplateWidget.ZIndexComparator());
         String filePath = "static/base.html";

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,9 +21,12 @@ import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 import deti.uas.uasmartsignage.Services.WidgetService;
 
 @ExtendWith(MockitoExtension.class)
-public class WidgetServiceTest {
+class WidgetServiceTest {
     @Mock
     private WidgetRepository repository;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private WidgetService service;

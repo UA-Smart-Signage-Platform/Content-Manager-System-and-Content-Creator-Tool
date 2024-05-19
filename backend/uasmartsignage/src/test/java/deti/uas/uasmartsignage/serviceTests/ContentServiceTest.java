@@ -8,6 +8,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ class ContentServiceTest {
 
         @Mock
         private ContentRepository repository;
+
+        @Mock
+        private LogsService logsService;
 
         @InjectMocks
         private ContentService service;

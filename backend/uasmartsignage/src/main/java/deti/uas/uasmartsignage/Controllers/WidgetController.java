@@ -2,7 +2,6 @@ package deti.uas.uasmartsignage.Controllers;
 
 
 import deti.uas.uasmartsignage.Models.Widget;
-import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Services.WidgetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,7 +22,6 @@ public class WidgetController {
 
     private WidgetService widgetService;
 
-    private ContentService contentService;
 
     @Operation(summary = "Get all widgets")
     @ApiResponses(value = {

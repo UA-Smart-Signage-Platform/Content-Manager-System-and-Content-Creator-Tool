@@ -65,8 +65,10 @@ public class FileService {
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
-
-        logger.info(ADDLOGSUCCESS, description);
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+            
         return files;
     }
 
@@ -94,7 +96,8 @@ public class FileService {
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         }
-        logger.info(ADDLOGSUCCESS, description);
+        else 
+            logger.info(ADDLOGSUCCESS, description);
         return file;
     }
 
@@ -143,11 +146,14 @@ public class FileService {
 
         //database path
         String parentDirectoryPath = getParentDirectoryPath(customFile);
-        logger.info("Parent directory path: {}",parentDirectoryPath);
         pathBuilder.insert(0, parentDirectoryPath);
         pathBuilder.insert(0, USERDIR);
 
         File directory = new File(pathBuilder + customFile.getName());
+
+        String operation = "createDirectory";
+        String description = "Directory created: " + directory.getAbsolutePath();
+        
 
         if (directory.exists()){
             logger.info("Directory already exists: {}", directory.getAbsolutePath());
@@ -158,7 +164,12 @@ public class FileService {
             customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
             CustomFile savedFile = fileRepository.save(customFile);
-            logger.info("Directory created: {}",directory.getAbsolutePath());
+            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                logger.error(ADDLOGERROR);
+            }
+            else {
+                logger.info(ADDLOGSUCCESS, description);
+            }
             return savedFile;
         }
         else {
@@ -190,16 +201,34 @@ public class FileService {
             pathBuilder.append("/uploads/");
         }
 
+       
+
         //Creating upload dir
         File rootDirectory = new File(USERDIR + File.separator + "uploads");
 
+        String operation = "getParentDirectoryPath";
+        String description = "Root Directory created: " + rootDirectory.getAbsolutePath();
+        String sDescription = "Parent Directory path: " + pathBuilder.toString();
+
         if (!rootDirectory.exists()) {
             if (rootDirectory.mkdir()) {
-                logger.info("Directory created: {}", rootDirectory.getAbsolutePath());
+                if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                    logger.error(ADDLOGERROR);
+                }
+                else {
+                    logger.info(ADDLOGSUCCESS, description);
+                }
             } 
             else {
                 logger.error("Failed to create directory: {}", rootDirectory.getAbsolutePath());
             }
+        }
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, sDescription)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, sDescription);
         }
 
         //adding upload path
@@ -228,7 +257,6 @@ public class FileService {
         Long fileSize = file.getFile().getSize();
 
         // Get parent and transform FilesClass onto a CustomFile
-        logger.info("Parent ID: {}", file.getParentId());
         Optional<CustomFile> parent = (file.getParentId() != null) ? getFileOrDirectoryById(file.getParentId()) : Optional.empty();
         if (parent.isEmpty()) {
             logger.info("Parent directory not found (Going to root).");
@@ -256,12 +284,20 @@ public class FileService {
         pathBuilder.insert(0, USERDIR);
 
         Path fileSysPath = Paths.get(pathBuilder.toString());
+
+        String operation = "createFile";
+        String description = "File created: " + fileSysPath;
         
 
         try {
-            logger.info("Creating file with type: {} and name: {}",customFile.getType(),customFile.getName());
             Files.copy(file.getFile().getInputStream(), fileSysPath);
             fileRepository.save(customFile);
+            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                logger.error(ADDLOGERROR);
+            }
+            else {
+                logger.info(ADDLOGSUCCESS, description);
+            }
             return customFile;
         } 
         catch (IOException e) {
@@ -287,8 +323,10 @@ public class FileService {
         CustomFile file = fileOptional.get();
 
         String filePath = USERDIR + file.getPath();
-        logger.info("Deleting file: {}", filePath);
         File fileToDelete = new File(filePath);
+
+        String operation = "deleteFile";
+        String description = "File deleted: " + filePath;
 
         if (fileToDelete.isDirectory()) {
             if (!deleteDirectory(fileToDelete)) {
@@ -306,7 +344,14 @@ public class FileService {
 
         // Delete file from repository
         fileRepository.delete(file);
-        logger.info("File with ID {} deleted", id);
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+
         return true;
     }
 
@@ -318,10 +363,21 @@ public class FileService {
      */
     private boolean deleteDirectory(File directory) {
         Path directoryPath = directory.toPath();
+        String operation = "deleteDirectory";
+        String description = "Directory deleted: " + directory.getAbsolutePath();
+
         try (Stream<Path> paths = Files.walk(directoryPath)) {
             paths.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
+
+            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                logger.error(ADDLOGERROR);
+            }
+            else {
+                logger.info(ADDLOGSUCCESS, description);
+            }
+
             return true;
         } catch (IOException e) {
             logger.error("Failed to delete directory: {}, error: {}", directory.getAbsolutePath(), e.getMessage());
@@ -347,9 +403,19 @@ public class FileService {
         Path filePath = Paths.get(sFilePath);
         Resource fileResource = new UrlResource(filePath.toUri());
 
+        String operation = "downloadFileById";
+        String description = "File downloaded: " + filePath;
+
         if (fileResource.exists() && fileResource.isReadable()) {
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
+
+            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                logger.error(ADDLOGERROR);
+            }
+            else {
+                logger.info(ADDLOGSUCCESS, description);
+            }
 
             return ResponseEntity.ok()
                     .headers(headers)
@@ -380,10 +446,19 @@ public class FileService {
 
         File fileToUpdate = new File(updatedFile.getPath());
         File newFile = new File(parentDirectoryPath + customFile.getName());
+
+        String operation = "updateFileName";
+        String description = "File renamed: " + newFile.getAbsolutePath();
+
         if (fileToUpdate.renameTo(newFile)) {
             updatedFile.setPath(parentDirectoryPath + updatedFile.getName());
-            logger.info("File renamed: {}", newFile.getAbsolutePath());
             fileRepository.save(updatedFile);
+            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+                logger.error(ADDLOGERROR);
+            }
+            else {
+                logger.info(ADDLOGSUCCESS, description);
+            }
         }
         else {
             logger.error("Failed to rename file: {}", newFile.getAbsolutePath());

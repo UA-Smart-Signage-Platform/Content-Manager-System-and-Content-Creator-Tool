@@ -1,10 +1,6 @@
 package deti.uas.uasmartsignage.Controllers;
 
 import java.util.List;
-import java.util.Map;
-
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

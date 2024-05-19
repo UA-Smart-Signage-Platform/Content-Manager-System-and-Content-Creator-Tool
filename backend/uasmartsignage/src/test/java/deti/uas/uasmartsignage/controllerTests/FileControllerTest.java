@@ -11,7 +11,6 @@ import deti.uas.uasmartsignage.Controllers.FileController;
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.FileService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +28,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import deti.uas.uasmartsignage.Controllers.MonitorController;
-import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Services.MonitorService;
 import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
@@ -38,7 +35,6 @@ import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
