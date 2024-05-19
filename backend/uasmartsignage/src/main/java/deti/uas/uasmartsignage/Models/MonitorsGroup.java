@@ -36,7 +36,7 @@ public class MonitorsGroup {
 
     @Override
     public String toString() {
-        return "MonitorsGroup [id=" + id + ", name=" + name
-                + "]";
+        return "MonitorsGroup [id=" + id + ", name=" + name + "monitors=" 
+                + monitors + ", templateGroups=" + templateGroups + "]";
     }
 }

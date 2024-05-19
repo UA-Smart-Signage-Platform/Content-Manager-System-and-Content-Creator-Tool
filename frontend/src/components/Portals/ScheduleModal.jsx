@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../services/templateService";
 import activeTemplateService from '../../services/activeTemplateService';
+import mediaService from '../../services/mediaService';
 import ScheduleContentModal from './ScheduleContentModal';
 import Select from 'react-select'
 import DatePicker from 'react-date-picker';
@@ -11,7 +12,7 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { AnimatePresence, motion } from 'framer-motion';
 
-const weekDays = [0,1,2,3,4,5,6];
+const weekDays = [0, 1, 2, 3, 4, 5, 6];
 const timeHour = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
 const timeMinute = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"];
 
@@ -27,7 +28,7 @@ const colors = [
 ];
 
 
-function ScheduleModal( { setShowPortal, selectedGroup } ) {
+function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules, titleMessage, ruleId, setRuleId, edit, setEdit } ) {
     const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
@@ -38,6 +39,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
     const [selectedStartDate, setSelectedStartDate] = useState(null);
     const [selectedEndDate, setSelectedEndDate] = useState(null);
     const [selectedContent, setSelectedContent] = useState({});
+    const [priority,setPriority] = useState(null);
 
     const [showContentsPortal, setShowContentsPortal] = useState(false);
     const [selectedWidgetId, setSelectedWidgetId] = useState(null);
@@ -48,11 +50,53 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
         templateService.getTemplates().then((response) => {
             setTemplates(response.data);
         })
+
+        if (ruleId !== null){
+            activeTemplateService.getRule(ruleId).then((response) => {
+                const data = response.data;
+                const schedule = data.schedule;
+                const content = data.content;
+                const hourStart = schedule.startTime[0].toString();
+                const minuteStart = schedule.startTime[1].toString();
+                const hourEnd = schedule.endTime[0].toString();
+                const minuteEnd = schedule.endTime[1].toString();
+
+                setPriority(schedule.priority)
+                setSelectedTemplateId(data.template.id);
+                setSelectedDays(schedule.weekdays);
+                setSelectedStartTime([hourStart.length === 1 ? "0".concat(hourStart) : hourStart,
+                                        minuteStart.length === 1 ? "0".concat(minuteStart) : minuteStart]);
+                setSelectedEndTime([hourEnd.length === 1 ? "0".concat(hourEnd) : hourEnd,
+                                        minuteEnd.length === 1 ? "0".concat(minuteEnd) : minuteEnd]);
+
+                
+                const templateWidgets = data.template.templateWidgets;
+                for (const [widgetId, contentId] of Object.entries(content)) {
+                    if ((templateWidgets.find(x => x.id === parseInt(widgetId))).widget.name === "Media"){
+                        mediaService.getFileOrDirectoryById(contentId).then((response) => { 
+                            setSelectedContent(previousData => ({...previousData, [widgetId] : response.data }));
+                        })
+                    }
+                    else{
+                        setSelectedContent(previousData => ({...previousData, [widgetId] : contentId }));
+                    }
+                };
+
+                if (schedule.startDate !== null){
+                    setSelectedStartDate(new Date(schedule.startDate));
+                }
+
+
+                if (schedule.endDate !== null){
+                    setSelectedEndDate(new Date(schedule.endDate));
+                }
+            })
+        }
     }, []);
 
 
     useEffect(()=>{
-        if (templates.length !== 0){
+        if (templates.length !== 0 && selectedTemplateId !== null){
             let template = templates.at(selectedTemplateId-1).templateWidgets.length;
             let arr = [];
             for (let i = 0; i < template; i++){
@@ -60,13 +104,14 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
             }
             setSelectedColors(arr)
         }
-
     },[selectedTemplateId]);
 
 
     const handleSubmit = () => {
         Object.keys(selectedContent).forEach(key => {
-            selectedContent[key] = selectedContent[key].id;
+            if (selectedContent[key].id !== undefined){
+                selectedContent[key] = selectedContent[key].id;
+            }
         });
 
         const data = {
@@ -77,15 +122,28 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     startTime : selectedStartTime[0] + ":" + selectedStartTime[1],
                     endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
                     startDate : selectedStartDate,
-                    endDate : selectedEndDate}
+                    endDate : selectedEndDate,
+                    priority: edit ? priority : totalRules}
         }
 
-        activeTemplateService.addActiveTemplate(data);
+        if (edit){
+            activeTemplateService.updateRule(ruleId, data).then(() => {
+                setUpdater(!updater);
+                setEdit(false);
+                setShowPortal(false);
+            });
+        }
+        else {
+            activeTemplateService.addRule(data).then(()=>{
+                setUpdater(!updater);
+                setShowPortal(false);
+            });
+        }
     };
 
-
     const handleSelectedDays = (event) => {
-        const { value } = event.target;
+        const value = parseInt(event.target.value);
+
         if (selectedDays.includes(value)) {
             setSelectedDays(selectedDays.filter(day => day !== value));
         } 
@@ -130,11 +188,13 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
             return (
                 <div className="text-sm min-w-[90%] max-w-[90%]">
                     <Select
-                        className="z-20"
-                        placeholder={templateWidget.widget.name + "..."}
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                        menuPortalTarget={document.body} 
                         isSearchable="true"
                         onChange={(e) => handleSelectedContent(e)}
                         options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
+                        placeholder={templateWidget.widget.name + "..."}
+                        defaultValue={selectedContent[templateWidget.id] !== undefined && { label: selectedContent[templateWidget.id], value: 1 }}
                         getOptionValue={(option) => option.label}
                     />
                 </div>
@@ -146,14 +206,21 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
             );
         }
     }
+
+    const resetEverything = () => {
+        setRuleId(null);
+        setEdit(false);
+        setShowPortal(false); 
+    }
     
+
     return createPortal(
             <motion.div key="background"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration:0.3 }}
-            className="fixed z-10 top-0 h-screen w-screen backdrop-blur-sm flex">
+            className="fixed z-20 top-0 h-screen w-screen backdrop-blur-sm flex">
                 <div className="bg-black h-screen w-screen opacity-75"></div>
                 <motion.div key="content"
                     initial={{ scale: 0.8 }}
@@ -163,7 +230,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                     className="absolute text-gray-50 h-screen w-screen flex items-center">
                     <div className="bg-[#fafdf7] text-[#101604] h-[90%] w-[90%] mx-auto rounded-xl p-[1%]">
                         <div className="h-[5%] w-full flex items-center">
-                            <button onClick={() => setShowPortal(false)} className="flex flex-row">
+                            <button onClick={() => { resetEverything() }} className="flex flex-row">
                                 <MdArrowBack className="w-7 h-7 mr-2"/> 
                                 <span className="text-xl">Go back</span>
                             </button>
@@ -171,10 +238,13 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                         <div className="h-[90%] w-full flex flex-row">
                             <div className="w-[40%] text-xl">
                                 <div className="w-full h-full flex flex-col items-center content-center place-items-center place-content-center">
-                                    <span className="text-2xl">Creating new rule for <span className="font-medium">{selectedGroup.name}</span></span>
+                                    <span className="text-2xl">{titleMessage}<span className="font-medium">{selectedGroup.name}</span></span>
                                     <div className="text-lg flex flex-row w-full justify-evenly">
                                         <div className="flex pt-5">
-                                            <select id="templateSelect" onChange={(e) => setSelectedTemplateId(e.target.value)} className="bg-[#E9E9E9] rounded-md p-2">
+                                            <select id="templateSelect" 
+                                                value={selectedTemplateId}
+                                                onChange={(e) => {setSelectedContent({}); setSelectedTemplateId(e.target.value)}} 
+                                                className="bg-[#E9E9E9] rounded-md p-2">
                                                 <option selected disabled hidden>Template</option>
                                                 {templates.length !== 0 && templates.map((template) => 
                                                     <option key={template.id} value={template.id}>{template.name}</option>
@@ -329,7 +399,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                             ?
                                             <button onClick={handleSubmit} 
                                                 className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">
-                                                Create rule
+                                                {edit ? "Update rule" : "Create rule"}
                                             </button>
                                             :
                                             <div
@@ -340,7 +410,7 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                                 <button onClick={handleSubmit} 
                                                     disabled 
                                                     className="bg-[#96d600] opacity-50 cursor-not-allowed rounded-md p-2 pl-4 pr-4">
-                                                    Create rule
+                                                    {edit ? "Update rule" : "Create rule"}
                                                 </button>
                                                 {displayInfo &&
                                                     <>
@@ -376,13 +446,14 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
                                     <span className="font-medium text-3xl pb-1">Template Preview:</span>
                                 </div>
                                 <div className="aspect-video relative border-4 border-gray-300 rounded-md">
-                                    {selectedTemplateId !== null && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
+                                    {selectedTemplateId !== null && templates.length !== 0 && templates[selectedTemplateId - 1].templateWidgets.map((templateWidget, index) => 
                                     <div key={templateWidget.id} className={`absolute`}
                                         style={{
                                             width: `${templateWidget.width}%`,
                                             height: `${templateWidget.height}%`,
                                             top: `${templateWidget.top}%`,
-                                            left: `${templateWidget.leftPosition}%`
+                                            left: `${templateWidget.leftPosition}%`,
+                                            zIndex: templateWidget.zindex,
                                         }}> 
                                         <div className={`h-full w-full absolute flex flex-col items-center place-content-center border-2 rounded-sm ${selectedColors[index]}`}>
                                             {contentElement(templateWidget)}
@@ -409,7 +480,6 @@ function ScheduleModal( { setShowPortal, selectedGroup } ) {
 
 
 ScheduleModal.propTypes = {
-    showPortal: PropTypes.bool.isRequired,
     setShowPortal: PropTypes.func.isRequired
 }
 

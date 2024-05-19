@@ -27,19 +27,19 @@ class MonitorsGroupRepositoryTest {
 
     @Test void
     findAllByMonitorsPendingFalse(){
-        Monitor m1 = new Monitor(null, "m1", 0, 0, UUID.randomUUID().toString(), false, null);
+        Monitor m1 = new Monitor(null, "m1", 0, 0, UUID.randomUUID().toString(), false,true, null);
         MonitorsGroup g1 = new MonitorsGroup(null, "g1", false, "bom grupo", null, null);
         repository.save(g1);
         m1.setGroup(g1);
         monitorRepository.save(m1);
 
-        Monitor m2 = new Monitor(null, "m2", 0, 0, UUID.randomUUID().toString(), true, null);
+        Monitor m2 = new Monitor(null, "m2", 0, 0, UUID.randomUUID().toString(), true,true, null);
         MonitorsGroup g2 = new MonitorsGroup(null, "g2", false, "bom grupo 2", null, null);
         repository.save(g2);
         m2.setGroup(g2);
         monitorRepository.save(m2);
 
-        List<MonitorsGroup> result = repository.findAllByMonitorsPendingFalse();
+        List<MonitorsGroup> result = repository.findAllByMonitorsPendingFalseOrMonitorsIsEmpty();
 
         assertThat(result).hasSize(1).extracting(MonitorsGroup::getName).contains("g1");
     }

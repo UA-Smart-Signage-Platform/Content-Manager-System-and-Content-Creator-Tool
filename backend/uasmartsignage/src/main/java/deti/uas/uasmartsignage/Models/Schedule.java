@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import deti.uas.uasmartsignage.Mqtt.ScheduleMqtt;
@@ -65,7 +64,13 @@ public class Schedule {
     }
 
     public ScheduleMqtt toMqttFormat() {
-        return new ScheduleMqtt(startTime.toString(), endTime.toString(), weekdays, startDate + "", endDate + "", priority);
+        String stringStartDate = "";
+        String stringEndDate = "";
+        if(startDate != null)
+            stringStartDate = startDate.toString();
+        if(endDate != null)
+            stringEndDate = endDate.toString();
+        return new ScheduleMqtt(startTime.toString(), endTime.toString(), weekdays, stringStartDate, stringEndDate, priority);
     }
 
 }

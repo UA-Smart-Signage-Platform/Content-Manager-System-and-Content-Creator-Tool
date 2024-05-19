@@ -12,6 +12,7 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import deti.uas.uasmartsignage.Configuration.InfluxDBProperties;
 import deti.uas.uasmartsignage.Models.BackendLog;
+import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Severity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,20 +29,26 @@ public class LogsService {
     private static final Logger logger = LoggerFactory.getLogger(LogsService.class);
 
     private final String org;
-    private final String bucket;
+    private final String backendBucket;
+    private final String monitorBucket;
 
     private static final String SEVERITY = "severity";
     private static final String OPERATION = "operation";
     private static final String DESCRIPTION = "description";
     private static final String OPERATION_SOURCE = "operationSource";
+    private static final String MONITOR = "SourceMonitor";
     private static final String USER = "user";
+
+    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
+    private static final String UNEXPECTEDERROR = "An unexpected error occurred: {}";
 
 
     public LogsService(InfluxDBProperties influxDBProperties) {
         String token = influxDBProperties.getToken();
         String url = influxDBProperties.getUrl();
         this.org = influxDBProperties.getOrg();
-        this.bucket = influxDBProperties.getBucket();
+        this.backendBucket = influxDBProperties.getBucket();
+        this.monitorBucket = influxDBProperties.getSBucket();
         this.influxDBClient = InfluxDBClientFactory.create(url, token.toCharArray());
     }
 
@@ -69,12 +76,12 @@ public class LogsService {
 
             // Write the point to InfluxDB
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
-            writeApi.writePoint(bucket, org, point);
+            writeApi.writePoint(backendBucket, org, point);
             return true;
         } catch (InfluxException e) {
-            logger.error("Failed to add log to InfluxDB: {}", e.getMessage());
+            logger.error(ADDLOGERROR, e.getMessage());
         } catch (Exception e) {
-            logger.error("An unexpected error occurred: {}", e.getMessage());
+            logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
     }
@@ -82,7 +89,7 @@ public class LogsService {
     public List<BackendLog> getBackendLogs() {
         List<BackendLog> logs = new ArrayList<>();
         // Construct Flux query to retrieve logs
-        String fluxQuery = "from(bucket: \""+ bucket +"\")" +
+        String fluxQuery = "from(bucket: \""+ backendBucket +"\")" +
                 " |> range(start: -48h)" +  // Adjust time range as needed
                 " |> filter(fn: (r) => r._measurement == \"BackendLogs\")";  // Measurement name
 
@@ -133,8 +140,63 @@ public class LogsService {
         return logs;
     }
 
-    public boolean addMonitorLog() {
-        //not implemented yet
+    public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {
+        String measurement = "KeepAliveLogs";
+        try {
+            Point point = Point.measurement(measurement)
+                    .addTag(MONITOR, monitor)
+                    .addField(SEVERITY, severity.toString())
+                    .addField(OPERATION, operation)
+                    .time(System.currentTimeMillis(), WritePrecision.MS);
+
+            WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
+            writeApi.writePoint(monitorBucket, org, point);
+            return true;
+        } catch (InfluxException e) {
+            logger.error(ADDLOGERROR, e.getMessage());
+        } catch (Exception e) {
+            logger.error(UNEXPECTEDERROR, e.getMessage());
+        }
+        return false;
+    }
+
+
+    public boolean keepAliveIn10min(Monitor monitor) {
+        String monitorUUID = monitor.getUuid();
+
+        String fluxQuery = "from(bucket: \""+ monitorBucket +"\")" +
+                " |> range(start: -10m)" +  // Adjust time range as needed
+                " |> filter(fn: (r) => r._measurement == \"KeepAliveLogs\")" +  
+                " |> filter(fn: (r) => r.SourceMonitor == \"" + monitorUUID + "\")";
+    
+        QueryApi queryApi = influxDBClient.getQueryApi();
+        List<FluxTable> tables = queryApi.query(fluxQuery, org);
+
+        return !tables.isEmpty();
+    }
+    
+
+    // Not implemented neither in MP or Frontend
+    public boolean addMonitorLog(Severity severity, String uuid, String operation, String description, Long time) {
+        String measurement = "MonitorLogs";
+        try {
+            // Prepare the InfluxDB point
+            Point point = Point.measurement(measurement)
+                    .addTag(MONITOR, uuid)
+                    .addField(SEVERITY, severity.toString())
+                    .addField(OPERATION, operation)
+                    .addField(DESCRIPTION, description)
+                    .time(time, WritePrecision.MS); //ask mp to send it in long (miliseconds)
+
+            // Write the point to InfluxDB
+            WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
+            writeApi.writePoint(monitorBucket, org, point);
+            return true;
+        } catch (InfluxException e) {
+            logger.error(ADDLOGERROR, e.getMessage());
+        } catch (Exception e) {
+            logger.error(UNEXPECTEDERROR, e.getMessage());
+        }
         return false;
     }
 }

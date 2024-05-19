@@ -1,27 +1,32 @@
 import { MdOutlineDashboard,MdOutlinePermMedia,
     MdCalendarToday,MdMonitor,
-    MdOutlineBrandingWatermark,MdOutlineWbSunny } from "react-icons/md";
+    MdOutlineBrandingWatermark,MdOutlineWbSunny, MdOutlineSupervisorAccount, MdOutlineLogout } from "react-icons/md";
 import { LuMoon } from "react-icons/lu";
 import  {ReactComponent as Logo}  from "../../static/logo.svg"
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
+import PropTypes from 'prop-types';
 
 
-function NavBar() {
+function NavBar({setLogged}) {
     const [isShow,setIsShow] = useState(false);
     const theme = useThemeStore((state) =>state.theme)
     const changeTheme = useThemeStore((state)=> state.changeTheme)
     const navigate = useNavigate();
+    const isLoggedIn = localStorage.getItem('access_token');
+    const userInfo = localStorage.getItem('userInfo');
+    const userRole = userInfo ? JSON.parse(userInfo).role : null;
+
 
     const handleLogout = () => {
         localStorage.removeItem('access_token');
         localStorage.removeItem('id_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('userInfo');
-
         navigate("/Login");
+        setLogged(false);
     };
 
     return(
@@ -44,9 +49,23 @@ function NavBar() {
             <Link to={"monitors"} className="w-full h-[5%]">
                 <MdMonitor className=" h-full w-full px-3.5"/>
             </Link>
-            <Link to={"contentcreator"} className="w-full h-[5%]">
-                <MdOutlineBrandingWatermark className=" h-full w-full px-3.5"/>
-            </Link>
+            {userRole === "ROLE_ADMIN" && (
+                <Link to={"contentcreator"} className="w-full h-[5%]">
+                    <MdOutlineBrandingWatermark className=" h-full w-full px-3.5"/>
+                </Link>
+            )}
+            {userRole === "ROLE_ADMIN" && (
+                <Link to={"admin"} className="w-full h-[5%]">
+                    <MdOutlineSupervisorAccount className=" h-full w-full px-3.5"/>
+                </Link>
+            )}
+            {isLoggedIn && (
+                <button className="w-full h-[5%] text-lg justify-evenly cursor-pointer" onClick={handleLogout}>
+                    <MdOutlineLogout className=" h-full w-full px-3.5"/>
+                </button>
+            )}
+            
+            
         </div>
         <AnimatePresence>
             {isShow && <motion.div className=" flex flex-col w-[10%] bg-black h-[100vh] gap-10 z-0 text-white fixed left-[65px] font-Lexend text-2xl font-semibold"
@@ -73,12 +92,21 @@ function NavBar() {
                 <Link to={"monitors"} className="w-full h-[5%] flex items-center">
                     Monitors
                 </Link>
-                <Link to={"contentcreator"} className="w-full h-[5%] flex items-center">
-                    Content Creator Tool
-                </Link>
-                <button className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" onClick={handleLogout}>
-                    Logout
-                </button>
+                {userRole === "ROLE_ADMIN" && (
+                    <Link to={"contentcreator"} className="w-full h-[5%] flex items-center">
+                        Content Creator Tool
+                    </Link>
+                )}
+                {userRole === "ROLE_ADMIN" && (
+                    <Link to={"admin"} className="w-full h-[5%] flex items-center">
+                        Users
+                    </Link>
+                )}
+                {isLoggedIn && ( 
+                    <button className="w-full h-[5%] flex items-center" onClick={handleLogout}>
+                        Logout
+                    </button>
+                )}
 
                 <button className="w-full h-[5%] flex items-center mt-auto text-lg justify-evenly cursor-pointer" onClick={() => changeTheme(theme === "dark" ? "light" : "dark")}>
                     <div className="h-full w-[25px] relative flex items-center">
@@ -110,5 +138,9 @@ function NavBar() {
         </>
     )
 }
+
+NavBar.propTypes = {
+    setLogged: PropTypes.func.isRequired,
+};
 
 export default NavBar;

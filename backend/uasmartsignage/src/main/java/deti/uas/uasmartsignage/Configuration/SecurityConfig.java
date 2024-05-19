@@ -43,7 +43,12 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) //NOSONAR
                 .authorizeHttpRequests(
                         request -> request
-                                .requestMatchers("/api/login","/api/files/download/**").permitAll()
+                                .requestMatchers("/api/files/download/**").permitAll()
+                                .requestMatchers("/api/login").permitAll()
+                                //.requestMatchers("/api/logs/backend").permitAll() 
+                                .requestMatchers("/swagger-ui/**").permitAll()
+                                .requestMatchers("/v3/api-docs/**").permitAll()
+                                .requestMatchers("/uploads/**").permitAll()
                                 .requestMatchers("/api/login/change-password").hasRole(ADMIN_ROLE)
                                 .requestMatchers("/api/users/**").hasRole(ADMIN_ROLE)
                                 .anyRequest().authenticated())

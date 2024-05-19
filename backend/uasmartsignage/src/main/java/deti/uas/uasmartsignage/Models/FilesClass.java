@@ -20,7 +20,7 @@ public class FilesClass {
     @Override
     public String toString() {
         return "FilesClass{" +
-                ", parent=" + parentId +
+                "parent=" + parentId +
                 ", file=" + file +
                 '}';
     }

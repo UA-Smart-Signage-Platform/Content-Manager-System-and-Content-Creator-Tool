@@ -1,12 +1,7 @@
 package deti.uas.uasmartsignage.Controllers;
 
-import org.springframework.stereotype.Controller;
-
 import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 
-import org.apache.catalina.connector.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

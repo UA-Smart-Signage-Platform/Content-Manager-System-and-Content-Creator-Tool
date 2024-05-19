@@ -1,9 +1,7 @@
 package deti.uas.uasmartsignage.Controllers;
 
 
-import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Widget;
-import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Services.WidgetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,13 +16,12 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/widgets")
+@RequestMapping("/api/widgets")
 @CrossOrigin(origins = "*")
 public class WidgetController {
 
     private WidgetService widgetService;
 
-    private ContentService contentService;
 
     @Operation(summary = "Get all widgets")
     @ApiResponses(value = {

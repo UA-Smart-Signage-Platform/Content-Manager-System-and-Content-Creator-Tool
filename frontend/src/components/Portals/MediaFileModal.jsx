@@ -19,8 +19,8 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
 
         if (!Array.isArray(currentFolder)){
             formData.append("parentId", currentFolder.id);
-        }
-        
+        }   
+
         await mediaService.createFile(formData);
         setUpdater(!updater);
         setShowPortal(false);
@@ -49,6 +49,7 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
                                         <input autoFocus onChange={(e) => setFile(e.target.files[0])} type="file" id="file" name="file" />
                                         <button className="rounded-md bg-slate-300 mr-auto p-2 mt-10" type="submit">Upload File</button>
                                     </form>
+                                    
                                 </div>
                             </div>
                         </div>

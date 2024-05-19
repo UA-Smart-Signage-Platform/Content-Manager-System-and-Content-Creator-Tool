@@ -16,12 +16,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
@@ -37,7 +39,7 @@ import java.util.HashMap;
 
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
-import deti.uas.uasmartsignage.Mqtt.TemplateMessage;
+import deti.uas.uasmartsignage.Mqtt.RulesMessage;
 
 @Service
 public class TemplateGroupService {
@@ -51,7 +53,7 @@ public class TemplateGroupService {
     private final TemplateGroupRepository templateGroupRepository;
     private final TemplateWidgetService templateWidgetService;
 
-    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService, ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
         this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
@@ -61,6 +63,9 @@ public class TemplateGroupService {
     }
 
     private final Logger logger = LoggerFactory.getLogger(TemplateGroupRepository.class);
+
+    private static final String DOWNLOAD_FILES = "downloadFiles";
+    private static final String SCHEDULE = "schedule";
 
     /**
      * Returns a TemplateGroup with the given id
@@ -119,6 +124,9 @@ public class TemplateGroupService {
                 }
             });
         }
+        else{
+            updatedContent.put(entry.getKey(), entry.getValue());
+        }
     }
     
     /**
@@ -134,7 +142,7 @@ public class TemplateGroupService {
             StringBuilder dirFiles = new StringBuilder();
             for (CustomFile f : files) {
                 if (!"directory".equals(f.getType())) {
-                    downloadFiles.add("http://localhost/api/files/download/" + f.getId());
+                    downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
                     dirFiles.append(f.getName()).append("\",\"");
                 }
             }
@@ -166,8 +174,80 @@ public class TemplateGroupService {
     private Map<String, Object> buildResultMap(Map<Integer, String> updatedContent, List<String> downloadFiles) {
         Map<String, Object> result = new HashMap<>();
         result.put("updatedContent", updatedContent);
-        result.put("downloadFiles", downloadFiles);
+        result.put(DOWNLOAD_FILES, downloadFiles);
         return result;
+    }
+
+    /**
+     * Sends all schedules to a MonitorsGroup
+     * 
+     * @param monitorGroup The MonitorsGroup to send the schedules to
+     * @param sendoToNewMonitor A boolean indicating if the schedules are being sent to a new monitor
+     */
+    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup, Boolean sendoToNewMonitor) {
+        List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
+        List <Map<String, Object>> rules = new ArrayList<>();
+
+        for (TemplateGroup group : templateGroups) {
+            Map<String, Object> rule = new HashMap<>();
+            Template template = templateService.getTemplateById(group.getTemplate().getId());
+            Schedule schedule = group.getSchedule();
+            List<String> downloadFiles = new ArrayList<>();
+
+            if (group.getContent() != null) {
+                Map<String, Object> contentResult = processTemplateGroupContent(group.getContent());
+                Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
+                group.setContent(updatedContent);
+                downloadFiles = (List<String>) contentResult.get(DOWNLOAD_FILES);
+            }
+
+            rule.put("template", template);
+            rule.put(SCHEDULE, schedule.toMqttFormat());
+            rule.put(DOWNLOAD_FILES, downloadFiles);
+            rule.put("group", group);
+            rules.add(rule);
+        }
+
+        try{
+            RulesMessage rulesMessage = new RulesMessage();
+            rulesMessage.setMethod("RULES");
+            List<Monitor> monitors = new ArrayList<>();
+            // If it is a new monitor, we only send the rules to the last monitor
+            if (Boolean.TRUE.equals(sendoToNewMonitor)) {
+                // Get the last monitor (just added)
+                Monitor monitor = monitorGroup.getMonitors().get(monitorGroup.getMonitors().size() - 1);
+                monitors.add(monitor);
+            }
+            else {
+                monitors = monitorGroup.getMonitors();
+            }
+            for (Monitor monitor : monitors) {
+                List <Map<String, Object>> rulesToSend = new ArrayList<>();
+                List <String> filesToSend = new ArrayList<>();
+                for (Map<String, Object> rule : rules) {
+                    Map<String, Object> ruleToSend = new HashMap<>();
+                    Template template = (Template) rule.get("template");
+                    TemplateGroup group = (TemplateGroup) rule.get("group");
+                    String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
+                    ruleToSend.put("html", html);
+                    ruleToSend.put(SCHEDULE, rule.get(SCHEDULE));
+                    rulesToSend.add(ruleToSend);
+                    for (String file : (List<String>) rule.get(DOWNLOAD_FILES)) {
+                        if (!filesToSend.contains(file)) {
+                            filesToSend.add(file);
+                        }
+                    }
+                }
+                rulesMessage.setRules(rulesToSend);
+                rulesMessage.setFiles(filesToSend);
+                String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
+                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
+            }
+        } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
+            logger.error("Could not send rules to monitors");
+        }
+
+        
     }
 
     /**
@@ -175,10 +255,22 @@ public class TemplateGroupService {
      * 
      * @param templateGroup The TemplateGroup to send
      * @param monitorGroup The MonitorsGroup to send the TemplateGroup to
+     * @param id The id of the TemplateGroup to send
      * @return The TemplateGroup that was sent
      */
-    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup) {
-        Template template = templateService.getTemplateById(templateGroup.getTemplate().getId());
+    public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
+        TemplateGroup templateGroupById;
+        if (id != null){
+            templateGroupById = templateGroupRepository.findById(id).orElse(null);
+        } else {
+            templateGroupById = templateGroup;
+        }
+        if (templateGroupById == null) {
+            return null;
+        }
+        
+        Template template = templateService.getTemplateById(templateGroupById.getTemplate().getId());
+        
         Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
             schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
@@ -186,37 +278,13 @@ public class TemplateGroupService {
         else {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
-        List<String> downloadFiles = new ArrayList<>();
-        if (templateGroup.getContent() != null) {
-            Map<String, Object> contentResult = processTemplateGroupContent(templateGroup.getContent());
-            Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
-            templateGroup.setContent(updatedContent);
-            downloadFiles = (List<String>) contentResult.get("downloadFiles");
-        }
-        try {
-            TemplateMessage confirmMessage = new TemplateMessage();
-            confirmMessage.setMethod("TEMPLATE");
-            confirmMessage.setFiles(downloadFiles);
-            confirmMessage.setSchedule(schedule.toMqttFormat());
-            List<Monitor> monitors = monitorGroup.getMonitors();
-            for (Monitor monitor : monitors) {
-                String html = generateHTML(template, templateGroup.getContent(), monitor.getWidth(), monitor.getHeight());
-                confirmMessage.setHtml(html);
-                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
-            }
-
-            
-        } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-            e.printStackTrace();
-    
-        }
-
-        templateGroup.setTemplate(template);
-        templateGroup.setGroup(monitorGroup);
-        templateGroup.setSchedule(schedule);
-        templateGroupRepository.save(templateGroup);
-        return templateGroup;
+        
+        templateGroupById.setTemplate(template);
+        templateGroupById.setGroup(monitorGroup);
+        templateGroupById.setSchedule(schedule);
+        templateGroupRepository.save(templateGroupById);
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+        return templateGroupById;
     }
     
     
@@ -229,7 +297,7 @@ public class TemplateGroupService {
      */
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
-        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
+        return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup, templateGroup.getId());
     }
 
     /**
@@ -238,7 +306,18 @@ public class TemplateGroupService {
      * @param id The id of the TemplateGroup to delete
      */
     public void deleteGroup(Long id) {
+        TemplateGroup templateGroup = templateGroupRepository.findById(id).orElse(null);
+
+        if (templateGroup == null) {
+            return;
+        }
+
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+        monitorGroup.getTemplateGroups().remove(templateGroup);
+        monitorGroupService.saveGroup(monitorGroup);
         templateGroupRepository.deleteById(id);
+
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
     }
 
     /**
@@ -262,7 +341,7 @@ public class TemplateGroupService {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         if (templateGroupById != templateGroup){
             MonitorsGroup monitorGroup = templateGroupById.getGroup();
-            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
+            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup,id);
         }
         return null;
     }
@@ -282,8 +361,8 @@ public class TemplateGroupService {
      * @return The created HTML in a String, or {@code null} if creation fails.
      */
     public String generateHTML(Template template, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
-
         List<TemplateWidget> widgets = template.getTemplateWidgets();
+        widgets.sort(new TemplateWidget.ZIndexComparator());
         String filePath = "static/base.html";
 
         try {
@@ -340,12 +419,14 @@ public class TemplateGroupService {
             ClassLoader cl = this.getClass().getClassLoader();
             InputStream inputStream = cl.getResourceAsStream(pathToWidget);
             String widgetHTML = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            String widgetID = UUID.randomUUID().toString().replace("-", "");
 
             widgetHTML = widgetHTML
                     .replace("[[top]]", String.valueOf(monitorHeight * widget.getTop() / 100))
                     .replace("[[left]]", String.valueOf(monitorWidth * widget.getLeftPosition() / 100))
                     .replace("[[width]]", String.valueOf(monitorWidth * widget.getWidth() / 100))
-                    .replace("[[height]]", String.valueOf(monitorHeight * widget.getHeight() / 100));
+                    .replace("[[height]]", String.valueOf(monitorHeight * widget.getHeight() / 100))
+                    .replace("[[widgetID]]", widgetID);
             
             if(value != null){
                 Content content = widget.getWidget().getContents().get(0);

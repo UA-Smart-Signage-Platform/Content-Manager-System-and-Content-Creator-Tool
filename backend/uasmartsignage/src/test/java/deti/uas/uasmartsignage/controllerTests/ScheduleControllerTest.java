@@ -2,18 +2,15 @@ package deti.uas.uasmartsignage.controllerTests;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
-import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
 
-import org.hibernate.validator.constraints.time.DurationMax;
-import org.junit.jupiter.api.Disabled;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +28,11 @@ import static org.hamcrest.Matchers.is;
 
 import deti.uas.uasmartsignage.Controllers.ScheduleController;
 import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Services.ScheduleService;
-import org.springframework.test.web.servlet.MvcResult;
+
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

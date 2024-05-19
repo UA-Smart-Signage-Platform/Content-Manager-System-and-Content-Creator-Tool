@@ -4,8 +4,10 @@ import { MdCreate, MdArrowBack, MdMonitor,MdCheck } from "react-icons/md";
 import { useLocation, useParams } from "react-router";
 import monitorService from "../../services/monitorService";
 import monitorsGroupService from "../../services/monitorsGroupService";
+import { IoWarningOutline } from "react-icons/io5";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { motion,AnimatePresence } from "framer-motion";
 
 
 function Monitor(){
@@ -16,6 +18,7 @@ function Monitor(){
     const [groups,setGroups] = useState([]);
     const { id } = useParams();
     const [update,setUpdate] = useState(false);
+    const [warning,setWarning] = useState(false);
 
     useEffect(()=>{
         axios.all([monitorService.getMonitorById(id),monitorsGroupService.getGroupsNotMadeForMonitor()]).then(
@@ -35,7 +38,7 @@ function Monitor(){
     const handleUpdate = ()=>{
         let monitorsend = monitor
         monitorsend.name = name
-        monitorsend.group = groups.find((element)=>element.id == groupId)
+        monitorsend.group = { id: groups.find(element => element.id == groupId).id };
         monitorService.updateMonitor(id,monitorsend).then((response)=>{
             setMonitor(response.data)
         })
@@ -46,6 +49,15 @@ function Monitor(){
     if(monitor !== null)
         return(
             <div className="h-full flex flex-col">
+                <AnimatePresence>
+                    {warning && <motion.div className=" bg-rose-500 text-white p-4 absolute rounded-lg flex items-center justify-center gap-3 left-[15%]"
+                                            initial={{y:-200}}
+                                            animate={{y:0}}
+                                            exit={{y:-200}}
+                    >
+                        <IoWarningOutline className="size-6"/>Cant Edit Group Of Monitor In Use.
+                    </motion.div>}
+                </AnimatePresence>
                 <div id="title" className="pt-4 h-[8%]">
                     <PageTitle startTitle={"monitor"} 
                                 middleTitle={"dashboard"}
@@ -75,20 +87,24 @@ function Monitor(){
                             </div>
                             <div className=" bg-secondaryMedium rounded-[20px] h-[30%] text-center flex flex-col p-4 pb-6">
                                 <p className="text-3xl">Template</p>
-                                <p className="m-auto text-xl">DUMMY VALUE</p>
+                                <p className="m-auto text-xl">Not Implemented</p>
                             </div>
                             <div className="h-[60%] flex-col flex gap-3 text-center text-xl">
                                 <div className="flex w-full gap-3 h-[49%] justify-around">
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-tl-[30px] basis-1/3 flex flex-col items-center p-2 h-full"> 
                                         <div className="h-[20%]">Memory</div>
-                                        <MemorySvg className=" h-[80%]" usado={"120"} max={"200"} full={0.8}/>
+                                        Not Implemented
+                                        {/* <MemorySvg className=" h-[80%]" usado={"Not"} max={"Implem"} full={0.8}/> */}
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] basis-1/3 p-2"> 
                                         <div className="h-[20%]">
-                                            <span>IP</span>
+                                            <span>Status</span>
                                         </div>
-                                        <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">{monitor.ip}</span>
+                                        <div className="h-[80%] flex items-center justify-center w-full">
+                                            <div className="text-xl text-center w-full flex items-center justify-center h-full">{monitor.online ?
+                                                <div className=" w-[70%] bg-primary h-[50%] rounded-2xl border-black border-2 flex items-center justify-center font-bold">Online</div> 
+                                                : <div className=" w-[70%] bg-red h-[50%] rounded-2xl border-black border-2 flex items-center justify-center font-bold">Offline</div>}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-tr-[30px] basis-1/3 p-2"> 
@@ -97,7 +113,12 @@ function Monitor(){
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
                                             {update?
-                                                <select className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}>
+                                                <select disabled={monitor.group.templateGroups.length !== 0} className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}
+                                                        onMouseOver={()=>{if(monitor.group.templateGroups.length !== 0)setWarning(true)}}
+                                                        onFocus={()=>{if(monitor.group.templateGroups.length !== 0)setWarning(true)}}
+                                                        onBlur={()=>setWarning(false)}
+                                                        onMouseLeave={()=>setWarning(false)}
+                                                >
                                                     {groups.map((group)=>
                                                     <option key={group.id} value={group.id} selected={groupId== group.id}>{!group.madeForMonitor ? group.name:"----"}</option>
                                                 )}
@@ -115,7 +136,7 @@ function Monitor(){
                                             <span>Updated</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                            <span className="text-xl text-center w-full">Not Implemented</span>
                                         </div>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] basis-1/3 p-2"> 
@@ -123,7 +144,7 @@ function Monitor(){
                                             <span>Errors</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                            <span className="text-xl text-center w-full">Not Implemented</span>
                                         </div>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-br-[30px] basis-1/3 p-2"> 
@@ -131,7 +152,7 @@ function Monitor(){
                                             <span>Last Update</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                            <span className="text-xl text-center w-full">Not Implemented</span>
                                         </div>
                                     </div>
                                 </div>

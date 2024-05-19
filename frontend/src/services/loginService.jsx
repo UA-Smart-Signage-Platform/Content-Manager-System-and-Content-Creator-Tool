@@ -7,6 +7,10 @@ const loginService = {
 
     async getInfo(){
         return await client.get("login/info");
+    },
+
+    async changePassword(username, currentPassword, newPassword){
+        return await client.put("login/change-password", {username, currentPassword, newPassword});
     }
 }
 

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const CLIENT_ID = process.env.REACT_APP_WSO2_CLIENT_ID;
 const REDIRECT_URI = process.env.REACT_APP_WSO2_REDIRECT_URI;
 const IDP_URI = process.env.REACT_APP_IDP_URI;
+const DEFAULT_PASSWORD = process.env.REACT_APP_DEFAULT_PASSWORD;
 
 const redirectToLogin = () => {
   window.location.replace(`${IDP_URI}/authorize?response_type=code&client_id=${CLIENT_ID}&state=1234567890&scope=openid&redirect_uri=${REDIRECT_URI}`);
@@ -40,10 +41,15 @@ const Wso2Login = () => {
       const user_data = { username: response.data.username, role: response.data.role };
       
       setWithExpiry('access_token', jwt, 3600 * 1000 * 10);
-      localStorage.setItem('userInfo', user_data);
-      console.log('userInfo', user_data);
+      localStorage.setItem('userInfo', JSON.stringify(user_data));
         
-      navigate("/dashboard");
+      if (password === DEFAULT_PASSWORD) {
+        // Redirect to change password page if it's the first login
+        navigate("/change-password");
+        return
+      } else {
+        navigate("/dashboard");
+      }
      
     } catch (error) {
       console.error('Error logging in:', error.response?.data || error.message);
