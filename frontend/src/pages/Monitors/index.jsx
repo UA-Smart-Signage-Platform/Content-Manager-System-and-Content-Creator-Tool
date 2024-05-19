@@ -71,7 +71,8 @@ function Monitors(){
         },
         {
             name: 'Status',
-            selector: row => <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div>,
+            selector: row => row.online ? <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div> 
+                                        : <div className=" w-[42px] bg-red h-[20px] rounded-xl border-black border-2"></div>,
             sortable: true
         }   
     ];

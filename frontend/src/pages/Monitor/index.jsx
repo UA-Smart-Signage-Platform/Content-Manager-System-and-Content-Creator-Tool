@@ -75,20 +75,24 @@ function Monitor(){
                             </div>
                             <div className=" bg-secondaryMedium rounded-[20px] h-[30%] text-center flex flex-col p-4 pb-6">
                                 <p className="text-3xl">Template</p>
-                                <p className="m-auto text-xl">DUMMY VALUE</p>
+                                <p className="m-auto text-xl">Not Implemented</p>
                             </div>
                             <div className="h-[60%] flex-col flex gap-3 text-center text-xl">
                                 <div className="flex w-full gap-3 h-[49%] justify-around">
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-tl-[30px] basis-1/3 flex flex-col items-center p-2 h-full"> 
                                         <div className="h-[20%]">Memory</div>
-                                        <MemorySvg className=" h-[80%]" usado={"120"} max={"200"} full={0.8}/>
+                                        Not Implemented
+                                        {/* <MemorySvg className=" h-[80%]" usado={"Not"} max={"Implem"} full={0.8}/> */}
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] basis-1/3 p-2"> 
                                         <div className="h-[20%]">
-                                            <span>IP</span>
+                                            <span>Status</span>
                                         </div>
-                                        <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">{monitor.ip}</span>
+                                        <div className="h-[80%] flex items-center justify-center w-full">
+                                            <div className="text-xl text-center w-full flex items-center justify-center h-full">{monitor.online ?
+                                                <div className=" w-[70%] bg-primary h-[50%] rounded-2xl border-black border-2 flex items-center justify-center font-bold">Online</div> 
+                                                : <div className=" w-[70%] bg-red h-[50%] rounded-2xl border-black border-2 flex items-center justify-center font-bold">Offline</div>}
+                                            </div>
                                         </div>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-tr-[30px] basis-1/3 p-2"> 
@@ -115,7 +119,7 @@ function Monitor(){
                                             <span>Updated</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                            <span className="text-xl text-center w-full">Not Implemented</span>
                                         </div>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] basis-1/3 p-2"> 
@@ -123,7 +127,7 @@ function Monitor(){
                                             <span>Errors</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                            <span className="text-xl text-center w-full">Not Implemented</span>
                                         </div>
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[10px] rounded-br-[30px] basis-1/3 p-2"> 
@@ -131,7 +135,7 @@ function Monitor(){
                                             <span>Last Update</span>
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
-                                            <span className="text-xl text-center w-full">DUMMY VALUE</span>
+                                            <span className="text-xl text-center w-full">Not Implemented</span>
                                         </div>
                                     </div>
                                 </div>
