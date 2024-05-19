@@ -39,6 +39,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     const [selectedStartDate, setSelectedStartDate] = useState(null);
     const [selectedEndDate, setSelectedEndDate] = useState(null);
     const [selectedContent, setSelectedContent] = useState({});
+    const [priority,setPriority] = useState(null);
 
     const [showContentsPortal, setShowContentsPortal] = useState(false);
     const [selectedWidgetId, setSelectedWidgetId] = useState(null);
@@ -60,7 +61,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 const hourEnd = schedule.endTime[0].toString();
                 const minuteEnd = schedule.endTime[1].toString();
 
-
+                setPriority(schedule.priority)
                 setSelectedTemplateId(data.template.id);
                 setSelectedDays(schedule.weekdays);
                 setSelectedStartTime([hourStart.length === 1 ? "0".concat(hourStart) : hourStart,
@@ -68,13 +69,18 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 setSelectedEndTime([hourEnd.length === 1 ? "0".concat(hourEnd) : hourEnd,
                                         minuteEnd.length === 1 ? "0".concat(minuteEnd) : minuteEnd]);
 
-
+                
+                const templateWidgets = data.template.templateWidgets;
                 for (const [widgetId, contentId] of Object.entries(content)) {
-                    mediaService.getFileOrDirectoryById(contentId).then((response) => { 
-                        setSelectedContent(previousData => ({...previousData, [widgetId] : response.data }));
-                    })
+                    if ((templateWidgets.find(x => x.id === parseInt(widgetId))).widget.name === "Media"){
+                        mediaService.getFileOrDirectoryById(contentId).then((response) => { 
+                            setSelectedContent(previousData => ({...previousData, [widgetId] : response.data }));
+                        })
+                    }
+                    else{
+                        setSelectedContent(previousData => ({...previousData, [widgetId] : contentId }));
+                    }
                 };
-
 
                 if (schedule.startDate !== null){
                     setSelectedStartDate(new Date(schedule.startDate));
@@ -117,7 +123,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
                     startDate : selectedStartDate,
                     endDate : selectedEndDate,
-                    priority: totalRules}
+                    priority: edit ? priority : totalRules}
         }
 
         if (edit){
@@ -182,14 +188,14 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             return (
                 <div className="text-sm min-w-[90%] max-w-[90%]">
                     <Select
-                        className="z-20"
-                        placeholder={templateWidget.widget.name + "..."}
+                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
+                        menuPortalTarget={document.body} 
                         isSearchable="true"
                         onChange={(e) => handleSelectedContent(e)}
                         options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
+                        placeholder={templateWidget.widget.name + "..."}
+                        defaultValue={selectedContent[templateWidget.id] !== undefined && { label: selectedContent[templateWidget.id], value: 1 }}
                         getOptionValue={(option) => option.label}
-                        menuPortalTarget={document.body} 
-                        styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
                     />
                 </div>
             );
@@ -237,7 +243,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                         <div className="flex pt-5">
                                             <select id="templateSelect" 
                                                 value={selectedTemplateId}
-                                                onChange={(e) => setSelectedTemplateId(e.target.value)} 
+                                                onChange={(e) => {setSelectedContent({}); setSelectedTemplateId(e.target.value)}} 
                                                 className="bg-[#E9E9E9] rounded-md p-2">
                                                 <option selected disabled hidden>Template</option>
                                                 {templates.length !== 0 && templates.map((template) => 
