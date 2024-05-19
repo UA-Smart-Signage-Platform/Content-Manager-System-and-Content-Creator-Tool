@@ -42,7 +42,6 @@ function Cct(){
             setWidgets(response.data)
         })
         templateservice.getTemplates().then((response)=>{
-            console.log(response.data)
             setTemplates(response.data)
         })
         if (id.toString() !== "0"){
@@ -142,7 +141,6 @@ function Cct(){
         let unique = templates.every((element)=>{
             return (element.name !== name || element.id === template.id)
         })
-        console.log(unique)
         if(unique){
             setAbleSaveName(false);
             setSameName(false);
