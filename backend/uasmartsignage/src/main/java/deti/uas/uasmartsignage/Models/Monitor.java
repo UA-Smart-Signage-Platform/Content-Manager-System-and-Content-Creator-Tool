@@ -35,7 +35,7 @@ public class Monitor {
     @Column(nullable = false)
     private boolean pending;
 
-    @Column(nullable = false)
+    @Column
     private boolean online;
 
     @ManyToOne
