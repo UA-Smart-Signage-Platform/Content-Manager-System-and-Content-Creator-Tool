@@ -4,8 +4,10 @@ import { MdCreate, MdArrowBack, MdMonitor,MdCheck } from "react-icons/md";
 import { useLocation, useParams } from "react-router";
 import monitorService from "../../services/monitorService";
 import monitorsGroupService from "../../services/monitorsGroupService";
+import { IoWarningOutline } from "react-icons/io5";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { motion,AnimatePresence } from "framer-motion";
 
 
 function Monitor(){
@@ -16,6 +18,7 @@ function Monitor(){
     const [groups,setGroups] = useState([]);
     const { id } = useParams();
     const [update,setUpdate] = useState(false);
+    const [warning,setWarning] = useState(false);
 
     useEffect(()=>{
         axios.all([monitorService.getMonitorById(id),monitorsGroupService.getGroupsNotMadeForMonitor()]).then(
@@ -46,6 +49,15 @@ function Monitor(){
     if(monitor !== null)
         return(
             <div className="h-full flex flex-col">
+                <AnimatePresence>
+                    {warning && <motion.div className=" bg-rose-500 text-white p-4 absolute rounded-lg flex items-center justify-center gap-3 left-[15%]"
+                                            initial={{y:-200}}
+                                            animate={{y:0}}
+                                            exit={{y:-200}}
+                    >
+                        <IoWarningOutline className="size-6"/>Cant Edit Group Of Monitor In Use.
+                    </motion.div>}
+                </AnimatePresence>
                 <div id="title" className="pt-4 h-[8%]">
                     <PageTitle startTitle={"monitor"} 
                                 middleTitle={"dashboard"}
@@ -101,7 +113,12 @@ function Monitor(){
                                         </div>
                                         <div className="h-[80%] flex items-center w-full pb-[20%]">
                                             {update?
-                                                <select className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}>
+                                                <select disabled={monitor.group.templateGroups.length !== 0} className="rounded-lg bg-secondaryLight p-2 w-[80%] mx-auto" onChange={e => setGroupId(e.target.value)}
+                                                        onMouseOver={()=>{if(monitor.group.templateGroups.length !== 0)setWarning(true)}}
+                                                        onFocus={()=>{if(monitor.group.templateGroups.length !== 0)setWarning(true)}}
+                                                        onBlur={()=>setWarning(false)}
+                                                        onMouseLeave={()=>setWarning(false)}
+                                                >
                                                     {groups.map((group)=>
                                                     <option key={group.id} value={group.id} selected={groupId== group.id}>{!group.madeForMonitor ? group.name:"----"}</option>
                                                 )}
