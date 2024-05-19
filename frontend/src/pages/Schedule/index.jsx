@@ -120,8 +120,6 @@ function Schedule(){
         setShowDeletePortal(false);
     }
 
-    console.log(rules);
-
     const displayRules = () => {
         if (selectedGroupId === null){
             return(
