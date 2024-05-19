@@ -39,6 +39,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     const [selectedStartDate, setSelectedStartDate] = useState(null);
     const [selectedEndDate, setSelectedEndDate] = useState(null);
     const [selectedContent, setSelectedContent] = useState({});
+    const [priority,setPriority] = useState(null);
 
     const [showContentsPortal, setShowContentsPortal] = useState(false);
     const [selectedWidgetId, setSelectedWidgetId] = useState(null);
@@ -60,7 +61,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 const hourEnd = schedule.endTime[0].toString();
                 const minuteEnd = schedule.endTime[1].toString();
 
-
+                setPriority(schedule.priority)
                 setSelectedTemplateId(data.template.id);
                 setSelectedDays(schedule.weekdays);
                 setSelectedStartTime([hourStart.length === 1 ? "0".concat(hourStart) : hourStart,
@@ -122,7 +123,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                     endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
                     startDate : selectedStartDate,
                     endDate : selectedEndDate,
-                    priority: totalRules}
+                    priority: edit ? priority : totalRules}
         }
 
         if (edit){
