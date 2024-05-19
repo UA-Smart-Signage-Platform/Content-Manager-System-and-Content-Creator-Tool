@@ -122,7 +122,6 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled  //problema com o mqtt
     void testSaveTemplateGroupEndpoint() throws Exception{
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
@@ -194,7 +193,6 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled // //problema com o mqtt
     void testUpdateTemplateGroupEndpoint() throws Exception{
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
@@ -243,7 +241,6 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled // problem with mqtt
     void testSetTemplateForTemplateGroupEndpoint() throws Exception{
         Monitor monitor = new Monitor();
         monitor.setName("monitor");

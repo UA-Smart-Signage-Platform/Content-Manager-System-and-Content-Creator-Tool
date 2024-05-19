@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import deti.uas.uasmartsignage.Models.*;
@@ -41,6 +43,9 @@ class TemplateGroupServiceTest {
 
     @Mock
     private ScheduleService scheduleService;
+
+    @Mock
+    private TemplateWidgetService templateWidgetService;
 
     @Mock
     private ContentService contentService;
@@ -164,8 +169,14 @@ class TemplateGroupServiceTest {
         //when(templateMessage.getMethod()).thenReturn("TEMPLATE");
         //doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
 
-        Schedule schedule = new Schedule();
-        schedule.setPriority(1);
+        Schedule schedule1 = new Schedule();
+        schedule1.setFrequency(7);
+        schedule1.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule1.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule1.setStartTime(LocalTime.parse("08:30"));
+        schedule1.setEndTime(LocalTime.parse("18:30"));
+        schedule1.setPriority(1);
+
 
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
@@ -183,32 +194,52 @@ class TemplateGroupServiceTest {
         group.setName("group1");
         group.setMonitors(List.of(monitor,monitor1));
 
+        Content content = new Content();
+        content.setName("Content1");
+        content.setType("text");
+
         Widget widget = new Widget();
         widget.setName("widget1");
+        widget.setId(1L);
+        widget.setContents(List.of(content));
+        widget.setPath("path");
 
         TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setId(100L);
         templateWidget.setWidget(widget);
+        templateWidget.setZIndex(1);
+        templateWidget.setTop(1);
+        templateWidget.setLeftPosition(1);
+        templateWidget.setWidth(1);
+        templateWidget.setHeight(1);
+
 
         TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setId(200L);
         templateWidget1.setWidget(widget);
+        templateWidget1.setZIndex(2);
+        templateWidget1.setTop(2);
+        templateWidget1.setLeftPosition(2);
+        templateWidget1.setWidth(2);
+        templateWidget1.setHeight(2);
 
         Template template = new Template();
         template.setName("template1");
         template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
 
-
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
-        templateGroup.setSchedule(schedule);
+        templateGroup.setSchedule(schedule1);
+        templateGroup.setContent(Map.of(1,"Content1"));
 
         group.setTemplateGroups(List.of(templateGroup));
-
-        
 
         when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
         when(groupService.getGroupById(templateGroup.getGroup().getId())).thenReturn(group);
         when(repository.save(templateGroup)).thenReturn(templateGroup);
+        when(scheduleService.saveSchedule(schedule1)).thenReturn(schedule1);
+        when(templateWidgetService.getTemplateWidgetById(1L)).thenReturn(templateWidget);
 
         TemplateGroup saved_template = service.saveGroup(templateGroup);
 

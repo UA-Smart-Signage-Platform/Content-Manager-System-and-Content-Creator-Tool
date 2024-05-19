@@ -195,7 +195,7 @@ public class TemplateGroupService {
                 group.setContent(updatedContent);
                 downloadFiles = (List<String>) contentResult.get(DOWNLOAD_FILES);
             }
-
+            System.out.println("schedule"+ schedule);
             rule.put("template", template);
             rule.put(SCHEDULE, schedule.toMqttFormat());
             rule.put(DOWNLOAD_FILES, downloadFiles);
@@ -275,6 +275,7 @@ public class TemplateGroupService {
      */
     public TemplateGroup saveGroup(TemplateGroup templateGroup) {
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+        System.out.println("monitorGroup"+ monitorGroup);
         return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup);
     }
 
@@ -330,7 +331,7 @@ public class TemplateGroupService {
     public String generateHTML(Template template, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
 
         List<TemplateWidget> widgets = template.getTemplateWidgets();
-        widgets.sort(new TemplateWidget.ZIndexComparator());
+        //widgets.sort(new TemplateWidget.ZIndexComparator());
         String filePath = "static/base.html";
 
         try {
