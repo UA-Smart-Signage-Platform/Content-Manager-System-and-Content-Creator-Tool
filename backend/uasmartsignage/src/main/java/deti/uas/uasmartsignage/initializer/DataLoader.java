@@ -17,6 +17,7 @@ import deti.uas.uasmartsignage.Services.ScheduleService;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,9 @@ import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 @Component
 @Profile("!test")
 public class DataLoader implements CommandLineRunner {
+
+    @Value("${backend.production}")
+    private String isProduction;
 
     private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
@@ -89,9 +93,11 @@ public class DataLoader implements CommandLineRunner {
         
 
         this.loadTemplates();
-        this.loadGroupsAndMonitors();
-        this.loadSchedules();
-        this.loadTemplateGroups();
+        if(isProduction.equals("false")){
+            this.loadGroupsAndMonitors();
+            this.loadSchedules();
+            this.loadTemplateGroups();
+        }
     }
 
     private void loadGroupsAndMonitors(){

@@ -23,6 +23,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -44,16 +45,20 @@ import deti.uas.uasmartsignage.Mqtt.RulesMessage;
 @Service
 public class TemplateGroupService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${ip.address}")
+    private String serverAddress;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
     private final FileService fileService;
     private final ScheduleService scheduleService;
     private final TemplateGroupRepository templateGroupRepository;
     private final TemplateWidgetService templateWidgetService;
+    private final MqttConfig mqttConfig;
 
-    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(MqttConfig mqttConfig, TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+        this.mqttConfig = mqttConfig;
         this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
@@ -142,7 +147,7 @@ public class TemplateGroupService {
             StringBuilder dirFiles = new StringBuilder();
             for (CustomFile f : files) {
                 if (!"directory".equals(f.getType())) {
-                    downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
+                    downloadFiles.add(serverAddress + "/api/files/download/" + f.getId());
                     dirFiles.append(f.getName()).append("\",\"");
                 }
             }
@@ -159,7 +164,7 @@ public class TemplateGroupService {
      * @param downloadFiles The List to store the download files
      */
     private void processFile(CustomFile file, Map.Entry<Integer, String> entry, Map<Integer, String> updatedContent, List<String> downloadFiles) {
-        downloadFiles.add("http://localhost/api/files/download/" + entry.getValue());
+        downloadFiles.add(serverAddress + "/api/files/download/" + entry.getValue());
         entry.setValue(file.getName());
         updatedContent.put(entry.getKey(), entry.getValue());
     }
@@ -241,7 +246,7 @@ public class TemplateGroupService {
                 rulesMessage.setRules(rulesToSend);
                 rulesMessage.setFiles(filesToSend);
                 String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
-                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
+                mqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
             }
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             logger.error("Could not send rules to monitors");

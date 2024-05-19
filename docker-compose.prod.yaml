@@ -1,4 +1,3 @@
-version: '3'
 services:
   postgresdb:
     image: postgres:15-alpine
@@ -7,14 +6,17 @@ services:
     ports:
       - "5433:5432"
     restart: unless-stopped
-
 # ------------------------------------------------------------------------------------------------------------------
   web:
     build:
       context: ./frontend
       dockerfile: .docker/Dockerfile.prod
       args:
-        -  REACT_APP_API_URL=http://localhost:80/api/
+        - REACT_APP_API_URL=http://localhost:80
+        - REACT_APP_WSO2_CLIENT_ID=agh44RajMJcYvCIq3lSMrutfPJ0a
+        - REACT_APP_WSO2_REDIRECT_URI=http://localhost:80/
+        - REACT_APP_IDP_URI=https://wso2-gw.ua.pt/
+        - REACT_APP_IDP_BASE64=Basic YWdoNDRSYWpNSmNZdkNJcTNsU01ydXRmUEowYTpXSmNrVTBGU2I0MXJzSkhMbkZQWXFCRnZTWm9h
     restart: unless-stopped
     env_file:
       - ./prod.env
@@ -40,26 +42,34 @@ services:
     image: influxdb:2.1.1
     env_file:
       - ./prod.env
-    entrypoint: ["./entrypoint.sh"]
     volumes:
         - influxdb_data:/var/lib/influxdb
     ports:
-        - ${DOCKER_INFLUXDB_INIT_PORT}:${DOCKER_INFLUXDB_INIT_PORT}
+        - 8086:8086
+
+  influxdb_cli:
+    build: .
+    env_file:
+      - ./prod.env
+    links:
+      - influxdb
+    volumes:
+      - ./influxdbv2:/root/.influxdbv2
+    entrypoint: ["./docker-entrypoint-initdb.d/entrypoint.sh"]
+    restart: on-failure:10
+    depends_on:
+      - influxdb
 # ------------------------------------------------------------------------------------------------------------------
-  mqtt:
-    image: eclipse-mosquitto:1.6.13
+  mosquitto:
+    image: eclipse-mosquitto:latest
     env_file:
       - ./prod.env
     volumes:
-        - mosquitto_conf:/mosquitto/config 
-        - mosquitto_data:/mosquitto/data
-        - mosquitto_log:/mosquitto/log
+      - ./mosquitto/passwd:/mosquitto/config/passwd
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
     ports:
         - 9001:9001
         - 1883:1883
     
 volumes:
-    mosquitto_conf:
-    mosquitto_data:
-    mosquitto_log:
     influxdb_data:

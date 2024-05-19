@@ -35,9 +35,12 @@ public class MqttSubscriberService {
 
     private final LogsService logsService;
 
+    private final MqttConfig mqttConfig;
+
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
 
-    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService) {
+    public MqttSubscriberService(MqttConfig mqttConfig, ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService) {
+        this.mqttConfig = mqttConfig;
         this.objectMapper = objectMapper;
         this.monitorService = monitorService;
         this.monitorGroupService = monitorGroupService;
@@ -48,7 +51,7 @@ public class MqttSubscriberService {
     public void subscribeToRegistrationTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
         logger.info("Subscribing to registration topic");
         try {
-            MqttConfig.getInstance().subscribe("register", (topic, mqttMessage) -> {
+            mqttConfig.getInstance().subscribe("register", (topic, mqttMessage) -> {
                 String payload = new String(mqttMessage.getPayload());
                logger.info("Received message on topic {}: {}", topic, payload);
 
@@ -69,7 +72,7 @@ public class MqttSubscriberService {
     public void subscribeToKeepAliveTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
         logger.info("Subscribing to keep alive topic");
         try {
-            MqttConfig.getInstance().subscribe("keepalive", (topic, mqttMessage) -> {
+            mqttConfig.getInstance().subscribe("keepalive", (topic, mqttMessage) -> {
                 String payload = new String(mqttMessage.getPayload());
                 logger.info("Received message on topic {}: {}", topic, payload);
 
@@ -129,7 +132,7 @@ public class MqttSubscriberService {
             
             String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
 
-            MqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
+            mqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             logger.error("Error sending confirmation message: {}", e.getMessage());
         }
