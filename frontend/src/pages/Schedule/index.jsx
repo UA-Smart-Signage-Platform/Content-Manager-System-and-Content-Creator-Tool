@@ -21,6 +21,7 @@ function Schedule(){
     const [scheduleModalTitle, setScheduleModalTitle] = useState("");
     const [ruleId, setRuleId] = useState(null);
     const [edit, setEdit] = useState(false);
+    const [rulesToDelete, setRulesToDelete] = useState([]);
 
     useEffect(() => {
         monitorsGroupService.getGroups().then((response) => {
@@ -79,14 +80,20 @@ function Schedule(){
         setChangesMade(true);
     };
 
-    const handleUpdatePriorityRules = () => {
+    const handleSave = () => {
+        rulesToDelete.forEach(rule => {
+            activeTemplateService.deleteRule(rule.id);
+        })
+
         const arr = [];
         rules.forEach(element => {
             arr.push(element.schedule);
         });
 
-        scheduleService.updateSchedule(arr);
-        setChangesMade(false);
+        scheduleService.updateSchedule(arr).then(() => {
+            setChangesMade(false);
+            setUpdater(!updater);
+        });
     };
 
     const handleUpdateSingleRule = (ruleId) => {
@@ -97,11 +104,23 @@ function Schedule(){
     }
 
     const deleteRule = () => {
-        activeTemplateService.deleteRule(ruleToDelete).then(() => {
-            setUpdater(!updater);
-        });
+        setRulesToDelete(previousRules => [...previousRules, ruleToDelete]);
+
+        const ruleToDeletePriority = ruleToDelete.schedule.priority;
+
+        let arr = rules.filter(rule => rule.schedule.priority !== ruleToDeletePriority).map((rule)=>{
+            if (rule.schedule.priority > ruleToDeletePriority){
+                rule.schedule.priority = rule.schedule.priority - 1;
+            }
+            return rule
+        })
+
+        setRules(arr);
+        setChangesMade(true);
         setShowDeletePortal(false);
     }
+
+    console.log(rules);
 
     const displayRules = () => {
         if (selectedGroupId === null){
@@ -150,7 +169,7 @@ function Schedule(){
                                             </motion.button>
                                         </div>
                                         <div className="flex items-center object-center place-content-center">
-                                            <motion.button onClick={() => {setRuleToDelete(rule.id); setShowDeletePortal(true)}} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => {setRuleToDelete(rule); setShowDeletePortal(true)}} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <FiTrash2 />
                                             </motion.button>
@@ -177,7 +196,7 @@ function Schedule(){
                     <div className="flex flex-row w-full h-[5%]">
                         <div className="flex w-[50%] h-full items-center">
                             <motion.button 
-                                whileHover={{ 
+                                whileHover={changesMade ? {} : { 
                                     scale: 1.1, 
                                     border: "2px solid", 
                                     transition: {
@@ -185,12 +204,17 @@ function Schedule(){
                                         ease: "easeInOut",
                                     }, 
                                 }}
-                                whileTap={{ scale: 0.9 }}
-                                onClick={() => { selectedGroupId === null ? 
+                                whileTap={changesMade ? {} : { scale: 0.9 }}
+                                onClick={() => { 
+                                    if(!changesMade) 
+                                    {selectedGroupId === null ? 
                                     setShowGroupNeeded(true) 
                                     : 
-                                    setShowPortal(true); setScheduleModalTitle("Creating new rule for ") }}
-                                className="bg-secondaryLight rounded-md h-[80%] pr-4 pl-4">
+                                    setShowPortal(true); 
+                                    setScheduleModalTitle("Creating new rule for ") 
+                                    }
+                                }}
+                                className={`bg-secondaryLight rounded-md h-[80%] pr-4 pl-4 ${changesMade ? "disabled cursor-not-allowed opacity-70" : ""}`}>
                                 + Add rule
                             </motion.button>
                         </div>
@@ -198,7 +222,7 @@ function Schedule(){
                         <div className="flex w-[50%] h-full items-center relative">
                             {selectedGroupId !== null &&
                                 <button disabled={!changesMade}
-                                    onClick={() => handleUpdatePriorityRules()} 
+                                    onClick={() => handleSave()} 
                                     className={`bg-primary p-1 pr-4 pl-4 rounded-md ${changesMade ? "" : "opacity-45 cursor-not-allowed"}`}>
                                 Save
                             </button>
@@ -221,7 +245,7 @@ function Schedule(){
                         </div>
                     </div>
                     <AnimatePresence>
-                        {showPortal && <ScheduleModal
+                        {showPortal && !changesMade && <ScheduleModal
                                 setShowPortal={setShowPortal}
                                 selectedGroup={groups.find(x => x.id === selectedGroupId + 1)}
                                 updater={updater}
