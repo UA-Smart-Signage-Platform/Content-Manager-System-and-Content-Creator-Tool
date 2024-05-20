@@ -1,6 +1,7 @@
 package deti.uas.uasmartsignage.Services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -44,6 +45,17 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public AppUser saveAdminUser(AppUser user) {
+        UserDetails newUser = User.builder()
+            .username(user.getEmail())
+            .password(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()))
+            .roles(user.getRole())
+            .build();
+        
+        customUserDetailsService.addUser(newUser);
+        return userRepository.save(user);
+    }
+
     public void deleteUser(Long id) {
         AppUser user = userRepository.findById(id).orElse(null);
         if (user == null) {
@@ -53,7 +65,11 @@ public class UserService implements UserDetailsService {
         userRepository.deleteById(id);
     }
 
-    public AppUser updateUser(AppUser user) {
+    public AppUser updateUser(Long id, AppUser user) {
+        AppUser oldUser = userRepository.findById(id).orElse(null);
+        if (oldUser == null) {
+            return null;
+        }
         return userRepository.save(user);
     }
 
