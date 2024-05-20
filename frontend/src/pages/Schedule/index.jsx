@@ -81,15 +81,18 @@ function Schedule(){
     };
 
     const handleSave = () => {
-        rulesToDelete.forEach(rule => {
-            activeTemplateService.deleteRule(rule.id);
-        })
-
+        const timeoutDelay = 2000;
+        rulesToDelete.forEach((rule, index) => {
+            setTimeout(() => {
+                activeTemplateService.deleteRule(rule.id);
+            }, index * timeoutDelay); 
+        });
+    
         const arr = [];
         rules.forEach(element => {
             arr.push(element.schedule);
         });
-
+    
         scheduleService.updateSchedule(arr).then(() => {
             setChangesMade(false);
             setUpdater(!updater);
