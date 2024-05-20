@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { MdSettings, MdCreate, MdAdd, MdCheck } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
+import { IoWarningOutline } from "react-icons/io5";
 import monitorsGroupService from "../../services/monitorsGroupService"
-import {motion} from "framer-motion"
+import {motion,AnimatePresence} from "framer-motion"
 
 function GroupBar( {id, changeId, page} ) {
     const [groups, setGroups] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [editGroup,setEditGroup] = useState({id:-1,name:"",description:""});
+    const [warning,setWarning] = useState(false);
  
     useEffect(() => {
         monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
@@ -85,6 +87,15 @@ function GroupBar( {id, changeId, page} ) {
 
     return (
         <div className="h-full flex flex-row">
+            <AnimatePresence>
+                {warning && <motion.div className=" bg-rose-500 text-white p-4 absolute rounded-lg flex items-center justify-center gap-3 left-[15%]"
+                                        initial={{y:-200}}
+                                        animate={{y:-70}}
+                                        exit={{y:-200}}
+                >
+                    <IoWarningOutline className="size-6"/>Cant Delete Group In Use
+                </motion.div>}
+            </AnimatePresence>
             <div className="mt-4 ml-3 flex-col w-full">
                 <div className="flex flex-col">
                     <div className="flex flex-row">
@@ -144,7 +155,12 @@ function GroupBar( {id, changeId, page} ) {
                                         {editGroup.id !== group.id ? 
                                         <div className="flex gap-1">
                                             <button onClick={()=>setEditGroup(group)}><MdCreate className="h-5 size-5 cursor-pointer"/></button>
-                                            <button onClick={() => handleDelete(group.id)}><IoMdTrash className="h-5 size-5 cursor-pointer"/></button>
+                                            <button disabled={group.templateGroups.length !== 0} onClick={() => handleDelete(group.id)}
+                                                    onMouseOver={()=>{if(group.templateGroups.length !== 0)setWarning(true)}}
+                                                    onFocus={()=>{if(group.templateGroups.length !== 0)setWarning(true)}}
+                                                    onBlur={()=>setWarning(false)}
+                                                    onMouseLeave={()=>setWarning(false)}
+                                            ><IoMdTrash className="h-5 size-5 cursor-pointer"/></button>
                                         </div> 
                                         :
                                         <button><MdCheck className="size-5" onClick={() => handleUpdateCreate()}/></button>
