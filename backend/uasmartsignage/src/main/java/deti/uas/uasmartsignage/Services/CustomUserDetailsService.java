@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,24 +28,38 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final List<UserDetails> users = new ArrayList<>();
 
-    private final UserDetails adminUser = User.builder()
+    private UserService userService;
+
+    /* private final UserDetails adminUser = User.builder()
         .username("admin")
         .password(BCrypt.hashpw("admin", BCrypt.gensalt()))
         .roles("ADMIN")
-        .build();
+        .build(); */
 
 
+    @Lazy
     @Autowired
-    public CustomUserDetailsService( UserRepository userRepository) {
-        users.add(adminUser);
+    public CustomUserDetailsService( UserRepository userRepository, UserService userService) {
+        this.userService = userService;
+        //users.add(adminUser);
 
         List<AppUser> appUsers = userRepository.findAll();
         for (AppUser appUser : appUsers) {
-            UserDetails userDetails = User.builder()
-                .username(appUser.getEmail())
-                .password(BCrypt.hashpw(generateRandomPassword(), BCrypt.gensalt()))
-                .roles(appUser.getRole())
-                .build();
+            UserDetails userDetails;
+            if (!appUser.getEmail().equals("admin")) {
+                userDetails = User.builder()
+                    .username(appUser.getEmail())
+                    .password(BCrypt.hashpw(generateRandomPassword(), BCrypt.gensalt()))
+                    .roles(appUser.getRole())
+                    .build();
+            }
+            else {
+                userDetails = User.builder()
+                    .username(appUser.getEmail())
+                    .password(appUser.getPassword())
+                    .roles(appUser.getRole())
+                    .build();
+            }
 
             users.add(userDetails);
         }
@@ -116,6 +131,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 
                 users.remove(user);  // Remove old user
                 users.add(updatedUser);  // Add updated user
+                AppUser appUser = userService.getUserByEmail(username);
+                appUser.setPassword(BCrypt.hashpw(newPassword, BCrypt.gensalt()));
+                userService.updateUser(appUser.getId(), appUser);
+                
             } else {
                 throw new IllegalArgumentException("User type not supported");
             }
