@@ -110,20 +110,22 @@ public class MqttSubscriberService {
         logger.info("Height: {}", registrationMessage.getHeight());
         logger.info("UUID: {}", registrationMessage.getUuid());
 
-        MonitorsGroup monitorsGroup = new MonitorsGroup();
-        monitorsGroup.setName(registrationMessage.getName());
-        monitorsGroup.setMadeForMonitor(true);
-        monitorGroupService.saveGroup(monitorsGroup);
-
-        Monitor monitor = new Monitor();
-        monitor.setName(registrationMessage.getName());
-        monitor.setGroup(monitorsGroup);
-        monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
-        monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
-        monitor.setUuid(registrationMessage.getUuid());
-        monitor.setPending(true);
-
-        monitorService.saveMonitor(monitor);
+        if(monitorService.getMonitorByUUID(registrationMessage.getUuid()) == null){
+            MonitorsGroup monitorsGroup = new MonitorsGroup();
+            monitorsGroup.setName(registrationMessage.getName());
+            monitorsGroup.setMadeForMonitor(true);
+            monitorGroupService.saveGroup(monitorsGroup);
+    
+            Monitor monitor = new Monitor();
+            monitor.setName(registrationMessage.getName());
+            monitor.setGroup(monitorsGroup);
+            monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
+            monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
+            monitor.setUuid(registrationMessage.getUuid());
+            monitor.setPending(true);
+    
+            monitorService.saveMonitor(monitor);
+        }
 
         // Send confirmation message back
         try {

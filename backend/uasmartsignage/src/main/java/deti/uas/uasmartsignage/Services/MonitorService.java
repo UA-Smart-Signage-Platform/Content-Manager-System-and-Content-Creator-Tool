@@ -226,4 +226,13 @@ public class MonitorService {
         return monitors;
     }
 
+        /**
+     * Retrieves and returns all Monitors.
+     *
+     * @return A list of all Monitors.
+     */
+    public Monitor getMonitorByUUID(String uuid) {
+        return monitorRepository.findByUuid(uuid);
+    }
+
 }
