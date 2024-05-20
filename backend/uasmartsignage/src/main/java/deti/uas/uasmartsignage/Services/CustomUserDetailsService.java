@@ -30,18 +30,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private UserService userService;
 
-    /* private final UserDetails adminUser = User.builder()
-        .username("admin")
-        .password(BCrypt.hashpw("admin", BCrypt.gensalt()))
-        .roles("ADMIN")
-        .build(); */
-
-
     @Lazy
     @Autowired
     public CustomUserDetailsService( UserRepository userRepository, UserService userService) {
         this.userService = userService;
-        //users.add(adminUser);
 
         List<AppUser> appUsers = userRepository.findAll();
         for (AppUser appUser : appUsers) {
