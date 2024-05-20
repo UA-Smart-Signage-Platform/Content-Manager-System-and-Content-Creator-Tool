@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
@@ -139,7 +140,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    void testUpdateSchedules(){
+    void testUpdateMultipleSchedules(){
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -200,15 +201,34 @@ class ScheduleServiceTest {
         schedule2.setTemplateGroups(List.of(templateGroup));
         schedule2.setLastEditedBy(user);
 
+        Schedule update = new Schedule();
+        update.setId(1L);
+        update.setFrequency(5);
+        update.setCreatedBy(user);
+        update.setEndDate(LocalDate.parse("2024-06-21"));
+        update.setStartDate(LocalDate.parse("2024-06-21"));
+        update.setPriority(1);
+        update.setTemplateGroups(List.of(templateGroup));
+        update.setLastEditedBy(user);
+
+        //  List<Schedule> schedules = Arrays.asList(schedule, update);
+
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
 
         when(repository.findById(2L)).thenReturn(Optional.of(schedule2));
+
+        when(repository.save(Mockito.any())).thenReturn(schedule2);
+
+        when(repository.save(Mockito.any())).thenReturn(update);
+
 
         List<Schedule> schedules = Arrays.asList(schedule, schedule2);
 
         List<Schedule> updatedSchedules = service.updateSchedules(schedules);
 
         assertThat(updatedSchedules).hasSize(2);
+        assertThat(updatedSchedules.get(0).getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
+        assertThat(updatedSchedules.get(0).getFrequency()).isEqualTo(5);
     }
 
     @Test
@@ -229,11 +249,21 @@ class ScheduleServiceTest {
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
 
-        when(repository.save(schedule)).thenReturn(schedule);
+        Schedule update = new Schedule();
+        update.setId(1L);
+        update.setFrequency(5);
+        update.setCreatedBy(user);
+        update.setEndDate(LocalDate.parse("2024-06-21"));
+        update.setStartDate(LocalDate.parse("2024-06-21"));
+        update.setPriority(1);
+        update.setLastEditedBy(user);
 
-        Schedule updatedSchedule = service.updateSchedule(schedule);
+        when(repository.save(Mockito.any())).thenReturn(update);
 
-        assertThat(updatedSchedule).isEqualTo(schedule);
+        Schedule updatedSchedule = service.updateSchedule(update);
+
+        assertThat(updatedSchedule.getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
+        assertThat(updatedSchedule.getFrequency()).isEqualTo(5);
     }
 
 

@@ -291,8 +291,14 @@ class TemplateGroupServiceTest {
 
     @Test
     void testUpdateTemplateGroup(){
-        Schedule schedule = new Schedule();
-        schedule.setPriority(1);
+        Schedule schedule1 = new Schedule();
+        schedule1.setFrequency(7);
+        schedule1.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule1.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule1.setStartTime(LocalTime.parse("08:30"));
+        schedule1.setEndTime(LocalTime.parse("18:30"));
+        schedule1.setPriority(1);
+
 
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
@@ -310,31 +316,66 @@ class TemplateGroupServiceTest {
         group.setName("group1");
         group.setMonitors(List.of(monitor,monitor1));
 
+        Content content = new Content();
+        content.setName("Content1");
+        content.setType("text");
+
         Widget widget = new Widget();
         widget.setName("widget1");
+        widget.setId(1L);
+        widget.setContents(List.of(content));
+        widget.setPath("path");
 
         TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setId(100L);
         templateWidget.setWidget(widget);
+        templateWidget.setZIndex(1);
+        templateWidget.setTop(1);
+        templateWidget.setLeftPosition(1);
+        templateWidget.setWidth(1);
+        templateWidget.setHeight(1);
+
 
         TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setId(200L);
         templateWidget1.setWidget(widget);
+        templateWidget1.setZIndex(2);
+        templateWidget1.setTop(2);
+        templateWidget1.setLeftPosition(2);
+        templateWidget1.setWidth(2);
+        templateWidget1.setHeight(2);
 
         Template template = new Template();
         template.setName("template1");
         template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
 
-
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule1);
         templateGroup.setContent(Map.of(1,"Content1"));
-        templateGroup.setSchedule(schedule);
+
+        Template template1 = new Template();
+        template.setName("template2");
+        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
+
+        TemplateGroup updated_templateGroup = new TemplateGroup();
+        updated_templateGroup.setGroup(group);
+        updated_templateGroup.setTemplate(template1);
+        updated_templateGroup.setSchedule(schedule1);
+        updated_templateGroup.setContent(Map.of(1,"Content_update"));
+
+        group.setTemplateGroups(List.of(templateGroup));
 
         when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
         when(repository.save(templateGroup)).thenReturn(templateGroup);
+        when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
+        when(templateWidgetService.getTemplateWidgetById(1L)).thenReturn(templateWidget);
+        when(scheduleService.saveSchedule(schedule1)).thenReturn(schedule1);
 
-        TemplateGroup updated_template = service.updateTemplateGroup(1L, templateGroup);
+        TemplateGroup updated_template = service.updateTemplateGroup(1L, updated_templateGroup);
 
-        assertThat(updated_template).isEqualTo(templateGroup);
+        assertThat(updated_template.getTemplate().getName()).isEqualTo("template2");
+        assertThat(updated_template.getContent().get(1)).isEqualTo("Content_update");
     }
 }

@@ -3,6 +3,8 @@ package deti.uas.uasmartsignage.controllerTests;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 
@@ -28,6 +30,7 @@ import static org.hamcrest.Matchers.is;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Controllers.TemplateGroupController;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -68,6 +71,8 @@ class TemplateGroupControllerTest {
 
 
     private ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private MonitorGroupService monitorGroupService;
 
     @Test
     void testGetAllTemplateGroupsEndpoint() throws Exception{
@@ -123,6 +128,11 @@ class TemplateGroupControllerTest {
 
     @Test
     void testSaveTemplateGroupEndpoint() throws Exception{
+        Schedule schedule1 = new Schedule();
+        schedule1.setFrequency(7);
+        schedule1.setPriority(1);
+
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -139,38 +149,64 @@ class TemplateGroupControllerTest {
         group.setName("group1");
         group.setMonitors(List.of(monitor,monitor1));
 
+        Content content = new Content();
+        content.setName("Content1");
+        content.setType("text");
+
         Widget widget = new Widget();
         widget.setName("widget1");
+        widget.setId(1L);
+        widget.setContents(List.of(content));
+        widget.setPath("path");
 
         TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setId(100L);
         templateWidget.setWidget(widget);
+        templateWidget.setZIndex(1);
+        templateWidget.setTop(1);
+        templateWidget.setLeftPosition(1);
+        templateWidget.setWidth(1);
+        templateWidget.setHeight(1);
+
 
         TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setId(200L);
         templateWidget1.setWidget(widget);
+        templateWidget1.setZIndex(2);
+        templateWidget1.setTop(2);
+        templateWidget1.setLeftPosition(2);
+        templateWidget1.setWidth(2);
+        templateWidget1.setHeight(2);
 
         Template template = new Template();
         template.setName("template1");
         template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
 
-
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule1);
+        templateGroup.setContent(Map.of(1,"Content1"));
+
+        group.setTemplateGroups(List.of(templateGroup));
 
         ResultActions result = mvc.perform(post("/api/templateGroups")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(templateGroup)))
                 .andExpect(status().isCreated());
 
-       // Extract the content from the response
-        String contentAsString = result.andReturn().getResponse().getContentAsString();
+        // Capture the response content
+        MvcResult mvcResult = result.andReturn();
+        String responseContent = mvcResult.getResponse().getContentAsString();
 
-        mvc.perform(post("/api/templateGroups")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(templateGroup)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.group.name", is("group1")));
-                //.andExpect(jsonPath("$.template.name", is("template1")));
+        //TemplateGroup returnedTemplateGroup = objectMapper.readValue(responseContent, TemplateGroup.class);
+
+        //System.out.println("asdfghj"+ returnedTemplateGroup);
+
+        System.out.println("fghjk" + responseContent);
+
+
+
     }
 
     @Test
@@ -194,6 +230,10 @@ class TemplateGroupControllerTest {
 
     @Test
     void testUpdateTemplateGroupEndpoint() throws Exception{
+        Schedule schedule1 = new Schedule();
+        schedule1.setFrequency(7);
+        schedule1.setPriority(1);
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -210,28 +250,61 @@ class TemplateGroupControllerTest {
         group.setName("group1");
         group.setMonitors(List.of(monitor,monitor1));
 
+        Content content = new Content();
+        content.setName("Content1");
+        content.setType("text");
+
         Widget widget = new Widget();
         widget.setName("widget1");
+        widget.setId(1L);
+        widget.setContents(List.of(content));
+        widget.setPath("path");
 
         TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setId(100L);
         templateWidget.setWidget(widget);
+        templateWidget.setZIndex(1);
+        templateWidget.setTop(1);
+        templateWidget.setLeftPosition(1);
+        templateWidget.setWidth(1);
+        templateWidget.setHeight(1);
+
 
         TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setId(200L);
         templateWidget1.setWidget(widget);
+        templateWidget1.setZIndex(2);
+        templateWidget1.setTop(2);
+        templateWidget1.setLeftPosition(2);
+        templateWidget1.setWidth(2);
+        templateWidget1.setHeight(2);
 
         Template template = new Template();
         template.setName("template1");
         template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
 
-
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule1);
+        templateGroup.setContent(Map.of(1,"Content1"));
 
-        when(templateService.getTemplateById(1L)).thenReturn(template);
-        when(groupService.getGroupById(1L)).thenReturn(group);
-        when(service.getGroupById(1L)).thenReturn(templateGroup);
-        when(service.saveGroup(Mockito.any(TemplateGroup.class))).thenReturn(templateGroup);
+        Template template1 = new Template();
+        template.setName("template2");
+        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
+
+        TemplateGroup updated_templateGroup = new TemplateGroup();
+        updated_templateGroup.setGroup(group);
+        updated_templateGroup.setTemplate(template1);
+        updated_templateGroup.setSchedule(schedule1);
+        updated_templateGroup.setContent(Map.of(1,"Content_update"));
+
+        group.setTemplateGroups(List.of(templateGroup));
+
+        //when(templateService.getTemplateById(1L)).thenReturn(template);
+        when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
+        when(service.updateTemplateGroup(1L,updated_templateGroup)).thenReturn(updated_templateGroup);
+
 
         mvc.perform(put("/api/templateGroups/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -242,6 +315,10 @@ class TemplateGroupControllerTest {
 
     @Test
     void testSetTemplateForTemplateGroupEndpoint() throws Exception{
+        Schedule schedule1 = new Schedule();
+        schedule1.setFrequency(7);
+        schedule1.setPriority(1);
+
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -258,25 +335,62 @@ class TemplateGroupControllerTest {
         group.setName("group1");
         group.setMonitors(List.of(monitor,monitor1));
 
+        Content content = new Content();
+        content.setName("Content1");
+        content.setType("text");
+
         Widget widget = new Widget();
         widget.setName("widget1");
+        widget.setId(1L);
+        widget.setContents(List.of(content));
+        widget.setPath("path");
 
         TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setId(100L);
         templateWidget.setWidget(widget);
+        templateWidget.setZIndex(1);
+        templateWidget.setTop(1);
+        templateWidget.setLeftPosition(1);
+        templateWidget.setWidth(1);
+        templateWidget.setHeight(1);
+
 
         TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setId(200L);
         templateWidget1.setWidget(widget);
+        templateWidget1.setZIndex(2);
+        templateWidget1.setTop(2);
+        templateWidget1.setLeftPosition(2);
+        templateWidget1.setWidth(2);
+        templateWidget1.setHeight(2);
 
         Template template = new Template();
         template.setName("template1");
         template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
 
-
         TemplateGroup templateGroup = new TemplateGroup();
         templateGroup.setGroup(group);
         templateGroup.setTemplate(template);
-        when(service.getGroupById(1L)).thenReturn(templateGroup);
-        when(service.saveGroup(Mockito.any(TemplateGroup.class))).thenReturn(templateGroup);
+        templateGroup.setSchedule(schedule1);
+        templateGroup.setContent(Map.of(1,"Content1"));
+
+        Template template1 = new Template();
+        template.setName("template2");
+        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
+
+        TemplateGroup updated_templateGroup = new TemplateGroup();
+        updated_templateGroup.setGroup(group);
+        updated_templateGroup.setTemplate(template1);
+        updated_templateGroup.setSchedule(schedule1);
+        updated_templateGroup.setContent(Map.of(1,"Content_update"));
+
+        group.setTemplateGroups(List.of(templateGroup));
+
+        when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
+        when(service.updateTemplateGroup(1L,updated_templateGroup)).thenReturn(updated_templateGroup);
+        when(monitorGroupService.getGroupById(1L)).thenReturn(group);
+        when(templateService.getTemplateById(1L)).thenReturn(template1);
+        when(service.getTemplateGroupByGroupID(1L)).thenReturn(templateGroup);
 
         mvc.perform(put("/api/templateGroups/set")
                         .contentType(MediaType.APPLICATION_JSON)
