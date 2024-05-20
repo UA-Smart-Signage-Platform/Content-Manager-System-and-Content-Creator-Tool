@@ -9,8 +9,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -21,6 +23,9 @@ class MonitorIT extends BaseIntegrationTest{
 
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private LogsService logsService;
 
     @Autowired
     private TestRestTemplate restTemplate;

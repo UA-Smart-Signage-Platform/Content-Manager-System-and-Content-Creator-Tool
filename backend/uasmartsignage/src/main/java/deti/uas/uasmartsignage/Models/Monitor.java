@@ -35,6 +35,9 @@ public class Monitor {
     @Column(nullable = false)
     private boolean pending;
 
+    @Column
+    private boolean online;
+
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
     @JsonIgnoreProperties({"monitors", "templateGroups"})

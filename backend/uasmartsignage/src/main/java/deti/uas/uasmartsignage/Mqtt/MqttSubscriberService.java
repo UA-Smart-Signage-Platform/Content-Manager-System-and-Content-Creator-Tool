@@ -16,10 +16,12 @@ import deti.uas.uasmartsignage.exceptions.MqttException;
 import jakarta.annotation.PostConstruct;
 
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Models.Monitor;
 
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.Severity;
 
 @Component
 @Profile("!test & !integration-test")
@@ -31,12 +33,15 @@ public class MqttSubscriberService {
 
     private final MonitorGroupService monitorGroupService;
 
+    private final LogsService logsService;
+
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
 
-    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService) {
+    public MqttSubscriberService(ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService) {
         this.objectMapper = objectMapper;
         this.monitorService = monitorService;
         this.monitorGroupService = monitorGroupService;
+        this.logsService = logsService;
     }
 
     @PostConstruct
@@ -58,6 +63,40 @@ public class MqttSubscriberService {
         } catch (MqttException e) {
             logger.error("Error subscribing to registration topic: {}", e.getMessage());
         }
+    }
+
+    @PostConstruct
+    public void subscribeToKeepAliveTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
+        logger.info("Subscribing to keep alive topic");
+        try {
+            MqttConfig.getInstance().subscribe("keepalive", (topic, mqttMessage) -> {
+                String payload = new String(mqttMessage.getPayload());
+                logger.info("Received message on topic {}: {}", topic, payload);
+
+                try {
+                    KeepAliveMessage keepAliveMessage = objectMapper.readValue(payload, KeepAliveMessage.class);
+                    handleKeepAliveMessage(keepAliveMessage);
+                } catch (IOException e) {
+                    logger.error("Error parsing keep alive message: {}", e.getMessage());
+                }
+
+            });
+        } catch (MqttException e) {
+            logger.error("Error subscribing to keep alive topic: {}", e.getMessage());
+        }
+    }
+
+    private void handleKeepAliveMessage(KeepAliveMessage keepAliveMessage) {
+        logger.info("Received keep alive message: {}", keepAliveMessage);
+        logger.info("Method: {}", keepAliveMessage.getMethod());
+        logger.info("UUID: {}", keepAliveMessage.getUuid());
+        
+        if (!logsService.addKeepAliveLog(Severity.INFO, keepAliveMessage.getUuid(), keepAliveMessage.getMethod())) {
+            logger.error("Failed to add log to InfluxDB");
+        } else {
+            logger.info("Added log to InfluxDB: {}", keepAliveMessage.getUuid());
+        }
+
     }
 
     private void handleRegistrationMessage(RegistrationMessage registrationMessage) {

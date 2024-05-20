@@ -9,11 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
-import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,12 +21,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
+import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {
     @Mock
     private ScheduleRepository repository;
+
+    @Mock
+    private LogsService logsService;
 
     @InjectMocks
     private ScheduleService service;

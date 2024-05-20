@@ -1,10 +1,9 @@
-version: '3.9'
 services:
   postgres_db:
     image: postgres:latest
     restart: unless-stopped
     env_file:
-      - ./backend/uasmartsignage/credentials.env
+      - .env
     ports:
       - 5432:5432
     networks:
@@ -33,13 +32,27 @@ services:
     image: influxdb:2.1.1
     env_file:
       - .env
-    entrypoint: ["./entrypoint.sh"]
     volumes:
         - influxdb_data:/var/lib/influxdb
     networks:
         - mqttnet
     ports:
         - ${DOCKER_INFLUXDB_INIT_PORT}:${DOCKER_INFLUXDB_INIT_PORT}
+        
+  influxdb_cli:
+    build: .
+    env_file:
+      - .env
+    links:
+      - influxdb
+    volumes:
+      - ./influxdbv2:/root/.influxdbv2
+    entrypoint: ["./docker-entrypoint-initdb.d/entrypoint.sh"]
+    restart: on-failure:10
+    depends_on:
+      - influxdb
+    networks:
+      - mqttnet
 
   mqtt:
     image: eclipse-mosquitto:1.6.13
@@ -52,6 +65,7 @@ services:
     ports:
         - 9001:9001
         - 1883:1883
+
   frontend:
       depends_on:
           - postgres_db
@@ -61,6 +75,8 @@ services:
         context: ./frontend
         dockerfile: .docker/Dockerfile
       restart: unless-stopped
+      env_file:
+        - .env
       volumes:
         - "./frontend/:/app"
       ports:

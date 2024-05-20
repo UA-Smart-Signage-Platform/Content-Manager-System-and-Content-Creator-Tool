@@ -7,9 +7,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
+import PropTypes from 'prop-types';
 
 
-function NavBar() {
+function NavBar({setLogged}) {
     const [isShow,setIsShow] = useState(false);
     const theme = useThemeStore((state) =>state.theme)
     const changeTheme = useThemeStore((state)=> state.changeTheme)
@@ -25,6 +26,7 @@ function NavBar() {
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('userInfo');
         navigate("/Login");
+        setLogged(false);
     };
 
     return(
@@ -136,5 +138,9 @@ function NavBar() {
         </>
     )
 }
+
+NavBar.propTypes = {
+    setLogged: PropTypes.func.isRequired,
+};
 
 export default NavBar;

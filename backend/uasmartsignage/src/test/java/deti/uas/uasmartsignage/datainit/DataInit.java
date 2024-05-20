@@ -1,17 +1,25 @@
 package deti.uas.uasmartsignage.datainit;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Repositories.*;
-import deti.uas.uasmartsignage.Services.FileService;
-import deti.uas.uasmartsignage.Services.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
+import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateRepository;
+import deti.uas.uasmartsignage.Repositories.WidgetRepository;
+import deti.uas.uasmartsignage.Repositories.ContentRepository;
+import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
+import deti.uas.uasmartsignage.Services.ScheduleService;
+import deti.uas.uasmartsignage.Services.FileService;
 
 @Component
 @Profile("test")
@@ -39,7 +47,7 @@ public class DataInit implements CommandLineRunner {
         this.templateGroupRepository = templateGroupRepository;
         this.scheduleService = scheduleService;
         this.fileService = fileService;
-    }
+                      }
 
     public void run(String... args) throws Exception {
         if (!groupRepository.findAll().isEmpty()) {

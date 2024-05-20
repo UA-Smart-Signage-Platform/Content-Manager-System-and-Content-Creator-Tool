@@ -1,9 +1,10 @@
 package deti.uas.uasmartsignage.datainit;
 
+
 import java.nio.charset.StandardCharsets;
+
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
 import deti.uas.uasmartsignage.Services.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -11,24 +12,17 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
-import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 
 @Component
 @Profile("integration-test")
 public class FilesDataInit implements CommandLineRunner{
-    private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
-    private FileRepository fileRepository;
     private FileService fileService;
 
-
     @Autowired
-    public FilesDataInit(MonitorGroupRepository groupRepository, MonitorRepository monitorRepository, FileRepository fileRepository, FileService fileService){
+    public FilesDataInit(MonitorGroupRepository groupRepository, FileService fileService){
         this.groupRepository = groupRepository;
-        this.monitorRepository = monitorRepository;
-        this.fileRepository = fileRepository;
         this.fileService = fileService;
     }
 

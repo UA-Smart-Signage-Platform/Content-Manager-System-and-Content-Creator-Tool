@@ -145,6 +145,38 @@ public class ScheduleIT extends BaseIntegrationTest{
 
     @Test
     @Order(5)
+    void testUpdateMultipleSchedules(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+
+        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/1", HttpMethod.GET, new HttpEntity<>(headers), Schedule.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        Schedule schedule = response.getBody();
+        schedule.setStartDate(LocalDate.parse("2024-05-11"));
+        schedule.setStartTime(LocalTime.parse("08:30"));
+
+        ResponseEntity<Schedule> response2 = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/2", HttpMethod.GET, new HttpEntity<>(headers), Schedule.class);
+        assertEquals(HttpStatus.OK, response2.getStatusCode());
+        Schedule schedule2 = response2.getBody();
+        schedule2.setStartDate(LocalDate.parse("2024-06-11"));
+        schedule2.setStartTime(LocalTime.parse("12:30"));
+
+
+        HttpEntity<List<Schedule>> requestEntity = new HttpEntity<>(List.of(schedule,schedule2), headers);
+
+        ResponseEntity<List<Schedule>> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/schedules", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<List<Schedule>>() {});
+
+        assertEquals(HttpStatus.OK, response1.getStatusCode());
+        assertEquals(LocalDate.parse("2024-05-11"), response1.getBody().get(0).getStartDate());
+        assertEquals(LocalTime.parse("08:30"), response1.getBody().get(0).getStartTime());
+        assertEquals(LocalDate.parse("2024-06-11"), response1.getBody().get(1).getStartDate());
+        assertEquals(LocalTime.parse("12:30"), response1.getBody().get(1).getStartTime());
+
+    }
+
+    @Test
+    @Order(6)
     void testDeleteSchedule(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);

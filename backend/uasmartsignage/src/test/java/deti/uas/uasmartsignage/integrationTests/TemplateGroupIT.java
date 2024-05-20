@@ -174,15 +174,21 @@ public class TemplateGroupIT{
         ResponseEntity<TemplateGroup> response = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups/1", HttpMethod.GET, requestEntity, TemplateGroup.class);
         TemplateGroup templateGroup = response.getBody();
 
-        ResponseEntity<Template> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/templates/2", HttpMethod.GET, new HttpEntity<>(headers), Template.class);
+        /*ResponseEntity<Template> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/templates/2", HttpMethod.GET, new HttpEntity<>(headers), Template.class);
         Template template = response1.getBody();
 
-        templateGroup.setTemplate(template);
+        templateGroup.setTemplate(template);*/
+
+        ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/groups/2", HttpMethod.GET, new HttpEntity<>(headers), MonitorsGroup.class);
+        MonitorsGroup monitorsGroup = response1.getBody();
+
+        templateGroup.setGroup(monitorsGroup);
 
         HttpEntity<TemplateGroup> requestEntity2 = new HttpEntity<>(templateGroup, headers);
         ResponseEntity<TemplateGroup> response2 = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups/1", HttpMethod.PUT, requestEntity2, TemplateGroup.class);
         assertEquals(HttpStatus.OK, response2.getStatusCode());
-        assertEquals("template2", response2.getBody().getTemplate().getName());
+        assertEquals("DMAT", response2.getBody().getGroup().getName());
+        //assertEquals("template2", response2.getBody().getTemplate().getName());
     }
 
     @Test

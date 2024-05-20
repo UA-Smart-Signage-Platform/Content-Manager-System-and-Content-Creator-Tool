@@ -18,6 +18,9 @@ function Schedule(){
     const [rules, setRules] = useState([]);
     const [changesMade, setChangesMade] = useState(false);
     const [ruleToDelete, setRuleToDelete] = useState(null);
+    const [scheduleModalTitle, setScheduleModalTitle] = useState("");
+    const [ruleId, setRuleId] = useState(null);
+    const [edit, setEdit] = useState(false);
 
     useEffect(() => {
         monitorsGroupService.getGroups().then((response) => {
@@ -76,7 +79,7 @@ function Schedule(){
         setChangesMade(true);
     };
 
-    const handleUpdateRules = () => {
+    const handleUpdatePriorityRules = () => {
         const arr = [];
         rules.forEach(element => {
             arr.push(element.schedule);
@@ -85,6 +88,13 @@ function Schedule(){
         scheduleService.updateSchedule(arr);
         setChangesMade(false);
     };
+
+    const handleUpdateSingleRule = (ruleId) => {
+        setScheduleModalTitle("Editing rule for ");
+        setRuleId(ruleId);
+        setEdit(true);
+        setShowPortal(true);
+    }
 
     const deleteRule = () => {
         activeTemplateService.deleteRule(ruleToDelete).then(() => {
@@ -116,7 +126,8 @@ function Schedule(){
                             animate={{y:index * 96}}
                             key={rule.id} 
                             className="flex w-full p-2 absolute h-24">
-                            <div className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center">
+                            <button onClick={() => handleUpdateSingleRule(`${rule.id}`)}
+                                className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center cursor-pointer">
                                 <span className="text-textcolor">{rule.template.name}</span> running {/* */}
                                 <span className="text-textcolor">weekly</span> from {/* */}
                                 <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
@@ -124,7 +135,7 @@ function Schedule(){
                                 {rule.schedule.weekdays.map((day, index) => (
                                     <span key={ALL_WEEKDAYS[day]} className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
                                 ))}
-                            </div>
+                            </button>
                             <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
                                 <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
                                 <div className="flex flex-col w-full gap-2 m-auto">
@@ -175,7 +186,10 @@ function Schedule(){
                                     }, 
                                 }}
                                 whileTap={{ scale: 0.9 }}
-                                onClick={() => { selectedGroupId === null ? setShowGroupNeeded(true) : setShowPortal(true) }}
+                                onClick={() => { selectedGroupId === null ? 
+                                    setShowGroupNeeded(true) 
+                                    : 
+                                    setShowPortal(true); setScheduleModalTitle("Creating new rule for ") }}
                                 className="bg-secondaryLight rounded-md h-[80%] pr-4 pl-4">
                                 + Add rule
                             </motion.button>
@@ -184,7 +198,7 @@ function Schedule(){
                         <div className="flex w-[50%] h-full items-center relative">
                             {selectedGroupId !== null &&
                                 <button disabled={!changesMade}
-                                    onClick={() => handleUpdateRules()} 
+                                    onClick={() => handleUpdatePriorityRules()} 
                                     className={`bg-primary p-1 pr-4 pl-4 rounded-md ${changesMade ? "" : "opacity-45 cursor-not-allowed"}`}>
                                 Save
                             </button>
@@ -209,17 +223,21 @@ function Schedule(){
                     <AnimatePresence>
                         {showPortal && <ScheduleModal
                                 setShowPortal={setShowPortal}
-                                selectedGroup={groups.at(selectedGroupId)}
+                                selectedGroup={groups.find(x => x.id === selectedGroupId + 1)}
                                 updater={updater}
                                 setUpdater={setUpdater}
-                                totalRules={rules.length} />
+                                totalRules={rules.length}
+                                titleMessage={scheduleModalTitle}
+                                ruleId={ruleId}
+                                setRuleId={setRuleId}
+                                edit={edit}
+                                setEdit={setEdit} />
                         }
                         {showDeletePortal && <FunctionModal
                                                     message={"Are you sure you want to delete this Rule?"}
                                                     funcToExecute={deleteRule}
                                                     cancelFunc={()=>setShowDeletePortal(false)}
-                                                    confirmMessage={"Yes"}
-                                             />
+                                                    confirmMessage={"Delete"} />
                         }
                     </AnimatePresence>
                     <div className="flex flex-col w-full h-[95%] pt-3 overflow-scroll">

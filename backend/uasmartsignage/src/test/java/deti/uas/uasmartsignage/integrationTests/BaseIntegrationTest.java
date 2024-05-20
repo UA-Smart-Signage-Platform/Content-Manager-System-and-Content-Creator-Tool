@@ -1,10 +1,8 @@
 package deti.uas.uasmartsignage.integrationTests;
 
 import org.junit.jupiter.api.*;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;

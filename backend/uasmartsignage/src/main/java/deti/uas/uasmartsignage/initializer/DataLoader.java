@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import deti.uas.uasmartsignage.Models.Content;
-import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Schedule;
