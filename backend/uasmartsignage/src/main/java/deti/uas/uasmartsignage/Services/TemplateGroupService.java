@@ -287,6 +287,7 @@ public class TemplateGroupService {
         templateGroupById.setTemplate(template);
         templateGroupById.setGroup(monitorGroup);
         templateGroupById.setSchedule(schedule);
+        templateGroupById.setContent(templateGroup.getContent());
         templateGroupRepository.save(templateGroupById);
         sendAllSchedulesToMonitorGroup(monitorGroup, false);
         return templateGroupById;
@@ -346,7 +347,7 @@ public class TemplateGroupService {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         if (templateGroupById != templateGroup){
             MonitorsGroup monitorGroup = templateGroupById.getGroup();
-            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup,id);
+            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup, id);
         }
         return null;
     }
