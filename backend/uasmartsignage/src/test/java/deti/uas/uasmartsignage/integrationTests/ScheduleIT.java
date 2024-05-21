@@ -153,14 +153,12 @@ public class ScheduleIT extends BaseIntegrationTest{
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         Schedule schedule = response.getBody();
-        schedule.setStartDate(LocalDate.parse("2024-05-11"));
-        schedule.setStartTime(LocalTime.parse("08:30"));
+        schedule.setPriority(2);
 
         ResponseEntity<Schedule> response2 = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/2", HttpMethod.GET, new HttpEntity<>(headers), Schedule.class);
         assertEquals(HttpStatus.OK, response2.getStatusCode());
         Schedule schedule2 = response2.getBody();
-        schedule2.setStartDate(LocalDate.parse("2024-06-11"));
-        schedule2.setStartTime(LocalTime.parse("12:30"));
+        schedule2.setPriority(3);
 
 
         HttpEntity<List<Schedule>> requestEntity = new HttpEntity<>(List.of(schedule,schedule2), headers);
@@ -168,10 +166,9 @@ public class ScheduleIT extends BaseIntegrationTest{
         ResponseEntity<List<Schedule>> response1 = restTemplate.exchange("http://localhost:"+ port + "/api/schedules", HttpMethod.PUT, requestEntity, new ParameterizedTypeReference<List<Schedule>>() {});
 
         assertEquals(HttpStatus.OK, response1.getStatusCode());
-        assertEquals(LocalDate.parse("2024-05-11"), response1.getBody().get(0).getStartDate());
-        assertEquals(LocalTime.parse("08:30"), response1.getBody().get(0).getStartTime());
-        assertEquals(LocalDate.parse("2024-06-11"), response1.getBody().get(1).getStartDate());
-        assertEquals(LocalTime.parse("12:30"), response1.getBody().get(1).getStartTime());
+        assertEquals(2, response1.getBody().size());
+        assertEquals(2, response1.getBody().get(0).getPriority());
+        assertEquals(3, response1.getBody().get(1).getPriority());
 
     }
 

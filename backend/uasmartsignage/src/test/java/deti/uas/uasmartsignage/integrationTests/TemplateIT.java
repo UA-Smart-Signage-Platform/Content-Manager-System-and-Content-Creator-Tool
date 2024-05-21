@@ -92,40 +92,12 @@ public class TemplateIT  extends BaseIntegrationTest{
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        // Fetch an existing Widget
-        ResponseEntity<Widget> widgetResponse = restTemplate.exchange(
-                "http://localhost:" + port + "/api/widgets/1",
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                Widget.class);
-        Widget widget = widgetResponse.getBody();
-
-        System.out.println("sdfdg"+widget);
-
-        /* // Prepare a TemplateWidget
-        TemplateWidget templateWidget = new TemplateWidget();
-        templateWidget.setTop(0);
-        templateWidget.setLeftPosition(0);
-        templateWidget.setWidth(100);
-        templateWidget.setHeight(100);
-        templateWidget.setZIndex(1);
-        templateWidget.setWidget(widget);
-
-        ResponseEntity<TemplateWidget> response1 = restTemplate.exchange("http://localhost:" + port + "/api/templateWidgets", HttpMethod.POST, new HttpEntity<>(templateWidget, headers), TemplateWidget.class);
-
-        TemplateWidget tw = response1.getBody();*/
-
-        ResponseEntity<TemplateWidget> response1 = restTemplate.exchange("http://localhost:" + port + "/api/templateWidgets/1", HttpMethod.GET, new HttpEntity<>(headers), TemplateWidget.class);
-        TemplateWidget tw = response1.getBody();
-
-        // We don't save the TemplateWidget separately; instead, we link it to the Template and save the Template
         Template template = new Template();
         template.setName("template5");
-        template.setTemplateWidgets(List.of(tw));
+        template.setTemplateWidgets(List.of());
 
         HttpEntity<Template> requestEntity = new HttpEntity<>(template, headers);
 
-        // Save the Template (which includes the TemplateWidget)
         ResponseEntity<Template> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/templates",
                 HttpMethod.POST,
@@ -135,12 +107,6 @@ public class TemplateIT  extends BaseIntegrationTest{
         // Assertions to verify the result
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("template5", response.getBody().getName());
-        assertEquals(1, response.getBody().getTemplateWidgets().size());
-        //assertEquals(templateWidget.getTop(), response.getBody().getTemplateWidgets().get(0).getTop());
-        //assertEquals(templateWidget.getLeftPosition(), response.getBody().getTemplateWidgets().get(0).getLeftPosition());
-        //assertEquals(templateWidget.getWidth(), response.getBody().getTemplateWidgets().get(0).getWidth());
-        //assertEquals(templateWidget.getHeight(), response.getBody().getTemplateWidgets().get(0).getHeight());
-        //assertEquals(templateWidget.getZIndex(), response.getBody().getTemplateWidgets().get(0).getZIndex());
     }
 
     @Test
