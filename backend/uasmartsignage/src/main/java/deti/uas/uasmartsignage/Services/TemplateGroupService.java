@@ -326,6 +326,39 @@ public class TemplateGroupService {
         sendAllSchedulesToMonitorGroup(monitorGroup, false);
     }
 
+
+    /**
+     * Deletes the templateGrous in a list of TemplateGroupsIds
+     * 
+     * @param templateGroups The list of TemplateGroups to delete
+     */
+    public void deleteGroups(List<Integer> templateGroupsIds) {
+        if (templateGroupsIds == null) {
+            return;
+        }
+        if (templateGroupsIds.isEmpty()) {
+            return;
+        }
+
+        Long templateGroupId = Long.valueOf(templateGroupsIds.get(0));
+        TemplateGroup tempGroup = templateGroupRepository.findById(templateGroupId).orElse(null);
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(tempGroup.getGroup().getId());
+
+        for (int id : templateGroupsIds) { 
+            Long templateGroupID = Long.valueOf(id);
+            TemplateGroup group = templateGroupRepository.findById(templateGroupID).orElse(null);
+
+            if (group == null) {
+                return;
+            }
+
+            monitorGroup.getTemplateGroups().remove(group);
+            monitorGroupService.saveGroup(monitorGroup);
+            templateGroupRepository.deleteById(templateGroupID);
+        }
+        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+    }
+
     /**
      * Returns all TemplateGroups
      * 

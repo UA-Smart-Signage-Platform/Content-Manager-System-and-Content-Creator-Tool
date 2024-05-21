@@ -15,6 +15,12 @@ const activeTemplateService = {
 
     async getRule(id){
         return await client.get(`/templateGroups/${id}`);
+    },
+
+    async deleteRules(data) {
+        return await client.delete("/templateGroups/delete", {
+            data: data,
+        });
     }
 }
 

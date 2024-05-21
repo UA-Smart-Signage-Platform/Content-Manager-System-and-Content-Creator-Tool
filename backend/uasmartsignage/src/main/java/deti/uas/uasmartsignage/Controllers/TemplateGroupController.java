@@ -73,9 +73,28 @@ public class TemplateGroupController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTemplateGroup(@PathVariable("id") Long id) {
+        if (id == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         templateGroupService.deleteGroup(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @Operation(summary = "Delete a list of template groups")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Template groups deleted", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "404", description = "Template groups not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+    })
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteTemplateGroup(@RequestBody List<Integer> templateGroupsIds) {
+        if (templateGroupsIds == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        templateGroupService.deleteGroups(templateGroupsIds);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    
 
     @Operation(summary = "Update template group")
     @ApiResponses(value = {
@@ -89,33 +108,6 @@ public class TemplateGroupController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(updatedTemplateGroup, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Set the template for an specific group")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Template group set", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Group or Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-    })
-    @PutMapping("/set")
-    public ResponseEntity<?> setTemplateForGroup(@RequestBody TemplateGroup templateGroup) {
-        
-        if(monitorGroupService.getGroupById(templateGroup.getGroup().getId()) == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        else if(templateService.getTemplateById(templateGroup.getTemplate().getId()) == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        TemplateGroup realTemplateGroup = templateGroupService.getTemplateGroupByGroupID(templateGroup.getGroup().getId());
-
-        if(realTemplateGroup == null){
-            TemplateGroup savedTemplateGroup = templateGroupService.saveGroup(templateGroup);
-            return new ResponseEntity<>(savedTemplateGroup, HttpStatus.OK);
-        }
-        else{
-            TemplateGroup updatedTemplateGroup = templateGroupService.updateTemplateGroup(realTemplateGroup.getId(), templateGroup);
-            return new ResponseEntity<>(updatedTemplateGroup, HttpStatus.OK);
-        }
     }
     
 }
