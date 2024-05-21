@@ -284,7 +284,7 @@ public class TemplateGroupService {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
         
-        templateGroupById.setTemplate(template);
+        templateGroupById.setTemplate(templateGroup.getTemplate());
         templateGroupById.setGroup(monitorGroup);
         templateGroupById.setSchedule(schedule);
         templateGroupById.setContent(templateGroup.getContent());
