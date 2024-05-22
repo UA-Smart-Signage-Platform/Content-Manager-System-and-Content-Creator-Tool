@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -187,53 +188,48 @@ public class TemplateGroupService {
      * Sends all schedules to a MonitorsGroup
      * 
      * @param monitorGroup The MonitorsGroup to send the schedules to
-     * @param sendoToNewMonitor A boolean indicating if the schedules are being sent to a new monitor
+     * @param sendAllSchedules A boolean that indicates if all schedules should be sent
      */
-    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup, Boolean sendoToNewMonitor) {
+    public void sendAllSchedulesToMonitorGroup(List<Monitor> monitors) {
+        if (monitors.isEmpty()) {
+            return;
+        }
+        Monitor tempMonitor = monitors.get(monitors.size() - 1);
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(tempMonitor.getGroup().getId());
         List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
         List <Map<String, Object>> rules = new ArrayList<>();
-
         for (TemplateGroup group : templateGroups) {
             Map<String, Object> rule = new HashMap<>();
             Template template = templateService.getTemplateById(group.getTemplate().getId());
             Schedule schedule = group.getSchedule();
             List<String> downloadFiles = new ArrayList<>();
-
             if (group.getContent() != null) {
                 Map<String, Object> contentResult = processTemplateGroupContent(group.getContent());
                 Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
                 group.setContent(updatedContent);
                 downloadFiles = (List<String>) contentResult.get(DOWNLOAD_FILES);
             }
-
             rule.put("template", template);
             rule.put(SCHEDULE, schedule.toMqttFormat());
             rule.put(DOWNLOAD_FILES, downloadFiles);
             rule.put("group", group);
             rules.add(rule);
         }
-
+        
         try{
             RulesMessage rulesMessage = new RulesMessage();
             rulesMessage.setMethod("RULES");
-            List<Monitor> monitors = new ArrayList<>();
-            // If it is a new monitor, we only send the rules to the last monitor
-            if (Boolean.TRUE.equals(sendoToNewMonitor)) {
-                // Get the last monitor (just added)
-                Monitor monitor = monitorGroup.getMonitors().get(monitorGroup.getMonitors().size() - 1);
-                monitors.add(monitor);
-            }
-            else {
-                monitors = monitorGroup.getMonitors();
-            }
             for (Monitor monitor : monitors) {
                 List <Map<String, Object>> rulesToSend = new ArrayList<>();
                 List <String> filesToSend = new ArrayList<>();
+                
                 for (Map<String, Object> rule : rules) {
                     Map<String, Object> ruleToSend = new HashMap<>();
                     Template template = (Template) rule.get("template");
                     TemplateGroup group = (TemplateGroup) rule.get("group");
+                    
                     String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
+                    
                     ruleToSend.put("html", html);
                     ruleToSend.put(SCHEDULE, rule.get(SCHEDULE));
                     rulesToSend.add(ruleToSend);
@@ -284,12 +280,15 @@ public class TemplateGroupService {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
         
-        templateGroupById.setTemplate(templateGroup.getTemplate());
+        templateGroupById.setTemplate(template);
         templateGroupById.setGroup(monitorGroup);
         templateGroupById.setSchedule(schedule);
         templateGroupById.setContent(templateGroup.getContent());
         templateGroupRepository.save(templateGroupById);
-        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+
+        List<Monitor> monitors = monitorGroup.getMonitors();
+
+        sendAllSchedulesToMonitorGroup(monitors);
         return templateGroupById;
     }
     
@@ -323,7 +322,9 @@ public class TemplateGroupService {
         monitorGroupService.saveGroup(monitorGroup);
         templateGroupRepository.deleteById(id);
 
-        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+        List<Monitor> monitors = monitorGroup.getMonitors();
+
+        sendAllSchedulesToMonitorGroup(monitors);
     }
 
 
@@ -356,7 +357,10 @@ public class TemplateGroupService {
             monitorGroupService.saveGroup(monitorGroup);
             templateGroupRepository.deleteById(templateGroupID);
         }
-        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+
+        List<Monitor> monitors = monitorGroup.getMonitors();
+
+        sendAllSchedulesToMonitorGroup(monitors);
     }
 
     /**

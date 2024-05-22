@@ -50,7 +50,7 @@ public class Schedule {
     @JsonIgnoreProperties("schedule")
     private List<TemplateGroup> templateGroups;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "schedule_weekdays", joinColumns = @JoinColumn(name = "schedule_id"))
     @Column(name = "weekdays")
     private List<Integer> weekdays;

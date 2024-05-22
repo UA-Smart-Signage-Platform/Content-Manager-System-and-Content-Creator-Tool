@@ -1,7 +1,10 @@
 package deti.uas.uasmartsignage.Mqtt;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import deti.uas.uasmartsignage.exceptions.MqttException;
 import jakarta.annotation.PostConstruct;
 
 import deti.uas.uasmartsignage.Services.MonitorService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Models.Monitor;
@@ -37,14 +41,17 @@ public class MqttSubscriberService {
 
     private final MqttConfig mqttConfig;
 
+    private final TemplateGroupService templateGroupService;
+
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
 
-    public MqttSubscriberService(MqttConfig mqttConfig, ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService) {
+    public MqttSubscriberService(MqttConfig mqttConfig, ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService, TemplateGroupService templateGroupService) {
         this.mqttConfig = mqttConfig;
         this.objectMapper = objectMapper;
         this.monitorService = monitorService;
         this.monitorGroupService = monitorGroupService;
         this.logsService = logsService;
+        this.templateGroupService = templateGroupService;
     }
 
     @PostConstruct
@@ -103,44 +110,55 @@ public class MqttSubscriberService {
     }
 
     private void handleRegistrationMessage(RegistrationMessage registrationMessage) {
-        logger.info("Received registration message: {}", registrationMessage);
-        logger.info("Method: {}", registrationMessage.getMethod());
-        logger.info("Name: {}", registrationMessage.getName());
-        logger.info("Width: {}", registrationMessage.getWidth());
-        logger.info("Height: {}", registrationMessage.getHeight());
-        logger.info("UUID: {}", registrationMessage.getUuid());
+            logger.info("Received registration message: {}", registrationMessage);
+            logger.info("Method: {}", registrationMessage.getMethod());
+            logger.info("Name: {}", registrationMessage.getName());
+            logger.info("Width: {}", registrationMessage.getWidth());
+            logger.info("Height: {}", registrationMessage.getHeight());
+            logger.info("UUID: {}", registrationMessage.getUuid());
 
-        if(monitorService.getMonitorByUUID(registrationMessage.getUuid()) == null){
-            MonitorsGroup monitorsGroup = new MonitorsGroup();
-            monitorsGroup.setName(registrationMessage.getName());
-            monitorsGroup.setMadeForMonitor(true);
-            monitorGroupService.saveGroup(monitorsGroup);
-    
-            Monitor monitor = new Monitor();
-            monitor.setName(registrationMessage.getName());
-            monitor.setGroup(monitorsGroup);
-            monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
-            monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
-            monitor.setUuid(registrationMessage.getUuid());
-            monitor.setPending(true);
-    
-            monitorService.saveMonitor(monitor);
+            IMqttClient instance = mqttConfig.getInstance();
+
+            Monitor tempMonitor = monitorService.getMonitorByUUID(registrationMessage.getUuid());
+            logger.info("Monitor: {}", tempMonitor);
+
+            if(tempMonitor == null){
+                MonitorsGroup monitorsGroup = new MonitorsGroup();
+                monitorsGroup.setName(registrationMessage.getName());
+                monitorsGroup.setMadeForMonitor(true);
+                monitorGroupService.saveGroup(monitorsGroup);
+        
+                Monitor monitor = new Monitor();
+                monitor.setName(registrationMessage.getName());
+                monitor.setGroup(monitorsGroup);
+                monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
+                monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
+                monitor.setUuid(registrationMessage.getUuid());
+                monitor.setPending(true);
+        
+                monitorService.saveMonitor(monitor);
+            } 
+
+
+            // Send confirmation message back
+            try {
+                ConfirmRegistrationMessage confirmMessage = new ConfirmRegistrationMessage();
+                confirmMessage.setMethod("CONFIRM_REGISTER");
+                
+                String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
+
+                instance.publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
+            } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
+                logger.error("Error sending confirmation message: {}", e.getMessage());
+            }
+
+            if (tempMonitor != null) {
+                logger.info("Monitor already exists, sending all schedules to monitor");
+                List<Monitor> monitors = new ArrayList<>();
+                monitors.add(tempMonitor);
+                templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
+            }
         }
 
-        // Send confirmation message back
-        try {
-            ConfirmRegistrationMessage confirmMessage = new ConfirmRegistrationMessage();
-            confirmMessage.setMethod("CONFIRM_REGISTER");
-            
-            String confirmMessageJson = objectMapper.writeValueAsString(confirmMessage);
-
-            mqttConfig.getInstance().publish(registrationMessage.getUuid(), new MqttMessage(confirmMessageJson.getBytes()));
-        } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
-            logger.error("Error sending confirmation message: {}", e.getMessage());
-        }
-
-
-
-    }
     
 }
