@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
@@ -197,6 +198,7 @@ public class TemplateGroupService {
         Monitor tempMonitor = monitors.get(monitors.size() - 1);
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(tempMonitor.getGroup().getId());
         List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
+        System.out.println(templateGroups);
         List <Map<String, Object>> rules = new ArrayList<>();
         for (TemplateGroup group : templateGroups) {
             Map<String, Object> rule = new HashMap<>();
@@ -266,11 +268,10 @@ public class TemplateGroupService {
         } else {
             templateGroupById = templateGroup;
         }
+
         if (templateGroupById == null) {
             return null;
         }
-        
-        Template template = templateService.getTemplateById(templateGroupById.getTemplate().getId());
         
         Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
@@ -279,15 +280,22 @@ public class TemplateGroupService {
         else {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
-        
-        templateGroupById.setTemplate(template);
-        templateGroupById.setGroup(monitorGroup);
+
+        MonitorsGroup monitorGroupById = monitorGroupService.getGroupById(monitorGroup.getId());
+        System.out.println(monitorGroup);
+        templateGroupById.setTemplate(templateGroup.getTemplate());
+        //templateGroupById.setGroup(monitorGroupById);
         templateGroupById.setSchedule(schedule);
         templateGroupById.setContent(templateGroup.getContent());
         templateGroupRepository.save(templateGroupById);
 
-        List<Monitor> monitors = monitorGroup.getMonitors();
+        List<TemplateGroup> templateGroupById1 = monitorGroupById.getTemplateGroups();
+        templateGroupById1.add(templateGroupById);
+        monitorGroupById.setTemplateGroups(templateGroupById1);
+        monitorGroupService.saveGroup(monitorGroupById);
 
+        List<Monitor> monitors = monitorGroupById.getMonitors();
+        
         sendAllSchedulesToMonitorGroup(monitors);
         return templateGroupById;
     }
