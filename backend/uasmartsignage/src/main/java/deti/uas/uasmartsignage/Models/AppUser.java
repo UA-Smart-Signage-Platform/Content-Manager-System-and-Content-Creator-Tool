@@ -24,4 +24,7 @@ public class AppUser{
 
     @Column(nullable = false)
     private String role;
+
+    @Column(nullable = true)
+    private String password;
 }
