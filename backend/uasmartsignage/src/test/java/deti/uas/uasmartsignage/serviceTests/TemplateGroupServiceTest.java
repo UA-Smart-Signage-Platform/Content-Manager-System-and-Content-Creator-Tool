@@ -11,14 +11,20 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
+import deti.uas.uasmartsignage.Configuration.MqttConfig;
 import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Mqtt.RulesMessage;
 import deti.uas.uasmartsignage.Services.*;
+import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,6 +36,8 @@ import deti.uas.uasmartsignage.Services.TemplateService;
 import deti.uas.uasmartsignage.Services.MonitorGroupService;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +55,7 @@ class TemplateGroupServiceTest {
     private ClassLoader cl;
 
     @Mock
-    private InputStream inputStream;
+    private InputStream inputStreamMock;
 
     @Mock
     private TemplateService templateService;
@@ -60,6 +68,19 @@ class TemplateGroupServiceTest {
 
     @Mock
     private TemplateWidgetService templateWidgetService;
+
+    @Mock
+    private RulesMessage rulesMessage;
+
+    @Mock
+    private IMqttClient ImqttClient;
+
+    @Mock
+    private MqttConfig mqttConfig;
+
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @InjectMocks
     private TemplateGroupService service;
@@ -206,10 +227,10 @@ class TemplateGroupServiceTest {
         content.setType("text");
 
         Widget widget = new Widget();
-        widget.setName("widget1");
+        widget.setName("Media");
         widget.setId(1L);
         widget.setContents(List.of(content));
-        widget.setPath("path");
+        widget.setPath("static/widgets/media.widget");
 
         TemplateWidget templateWidget = new TemplateWidget();
         templateWidget.setId(100L);
@@ -240,6 +261,12 @@ class TemplateGroupServiceTest {
         templateGroup.setSchedule(schedule1);
         templateGroup.setContent(Map.of(1,"Content1"));
 
+        RulesMessage rulesMessage = new RulesMessage();
+        rulesMessage.setMethod("TEMPLATE");
+        rulesMessage.setRules(List.of(Map.of("rule1", "rule1")));
+        rulesMessage.setFiles(List.of("file1"));
+
+
         group.setTemplateGroups(List.of(templateGroup));
 
         when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
@@ -247,8 +274,13 @@ class TemplateGroupServiceTest {
         when(repository.save(templateGroup)).thenReturn(templateGroup);
         when(scheduleService.saveSchedule(schedule1)).thenReturn(schedule1);
         when(templateWidgetService.getTemplateWidgetById(1L)).thenReturn(templateWidget);
-        //when(inputStream.readAllBytes()).thenReturn("test".getBytes());
-        when(cl.getResourceAsStream("path")).thenReturn(inputStream);
+        //when(inputStreamMock.readAllBytes()).thenReturn("test".getBytes());
+        when(mqttConfig.getInstance()).thenReturn(ImqttClient);
+        //when(ImqttClient.publish( Mockito.any(String.class), Mockito.any(MqttMessage.class))).doNothing();
+
+        //when(cl.getResourceAsStream("path")).thenReturn(inputStreamMock);
+        when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("test");
+        //when(cl.getResourceAsStream("path")).thenReturn(inputStream);
 
         TemplateGroup saved_template = service.saveGroup(templateGroup);
 
@@ -334,10 +366,10 @@ class TemplateGroupServiceTest {
         content.setType("text");
 
         Widget widget = new Widget();
-        widget.setName("widget1");
+        widget.setName("Media");
         widget.setId(1L);
         widget.setContents(List.of(content));
-        widget.setPath("path");
+        widget.setPath("static/widgets/media.widget");
 
         TemplateWidget templateWidget = new TemplateWidget();
         templateWidget.setId(100L);
