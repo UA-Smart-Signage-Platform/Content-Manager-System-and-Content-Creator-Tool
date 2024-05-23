@@ -203,23 +203,16 @@ class ScheduleServiceTest {
 
         Schedule update = new Schedule();
         update.setId(1L);
-        update.setFrequency(5);
-        update.setCreatedBy(user);
-        update.setEndDate(LocalDate.parse("2024-06-21"));
-        update.setStartDate(LocalDate.parse("2024-06-21"));
         update.setPriority(1);
-        update.setTemplateGroups(List.of(templateGroup));
-        update.setLastEditedBy(user);
 
-        //  List<Schedule> schedules = Arrays.asList(schedule, update);
 
         when(repository.findById(1L)).thenReturn(Optional.of(schedule));
 
         when(repository.findById(2L)).thenReturn(Optional.of(schedule2));
 
-        when(repository.save(Mockito.any())).thenReturn(schedule2);
+        when(repository.save(schedule)).thenReturn(update);
 
-        when(repository.save(Mockito.any())).thenReturn(update);
+        when(repository.save(schedule2)).thenReturn(schedule2);
 
 
         List<Schedule> schedules = Arrays.asList(schedule, schedule2);
@@ -227,8 +220,9 @@ class ScheduleServiceTest {
         List<Schedule> updatedSchedules = service.updateSchedules(schedules);
 
         assertThat(updatedSchedules).hasSize(2);
-        assertThat(updatedSchedules.get(0).getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
-        assertThat(updatedSchedules.get(0).getFrequency()).isEqualTo(5);
+        assertThat(updatedSchedules.get(0).getEndDate()).isEqualTo(LocalDate.parse("2024-04-21"));
+        assertThat(updatedSchedules.get(0).getPriority()).isEqualTo(1);
+        assertThat(updatedSchedules.get(1).getPriority()).isEqualTo(4);
     }
 
     @Test

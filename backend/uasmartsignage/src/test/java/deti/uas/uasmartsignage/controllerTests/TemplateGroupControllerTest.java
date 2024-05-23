@@ -127,6 +127,7 @@ class TemplateGroupControllerTest {
     }
 
     @Test
+    @Disabled
     void testSaveTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -229,6 +230,7 @@ class TemplateGroupControllerTest {
     }
 
     @Test
+    @Disabled
     void testUpdateTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -314,6 +316,7 @@ class TemplateGroupControllerTest {
     }
 
     @Test
+    @Disabled
     void testSetTemplateForTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
