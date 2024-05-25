@@ -198,7 +198,6 @@ public class TemplateGroupService {
         Monitor tempMonitor = monitors.get(monitors.size() - 1);
         MonitorsGroup monitorGroup = monitorGroupService.getGroupById(tempMonitor.getGroup().getId());
         List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
-        System.out.println(templateGroups);
         List <Map<String, Object>> rules = new ArrayList<>();
         for (TemplateGroup group : templateGroups) {
             Map<String, Object> rule = new HashMap<>();
@@ -263,10 +262,13 @@ public class TemplateGroupService {
      */
     public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
         TemplateGroup templateGroupById;
+        boolean isNew = false;
+        
         if (id != null){
             templateGroupById = templateGroupRepository.findById(id).orElse(null);
         } else {
             templateGroupById = templateGroup;
+            isNew = true;
         }
 
         if (templateGroupById == null) {
@@ -282,21 +284,25 @@ public class TemplateGroupService {
         }
 
         MonitorsGroup monitorGroupById = monitorGroupService.getGroupById(monitorGroup.getId());
-        System.out.println(monitorGroup);
+
         templateGroupById.setTemplate(templateGroup.getTemplate());
-        //templateGroupById.setGroup(monitorGroupById);
         templateGroupById.setSchedule(schedule);
         templateGroupById.setContent(templateGroup.getContent());
         templateGroupRepository.save(templateGroupById);
 
-        List<TemplateGroup> templateGroupById1 = monitorGroupById.getTemplateGroups();
-        templateGroupById1.add(templateGroupById);
-        monitorGroupById.setTemplateGroups(templateGroupById1);
+
+        List<TemplateGroup> templateGroups = monitorGroupById.getTemplateGroups();
+        if (!isNew){
+            templateGroups.remove(templateGroupById);
+        }
+        templateGroups.add(templateGroupById);
+        monitorGroupById.setTemplateGroups(templateGroups);
         monitorGroupService.saveGroup(monitorGroupById);
 
         List<Monitor> monitors = monitorGroupById.getMonitors();
         
         sendAllSchedulesToMonitorGroup(monitors);
+
         return templateGroupById;
     }
     
@@ -391,7 +397,7 @@ public class TemplateGroupService {
     public TemplateGroup updateTemplateGroup(Long id, TemplateGroup templateGroup) {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         if (templateGroupById != templateGroup){
-            MonitorsGroup monitorGroup = templateGroupById.getGroup();
+            MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
             return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup, id);
         }
         return null;
