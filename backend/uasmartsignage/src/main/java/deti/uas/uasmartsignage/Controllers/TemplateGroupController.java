@@ -36,7 +36,7 @@ public class TemplateGroupController {
             @ApiResponse(responseCode = "200", description = "List of all template groups", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
     })
     @GetMapping
-    public ResponseEntity<?> getAllTemplateGroups() {
+    public ResponseEntity<List<TemplateGroup>> getAllTemplateGroups() {
         List<TemplateGroup> templateGroups = (List<TemplateGroup>) templateGroupService.getAllGroups();
         return new ResponseEntity<>(templateGroups, HttpStatus.OK);
     }
@@ -47,7 +47,7 @@ public class TemplateGroupController {
             @ApiResponse(responseCode = "404", description = "Template group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTemplateGroupById(@PathVariable("id") Long id) {
+    public ResponseEntity<TemplateGroup> getTemplateGroupById(@PathVariable("id") Long id) {
         TemplateGroup templateGroup = templateGroupService.getGroupById(id);
         if (templateGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -61,7 +61,7 @@ public class TemplateGroupController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> saveTemplateGroup(@RequestBody TemplateGroup templateGroup) {
+    public ResponseEntity<TemplateGroup> saveTemplateGroup(@RequestBody TemplateGroup templateGroup) {
         TemplateGroup savedTemplateGroup = templateGroupService.saveGroup(templateGroup);
         return new ResponseEntity<>(savedTemplateGroup, HttpStatus.CREATED);
     }
@@ -72,7 +72,7 @@ public class TemplateGroupController {
             @ApiResponse(responseCode = "404", description = "Template group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTemplateGroup(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteTemplateGroup(@PathVariable("id") Long id) {
         if (id == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -86,7 +86,7 @@ public class TemplateGroupController {
             @ApiResponse(responseCode = "404", description = "Template groups not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteTemplateGroup(@RequestBody List<Integer> templateGroupsIds) {
+    public ResponseEntity<Void> deleteTemplateGroup(@RequestBody List<Integer> templateGroupsIds) {
         if (templateGroupsIds == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -102,7 +102,7 @@ public class TemplateGroupController {
             @ApiResponse(responseCode = "404", description = "Template group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTemplateGroup(@PathVariable("id") Long id, @RequestBody TemplateGroup templateGroup) {
+    public ResponseEntity<TemplateGroup> updateTemplateGroup(@PathVariable("id") Long id, @RequestBody TemplateGroup templateGroup) {
         TemplateGroup updatedTemplateGroup = templateGroupService.updateTemplateGroup(id, templateGroup);
         if (updatedTemplateGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

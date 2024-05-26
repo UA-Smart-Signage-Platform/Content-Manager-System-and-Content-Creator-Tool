@@ -26,7 +26,7 @@ public class ContentController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> saveContent(@RequestBody Content content) {
+    public ResponseEntity<Content> saveContent(@RequestBody Content content) {
         Content savedContent = contentService.saveContent(content);
         return new ResponseEntity<>(savedContent, HttpStatus.CREATED);
     }
@@ -37,7 +37,7 @@ public class ContentController {
             @ApiResponse(responseCode = "404", description = "No contents found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping
-    public ResponseEntity<?> getAllContents() {
+    public ResponseEntity<List<Content>> getAllContents() {
         List<Content> contents = (List<Content>) contentService.getAllContents();
         return new ResponseEntity<>(contents, HttpStatus.OK);
     }
@@ -48,7 +48,7 @@ public class ContentController {
             @ApiResponse(responseCode = "404", description = "Content not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getContentById(@PathVariable("id") Long id) {
+    public ResponseEntity<Content> getContentById(@PathVariable("id") Long id) {
         Content content = contentService.getContentById(id);
         if (content == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -62,7 +62,7 @@ public class ContentController {
             @ApiResponse(responseCode = "404", description = "Content not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteContent(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteContent(@PathVariable("id") Long id) {
         contentService.deleteContent(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -73,7 +73,7 @@ public class ContentController {
             @ApiResponse(responseCode = "404", description = "Content not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContent(@PathVariable("id") Long id, @RequestBody Content content) {
+    public ResponseEntity<Content> updateContent(@PathVariable("id") Long id, @RequestBody Content content) {
         Content updatedContent = contentService.updateContent(id, content);
         if (updatedContent == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
