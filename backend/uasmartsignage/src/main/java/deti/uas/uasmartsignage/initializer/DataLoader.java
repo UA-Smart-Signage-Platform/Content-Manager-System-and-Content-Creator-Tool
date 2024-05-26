@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import deti.uas.uasmartsignage.Services.FileService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import com.influxdb.client.domain.User;
+
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
@@ -37,6 +41,7 @@ import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
 import deti.uas.uasmartsignage.Repositories.WidgetRepository;
+import deti.uas.uasmartsignage.Services.UserService;
 
 @Component
 @Profile("!test")
@@ -54,6 +59,7 @@ public class DataLoader implements CommandLineRunner {
     private TemplateGroupRepository templateGroupRepository;
     private ScheduleService scheduleService;
     private FileService fileService;
+    private UserService userService;
 
     private Logger logger = org.slf4j.LoggerFactory.getLogger(DataLoader.class);
 
@@ -62,7 +68,7 @@ public class DataLoader implements CommandLineRunner {
             ContentRepository contentRepository, WidgetRepository widgetRepository,
             MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,
             TemplateGroupRepository templateGroupRepository,
-            ScheduleService scheduleService, FileService fileService) {
+            ScheduleService scheduleService, FileService fileService, UserService userService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
@@ -72,6 +78,7 @@ public class DataLoader implements CommandLineRunner {
         this.templateGroupRepository = templateGroupRepository;
         this.scheduleService = scheduleService;
         this.fileService = fileService;
+        this.userService = userService;
     }
 
     public void run(String... args) throws Exception {
@@ -93,11 +100,22 @@ public class DataLoader implements CommandLineRunner {
         
 
         this.loadTemplates();
+        this.loadAdminUser();
         if(isProduction.equals("false")){
             this.loadGroupsAndMonitors();
             this.loadSchedules();
             this.loadTemplateGroups();
         }
+    }
+
+    private void loadAdminUser() {
+        // create the admin user
+        AppUser admin = new AppUser();
+        admin.setEmail("admin");
+        admin.setRole("ADMIN");
+        admin.setPassword("admin");
+        userService.saveAdminUser(admin);
+
     }
 
     private void loadGroupsAndMonitors(){
