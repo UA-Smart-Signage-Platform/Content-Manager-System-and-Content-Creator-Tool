@@ -3,7 +3,7 @@ services:
     image: postgres:latest
     restart: unless-stopped
     env_file:
-      - credentials.env
+      - test.txt
     ports:
       - "5432:5432"
     networks:
