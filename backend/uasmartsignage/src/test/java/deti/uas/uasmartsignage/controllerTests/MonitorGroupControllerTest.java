@@ -9,7 +9,6 @@ import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.JwtUtilService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -233,8 +232,6 @@ class MonitorGroupControllerTest {
         monitorsGroup.setTemplateGroups(List.of(templateGroup));
         monitorsGroup.setMonitors(Arrays.asList(monitor, monitor2));
 
-
-
         when(service.getGroupById(1L)).thenReturn(monitorsGroup);
 
         mvc.perform(get("/api/groups/1/template")
@@ -254,7 +251,6 @@ class MonitorGroupControllerTest {
         monitor2.setId(2L);
 
         TemplateGroup templateGroup = new TemplateGroup();
-
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("group1");

@@ -8,7 +8,6 @@ import java.util.Arrays;
 import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.JwtUtilService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,6 @@ import static org.hamcrest.Matchers.is;
 import deti.uas.uasmartsignage.Controllers.ContentController;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Widget;
-import org.springframework.test.web.servlet.MvcResult;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

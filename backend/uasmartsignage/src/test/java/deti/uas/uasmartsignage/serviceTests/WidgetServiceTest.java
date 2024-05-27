@@ -10,7 +10,6 @@ import java.util.Optional;
 
 import deti.uas.uasmartsignage.Models.*;
 import deti.uas.uasmartsignage.Services.LogsService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,17 +1,10 @@
 package deti.uas.uasmartsignage.repositoryTests;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import deti.uas.uasmartsignage.Models.Schedule;
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +14,6 @@ import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -70,9 +62,7 @@ class TemplateGroupRepositoryTest {
 
         List<TemplateGroup> found = repository.findAll();
 
-        assertThat(found).isNotEmpty();
-        assertThat(found).hasSize(2);
-        assertThat(found).contains(templateGroup1, templateGroup2);
+        assertThat(found).isNotEmpty().hasSize(2).contains(templateGroup1, templateGroup2);
     }
 
     @Test
@@ -102,8 +92,7 @@ class TemplateGroupRepositoryTest {
 
         TemplateGroup found = repository.findByGroupId(group1.getId());
 
-        assertThat(found).isNotNull();
-        assertThat(found).isEqualTo(templateGroup1);
+        assertThat(found).isNotNull().isEqualTo(templateGroup1);
     }
 
     @Test
@@ -128,8 +117,7 @@ class TemplateGroupRepositoryTest {
 
         TemplateGroup saved = repository.save(templateGroup1);
 
-        assertThat(saved).isNotNull();
-        assertThat(saved).isEqualTo(templateGroup1);
+        assertThat(saved).isNotNull().isEqualTo(templateGroup1);
     }
 
 }

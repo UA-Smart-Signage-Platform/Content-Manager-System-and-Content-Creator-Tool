@@ -11,7 +11,6 @@ import java.util.Optional;
 import deti.uas.uasmartsignage.Models.TemplateWidget;
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Services.LogsService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -87,9 +86,7 @@ class TemplateServiceTest {
 
         Iterable<Template> templates = service.getAllTemplates();
 
-        assertThat(templates).isNotEmpty();
-        assertThat(templates).hasSize(1);
-        assertThat(templates).contains(template1);
+        assertThat(templates).isNotEmpty().hasSize(1).contains(template1);
     }
 
     @Test
@@ -100,8 +97,7 @@ class TemplateServiceTest {
 
         Template found = service.getTemplateByName(template.getName());
 
-        assertThat(found).isNotNull();
-        assertThat(found).isEqualTo(template);
+        assertThat(found).isNotNull().isEqualTo(template);
     }
 
 

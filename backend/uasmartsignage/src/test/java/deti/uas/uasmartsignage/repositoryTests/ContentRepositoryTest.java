@@ -16,7 +16,7 @@ import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Models.Widget;
 
 @DataJpaTest
-public class ContentRepositoryTest {
+class ContentRepositoryTest {
 
     @Autowired
     TestEntityManager entityManager;
@@ -87,7 +87,7 @@ public class ContentRepositoryTest {
 
         list_content = repository.findAll();
 
-        assertThat(list_content).hasSize(0);
+        assertThat(list_content).isEmpty();
     }
 
 

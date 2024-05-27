@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.controllerTests;
 
-
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 

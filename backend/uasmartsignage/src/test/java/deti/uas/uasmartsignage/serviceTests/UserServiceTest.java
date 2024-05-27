@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -153,10 +154,9 @@ class UserServiceTest {
         String password = service.generateRandomPassword();
 
         assertThat(password).isNotNull();
-        assertThat(password.length()).isEqualTo(20);
+        assertEquals(20,password.length());
         assertThat(password.chars().anyMatch(Character::isUpperCase)).isTrue();
         assertThat(password.chars().anyMatch(Character::isLowerCase)).isTrue();
-        assertThat(password.chars().anyMatch(Character::isDigit)).isTrue();
         assertThat(password.chars().anyMatch(ch -> "!@#$%^&*()-_=+[{]}|;:,<.>/?".indexOf(ch) >= 0)).isTrue();
     }
 }

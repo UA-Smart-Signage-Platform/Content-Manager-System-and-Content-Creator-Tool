@@ -1,30 +1,21 @@
 package deti.uas.uasmartsignage.repositoryTests;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import deti.uas.uasmartsignage.Models.Template;
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 import deti.uas.uasmartsignage.Models.Content;
-import deti.uas.uasmartsignage.Models.TemplateWidget;
-import deti.uas.uasmartsignage.Models.Template;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class WidgetRepositoryTest {
+class WidgetRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;

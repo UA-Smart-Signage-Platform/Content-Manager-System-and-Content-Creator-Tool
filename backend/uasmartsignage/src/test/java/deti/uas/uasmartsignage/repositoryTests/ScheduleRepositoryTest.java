@@ -55,8 +55,7 @@ class ScheduleRepositoryTest {
 
         Schedule found = repository.findById(schedule.getId()).orElse(null);
 
-        assertThat(found).isNotNull();
-        assertThat(found).isEqualTo(schedule);
+        assertThat(found).isNotNull().isEqualTo(schedule);
     }
 
     @Test

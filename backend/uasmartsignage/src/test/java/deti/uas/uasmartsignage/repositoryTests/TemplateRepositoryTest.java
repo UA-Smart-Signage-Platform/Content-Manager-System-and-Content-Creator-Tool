@@ -1,22 +1,15 @@
 package deti.uas.uasmartsignage.repositoryTests;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Column;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Repositories.TemplateRepository;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -38,9 +31,7 @@ class TemplateRepositoryTest {
 
         List<Template> found = repository.findAll();
 
-        assertThat(found).isNotEmpty();
-        assertThat(found).hasSize(2);
-        assertThat(found).contains(template1, template2);
+        assertThat(found).isNotEmpty().hasSize(2).contains(template1, template2);
     }
 
     @Test
@@ -51,8 +42,7 @@ class TemplateRepositoryTest {
 
         Template found = repository.findByName(template.getName());
 
-        assertThat(found).isNotNull();
-        assertThat(found).isEqualTo(template);
+        assertThat(found).isNotNull().isEqualTo(template);
     }
 
     @Test
@@ -63,8 +53,7 @@ class TemplateRepositoryTest {
 
         Template found = repository.findById(template.getId()).orElse(null);
 
-        assertThat(found).isNotNull();
-        assertThat(found).isEqualTo(template);
+        assertThat(found).isNotNull().isEqualTo(template);
     }
 
 

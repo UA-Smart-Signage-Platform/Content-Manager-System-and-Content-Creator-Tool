@@ -2,18 +2,15 @@ package deti.uas.uasmartsignage.controllerTests;
 
 import static org.mockito.Mockito.when;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import deti.uas.uasmartsignage.Models.Content;
-import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.Template;
 import deti.uas.uasmartsignage.Services.ContentService;
 import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.JwtUtilService;
 import deti.uas.uasmartsignage.Services.WidgetService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +54,7 @@ class WidgetControllerTest {
         private JwtUtilService jwtUtil;
 
         @MockBean
-        private ContentService contentService;//can be erased in the controller??
+        private ContentService contentService;
 
         private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -142,8 +139,6 @@ class WidgetControllerTest {
             widget.setName("widget");
             widget.setPath("path");
             widget.setContents(List.of(content));
-
-            //when(service.getWidgetById(1L)).thenReturn(widget);
 
             mvc.perform(delete("/api/widgets/1").contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());

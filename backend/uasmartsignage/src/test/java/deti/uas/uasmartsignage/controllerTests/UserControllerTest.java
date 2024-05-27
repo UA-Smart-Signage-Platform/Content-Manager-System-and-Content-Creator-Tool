@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import deti.uas.uasmartsignage.Configuration.JwtAuthFilter;
 import deti.uas.uasmartsignage.Controllers.UserController;
 import deti.uas.uasmartsignage.Models.AppUser;
-import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
 import deti.uas.uasmartsignage.Services.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

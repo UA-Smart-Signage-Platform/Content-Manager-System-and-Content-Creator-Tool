@@ -4,12 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
-
 import java.util.ArrayList;
 import java.util.Optional;
 
 import deti.uas.uasmartsignage.Services.LogsService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -105,24 +103,23 @@ class ContentServiceTest {
         }
 
         @Test
-    void testFindByAllContent() {
-        Content content = new Content();
-        content.setName("New Content");
-        content.setType("type");
-        content.setWidget(null);
-        content.setOptions(new ArrayList<>());
+        void testFindByAllContent() {
+            Content content = new Content();
+            content.setName("New Content");
+            content.setType("type");
+            content.setWidget(null);
+            content.setOptions(new ArrayList<>());
 
-        Content content2 = new Content();
-        content2.setName("New Content2");
-        content2.setType("type2");
-        content2.setWidget(null);
-        content2.setOptions(new ArrayList<>());
+            Content content2 = new Content();
+            content2.setName("New Content2");
+            content2.setType("type2");
+            content2.setWidget(null);
+            content2.setOptions(new ArrayList<>());
 
-        when(repository.findAll()).thenReturn(java.util.Arrays.asList(content, content2));
+            when(repository.findAll()).thenReturn(java.util.Arrays.asList(content, content2));
 
-        Iterable<Content> contents = service.getAllContents();
+            Iterable<Content> contents = service.getAllContents();
 
-        assertThat(contents).hasSize(2).contains(content, content2);
-    }
-
+            assertThat(contents).hasSize(2).contains(content, content2);
+        }
 }

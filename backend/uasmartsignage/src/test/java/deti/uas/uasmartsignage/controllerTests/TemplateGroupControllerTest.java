@@ -1,20 +1,13 @@
 package deti.uas.uasmartsignage.controllerTests;
 
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.*;
-
 
 import deti.uas.uasmartsignage.Models.*;
 import deti.uas.uasmartsignage.Services.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -134,7 +127,6 @@ class TemplateGroupControllerTest {
         schedule1.setFrequency(7);
         schedule1.setPriority(1);
 
-
         Monitor monitor = new Monitor();
         monitor.setName("monitor");
         monitor.setPending(false);
@@ -170,7 +162,6 @@ class TemplateGroupControllerTest {
         templateWidget.setWidth(1);
         templateWidget.setHeight(1);
 
-
         TemplateWidget templateWidget1 = new TemplateWidget();
         templateWidget1.setId(200L);
         templateWidget1.setWidget(widget);
@@ -192,23 +183,10 @@ class TemplateGroupControllerTest {
 
         group.setTemplateGroups(List.of(templateGroup));
 
-        ResultActions result = mvc.perform(post("/api/templateGroups")
+        mvc.perform(post("/api/templateGroups")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(templateGroup)))
                 .andExpect(status().isCreated());
-
-        // Capture the response content
-        MvcResult mvcResult = result.andReturn();
-        String responseContent = mvcResult.getResponse().getContentAsString();
-
-        //TemplateGroup returnedTemplateGroup = objectMapper.readValue(responseContent, TemplateGroup.class);
-
-        //System.out.println("asdfghj"+ returnedTemplateGroup);
-
-        System.out.println("fghjk" + responseContent);
-
-
-
     }
 
     @Test
