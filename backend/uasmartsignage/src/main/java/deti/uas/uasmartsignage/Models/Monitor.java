@@ -40,12 +40,12 @@ public class Monitor {
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
-    @JsonIgnoreProperties({"monitors", "schedules"})
+    @JsonIgnoreProperties({"monitors"})
     private MonitorsGroup group;
+
 
     @Override
     public String toString() {
-        return "Monitor [id=" + id + ", name=" + name + ", width=" + width + ", height=" + height + ", uuid=" + uuid
-                + ", pending=" + pending + ", group=" + group + "]";
+        return "Monitor [id=" + id + ", name=" + name + ", width=" + width + ", height=" + height + ", uuid=" + uuid + ", pending=" + pending + ", online=" + online + ", group=" + group + "]";
     }
 }

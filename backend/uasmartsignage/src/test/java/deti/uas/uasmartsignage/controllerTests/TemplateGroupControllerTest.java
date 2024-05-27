@@ -128,6 +128,7 @@ class TemplateGroupControllerTest {
 
     @Test
     @Disabled
+    //this is not working because as the service was made is not possible to mock the mqtt service
     void testSaveTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -231,6 +232,7 @@ class TemplateGroupControllerTest {
 
     @Test
     @Disabled
+    //this is not working because as the service was made is not possible to mock the mqtt service
     void testUpdateTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -313,92 +315,5 @@ class TemplateGroupControllerTest {
                 .content(objectMapper.writeValueAsString(templateGroup)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", is("content2")));
-    }
-
-    @Test
-    @Disabled
-    void testSetTemplateForTemplateGroupEndpoint() throws Exception{
-        Schedule schedule1 = new Schedule();
-        schedule1.setFrequency(7);
-        schedule1.setPriority(1);
-
-        Monitor monitor = new Monitor();
-        monitor.setName("monitor");
-        monitor.setPending(false);
-        monitor.setWidth(1);
-        monitor.setHeight(1);
-
-        Monitor monitor1 = new Monitor();
-        monitor1.setName("monitor1");
-        monitor1.setPending(false);
-        monitor1.setWidth(12);
-        monitor1.setHeight(12);
-
-        MonitorsGroup group = new MonitorsGroup();
-        group.setName("group1");
-        group.setMonitors(List.of(monitor,monitor1));
-
-        Content content = new Content();
-        content.setName("Content1");
-        content.setType("text");
-
-        Widget widget = new Widget();
-        widget.setName("widget1");
-        widget.setId(1L);
-        widget.setContents(List.of(content));
-        widget.setPath("path");
-
-        TemplateWidget templateWidget = new TemplateWidget();
-        templateWidget.setId(100L);
-        templateWidget.setWidget(widget);
-        templateWidget.setZIndex(1);
-        templateWidget.setTop(1);
-        templateWidget.setLeftPosition(1);
-        templateWidget.setWidth(1);
-        templateWidget.setHeight(1);
-
-
-        TemplateWidget templateWidget1 = new TemplateWidget();
-        templateWidget1.setId(200L);
-        templateWidget1.setWidget(widget);
-        templateWidget1.setZIndex(2);
-        templateWidget1.setTop(2);
-        templateWidget1.setLeftPosition(2);
-        templateWidget1.setWidth(2);
-        templateWidget1.setHeight(2);
-
-        Template template = new Template();
-        template.setName("template1");
-        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
-
-        TemplateGroup templateGroup = new TemplateGroup();
-        templateGroup.setGroup(group);
-        templateGroup.setTemplate(template);
-        templateGroup.setSchedule(schedule1);
-        templateGroup.setContent(Map.of(1,"Content1"));
-
-        Template template1 = new Template();
-        template.setName("template2");
-        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
-
-        TemplateGroup updated_templateGroup = new TemplateGroup();
-        updated_templateGroup.setGroup(group);
-        updated_templateGroup.setTemplate(template1);
-        updated_templateGroup.setSchedule(schedule1);
-        updated_templateGroup.setContent(Map.of(1,"Content_update"));
-
-        group.setTemplateGroups(List.of(templateGroup));
-
-        when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
-        when(service.updateTemplateGroup(1L,updated_templateGroup)).thenReturn(updated_templateGroup);
-        when(monitorGroupService.getGroupById(1L)).thenReturn(group);
-        when(templateService.getTemplateById(1L)).thenReturn(template1);
-        when(service.getTemplateGroupByGroupID(1L)).thenReturn(templateGroup);
-
-        mvc.perform(put("/api/templateGroups/set")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(templateGroup)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.template.name", is("template2")));
     }
 }

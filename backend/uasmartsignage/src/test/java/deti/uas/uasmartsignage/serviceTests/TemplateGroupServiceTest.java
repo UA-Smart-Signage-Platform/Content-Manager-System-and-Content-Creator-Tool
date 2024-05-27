@@ -30,12 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
-import deti.uas.uasmartsignage.Services.TemplateService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
-import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
+
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
@@ -183,19 +178,8 @@ class TemplateGroupServiceTest {
 
     @Test
     @Disabled
+    //this is not working because as the service was made is not possible to mock the mqtt service
     void testSaveTemplateGroup() throws MqttException, IOException {
-
-        //MockitoAnnotations.openMocks(this);
-
-        // Mock MqttConfig.getInstance() to return the mock mqttClient
-        //when(mqttConfig.getInstance()).thenReturn(mqttClient);
-
-        // Mock any necessary behavior of mqttClient
-        //when(mqttClient.isConnected()).thenReturn(true);
-
-
-        //when(templateMessage.getMethod()).thenReturn("TEMPLATE");
-        //doNothing().when(mqttClient).publish(anyString(), any(MqttMessage.class));
 
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -335,6 +319,7 @@ class TemplateGroupServiceTest {
 
     @Test
     @Disabled
+    //this is not working because as the service was made is not possible to mock the mqtt service
     void testUpdateTemplateGroup(){
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);

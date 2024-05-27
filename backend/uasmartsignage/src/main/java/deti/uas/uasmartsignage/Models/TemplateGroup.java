@@ -32,7 +32,7 @@ public class TemplateGroup {
     @JsonIgnoreProperties("templateGroups")
     private MonitorsGroup group;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "TemplateGroup_Content", joinColumns = @JoinColumn(name = "template_group_id"))
     @MapKeyColumn(name = "content_key")
     @Column(name = "content_value")

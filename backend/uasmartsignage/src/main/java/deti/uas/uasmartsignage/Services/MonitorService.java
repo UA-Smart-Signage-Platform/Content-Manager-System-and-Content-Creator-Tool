@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 import deti.uas.uasmartsignage.Repositories.MonitorRepository;
 import deti.uas.uasmartsignage.Models.Monitor;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service 
@@ -138,9 +140,10 @@ public class MonitorService {
             }
         }
 
-        // Send all template groups etc to the monitor group
-        MonitorsGroup monitorGroup = monitorGroupRepository.findById(monitor.getGroup().getId()).orElse(null);
-        templateGroupService.sendAllSchedulesToMonitorGroup(monitorGroup, true);
+        // Send all schedules to the new monitor
+        List<Monitor> monitors = new ArrayList<>();
+        monitors.add(returnMonitor);
+        templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
 
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
@@ -227,32 +230,12 @@ public class MonitorService {
     }
 
     /**
-     * Retrieves and returns a Monitor by its UUID.
+     * Retrieves and returns all Monitors.
      *
-     * @param uuid The UUID of the Monitor to retrieve.
-     * @return The Monitor with the specified UUID.
-     */
-    public Monitor getMonitorByUuid(String uuid) {
-        String operation = "getMonitorByUuid";
-        String description = "Getting monitor by uuid " + uuid;
-
-        Monitor monitor = monitorRepository.findByUuid(uuid);
-
-        if (monitor == null) {
-            return null;
-        }
-
-        boolean online = logsService.keepAliveIn10min(monitor);
-        monitor.setOnline(online);
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
-
-        return monitor;
+     * @return A list of all Monitors.
+    */
+    public Monitor getMonitorByUUID(String uuid) {
+        return monitorRepository.findByUuid(uuid);
     }
 
 }

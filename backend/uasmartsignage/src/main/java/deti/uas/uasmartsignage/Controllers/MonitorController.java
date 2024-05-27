@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/monitors")
 public class MonitorController {
@@ -33,8 +33,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "200", description = "List of all monitors that are not pending", content = @Content(mediaType = "application/json")),
     })
     @GetMapping
-    public ResponseEntity<?> getAllMonitors() {
-        
+    public ResponseEntity<List<Monitor>> getAllMonitors() {
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(false);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
@@ -44,7 +43,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "200", description = "List of all pendign monitors", content = @Content(mediaType = "application/json")),
     })
     @GetMapping("/pending")
-    public ResponseEntity<?> getPendingMonitors(){
+    public ResponseEntity<List<Monitor>> getPendingMonitors(){
         List<Monitor> monitors = monitorService.getAllMonitorsByPending(true);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
@@ -55,7 +54,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "404", description = "Monitor not found", content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/accept/{id}")
-    public ResponseEntity<?> acceptPendingMonitor(@PathVariable("id") Long id){
+    public ResponseEntity<Monitor> acceptPendingMonitor(@PathVariable("id") Long id){
         Monitor monitor = monitorService.updatePending(id, false);
         if(monitor == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -69,7 +68,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "404", description = "Monitor not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getMonitorById(@PathVariable("id") Long id) {
+    public ResponseEntity<Monitor> getMonitorById(@PathVariable("id") Long id) {
         Monitor monitor = monitorService.getMonitorById(id);
         if (monitor == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -82,7 +81,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "200", description = "List of monitors found", content = @Content(mediaType = "application/json")),
     })
     @GetMapping("/group/{group}")
-    public ResponseEntity<?> getMonitorsByGroup(@PathVariable("group") Long group) {
+    public ResponseEntity<List<Monitor>> getMonitorsByGroup(@PathVariable("group") Long group) {
         List<Monitor> monitors = monitorService.getMonitorsByGroup(group);
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
@@ -94,7 +93,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "409", description = "Monitor already exists", content = @Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> saveMonitor(@RequestBody Monitor monitor) {
+    public ResponseEntity<Monitor> saveMonitor(@RequestBody Monitor monitor) {
         Monitor savedMonitor = monitorService.saveMonitor(monitor);
         return new ResponseEntity<>(savedMonitor, HttpStatus.CREATED);
     }
@@ -105,7 +104,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "404", description = "Monitor not found", content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateMonitor(@PathVariable("id") Long id, @RequestBody Monitor monitor) {
+    public ResponseEntity<Monitor> updateMonitor(@PathVariable("id") Long id, @RequestBody Monitor monitor) {
         Monitor updatedMonitor = monitorService.updateMonitor(id, monitor);
         if (updatedMonitor == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -119,7 +118,7 @@ public class MonitorController {
             @ApiResponse(responseCode = "404", description = "Monitor not found", content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteMonitor(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteMonitor(@PathVariable("id") Long id) {
         monitorService.deleteMonitor(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

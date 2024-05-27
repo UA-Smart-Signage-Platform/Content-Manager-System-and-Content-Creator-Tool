@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const client = axios.create({
-    baseURL: 'http://localhost:8080/api/',
-    timeout: 5000
-});
+    baseURL: process.env.REACT_APP_API_URL + "/api/",
+    timeout: 5000,
+})
 
 // Add a request interceptor
 client.interceptors.request.use(

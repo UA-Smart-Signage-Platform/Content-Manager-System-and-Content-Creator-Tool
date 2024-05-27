@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MonitorRepository extends JpaRepository<Monitor, Long> {
     Monitor findByName(String name);
+    Monitor findByUuid(String uuid);
     List<Monitor> findByPendingAndGroup_Id(boolean pending,long groupId);
     List<Monitor> findByPending(boolean pending);
-    Monitor findByUuid(String uuid);
 }
