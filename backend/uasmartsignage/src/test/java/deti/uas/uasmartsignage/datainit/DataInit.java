@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 @Component
 @Profile("test")
 public class DataInit implements CommandLineRunner {
+    private static final Logger logger = LoggerFactory.getLogger(DataInit.class);
+
     private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
     private WidgetRepository widgetRepository;
@@ -56,17 +58,23 @@ public class DataInit implements CommandLineRunner {
         this.templateGroupService = templateGroupService;
                       }
 
+     @Override
     public void run(String... args) throws Exception {
         if (!groupRepository.findAll().isEmpty()) {
             return;
         }
 
+        logger.info("Loading templates...");
         this.loadTemplates();
+        logger.info("Loading groups and monitors...");
         this.loadGroupsAndMonitors();
+        logger.info("Loading schedules...");
         this.loadSchedules();
-        this.loadAdminUser();
+        logger.info("Loading template groups...");
         this.loadTemplateGroups();
-
+        logger.info("Loading admin user...");
+        this.loadAdminUser();
+        
     }
 
     private void loadAdminUser() {
@@ -328,49 +336,93 @@ public class DataInit implements CommandLineRunner {
         Template template4 = new Template();
         template4.setName("template4");
         templateRepository.save(template4);
-
-        /*TemplateWidget media4 = new TemplateWidget();
-        media4.setTop(10);
-        media4.setLeftPosition(0);
-        media4.setHeight(80);
-        media4.setWidth(20);
-        media4.setTemplate(template4);
-        media4.setWidget(mediaWidget);
-        templateWidgetRepository.save(media4);*/
     }
 
     private void loadTemplateGroups() {
+        logger.info("Attempting to load template groups...");
+
         Template template1 = templateRepository.findByName("template1");
+        if (template1 == null) {
+            logger.error("Template 'template1' not found");
+            return;
+        }
 
         MonitorsGroup deti = groupRepository.findByName("DETI");
+        if (deti == null) {
+            logger.error("Group 'DETI' not found");
+            return;
+        }
+
+        Schedule schedule1 = scheduleService.getAllSchedules().get(0);
+        if (schedule1 == null) {
+            logger.error("Schedule 1 not found");
+            return;
+        }
 
         TemplateGroup templateGroup1 = new TemplateGroup();
         templateGroup1.setGroup(deti);
         templateGroup1.setTemplate(template1);
-        Schedule schedule1 = scheduleService.getAllSchedules().get(0);
         templateGroup1.setSchedule(schedule1);
         templateGroupRepository.save(templateGroup1);
+        logger.info("TemplateGroup1 saved");
 
         Template template2 = templateRepository.findByName("template2");
+        if (template2 == null) {
+            logger.error("Template 'template2' not found");
+            return;
+        }
+
         MonitorsGroup dMat = groupRepository.findByName("DMAT");
+        if (dMat == null) {
+            logger.error("Group 'DMAT' not found");
+            return;
+        }
+
+        Schedule schedule2 = scheduleService.getAllSchedules().get(1);
+        if (schedule2 == null) {
+            logger.error("Schedule 2 not found");
+            return;
+        }
 
         TemplateGroup templateGroup2 = new TemplateGroup();
         templateGroup2.setGroup(dMat);
         templateGroup2.setTemplate(template2);
-        Schedule schedule2 = scheduleService.getAllSchedules().get(1);
         templateGroup2.setSchedule(schedule2);
         templateGroupRepository.save(templateGroup2);
+        logger.info("TemplateGroup2 saved");
+
+        
 
         MonitorsGroup dBio = groupRepository.findByName("DBIO");
+        if (dBio == null) {
+            logger.error("Group 'DBIO' not found");
+            return;
+        }
+
         Template template3 = templateRepository.findByName("template3");
+        if (template3 == null) {
+            logger.error("Template 'template3' not found");
+            return;
+        }
+
+        Schedule schedule3 = scheduleService.getAllSchedules().get(0);
+        if (schedule3 == null) {
+            logger.error("Schedule 3 not found");
+            return;
+        }
 
         TemplateGroup templateGroup3 = new TemplateGroup();
         templateGroup3.setGroup(dBio);
         templateGroup3.setTemplate(template3);
-        Schedule schedule3 = scheduleService.getAllSchedules().get(0);
         templateGroup3.setSchedule(schedule3);
         templateGroupRepository.save(templateGroup3);
+        logger.info("TemplateGroup3 saved");
 
+        //get all templategroups
+        List<TemplateGroup> templateGroups = templateGroupRepository.findAll();
+        for (TemplateGroup templateGroup : templateGroups) {
+            logger.info("TemplateGroup: " + templateGroup.getId() + " " + templateGroup.getGroup().getName() + " " + templateGroup.getTemplate().getName());
+        }
     }
 
     private void loadSchedules() {

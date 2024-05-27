@@ -43,8 +43,6 @@ public class ScheduleIT extends BaseIntegrationTest{
 
     @BeforeEach
     void setup() {
-        String username = "admin";
-        String password = "admin";
         String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
@@ -105,14 +103,7 @@ public class ScheduleIT extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<TemplateGroup> response = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups/1", HttpMethod.GET, requestEntity, TemplateGroup.class);
-        System.out.println("sdfgh"+response.getBody());
-        TemplateGroup templateGroup = response.getBody();
-
-        System.out.println("1qwerftgyhu"+templateGroup);
-
         Schedule schedule = new Schedule();
-        schedule.setTemplateGroups(List.of(templateGroup));
         List<Integer> days = new ArrayList<>();
         days.add(1);
         days.add(2);
@@ -192,8 +183,9 @@ public class ScheduleIT extends BaseIntegrationTest{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/3", HttpMethod.DELETE, requestEntity, Schedule.class);
+        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/1", HttpMethod.DELETE, requestEntity, Schedule.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+
     }
 
 

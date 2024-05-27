@@ -51,11 +51,6 @@ public class TemplateGroupIT{
         container.start();
     }
 
-    @AfterAll
-    static void tearDown() {
-        container.stop();
-    }
-
     @LocalServerPort
     private int port;
 
@@ -106,9 +101,8 @@ public class TemplateGroupIT{
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-        ResponseEntity<List<TemplateGroup>> response = restTemplate.exchange(
-                "http://localhost:" + port + "/api/templateGroups", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<TemplateGroup>>() {
-                });
+        ResponseEntity<List<TemplateGroup>> response = restTemplate.exchange("http://localhost:" + port + "/api/templateGroups", HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<TemplateGroup>>() {});
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, response.getBody().size());
     }

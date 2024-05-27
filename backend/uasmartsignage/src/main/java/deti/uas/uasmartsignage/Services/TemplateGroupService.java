@@ -394,7 +394,7 @@ public class TemplateGroupService {
      * 
      * @return An Iterable of all TemplateGroups
      */
-    public Iterable<TemplateGroup> getAllGroups() {
+    public List<TemplateGroup> getAllGroups() {
         return templateGroupRepository.findAll();
     }
 
