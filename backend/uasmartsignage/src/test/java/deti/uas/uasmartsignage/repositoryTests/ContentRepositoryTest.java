@@ -31,11 +31,7 @@ public class ContentRepositoryTest {
 
         entityManager.persistAndFlush(widget);
 
-        Content content = new Content();
-        content.setName("New Content");
-        content.setType("type");
-        content.setWidget(widget);
-        content.setOptions(new ArrayList<>());
+        Content content = new Content(null,"New Content", "type", widget, new ArrayList<>());
         entityManager.persistAndFlush(content);
 
         Content found = repository.findById(content.getId()).get();

@@ -316,4 +316,60 @@ class TemplateGroupControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content", is("content2")));
     }
+
+
+    @Test
+    void testDeleteTemplateGroups() throws Exception{
+        Schedule schedule = new Schedule();
+        schedule.setPriority(1);
+
+        Monitor monitor = new Monitor();
+        monitor.setName("monitor");
+        monitor.setPending(false);
+        monitor.setWidth(1);
+        monitor.setHeight(1);
+
+        Monitor monitor1 = new Monitor();
+        monitor1.setName("monitor1");
+        monitor1.setPending(false);
+        monitor1.setWidth(12);
+        monitor1.setHeight(12);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+        group.setMonitors(List.of(monitor, monitor1));
+
+        Widget widget = new Widget();
+        widget.setName("widget1");
+
+        TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setWidget(widget);
+
+        TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setWidget(widget);
+
+        Template template = new Template();
+        template.setName("template1");
+        template.setTemplateWidgets(List.of(templateWidget, templateWidget1));
+
+        TemplateGroup templateGroup = new TemplateGroup();
+        templateGroup.setGroup(group);
+        templateGroup.setTemplate(template);
+        templateGroup.setSchedule(schedule);
+
+        TemplateGroup templateGroup1 = new TemplateGroup();
+        templateGroup1.setGroup(group);
+        templateGroup1.setTemplate(template);
+        templateGroup1.setSchedule(schedule);
+
+        when(service.getGroupById(1L)).thenReturn(templateGroup);
+        when(service.getGroupById(2L)).thenReturn(templateGroup1);
+
+        List<Integer> templateGroupsIds = Arrays.asList(1, 2);
+
+        mvc.perform(delete("/api/templateGroups/delete")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(templateGroupsIds)))
+                .andExpect(status().isNoContent());
+    }
 }

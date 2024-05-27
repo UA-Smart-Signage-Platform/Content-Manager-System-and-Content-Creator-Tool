@@ -49,10 +49,7 @@ public class WidgetRepositoryTest {
         widget1.setContents(List.of(content));
         entityManager.persistAndFlush(widget1);
 
-        Widget widget2 = new Widget();
-        widget2.setName("widget2");
-        widget2.setPath("path");
-        widget2.setContents(List.of(content));
+        Widget widget2 = new Widget(null, "widget2", "path", List.of(content), List.of());
         entityManager.persistAndFlush(widget2);
 
         List<Widget> found = repository.findAll();

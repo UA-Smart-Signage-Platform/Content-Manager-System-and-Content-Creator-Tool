@@ -58,13 +58,7 @@ public class TemplateWidgetRepositoryTest {
         widget2.setName("widget2");
         entityManager.persistAndFlush(widget2);
 
-        TemplateWidget templateWidget2 = new TemplateWidget();
-        templateWidget2.setTemplate(template2);
-        templateWidget2.setWidget(widget2);
-        templateWidget2.setTop(2);
-        templateWidget2.setLeftPosition(2);
-        templateWidget2.setWidth(2);
-        templateWidget2.setHeight(2);
+        TemplateWidget templateWidget2 = new TemplateWidget(null, 2,2,2,2,1,template2,widget2);
         entityManager.persistAndFlush(templateWidget2);
 
         List<TemplateWidget> templateWidgets = repository.findAll();

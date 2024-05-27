@@ -192,11 +192,14 @@
 						<exclude>**/Mqtt/**</exclude>
 						<exclude>**/Configuration/**</exclude>
 						<exclude>**/exceptions/**</exclude>
-						<exclude>**/UasmartsignageApplication.java</exclude>
+						<exclude>**/UasmartsignageApplication.class</exclude>
 						<exclude>**/authentication/**</exclude>
-						<exclude>**/Services/JwtUtilService.java</exclude>
-						<exclude>**/Services/LogsService.java</exclude>
-						<exclude>**/Controllers/LogController</exclude>
+						<exclude>deti/uas/uasmartsignage/Services/TemplateGroupService.class</exclude>
+						<exclude>**/Services/LogsService.class</exclude>
+						<exclude>**/Controllers/LogController.class</exclude>
+						<exclude>deti/uas/uasmartsignage/Models/BackendLog.class</exclude>
+						<exclude>deti/uas/uasmartsignage/Services/CustomUserDetailsService.class</exclude>
+
                     </excludes>
                 </configuration>
 				<executions>

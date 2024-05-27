@@ -29,8 +29,7 @@ class TemplateRepositoryTest {
 
     @Test
     void whenFindAll_thenReturnAllTemplates(){
-        Template template1 = new Template();
-        template1.setName("template1");
+        Template template1 = new Template(null, "template1", List.of(), List.of());
         entityManager.persistAndFlush(template1);
 
         Template template2 = new Template();
