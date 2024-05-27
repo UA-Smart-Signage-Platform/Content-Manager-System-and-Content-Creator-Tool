@@ -1,1 +1,1 @@
-<div hx-get="http://127.0.0.1:5000/ipma/temperature?station=[[station]]" hx-trigger="load, every 30m" style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; display: flex; justify-content: center; align-items: center; font-size: 45px; background-color: #97d700;"></div>
+<div hx-get="http://127.0.0.1:5000/ipma/temperature?station=[[station]]" hx-trigger="load, every 30m" style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; display: flex; justify-content: center; align-items: center; font-size: 2.5vw;"></div>
