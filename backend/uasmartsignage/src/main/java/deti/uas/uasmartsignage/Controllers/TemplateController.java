@@ -2,8 +2,6 @@ package deti.uas.uasmartsignage.Controllers;
 
 import deti.uas.uasmartsignage.Models.Template;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
