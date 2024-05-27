@@ -8,8 +8,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Widget;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -20,6 +22,11 @@ import java.util.List;
 public class ContentIT extends BaseIntegrationTest{
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private LogsService logsService;
+
+    @MockBean
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -32,7 +39,7 @@ public class ContentIT extends BaseIntegrationTest{
     void setup() {
         String username = "admin";
         String password = "admin";
-        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");

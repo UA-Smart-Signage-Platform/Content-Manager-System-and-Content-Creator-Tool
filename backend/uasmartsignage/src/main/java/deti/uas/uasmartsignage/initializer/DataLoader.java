@@ -18,6 +18,7 @@ import deti.uas.uasmartsignage.Services.ScheduleService;
 import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -45,6 +46,9 @@ import deti.uas.uasmartsignage.Services.UserService;
 @Component
 @Profile("!test")
 public class DataLoader implements CommandLineRunner {
+
+    @Value("${backend.production}")
+    private String isProduction;
 
     private MonitorRepository monitorRepository;
     private MonitorGroupRepository groupRepository;
@@ -96,10 +100,12 @@ public class DataLoader implements CommandLineRunner {
         
 
         this.loadTemplates();
-        this.loadGroupsAndMonitors();
-        this.loadSchedules();
-        this.loadTemplateGroups();
         this.loadAdminUser();
+        if(isProduction.equals("false")){
+            this.loadGroupsAndMonitors();
+            this.loadSchedules();
+            this.loadTemplateGroups();
+        }
     }
 
     private void loadAdminUser() {
@@ -109,6 +115,7 @@ public class DataLoader implements CommandLineRunner {
         admin.setRole("ADMIN");
         admin.setPassword("admin");
         userService.saveAdminUser(admin);
+
     }
 
     private void loadGroupsAndMonitors(){
@@ -221,6 +228,12 @@ public class DataLoader implements CommandLineRunner {
         newsWidget.setContents(new ArrayList<>());
         widgetRepository.save(newsWidget);
 
+        Widget eventsWidget = new Widget();
+        eventsWidget.setName("Events");
+        eventsWidget.setPath("static/widgets/events.widget");
+        widgetRepository.save(eventsWidget);
+        
+
         // create template1
         Template template1 = new Template();
         template1.setName("template1");
@@ -267,15 +280,15 @@ public class DataLoader implements CommandLineRunner {
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
 
-        TemplateWidget media2 = new TemplateWidget();
-        media2.setZIndex(5);
-        media2.setTop(10);
-        media2.setLeftPosition(0);
-        media2.setHeight(80);
-        media2.setWidth(20);
-        media2.setTemplate(template1);
-        media2.setWidget(mediaWidget);
-        templateWidgetRepository.save(media2);
+        TemplateWidget events = new TemplateWidget();
+        events.setZIndex(5);
+        events.setTop(10);
+        events.setLeftPosition(0);
+        events.setHeight(80);
+        events.setWidth(20);
+        events.setTemplate(template1);
+        events.setWidget(eventsWidget);
+        templateWidgetRepository.save(events);
 
         // create template2
         Template template2 = new Template();
@@ -313,15 +326,15 @@ public class DataLoader implements CommandLineRunner {
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
 
-        media2 = new TemplateWidget();
-        media2.setZIndex(4);
-        media2.setTop(20);
-        media2.setLeftPosition(80);
-        media2.setHeight(70);
-        media2.setWidth(20);
-        media2.setTemplate(template2);
-        media2.setWidget(mediaWidget);
-        templateWidgetRepository.save(media2);
+        events = new TemplateWidget();
+        events.setZIndex(4);
+        events.setTop(20);
+        events.setLeftPosition(80);
+        events.setHeight(70);
+        events.setWidth(20);
+        events.setTemplate(template2);
+        events.setWidget(eventsWidget);
+        templateWidgetRepository.save(events);
     }
 
     private void loadTemplateGroups() {

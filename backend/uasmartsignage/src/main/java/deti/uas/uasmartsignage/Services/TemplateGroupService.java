@@ -23,11 +23,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -44,16 +47,20 @@ import deti.uas.uasmartsignage.Mqtt.RulesMessage;
 @Service
 public class TemplateGroupService {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Value("${ip.address}")
+    private String serverAddress;
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
     private final FileService fileService;
     private final ScheduleService scheduleService;
     private final TemplateGroupRepository templateGroupRepository;
     private final TemplateWidgetService templateWidgetService;
+    private final MqttConfig mqttConfig;
 
-    public TemplateGroupService(TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+    public TemplateGroupService(MqttConfig mqttConfig, TemplateWidgetService templateWidgetService, TemplateService templateService, MonitorGroupService monitorGroupService, FileService fileService,@Lazy ScheduleService scheduleService,TemplateGroupRepository templateGroupRepository) {
+        this.mqttConfig = mqttConfig;
         this.templateWidgetService = templateWidgetService;
         this.templateService = templateService;
         this.monitorGroupService = monitorGroupService;
@@ -125,6 +132,7 @@ public class TemplateGroupService {
             });
         }
         else{
+            // If the widget is not a media widget, just add the content to the updatedContent
             updatedContent.put(entry.getKey(), entry.getValue());
         }
     }
@@ -137,12 +145,13 @@ public class TemplateGroupService {
      * @param downloadFiles The List to store the download files
      */
     private void processDirectory(CustomFile directory, Map.Entry<Integer, String> entry, List<String> downloadFiles, Map<Integer, String> updatedContent) {
+        // Add all the files in the directory to the downloadFiles and update the content with the file names
         List<CustomFile> files = directory.getSubDirectories();
         if (files != null) {
             StringBuilder dirFiles = new StringBuilder();
             for (CustomFile f : files) {
                 if (!"directory".equals(f.getType())) {
-                    downloadFiles.add("http://localhost:8080/api/files/download/" + f.getId());
+                    downloadFiles.add(serverAddress + "/api/files/download/" + f.getId());
                     dirFiles.append(f.getName()).append("\",\"");
                 }
             }
@@ -159,7 +168,8 @@ public class TemplateGroupService {
      * @param downloadFiles The List to store the download files
      */
     private void processFile(CustomFile file, Map.Entry<Integer, String> entry, Map<Integer, String> updatedContent, List<String> downloadFiles) {
-        downloadFiles.add("http://localhost:8080/api/files/download/" + entry.getValue());
+        // Add the file to the downloadFiles and update the content with the file name
+        downloadFiles.add(serverAddress + "/api/files/download/" + entry.getValue());
         entry.setValue(file.getName());
         updatedContent.put(entry.getKey(), entry.getValue());
     }
@@ -172,6 +182,7 @@ public class TemplateGroupService {
      * @return The built Map
      */
     private Map<String, Object> buildResultMap(Map<Integer, String> updatedContent, List<String> downloadFiles) {
+        // Return the updated content and the download files
         Map<String, Object> result = new HashMap<>();
         result.put("updatedContent", updatedContent);
         result.put(DOWNLOAD_FILES, downloadFiles);
@@ -179,59 +190,60 @@ public class TemplateGroupService {
     }
 
     /**
-     * Sends all schedules to a MonitorsGroup
+     * Sends all schedules to a list of Monitors
      * 
-     * @param monitorGroup The MonitorsGroup to send the schedules to
-     * @param sendoToNewMonitor A boolean indicating if the schedules are being sent to a new monitor
+     * @param monitors The list of Monitors to send the schedules to
      */
-    public void sendAllSchedulesToMonitorGroup(MonitorsGroup monitorGroup, Boolean sendoToNewMonitor) {
-        List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
-        List <Map<String, Object>> rules = new ArrayList<>();
+    public void sendAllSchedulesToMonitorGroup(List<Monitor> monitors) {
 
+        if (monitors.isEmpty()) {
+            return;
+        }
+        // Get the last monitor to get the monitorGroup (the one just added)
+        Monitor tempMonitor = monitors.get(monitors.size() - 1);
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(tempMonitor.getGroup().getId());
+        List <TemplateGroup> templateGroups = monitorGroup.getTemplateGroups();
+
+        // Get all the rules for the monitorGroup
+        List <Map<String, Object>> rules = new ArrayList<>();
         for (TemplateGroup group : templateGroups) {
             Map<String, Object> rule = new HashMap<>();
             Template template = templateService.getTemplateById(group.getTemplate().getId());
             Schedule schedule = group.getSchedule();
             List<String> downloadFiles = new ArrayList<>();
-
             if (group.getContent() != null) {
                 Map<String, Object> contentResult = processTemplateGroupContent(group.getContent());
                 Map<Integer, String> updatedContent = (Map<Integer, String>) contentResult.get("updatedContent");
                 group.setContent(updatedContent);
                 downloadFiles = (List<String>) contentResult.get(DOWNLOAD_FILES);
             }
-
             rule.put("template", template);
             rule.put(SCHEDULE, schedule.toMqttFormat());
             rule.put(DOWNLOAD_FILES, downloadFiles);
             rule.put("group", group);
             rules.add(rule);
         }
-
+        
         try{
             RulesMessage rulesMessage = new RulesMessage();
             rulesMessage.setMethod("RULES");
-            List<Monitor> monitors = new ArrayList<>();
-            // If it is a new monitor, we only send the rules to the last monitor
-            if (Boolean.TRUE.equals(sendoToNewMonitor)) {
-                // Get the last monitor (just added)
-                Monitor monitor = monitorGroup.getMonitors().get(monitorGroup.getMonitors().size() - 1);
-                monitors.add(monitor);
-            }
-            else {
-                monitors = monitorGroup.getMonitors();
-            }
             for (Monitor monitor : monitors) {
                 List <Map<String, Object>> rulesToSend = new ArrayList<>();
                 List <String> filesToSend = new ArrayList<>();
+                
                 for (Map<String, Object> rule : rules) {
                     Map<String, Object> ruleToSend = new HashMap<>();
+
                     Template template = (Template) rule.get("template");
                     TemplateGroup group = (TemplateGroup) rule.get("group");
+                    // Generate the HTML for the template
                     String html = generateHTML(template, group.getContent(), monitor.getWidth(), monitor.getHeight());
+                    
                     ruleToSend.put("html", html);
                     ruleToSend.put(SCHEDULE, rule.get(SCHEDULE));
                     rulesToSend.add(ruleToSend);
+
+                    // Add the files to the list of files to send (no duplicates)
                     for (String file : (List<String>) rule.get(DOWNLOAD_FILES)) {
                         if (!filesToSend.contains(file)) {
                             filesToSend.add(file);
@@ -240,8 +252,10 @@ public class TemplateGroupService {
                 }
                 rulesMessage.setRules(rulesToSend);
                 rulesMessage.setFiles(filesToSend);
+                
+                // Send the rules to the monitor
                 String rulesMessageJson = objectMapper.writeValueAsString(rulesMessage);
-                MqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
+                mqttConfig.getInstance().publish(monitor.getUuid(), new MqttMessage(rulesMessageJson.getBytes()));
             }
         } catch (JsonProcessingException | org.eclipse.paho.client.mqttv3.MqttException e) {
             logger.error("Could not send rules to monitors");
@@ -260,17 +274,20 @@ public class TemplateGroupService {
      */
     public TemplateGroup sendTemplateGroupToMonitorGroup(TemplateGroup templateGroup, MonitorsGroup monitorGroup, Long id) {
         TemplateGroup templateGroupById;
+        boolean isNew = false;
+
         if (id != null){
             templateGroupById = templateGroupRepository.findById(id).orElse(null);
         } else {
             templateGroupById = templateGroup;
+            isNew = true;
         }
+
         if (templateGroupById == null) {
             return null;
         }
         
-        Template template = templateService.getTemplateById(templateGroupById.getTemplate().getId());
-        
+
         Schedule schedule;
         if (templateGroup.getSchedule().getId() == null) {
             schedule = scheduleService.saveSchedule(templateGroup.getSchedule());
@@ -278,12 +295,25 @@ public class TemplateGroupService {
         else {
             schedule = scheduleService.getScheduleById(templateGroup.getSchedule().getId());
         }
-        
-        templateGroupById.setTemplate(template);
-        templateGroupById.setGroup(monitorGroup);
+
+        MonitorsGroup monitorGroupById = monitorGroupService.getGroupById(monitorGroup.getId());
+        templateGroupById.setTemplate(templateGroup.getTemplate());
         templateGroupById.setSchedule(schedule);
+        templateGroupById.setContent(templateGroup.getContent());
         templateGroupRepository.save(templateGroupById);
-        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+
+        // Add the templateGroup to the monitorGroup (if it is not a new templateGroup) this is setted in monitorgroup because of the fetch type
+        List<TemplateGroup> templateGroups = monitorGroupById.getTemplateGroups();
+        if (!isNew){
+            templateGroups.remove(templateGroupById);
+        }
+        templateGroups.add(templateGroupById);
+        monitorGroupById.setTemplateGroups(templateGroups);
+        monitorGroupService.saveGroup(monitorGroupById);
+
+        List<Monitor> monitors = monitorGroupById.getMonitors();
+        sendAllSchedulesToMonitorGroup(monitors);
+
         return templateGroupById;
     }
     
@@ -317,7 +347,45 @@ public class TemplateGroupService {
         monitorGroupService.saveGroup(monitorGroup);
         templateGroupRepository.deleteById(id);
 
-        sendAllSchedulesToMonitorGroup(monitorGroup, false);
+        List<Monitor> monitors = monitorGroup.getMonitors();
+        sendAllSchedulesToMonitorGroup(monitors);
+    }
+
+
+    /**
+     * Deletes the templateGrous in a list of TemplateGroupsIds
+     * 
+     * @param templateGroups The list of TemplateGroups to delete
+     */
+    public void deleteGroups(List<Integer> templateGroupsIds) {
+        if (templateGroupsIds == null) {
+            return;
+        }
+        if (templateGroupsIds.isEmpty()) {
+            return;
+        }
+
+        // Get the monitorGroup of the first templateGroup (they all belong to the same monitorGroup)
+        Long templateGroupId = Long.valueOf(templateGroupsIds.get(0));
+        TemplateGroup tempGroup = templateGroupRepository.findById(templateGroupId).orElse(null);
+        MonitorsGroup monitorGroup = monitorGroupService.getGroupById(tempGroup.getGroup().getId());
+
+        // Delete all the templateGroups updating the monitorGroup first
+        for (int id : templateGroupsIds) { 
+            Long templateGroupID = Long.valueOf(id);
+            TemplateGroup group = templateGroupRepository.findById(templateGroupID).orElse(null);
+
+            if (group == null) {
+                return;
+            }
+
+            monitorGroup.getTemplateGroups().remove(group);
+            monitorGroupService.saveGroup(monitorGroup);
+            templateGroupRepository.deleteById(templateGroupID);
+        }
+
+        List<Monitor> monitors = monitorGroup.getMonitors();
+        sendAllSchedulesToMonitorGroup(monitors);
     }
 
     /**
@@ -340,8 +408,8 @@ public class TemplateGroupService {
     public TemplateGroup updateTemplateGroup(Long id, TemplateGroup templateGroup) {
         TemplateGroup templateGroupById = templateGroupRepository.findById(id).orElse(null);
         if (templateGroupById != templateGroup){
-            MonitorsGroup monitorGroup = templateGroupById.getGroup();
-            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup,id);
+            MonitorsGroup monitorGroup = monitorGroupService.getGroupById(templateGroup.getGroup().getId());
+            return sendTemplateGroupToMonitorGroup(templateGroup, monitorGroup, id);
         }
         return null;
     }

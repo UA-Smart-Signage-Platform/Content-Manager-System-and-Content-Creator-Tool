@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
@@ -33,7 +34,7 @@ import java.util.List;
 class MonitorsGroupIT {
 
     @MockBean
-    private LogsService logsService;//should not be done like this
+    private LogsService logsService;
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -60,9 +61,7 @@ class MonitorsGroupIT {
 
     @BeforeEach
     void setup() {
-        String username = "admin";
-        String password = "admin";
-        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");

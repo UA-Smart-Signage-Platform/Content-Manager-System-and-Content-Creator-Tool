@@ -26,17 +26,16 @@ public class MonitorsGroup {
 
     private String description;
 
-    @OneToMany(mappedBy = "group")
-    @JsonIgnoreProperties(value={"group"},allowSetters = true)
+    @OneToMany(mappedBy = "group",fetch = FetchType.EAGER)
+    @JsonIgnoreProperties(value = {"group"},allowSetters = true)
     private List<Monitor> monitors;
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group",fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value={"group"},allowSetters = true)
     private List<TemplateGroup> templateGroups;
 
     @Override
     public String toString() {
-        return "MonitorsGroup [id=" + id + ", name=" + name + "monitors=" 
-                + monitors + ", templateGroups=" + templateGroups + "]";
+        return "MonitorsGroup [id=" + id + ", name=" + name + "]";
     }
 }

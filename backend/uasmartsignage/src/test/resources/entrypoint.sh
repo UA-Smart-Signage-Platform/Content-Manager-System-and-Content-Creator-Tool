@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Protects script from continuing with an error
+set -e
+
+# Ensures environment variables are set
+export DOCKER_INFLUXDB_ORG=$DOCKER_INFLUXDB_INIT_ORG
+
+export DOCKER_INFLUXDB_2ND_BUCKET=$DOCKER_INFLUXDB_2ND_BUCKET
+export DOCKER_INFLUXDB_2ND_BUCKET_RETENTION=$DOCKER_INFLUXDB_2ND_BUCKET_RETENTION
+
+export DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+
+export DOCKER_INFLUXDB_INIT_HOST=$DOCKER_INFLUXDB_INIT_HOST
+
+if influx bucket find --org $DOCKER_INFLUXDB_ORG --name $DOCKER_INFLUXDB_2ND_BUCKET --host http://${DOCKER_INFLUXDB_INIT_HOST}:8086 --token $DOCKER_INFLUXDB_INIT_ADMIN_TOKEN | grep -q 'ID'; then
+    echo "Bucket $DOCKER_INFLUXDB_1ST_BUCKET already exists"
+else
+    # Create the first bucket if it doesn't exist
+    influx bucket create --name $DOCKER_INFLUXDB_2ND_BUCKET --org $DOCKER_INFLUXDB_ORG --retention $DOCKER_INFLUXDB_2ND_BUCKET_RETENTION --host http://${DOCKER_INFLUXDB_INIT_HOST}:8086 --token $DOCKER_INFLUXDB_INIT_ADMIN_TOKEN
+    echo "Bucket $DOCKER_INFLUXDB_1ST_BUCKET created"
+fi

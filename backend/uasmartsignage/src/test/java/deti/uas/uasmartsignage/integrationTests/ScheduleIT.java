@@ -5,10 +5,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
+import deti.uas.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -28,6 +30,9 @@ public class ScheduleIT extends BaseIntegrationTest{
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @MockBean
+    private LogsService logsService;
+
     public static String jwtToken;
     private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
 
@@ -36,7 +41,7 @@ public class ScheduleIT extends BaseIntegrationTest{
     void setup() {
         String username = "admin";
         String password = "admin";
-        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");

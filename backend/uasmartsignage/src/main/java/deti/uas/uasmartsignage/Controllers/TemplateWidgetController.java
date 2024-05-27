@@ -26,7 +26,7 @@ public class TemplateWidgetController {
             @ApiResponse(responseCode = "200", description = "List of all template widgets", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
     })
     @GetMapping
-    public ResponseEntity<?> getAllTemplateWidgets() {
+    public ResponseEntity<List<TemplateWidget>> getAllTemplateWidgets() {
         List<TemplateWidget> templateWidgets = (List<TemplateWidget>) templateWidgetService.getAllTemplateWidgets();
         return new ResponseEntity<>(templateWidgets, HttpStatus.OK);
     }
@@ -37,7 +37,7 @@ public class TemplateWidgetController {
             @ApiResponse(responseCode = "404", description = "Template widget not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTemplateWidgetById(@PathVariable("id") Long id) {
+    public ResponseEntity<TemplateWidget> getTemplateWidgetById(@PathVariable("id") Long id) {
         TemplateWidget templateWidget = templateWidgetService.getTemplateWidgetById(id);
         if (templateWidget == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -51,7 +51,7 @@ public class TemplateWidgetController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> saveTemplateWidget(@RequestBody TemplateWidget templateWidget) {
+    public ResponseEntity<TemplateWidget> saveTemplateWidget(@RequestBody TemplateWidget templateWidget) {
         TemplateWidget savedTemplateWidget = templateWidgetService.saveTemplateWidget(templateWidget);
         return new ResponseEntity<>(savedTemplateWidget, HttpStatus.CREATED);
     }
@@ -62,7 +62,7 @@ public class TemplateWidgetController {
             @ApiResponse(responseCode = "404", description = "Template widget not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTemplateWidget(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteTemplateWidget(@PathVariable("id") Long id) {
         templateWidgetService.deleteTemplateWidget(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -73,7 +73,7 @@ public class TemplateWidgetController {
             @ApiResponse(responseCode = "404", description = "Template widget not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTemplateWidget(@PathVariable("id") Long id, @RequestBody TemplateWidget templateWidget) {
+    public ResponseEntity<TemplateWidget> updateTemplateWidget(@PathVariable("id") Long id, @RequestBody TemplateWidget templateWidget) {
         TemplateWidget updatedTemplateWidget = templateWidgetService.updateTemplateWidget(id, templateWidget);
         if (updatedTemplateWidget == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

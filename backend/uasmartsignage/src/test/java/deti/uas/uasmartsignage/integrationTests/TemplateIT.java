@@ -32,9 +32,7 @@ public class TemplateIT  extends BaseIntegrationTest{
 
     @BeforeEach
     void setup() {
-        String username = "admin";
-        String password = "admin";
-        String requestBody = "{\"username\":\"" + username + "\",\"password\":\"" + password + "\"}";
+        String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-Type", "application/json");

@@ -1,10 +1,10 @@
 package deti.uas.uasmartsignage.Services;
 
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.Severity;
@@ -135,7 +135,8 @@ public class ScheduleService {
         }
 
         for (MonitorsGroup monitorGroup : monitorGroups) {
-            templateGroupService.sendAllSchedulesToMonitorGroup(monitorGroup, false);
+            List<Monitor> monitors = monitorGroup.getMonitors();
+            templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
         }
 
         return savedSchedules;

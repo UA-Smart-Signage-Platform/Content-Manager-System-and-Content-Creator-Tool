@@ -53,6 +53,7 @@ public class UserService implements UserDetailsService {
             .build();
         
         customUserDetailsService.addUser(newUser);
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
         return userRepository.save(user);
     }
 
