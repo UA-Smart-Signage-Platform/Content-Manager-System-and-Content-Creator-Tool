@@ -3,13 +3,17 @@ package deti.uas.uasmartsignage.datainit;
 
 import java.nio.charset.StandardCharsets;
 
+import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Models.CustomFile;
 import deti.uas.uasmartsignage.Models.FilesClass;
 import deti.uas.uasmartsignage.Services.FileService;
+import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
@@ -19,11 +23,13 @@ import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
 public class FilesDataInit implements CommandLineRunner{
     private MonitorGroupRepository groupRepository;
     private FileService fileService;
+    private UserService userService;
 
     @Autowired
-    public FilesDataInit(MonitorGroupRepository groupRepository, FileService fileService){
+    public FilesDataInit(MonitorGroupRepository groupRepository, FileService fileService, UserService userService){
         this.groupRepository = groupRepository;
         this.fileService = fileService;
+        this.userService = userService;
     }
 
 
@@ -52,5 +58,11 @@ public class FilesDataInit implements CommandLineRunner{
         ff1.setFile(file1);
         ff1.setParentId(1L);
         fileService.createFile(ff1);
+
+        AppUser admin = new AppUser();
+        admin.setEmail("admin");
+        admin.setRole("ADMIN");
+        admin.setPassword("admin");
+        userService.saveAdminUser(admin);
     }
 }

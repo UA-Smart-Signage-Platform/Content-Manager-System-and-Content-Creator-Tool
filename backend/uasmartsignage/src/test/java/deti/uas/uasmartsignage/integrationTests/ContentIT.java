@@ -9,6 +9,7 @@ import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,6 +28,7 @@ public class ContentIT extends BaseIntegrationTest{
     private LogsService logsService;
 
     @MockBean
+    private TemplateGroupService templateGroupService;
 
     @Autowired
     private TestRestTemplate restTemplate;

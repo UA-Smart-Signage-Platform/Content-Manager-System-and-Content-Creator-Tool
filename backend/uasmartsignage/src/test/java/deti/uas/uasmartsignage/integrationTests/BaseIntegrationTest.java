@@ -24,8 +24,7 @@ public abstract class BaseIntegrationTest {
     static {
         container = (DockerComposeContainer) new DockerComposeContainer<>(new File(DOCKER_COMPOSE_FILE_PATH))
                 .withExposedService(POSTGRES_SERVICE_NAME, 5432)
-                .withExposedService(MQTT_SERVICE_NAME, 1883)
-                        .withExposedService(INFLUXDB_SERVICE_NAME, 8086);
+                .withExposedService(MQTT_SERVICE_NAME, 1883);
         container.start();
     }
 
@@ -40,12 +39,5 @@ public abstract class BaseIntegrationTest {
         String mqttHost = container.getServiceHost(MQTT_SERVICE_NAME, 1883);
         Integer mqttPort = container.getServicePort(MQTT_SERVICE_NAME, 1883);
         registry.add("spring.mqtt.broker", () -> "tcp://"+ mqttHost + ":" + mqttPort);
-
-        String influxdbHost = container.getServiceHost(INFLUXDB_SERVICE_NAME, 8086);
-        System.out.println("afd"+influxdbHost);
-        Integer influxdbPort = container.getServicePort(INFLUXDB_SERVICE_NAME, 8086);
-        System.out.println("ars"+influxdbPort);
-        registry.add("spring.influxdb.url", () -> "http://"+ influxdbHost + ":" + influxdbPort);
-
     }
 }

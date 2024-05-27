@@ -20,6 +20,10 @@ import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 import deti.uas.uasmartsignage.Repositories.ContentRepository;
 import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 @Component
 @Profile("test")
 public class DataInit implements CommandLineRunner {
@@ -28,8 +32,6 @@ public class DataInit implements CommandLineRunner {
     private WidgetRepository widgetRepository;
     private ContentRepository contentRepository;
     private TemplateRepository templateRepository;
-    private LogsService logsService;
-    private MonitorService monitorService;
     private TemplateGroupService templateGroupService;
     private TemplateWidgetRepository templateWidgetRepository;
     private TemplateGroupRepository templateGroupRepository;
@@ -40,7 +42,7 @@ public class DataInit implements CommandLineRunner {
     @Autowired
     public DataInit(TemplateWidgetRepository templateWidgetRepository, TemplateRepository templateRepository,
                       ContentRepository contentRepository, WidgetRepository widgetRepository,
-                      MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,TemplateGroupRepository templateGroupRepository,ScheduleService scheduleService, FileService fileService, UserService userService, LogsService logsService, MonitorService monitorService, TemplateGroupService templateGroupService) {
+                      MonitorGroupRepository groupRepository, MonitorRepository monitorRepository,TemplateGroupRepository templateGroupRepository,ScheduleService scheduleService, FileService fileService, UserService userService,TemplateGroupService templateGroupService) {
         this.templateWidgetRepository = templateWidgetRepository;
         this.templateRepository = templateRepository;
         this.contentRepository = contentRepository;
@@ -51,9 +53,7 @@ public class DataInit implements CommandLineRunner {
         this.scheduleService = scheduleService;
         this.fileService = fileService;
         this.userService = userService;
-        //this.logsService = logsService;
-        //this.monitorService = monitorService;
-        //this.templateGroupService = templateGroupService;
+        this.templateGroupService = templateGroupService;
                       }
 
     public void run(String... args) throws Exception {
@@ -64,8 +64,8 @@ public class DataInit implements CommandLineRunner {
         this.loadTemplates();
         this.loadGroupsAndMonitors();
         this.loadSchedules();
-        this.loadTemplateGroups();
         this.loadAdminUser();
+        this.loadTemplateGroups();
 
     }
 

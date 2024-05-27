@@ -11,6 +11,7 @@ import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,6 +55,9 @@ class MonitorsGroupIT {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @MockBean
+    private TemplateGroupService templateGroupService;
 
     public static String jwtToken;
     private static final TestRestTemplate restTemplate1 = new TestRestTemplate();

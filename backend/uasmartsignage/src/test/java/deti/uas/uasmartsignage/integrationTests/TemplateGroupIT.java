@@ -4,9 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -30,42 +33,37 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TemplateGroupIT{
 
-    private static final String DOCKER_COMPOSE_FILE_PATH = "src/test/resources/docker-compose.yml";
-    private static final String POSTGRES_SERVICE_NAME = "postgres_db";
-    private static final String MQTT_SERVICE_NAME = "mqtt";
-
     @Container
-    private static DockerComposeContainer environment =
-            new DockerComposeContainer(new File(DOCKER_COMPOSE_FILE_PATH))
-                    .withExposedService(POSTGRES_SERVICE_NAME, 5432)
-                    .withExposedService(MQTT_SERVICE_NAME, 1883);
+    public static PostgreSQLContainer<?> container = new PostgreSQLContainer<>("postgres:latest")
+            .withDatabaseName("uasmartsignageIT")
+            .withUsername("integrationTest")
+            .withPassword("test");
 
     @DynamicPropertySource
-    static void dynamicProperties(DynamicPropertyRegistry registry) {
-        String postgresHost = environment.getServiceHost(POSTGRES_SERVICE_NAME, 5432);
-        Integer postgresPort = environment.getServicePort(POSTGRES_SERVICE_NAME, 5432);
-        registry.add("spring.datasource.url", () -> "jdbc:postgresql://" + postgresHost + ":" + postgresPort + "/uas");
-        registry.add("spring.datasource.username", () -> "spring");
-        registry.add("spring.datasource.password", () -> "springpass");
-
-        String mqttHost = environment.getServiceHost(MQTT_SERVICE_NAME, 1883);
-        Integer mqttPort = environment.getServicePort(MQTT_SERVICE_NAME, 1883);
-        registry.add("spring.mqtt.broker", () -> "tcp://"+ mqttHost + ":" + mqttPort);
-
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", container::getJdbcUrl);
+        registry.add("spring.datasource.username", container::getUsername);
+        registry.add("spring.datasource.password", container::getPassword);
     }
 
     @BeforeAll
     static void setUp() {
-        environment.start();
+        container.start();
     }
 
     @AfterAll
     static void tearDown() {
-        environment.stop();
+        container.stop();
     }
 
     @LocalServerPort
     private int port;
+
+    @MockBean
+    private LogsService logsService;
+
+    @MockBean
+    private TemplateGroupService templateGroupService;
 
     @Autowired
     private TestRestTemplate restTemplate;

@@ -7,9 +7,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,12 +21,10 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
@@ -33,38 +34,18 @@ import java.util.Objects;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class FileIT {
 
-    private static final String DOCKER_COMPOSE_FILE_PATH = "src/test/resources/docker-compose.yml";
-    private static final String POSTGRES_SERVICE_NAME = "postgres_db";
-    private static final String MQTT_SERVICE_NAME = "mqtt";
-    private static final String INFLUXDB_SERVICE_NAME = "influxdb";
-
     @Container
-    private static DockerComposeContainer container =
-            new DockerComposeContainer(new File(DOCKER_COMPOSE_FILE_PATH))
-                    .withExposedService(POSTGRES_SERVICE_NAME, 5432)
-                    .withExposedService(MQTT_SERVICE_NAME, 1883)
-                    .withExposedService(INFLUXDB_SERVICE_NAME, 8086);
+    public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
+            .withDatabaseName("uasmartsignageIT")
+            .withUsername("integrationTest")
+            .withPassword("test");
 
     @DynamicPropertySource
-    static void dynamicProperties(DynamicPropertyRegistry registry) {
-        String postgresHost = container.getServiceHost(POSTGRES_SERVICE_NAME, 5432);
-        Integer postgresPort = container.getServicePort(POSTGRES_SERVICE_NAME, 5432);
-        registry.add("spring.datasource.url", () -> "jdbc:postgresql://" + postgresHost + ":" + postgresPort + "/uas");
-        registry.add("spring.datasource.username", () -> "spring");
-        registry.add("spring.datasource.password", () -> "springpass");
-
-        String mqttHost = container.getServiceHost(MQTT_SERVICE_NAME, 1883);
-        Integer mqttPort = container.getServicePort(MQTT_SERVICE_NAME, 1883);
-        registry.add("spring.mqtt.broker", () -> "tcp://"+ mqttHost + ":" + mqttPort);
-
-        String influxdbHost = container.getServiceHost(INFLUXDB_SERVICE_NAME, 8086);
-        System.out.println("afd"+influxdbHost);
-        Integer influxdbPort = container.getServicePort(INFLUXDB_SERVICE_NAME, 8086);
-        System.out.println("ars"+influxdbPort);
-        registry.add("spring.influxdb.url", () -> "http://"+ influxdbHost + ":" + influxdbPort);
-
+    static void properties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", postgreSQLContainer::getUsername);
+        registry.add("spring.datasource.password", postgreSQLContainer::getPassword);
     }
-
 
     @LocalServerPort
     private int port;
@@ -72,13 +53,17 @@ class FileIT {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @MockBean
+    private LogsService logsService;
+
+    @MockBean
+    private TemplateGroupService templateGroupService;
+
     private static String jwtToken;
     private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
 
     @BeforeAll
     static void setup(@LocalServerPort int port1) {
-        String username = "admin";
-        String password = "admin";
         String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
@@ -343,7 +328,7 @@ class FileIT {
 
     @Test
     @Order(999)
-    // Clean up
+        // Clean up
     void testDeleteFileByIdWithDirectoryEndpoint() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);

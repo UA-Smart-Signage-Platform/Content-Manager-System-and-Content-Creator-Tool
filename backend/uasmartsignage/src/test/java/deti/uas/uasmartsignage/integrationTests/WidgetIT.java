@@ -5,10 +5,13 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Content;
 import deti.uas.uasmartsignage.Models.Widget;
+import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
@@ -25,6 +28,12 @@ public class WidgetIT extends BaseIntegrationTest{
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    @MockBean
+    private TemplateGroupService templateGroupService;
+
+    @MockBean
+    private LogsService logsService;
 
     public static String jwtToken;
     private static final TestRestTemplate restTemplate1 = new TestRestTemplate();

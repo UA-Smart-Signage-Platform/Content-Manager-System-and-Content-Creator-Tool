@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Schedule;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,9 @@ public class ScheduleIT extends BaseIntegrationTest{
 
     @MockBean
     private LogsService logsService;
+
+    @MockBean
+    private TemplateGroupService templateGroupService;
 
     public static String jwtToken;
     private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
@@ -102,7 +106,10 @@ public class ScheduleIT extends BaseIntegrationTest{
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
         ResponseEntity<TemplateGroup> response = restTemplate.exchange("http://localhost:"+ port + "/api/templateGroups/1", HttpMethod.GET, requestEntity, TemplateGroup.class);
+        System.out.println("sdfgh"+response.getBody());
         TemplateGroup templateGroup = response.getBody();
+
+        System.out.println("1qwerftgyhu"+templateGroup);
 
         Schedule schedule = new Schedule();
         schedule.setTemplateGroups(List.of(templateGroup));

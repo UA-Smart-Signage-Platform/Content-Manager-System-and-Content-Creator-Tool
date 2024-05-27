@@ -81,6 +81,7 @@ public class TemplateGroupService {
      * @return The TemplateGroup with the given id, or {@code null} if it does not exist
      */
     public TemplateGroup getGroupById(Long id) {
+        logger.info("Getting TemplateGroup by id " + templateGroupRepository.findById(id));
         return templateGroupRepository.findById(id).orElse(null);
     }
 
