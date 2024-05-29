@@ -195,8 +195,10 @@
 						<exclude>**/UasmartsignageApplication.class</exclude>
 						<exclude>**/authentication/**</exclude>
 						<exclude>deti/uas/uasmartsignage/Services/TemplateGroupService.class</exclude>
+						<exclude>deti/uas/uasmartsignage/Services/JwtUtilService.class</exclude>
 						<exclude>**/Services/LogsService.class</exclude>
 						<exclude>**/Controllers/LogController.class</exclude>
+						<exclude>**/Controllers/AuthController.class</exclude>
 						<exclude>deti/uas/uasmartsignage/Models/BackendLog.class</exclude>
 						<exclude>deti/uas/uasmartsignage/Services/CustomUserDetailsService.class</exclude>
 

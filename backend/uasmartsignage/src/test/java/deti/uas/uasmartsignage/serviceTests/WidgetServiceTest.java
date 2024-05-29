@@ -106,5 +106,18 @@ class WidgetServiceTest {
         assertThat(updatedWidget.getPath()).isEqualTo("newPath");
     }
 
+    @Test
+    void testGetWidgetByName(){
+        Widget widget = new Widget();
+        widget.setName("widget");
+        widget.setPath("path");
+        when(repository.findByName("widget")).thenReturn(widget);
+
+        Widget widget1 = service.getWidgetsByName("widget");
+
+        assertThat(widget1.getName()).isEqualTo("widget");
+        assertThat(widget1.getPath()).isEqualTo("path");
+    }
+
 
 }

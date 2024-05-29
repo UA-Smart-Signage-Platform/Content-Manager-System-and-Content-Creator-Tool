@@ -260,5 +260,49 @@ class ScheduleServiceTest {
         assertThat(updatedSchedule.getFrequency()).isEqualTo(5);
     }
 
+    @Test
+    void testGetSchedulesByGroupId(){
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setId(1L);
+        group.setName("group1");
+
+        TemplateGroup templateGroup = new TemplateGroup();
+        templateGroup.setGroup(group);
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+        schedule.setTemplateGroups(List.of(templateGroup));
+
+        Schedule update = new Schedule();
+        update.setId(1L);
+        update.setFrequency(5);
+        update.setCreatedBy(user);
+        update.setEndDate(LocalDate.parse("2024-06-21"));
+        update.setStartDate(LocalDate.parse("2024-06-21"));
+        update.setPriority(1);
+        update.setLastEditedBy(user);
+        update.setTemplateGroups(List.of(templateGroup));
+
+        when(repository.findAll()).thenReturn(Arrays.asList(schedule, update));
+
+        List<Schedule> schedules = service.getSchedulesByGroupId(1L);
+
+        assertThat(schedules).hasSize(2);
+        assertThat(schedules.get(0).getEndDate()).isEqualTo(LocalDate.parse("2024-04-21"));
+        assertThat(schedules.get(1).getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
+
+
+    }
+
 
 }

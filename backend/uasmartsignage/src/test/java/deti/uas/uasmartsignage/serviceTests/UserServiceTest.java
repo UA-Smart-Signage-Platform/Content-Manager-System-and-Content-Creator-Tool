@@ -159,4 +159,15 @@ class UserServiceTest {
         assertThat(password.chars().anyMatch(Character::isLowerCase)).isTrue();
         assertThat(password.chars().anyMatch(ch -> "!@#$%^&*()-_=+[{]}|;:,<.>/?".indexOf(ch) >= 0)).isTrue();
     }
+
+    @Test
+    void testSaveAdminUser(){
+        AppUser user = new AppUser(null, "admin","admin","admin");
+
+        when(repository.save(user)).thenReturn(user);
+
+        AppUser savedUser = service.saveAdminUser(user);
+        assertThat(savedUser.getEmail()).isEqualTo("admin");
+        assertThat(savedUser.getRole()).isEqualTo("admin");
+    }
 }
