@@ -27,7 +27,7 @@ public class Widget {
     private String path;
 
     @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties("widget")
+    @JsonIgnoreProperties(value={"widget"},allowSetters = true)
     private List<Content> contents;
     
     @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

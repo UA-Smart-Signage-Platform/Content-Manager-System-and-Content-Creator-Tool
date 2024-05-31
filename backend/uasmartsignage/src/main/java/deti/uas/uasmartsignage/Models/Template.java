@@ -26,7 +26,7 @@ public class Template {
     private String name;
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value={"template"},allowSetters = true) //widegts
+    @JsonIgnoreProperties(value={"template","widgets"},allowSetters = true) //widegts
     private List<TemplateWidget> templateWidgets;
 
     @OneToMany(mappedBy = "template")
