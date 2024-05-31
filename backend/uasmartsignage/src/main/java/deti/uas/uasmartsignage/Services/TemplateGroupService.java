@@ -26,11 +26,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -81,7 +79,7 @@ public class TemplateGroupService {
      * @return The TemplateGroup with the given id, or {@code null} if it does not exist
      */
     public TemplateGroup getGroupById(Long id) {
-        logger.info("Getting TemplateGroup by id " + templateGroupRepository.findById(id));
+        logger.info("Getting TemplateGroup by {} ", templateGroupRepository.findById(id));
         return templateGroupRepository.findById(id).orElse(null);
     }
 
