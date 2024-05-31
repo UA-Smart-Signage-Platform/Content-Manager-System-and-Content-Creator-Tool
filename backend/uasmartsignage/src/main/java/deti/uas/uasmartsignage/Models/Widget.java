@@ -30,7 +30,7 @@ public class Widget {
     @JsonIgnoreProperties("widget")
     private List<Content> contents;
     
-    @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value={"widget"},allowSetters = true)
     private List<TemplateWidget> templateWidgets;
 

@@ -25,8 +25,8 @@ public class Template {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value = {"template","widget"},allowSetters = true)
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties(value={"template"},allowSetters = true) //widegts
     private List<TemplateWidget> templateWidgets;
 
     @OneToMany(mappedBy = "template")

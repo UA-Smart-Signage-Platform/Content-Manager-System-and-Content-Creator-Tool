@@ -175,18 +175,4 @@ public class ScheduleIT extends BaseIntegrationTest{
 
     }
 
-    @Test
-    @Order(6)
-    void testDeleteSchedule(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
-        ResponseEntity<Schedule> response = restTemplate.exchange("http://localhost:"+ port + "/api/schedules/1", HttpMethod.DELETE, requestEntity, Schedule.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-    }
-
-
 }

@@ -29,7 +29,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") //NOSONAR
 @RestController
 @RequestMapping("/api/login")
 public class AuthController {

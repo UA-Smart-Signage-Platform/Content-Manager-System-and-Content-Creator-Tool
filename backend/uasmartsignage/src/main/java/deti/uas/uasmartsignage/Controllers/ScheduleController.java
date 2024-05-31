@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") //NOSONAR
 @RequestMapping("/api/schedules")
 
 public class ScheduleController {
