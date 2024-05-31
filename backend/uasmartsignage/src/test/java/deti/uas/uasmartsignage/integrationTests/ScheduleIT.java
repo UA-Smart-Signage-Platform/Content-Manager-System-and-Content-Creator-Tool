@@ -4,7 +4,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.TemplateGroup;
 import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.BeforeEach;
@@ -57,7 +56,7 @@ public class ScheduleIT extends BaseIntegrationTest{
                 String.class
         );
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String responseBody = response.getBody();
 
@@ -100,8 +99,6 @@ public class ScheduleIT extends BaseIntegrationTest{
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         headers.setContentType(MediaType.APPLICATION_JSON);
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
         Schedule schedule = new Schedule();
         List<Integer> days = new ArrayList<>();

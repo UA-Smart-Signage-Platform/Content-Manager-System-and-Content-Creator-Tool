@@ -3,8 +3,6 @@ package deti.uas.uasmartsignage.integrationTests;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import deti.uas.uasmartsignage.Models.TemplateWidget;
-import deti.uas.uasmartsignage.Models.Widget;
 import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +53,7 @@ public class TemplateIT  extends BaseIntegrationTest{
                 String.class
         );
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String responseBody = response.getBody();
 

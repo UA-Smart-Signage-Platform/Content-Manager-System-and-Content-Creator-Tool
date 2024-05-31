@@ -41,8 +41,6 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
 
     @BeforeEach
     void setup() {
-        String username = "admin";
-        String password = "admin";
         String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
 
         HttpHeaders headers = new HttpHeaders();
@@ -57,7 +55,7 @@ public class TemplateWidgetIT extends BaseIntegrationTest{
                 String.class
         );
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String responseBody = response.getBody();
 

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Models.Monitor;
 import deti.uas.uasmartsignage.Models.MonitorsGroup;
 import deti.uas.uasmartsignage.Models.TemplateGroup;
@@ -79,7 +78,7 @@ class MonitorsGroupIT {
                 String.class
         );
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String responseBody = response.getBody();
 
@@ -105,7 +104,7 @@ class MonitorsGroupIT {
 
     @Test
     @Order(2)
-    void testGetMonitorsGroupsNotMadeForMonitors() throws Exception{
+    void testGetMonitorsGroupsNotMadeForMonitors(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);

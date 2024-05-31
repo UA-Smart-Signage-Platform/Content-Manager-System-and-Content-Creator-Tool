@@ -417,12 +417,6 @@ public class DataInit implements CommandLineRunner {
         templateGroup3.setSchedule(schedule3);
         templateGroupRepository.save(templateGroup3);
         logger.info("TemplateGroup3 saved");
-
-        //get all templategroups
-        List<TemplateGroup> templateGroups = templateGroupRepository.findAll();
-        for (TemplateGroup templateGroup : templateGroups) {
-            logger.info("TemplateGroup: " + templateGroup.getId() + " " + templateGroup.getGroup().getName() + " " + templateGroup.getTemplate().getName());
-        }
     }
 
     private void loadSchedules() {

@@ -78,7 +78,7 @@ class FileIT {
                 String.class
         );
 
-        assertEquals(200, response.getStatusCodeValue());
+        assertEquals(HttpStatus.OK, response.getStatusCode());
 
         String responseBody = response.getBody();
 
@@ -94,7 +94,7 @@ class FileIT {
 
     @Test
     @Order(1)
-    void testGetFileByIdEndpoint() throws IOException{
+    void testGetFileByIdEndpoint(){
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers);
@@ -266,7 +266,7 @@ class FileIT {
 
     @Test
     @Order(9)
-    void testUpdateFileEndpoint() throws IOException  {
+    void testUpdateFileEndpoint(){
         HttpHeaders headers1 = new HttpHeaders();
         headers1.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers1);
@@ -298,7 +298,7 @@ class FileIT {
 
     @Test
     @Order(10)
-    void testUpdateFileEndpoint400() throws IOException  {
+    void testUpdateFileEndpoint400(){
         HttpHeaders headers1 = new HttpHeaders();
         headers1.setBearerAuth(jwtToken);
         HttpEntity<?> entity = new HttpEntity<>(headers1);
