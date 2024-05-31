@@ -81,20 +81,25 @@ function Schedule(){
     };
 
     const handleSave = () => {
-        const timeoutDelay = 2000;
-    
-        rulesToDelete.forEach((rule, index) => {
-            setTimeout(() => {
-                activeTemplateService.deleteRule(rule.id);
-            }, index * timeoutDelay);
-        });
+        const idsArr = [];
+        rulesToDelete.forEach(rule => {
+            idsArr.push(rule.id);
+        })
+
+        let promise1;
+        
+        if (idsArr.length !== 0){
+            promise1 = activeTemplateService.deleteRules(idsArr);
+        }
     
         const arr = [];
         rules.forEach(element => {
             arr.push(element.schedule);
         });
     
-        scheduleService.updateSchedule(arr).then(() => {
+        let promise2 = scheduleService.updateSchedule(arr);
+
+        Promise.all([promise1,promise2]).then(() => {
             setChangesMade(false);
             setUpdater(!updater);
         });

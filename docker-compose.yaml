@@ -1,15 +1,15 @@
 services:
-  postgres_db:
+  postgresdb:
     image: postgres:latest
     restart: unless-stopped
     env_file:
-      - .env
+      - ./dev.env
     ports:
       - 5432:5432
     networks:
       - mqttnet
       
-  api:
+  springboot:
     build:
       context: ./backend/uasmartsignage
       dockerfile: Dockerfile
@@ -18,31 +18,33 @@ services:
       - ./backend/uasmartsignage/.m2:/root/.m2
     working_dir: /app
     command: sh run.sh
+    env_file:
+      - ./dev.env
     ports:
       - 8080:8080
       - 35729:35729
       - 5005:5005
     depends_on:
-      - postgres_db
-      - mqtt
+      - postgresdb
+      - mosquitto
     networks:
       - mqttnet
       
   influxdb:
     image: influxdb:2.1.1
     env_file:
-      - .env
+      - ./dev.env
     volumes:
         - influxdb_data:/var/lib/influxdb
     networks:
         - mqttnet
     ports:
-        - ${DOCKER_INFLUXDB_INIT_PORT}:${DOCKER_INFLUXDB_INIT_PORT}
+        - 8086:8086
         
   influxdb_cli:
     build: .
     env_file:
-      - .env
+      - ./dev.env
     links:
       - influxdb
     volumes:
@@ -54,7 +56,7 @@ services:
     networks:
       - mqttnet
 
-  mqtt:
+  mosquitto:
     image: eclipse-mosquitto:1.6.13
     volumes:
         - mosquitto_conf:/mosquitto/config 
@@ -65,18 +67,20 @@ services:
     ports:
         - 9001:9001
         - 1883:1883
+    env_file:
+      - ./dev.env
 
-  frontend:
+  web:
       depends_on:
-          - postgres_db
-          - api
-          - mqtt
+          - postgresdb
+          - springboot
+          - mosquitto
       build:
         context: ./frontend
         dockerfile: .docker/Dockerfile
       restart: unless-stopped
       env_file:
-        - .env
+        - ./dev.env
       volumes:
         - "./frontend/:/app"
       ports:

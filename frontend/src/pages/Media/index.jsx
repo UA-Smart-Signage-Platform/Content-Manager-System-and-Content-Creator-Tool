@@ -164,10 +164,10 @@ function Media() {
             setFile(change);
             if (change !== null){
                 if (path === 'home' ){
-                    setPreview("http://localhost:8080/uploads/" + row.name);
+                    setPreview(process.env.REACT_APP_API_URL + "/uploads/" + row.name);
                 }
                 else{
-                    setPreview("http://localhost:8080" + path + "/" + row.name);
+                    setPreview(process.env.REACT_APP_API_URL + path + "/" + row.name);
                 }
             }
             else{

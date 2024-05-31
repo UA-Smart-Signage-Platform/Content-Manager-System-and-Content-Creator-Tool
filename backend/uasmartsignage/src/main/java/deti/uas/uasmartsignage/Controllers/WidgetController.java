@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/widgets")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") //NOSONAR
 public class WidgetController {
 
     private WidgetService widgetService;
@@ -28,7 +28,7 @@ public class WidgetController {
             @ApiResponse(responseCode = "200", description = "List of all widgets", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
     })
     @GetMapping
-    public ResponseEntity<?> getAllWidgets() {
+    public ResponseEntity<List<Widget>> getAllWidgets() {
         List<Widget> widgets = (List<Widget>) widgetService.getAllWidgets();
         return new ResponseEntity<>(widgets, HttpStatus.OK);
     }
@@ -39,7 +39,7 @@ public class WidgetController {
             @ApiResponse(responseCode = "404", description = "Widget not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getWidgetById(@PathVariable("id") Long id) {
+    public ResponseEntity<Widget> getWidgetById(@PathVariable("id") Long id) {
         Widget widget = widgetService.getWidgetById(id);
         if (widget == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -53,7 +53,7 @@ public class WidgetController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> saveWidget(@RequestBody Widget widget) {
+    public ResponseEntity<Widget> saveWidget(@RequestBody Widget widget) {
         // Long contentId = widget.getContent().getId();
         // Content content = contentService.getContentById(contentId);
         // widget.setContent(content);
@@ -67,7 +67,7 @@ public class WidgetController {
             @ApiResponse(responseCode = "404", description = "Widget not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteWidget(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteWidget(@PathVariable("id") Long id) {
         widgetService.deleteWidget(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -78,7 +78,7 @@ public class WidgetController {
             @ApiResponse(responseCode = "404", description = "Widget not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateWidget(@PathVariable("id") Long id, @RequestBody Widget widget) {
+    public ResponseEntity<Widget> updateWidget(@PathVariable("id") Long id, @RequestBody Widget widget) {
         Widget updatedWidget = widgetService.updateWidget(id, widget);
         if (updatedWidget == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

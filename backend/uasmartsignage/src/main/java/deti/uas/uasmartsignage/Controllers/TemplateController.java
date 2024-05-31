@@ -23,7 +23,7 @@ import deti.uas.uasmartsignage.Services.TemplateService;
 
 @RestController
 @RequestMapping("/api/templates")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*") //NOSONAR
 public class TemplateController {
 
     
@@ -39,7 +39,7 @@ public class TemplateController {
             @ApiResponse(responseCode = "404", description = "No templates found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping
-    public ResponseEntity<?> getAllTemplates() {
+    public ResponseEntity<Iterable<Template>> getAllTemplates() {
         Iterable<Template> templates = templateService.getAllTemplates();
         return new ResponseEntity<>(templates, HttpStatus.OK);
     }
@@ -50,7 +50,7 @@ public class TemplateController {
             @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PostMapping
-    public ResponseEntity<?> saveTemplate(@RequestBody Template template) {
+    public ResponseEntity<Template> saveTemplate(@RequestBody Template template) {
         Template savedTemplate = templateService.saveTemplate(template);
         return new ResponseEntity<>(savedTemplate, HttpStatus.CREATED);
     }
@@ -61,7 +61,7 @@ public class TemplateController {
             @ApiResponse(responseCode = "404", description = "Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTemplateById(@PathVariable("id") Long id) {
+    public ResponseEntity<Template> getTemplateById(@PathVariable("id") Long id) {
         Template template = templateService.getTemplateById(id);
         if (template == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -75,7 +75,7 @@ public class TemplateController {
             @ApiResponse(responseCode = "404", description = "Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTemplate(@PathVariable("id") Long id, @RequestBody Template template) {
+    public ResponseEntity<Template> updateTemplate(@PathVariable("id") Long id, @RequestBody Template template) {
         Template updatedTemplate = templateService.updateTemplate(id, template);
         if (updatedTemplate == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -89,7 +89,7 @@ public class TemplateController {
             @ApiResponse(responseCode = "404", description = "Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteTemplate(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteTemplate(@PathVariable("id") Long id) {
         templateService.deleteTemplate(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
