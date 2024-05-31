@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/widgets")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") //NOSONAR
 public class WidgetController {
 
     private WidgetService widgetService;

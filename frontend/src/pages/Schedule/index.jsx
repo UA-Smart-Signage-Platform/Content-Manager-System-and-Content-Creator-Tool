@@ -85,9 +85,11 @@ function Schedule(){
         rulesToDelete.forEach(rule => {
             idsArr.push(rule.id);
         })
+
+        let promise1;
         
         if (idsArr.length !== 0){
-            activeTemplateService.deleteRules(idsArr);
+            promise1 = activeTemplateService.deleteRules(idsArr);
         }
     
         const arr = [];
@@ -95,7 +97,9 @@ function Schedule(){
             arr.push(element.schedule);
         });
     
-        scheduleService.updateSchedule(arr).then(() => {
+        let promise2 = scheduleService.updateSchedule(arr);
+
+        Promise.all([promise1,promise2]).then(() => {
             setChangesMade(false);
             setUpdater(!updater);
         });
