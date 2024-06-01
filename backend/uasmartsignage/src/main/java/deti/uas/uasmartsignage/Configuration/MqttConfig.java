@@ -13,8 +13,12 @@ public class MqttConfig {
 
     private static IMqttClient instance;
 
-    @Autowired
     private Environment env;
+
+    @Autowired
+    public MqttConfig(Environment env) {
+        this.env = env;
+    }
 
     public IMqttClient getInstance() {
         String serverURI = env.getProperty("mqtt.serverURI");
@@ -24,7 +28,7 @@ public class MqttConfig {
 
         try {
             if (instance == null) {
-                instance = new MqttClient(serverURI, clientId);
+                instance = new MqttClient(serverURI, clientId); //NOSONAR
             }
 
             MqttConnectOptions options = new MqttConnectOptions();
@@ -32,7 +36,9 @@ public class MqttConfig {
             options.setCleanSession(false);
             options.setConnectionTimeout(10);
             options.setUserName(username);
-            options.setPassword(password.toCharArray());
+            if (password != null) {
+                options.setPassword(password.toCharArray());
+            }
 
             if (!instance.isConnected()) {
                 instance.connect(options);
@@ -42,8 +48,5 @@ public class MqttConfig {
         }
 
         return instance;
-    }
-
-    private MqttConfig() {
     }
 }

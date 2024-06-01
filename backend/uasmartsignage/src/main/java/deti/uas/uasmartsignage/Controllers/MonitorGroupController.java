@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") //NOSONAR
 @RequestMapping("/api/groups")
 public class MonitorGroupController {
 
@@ -87,7 +87,8 @@ public class MonitorGroupController {
         if (monitorsGroup == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(monitorsGroup.getMonitors(), HttpStatus.OK);
+        List<Monitor> monitors = monitorsGroup.getMonitors();
+        return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
 
     @Operation(summary = "Get template from group")

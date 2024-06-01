@@ -40,7 +40,7 @@ public class Monitor {
 
     @ManyToOne
     @JoinColumn(name = "groupId", nullable = false)
-    @JsonIgnoreProperties({"monitors"})
+    @JsonIgnoreProperties({"monitors", "templateGroups"})
     private MonitorsGroup group;
 
 

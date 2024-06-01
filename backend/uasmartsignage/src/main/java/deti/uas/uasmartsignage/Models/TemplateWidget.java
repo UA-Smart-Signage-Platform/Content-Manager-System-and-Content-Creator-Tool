@@ -40,7 +40,7 @@ public class TemplateWidget {
 
     @ManyToOne
     @JoinColumn(name = "templateId", nullable = false)
-    @JsonIgnoreProperties("templateWidgets")
+    @JsonIgnoreProperties(value={"templateWidgets"},allowSetters = true)
     private Template template;
 
     @ManyToOne

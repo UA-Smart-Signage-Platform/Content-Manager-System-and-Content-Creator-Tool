@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @AllArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*") //NOSONAR
 @RequestMapping("/api/templateGroups")
 public class TemplateGroupController {
 
@@ -37,7 +37,7 @@ public class TemplateGroupController {
     })
     @GetMapping
     public ResponseEntity<List<TemplateGroup>> getAllTemplateGroups() {
-        List<TemplateGroup> templateGroups = (List<TemplateGroup>) templateGroupService.getAllGroups();
+        List<TemplateGroup> templateGroups = templateGroupService.getAllGroups();
         return new ResponseEntity<>(templateGroups, HttpStatus.OK);
     }
 

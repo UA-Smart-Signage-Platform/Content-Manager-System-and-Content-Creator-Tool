@@ -79,6 +79,7 @@ public class TemplateGroupService {
      * @return The TemplateGroup with the given id, or {@code null} if it does not exist
      */
     public TemplateGroup getGroupById(Long id) {
+        logger.info("Getting TemplateGroup by {} ", templateGroupRepository.findById(id));
         return templateGroupRepository.findById(id).orElse(null);
     }
 
@@ -391,7 +392,7 @@ public class TemplateGroupService {
      * 
      * @return An Iterable of all TemplateGroups
      */
-    public Iterable<TemplateGroup> getAllGroups() {
+    public List<TemplateGroup> getAllGroups() {
         return templateGroupRepository.findAll();
     }
 

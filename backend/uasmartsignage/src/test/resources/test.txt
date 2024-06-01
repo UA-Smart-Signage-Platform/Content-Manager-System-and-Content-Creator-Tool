@@ -1,0 +1,3 @@
+POSTGRES_DB=uas
+POSTGRES_USER=spring
+POSTGRES_PASSWORD=springpass
