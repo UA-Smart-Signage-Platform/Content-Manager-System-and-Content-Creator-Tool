@@ -178,9 +178,6 @@ class ScheduleServiceTest {
         user.setEmail("admin");
         user.setRole("ADMIN");
 
-        MonitorsGroup group1 = new MonitorsGroup();
-        group.setName("group1");
-
         Schedule schedule = new Schedule();
         schedule.setId(1L);
         schedule.setFrequency(4);

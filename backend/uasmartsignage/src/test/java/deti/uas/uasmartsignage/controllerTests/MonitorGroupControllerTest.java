@@ -190,9 +190,6 @@ class MonitorGroupControllerTest {
         monitor2.setName("monitor2");
         monitor2.setId(2L);
 
-        TemplateGroup templateGroup = new TemplateGroup();
-
-
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("group1");
         monitorsGroup.setId(1L);
@@ -250,7 +247,6 @@ class MonitorGroupControllerTest {
         monitor2.setName("monitor2");
         monitor2.setId(2L);
 
-        TemplateGroup templateGroup = new TemplateGroup();
 
         MonitorsGroup monitorsGroup = new MonitorsGroup();
         monitorsGroup.setName("group1");

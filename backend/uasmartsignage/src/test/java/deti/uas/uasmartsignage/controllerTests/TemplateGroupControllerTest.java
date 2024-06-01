@@ -23,8 +23,6 @@ import static org.hamcrest.Matchers.is;
 
 import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
 import deti.uas.uasmartsignage.Controllers.TemplateGroupController;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -120,8 +118,7 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled
-    //this is not working because as the service was made is not possible to mock the mqtt service
+    @Disabled("this is not working because as the service was made is not possible to mock the mqtt service")
     void testSaveTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -209,8 +206,7 @@ class TemplateGroupControllerTest {
     }
 
     @Test
-    @Disabled
-    //this is not working because as the service was made is not possible to mock the mqtt service
+    @Disabled("this is not working because as the service was made is not possible to mock the mqtt service")
     void testUpdateTemplateGroupEndpoint() throws Exception{
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -283,7 +279,6 @@ class TemplateGroupControllerTest {
 
         group.setTemplateGroups(List.of(templateGroup));
 
-        //when(templateService.getTemplateById(1L)).thenReturn(template);
         when(repository.findById(1L)).thenReturn(Optional.of(templateGroup));
         when(service.updateTemplateGroup(1L,updated_templateGroup)).thenReturn(updated_templateGroup);
 

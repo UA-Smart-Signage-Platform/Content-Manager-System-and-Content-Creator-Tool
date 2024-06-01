@@ -13,7 +13,6 @@ import java.util.Optional;
 
 import deti.uas.uasmartsignage.Configuration.MqttConfig;
 import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Mqtt.RulesMessage;
 import deti.uas.uasmartsignage.Services.*;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -64,9 +63,6 @@ class TemplateGroupServiceTest {
 
     @Mock
     private TemplateWidgetService templateWidgetService;
-
-    @Mock
-    private RulesMessage rulesMessage;
 
     @Mock
     private IMqttClient ImqttClient;
@@ -178,9 +174,8 @@ class TemplateGroupServiceTest {
 
 
     @Test
-    @Disabled
-    //this is not working because as the service was made is not possible to mock the mqtt service
-    void testSaveTemplateGroup() throws MqttException, IOException {
+    @Disabled("this is not working because as the service was made is not possible to mock the mqtt service")
+    void testSaveTemplateGroup() throws IOException {
 
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -246,12 +241,6 @@ class TemplateGroupServiceTest {
         templateGroup.setSchedule(schedule1);
         templateGroup.setContent(Map.of(1,"Content1"));
 
-        RulesMessage rulesMessage = new RulesMessage();
-        rulesMessage.setMethod("TEMPLATE");
-        rulesMessage.setRules(List.of(Map.of("rule1", "rule1")));
-        rulesMessage.setFiles(List.of("file1"));
-
-
         group.setTemplateGroups(List.of(templateGroup));
 
         when(templateService.getTemplateById(templateGroup.getTemplate().getId())).thenReturn(template);
@@ -259,13 +248,9 @@ class TemplateGroupServiceTest {
         when(repository.save(templateGroup)).thenReturn(templateGroup);
         when(scheduleService.saveSchedule(schedule1)).thenReturn(schedule1);
         when(templateWidgetService.getTemplateWidgetById(1L)).thenReturn(templateWidget);
-        //when(inputStreamMock.readAllBytes()).thenReturn("test".getBytes());
         when(mqttConfig.getInstance()).thenReturn(ImqttClient);
-        //when(ImqttClient.publish( Mockito.any(String.class), Mockito.any(MqttMessage.class))).doNothing();
 
-        //when(cl.getResourceAsStream("path")).thenReturn(inputStreamMock);
         when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("test");
-        //when(cl.getResourceAsStream("path")).thenReturn(inputStream);
 
         TemplateGroup saved_template = service.saveGroup(templateGroup);
 
@@ -317,8 +302,7 @@ class TemplateGroupServiceTest {
     }
 
     @Test
-    @Disabled
-    //this is not working because as the service was made is not possible to mock the mqtt service
+    @Disabled("this is not working because as the service was made is not possible to mock the mqtt service")
     void testUpdateTemplateGroup(){
         Schedule schedule1 = new Schedule();
         schedule1.setFrequency(7);
@@ -402,17 +386,11 @@ class TemplateGroupServiceTest {
         when(templateWidgetService.getTemplateWidgetById(1L)).thenReturn(templateWidget);
         when(scheduleService.saveSchedule(schedule1)).thenReturn(schedule1);
         when(groupService.getGroupById(templateGroup.getGroup().getId())).thenReturn(group);
-        //when(objectMapper.writeValueAsString(Mockito.any())).thenReturn("test");
-        /*doNothing().when(templateGroupService).sendTemplateGroupToMonitorGroup(
-                Mockito.any(TemplateGroup.class),
-                Mockito.any(MonitorsGroup.class),
-                Mockito.any(Long.class)
-        );*/
         when(templateGroupService.sendTemplateGroupToMonitorGroup(Mockito.any(TemplateGroup.class), Mockito.any(MonitorsGroup.class), Mockito.any(Long.class))).thenReturn(templateGroup);
         TemplateGroup updated_template = service.updateTemplateGroup(1L, updated_templateGroup);
 
-        //assertThat(updated_template.getTemplate().getName()).isEqualTo("template2");
-        //assertThat(updated_template.getContent().get(1)).isEqualTo("Content_update");
+        assertThat(updated_template).isEqualTo(updated_templateGroup);
+
     }
 
     @Test
@@ -471,7 +449,6 @@ class TemplateGroupServiceTest {
         Widget widget = new Widget();
         widget.setContents(List.of(mediaContent));
 
-        // Create a TemplateWidget object with the widget
         TemplateWidget templateWidget = new TemplateWidget();
         templateWidget.setWidget(widget);
 
@@ -483,15 +460,11 @@ class TemplateGroupServiceTest {
         templateGroup.setGroup(new MonitorsGroup());
         templateGroup.setSchedule(new Schedule());
 
-        //when(templateWidgetService.getTemplateWidgetById(1L)).thenReturn(templateWidget);
 
         service.isWidgetContentMedia(templateWidget);
 
         assertThat(service.isWidgetContentMedia(templateWidget)).isTrue();
 
     }
-
-
-
 
 }

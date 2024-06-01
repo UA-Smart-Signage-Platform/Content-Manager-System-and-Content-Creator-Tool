@@ -429,7 +429,7 @@ public class TemplateGroupService {
      */
     public String generateHTML(Template template, Map<Integer, String> contents, int monitorWidth, int monitorHeight) {
         List<TemplateWidget> widgets = template.getTemplateWidgets();
-        //widgets.sort(new TemplateWidget.ZIndexComparator());
+        widgets.sort(new TemplateWidget.ZIndexComparator());
         String filePath = "static/base.html";
 
         try {

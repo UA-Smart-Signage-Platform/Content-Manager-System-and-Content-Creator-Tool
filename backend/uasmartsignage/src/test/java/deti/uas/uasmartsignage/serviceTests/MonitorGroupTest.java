@@ -234,7 +234,7 @@ class MonitorGroupTest {
         MonitorsGroup retu = service.updateGroup(1L, monitorsGroupUpdated);
 
         assertThat(retu.getName()).isEqualTo("group2");
-        assertThat(retu.getMonitors().size()).isEqualTo(3);
+        assertThat(retu.getMonitors()).hasSize(3);
         verify(monitorGroupRepository, times(1)).save(monitorsGroup);
 
 
