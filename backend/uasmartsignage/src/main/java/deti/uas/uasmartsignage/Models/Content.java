@@ -1,5 +1,6 @@
 package deti.uas.uasmartsignage.Models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,6 +28,7 @@ public class Content {
 
     @ManyToOne
     @JoinColumn(name = "widget_id")
+    @JsonIgnoreProperties({"contents", "templateWidgets"})
     private Widget widget;
     
     @ElementCollection

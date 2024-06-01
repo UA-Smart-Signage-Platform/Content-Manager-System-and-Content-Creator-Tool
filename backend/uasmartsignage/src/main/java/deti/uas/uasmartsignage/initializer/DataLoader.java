@@ -44,7 +44,7 @@ import deti.uas.uasmartsignage.Repositories.WidgetRepository;
 import deti.uas.uasmartsignage.Services.UserService;
 
 @Component
-@Profile("!test")
+@Profile("!test & !integration-test")
 public class DataLoader implements CommandLineRunner {
 
     @Value("${backend.production}")
