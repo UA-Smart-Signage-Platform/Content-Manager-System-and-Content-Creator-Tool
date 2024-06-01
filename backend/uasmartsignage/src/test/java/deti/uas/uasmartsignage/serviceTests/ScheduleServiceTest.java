@@ -254,7 +254,7 @@ class ScheduleServiceTest {
 
         when(repository.save(Mockito.any())).thenReturn(update);
 
-        Schedule updatedSchedule = service.updateSchedule(update);
+        Schedule updatedSchedule = service.updateSchedule(1L,update);
 
         assertThat(updatedSchedule.getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
         assertThat(updatedSchedule.getFrequency()).isEqualTo(5);

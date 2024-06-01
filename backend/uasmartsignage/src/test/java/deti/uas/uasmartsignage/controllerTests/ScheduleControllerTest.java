@@ -89,7 +89,7 @@ class ScheduleControllerTest {
         mvc.perform(get("/api/schedules").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].frequency", is(10)))
+            .andExpect(jsonPath("$[0].frequency",is(10)))
             .andExpect(jsonPath("$[1].frequency", is(5)));
     }
 
@@ -214,7 +214,7 @@ class ScheduleControllerTest {
         schedule.setPriority(1);
         schedule.setLastEditedBy(user);
 
-        when(service.updateSchedule(Mockito.any())).thenReturn(schedule);
+        when(service.updateSchedule(Mockito.any(Long.class) , Mockito.any(Schedule.class))).thenReturn(schedule);
 
         mvc.perform(put("/api/schedules/1").contentType(MediaType.APPLICATION_JSON)
             .content(objectMapper.writeValueAsString(schedule)))
