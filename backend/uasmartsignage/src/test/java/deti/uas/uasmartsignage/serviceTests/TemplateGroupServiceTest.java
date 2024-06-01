@@ -15,7 +15,6 @@ import deti.uas.uasmartsignage.Configuration.MqttConfig;
 import deti.uas.uasmartsignage.Models.*;
 import deti.uas.uasmartsignage.Services.*;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
