@@ -91,7 +91,7 @@ public class UserService implements UserDetailsService {
         return customUserDetailsService.loadUserByUsername(username);
     }
 
-    private String generateRandomPassword() {
+    public String generateRandomPassword() {
         // Define the characters that can be used in the random password
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_=+[{]}|;:,<.>/?";
         StringBuilder password = new StringBuilder();

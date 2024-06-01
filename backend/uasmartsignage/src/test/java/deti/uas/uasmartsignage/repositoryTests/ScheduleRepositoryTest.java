@@ -3,6 +3,7 @@ package deti.uas.uasmartsignage.repositoryTests;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 
@@ -35,19 +36,26 @@ class ScheduleRepositoryTest {
         monitorsGroup.setName("group1");
         entityManager.persistAndFlush(monitorsGroup);
 
-        Schedule schedule = new Schedule();
-        schedule.setFrequency(1);
-        schedule.setCreatedBy(user);
-        schedule.setEndDate(LocalDate.parse("2024-04-21"));
-        schedule.setStartDate(LocalDate.parse("2024-04-21"));
-        schedule.setPriority(1);
-        schedule.setLastEditedBy(user);
+        Schedule schedule = new Schedule(
+                null,
+                1,
+                LocalTime.parse("12:00:00"),
+                LocalTime.parse("13:00:00"),
+                LocalDate.parse("2024-04-21"),
+                LocalDate.parse("2024-04-21"),
+                1,
+                user,
+                user,
+                LocalDate.parse("2024-04-21"),
+                List.of(),
+                List.of()
+        );
 
         entityManager.persistAndFlush(schedule);
 
-        Schedule found = repository.findById(schedule.getId()).get();
+        Schedule found = repository.findById(schedule.getId()).orElse(null);
 
-        assertThat(found).isEqualTo(schedule);
+        assertThat(found).isNotNull().isEqualTo(schedule);
     }
 
     @Test

@@ -51,6 +51,7 @@ public class SecurityConfig {
                                 .requestMatchers("/uploads/**").permitAll()
                                 .requestMatchers("/api/login/change-password").hasRole(ADMIN_ROLE)
                                 .requestMatchers("/api/users/**").hasRole(ADMIN_ROLE)
+                                .requestMatchers("/api/files/**").permitAll()
                                 .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

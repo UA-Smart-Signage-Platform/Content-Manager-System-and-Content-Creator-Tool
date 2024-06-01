@@ -186,6 +186,24 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>0.8.8</version>
+				<configuration>
+                    <excludes>
+                        <exclude>**/initializer/**</exclude>
+						<exclude>**/Mqtt/**</exclude>
+						<exclude>**/Configuration/**</exclude>
+						<exclude>**/exceptions/**</exclude>
+						<exclude>**/UasmartsignageApplication.class</exclude>
+						<exclude>**/authentication/**</exclude>
+						<exclude>deti/uas/uasmartsignage/Services/TemplateGroupService.class</exclude>
+						<exclude>deti/uas/uasmartsignage/Services/JwtUtilService.class</exclude>
+						<exclude>**/Services/LogsService.class</exclude>
+						<exclude>**/Controllers/LogController.class</exclude>
+						<exclude>**/Controllers/AuthController.class</exclude>
+						<exclude>deti/uas/uasmartsignage/Models/BackendLog.class</exclude>
+						<exclude>deti/uas/uasmartsignage/Services/CustomUserDetailsService.class</exclude>
+
+                    </excludes>
+                </configuration>
 				<executions>
 					<execution>
 						<goals>

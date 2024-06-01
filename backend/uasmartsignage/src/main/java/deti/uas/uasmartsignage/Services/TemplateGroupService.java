@@ -414,7 +414,7 @@ public class TemplateGroupService {
     }
 
     
-    private boolean isWidgetContentMedia(TemplateWidget widget){
+    public boolean isWidgetContentMedia(TemplateWidget widget){
         return widget.getWidget().getContents().get(0).getType().equals("media");
     }
 
