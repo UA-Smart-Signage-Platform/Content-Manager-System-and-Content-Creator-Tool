@@ -1,6 +1,6 @@
-<div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px;">
-    <video autoplay muted class="stretch" id="video[[widgetID]]"></video>
-    <img class="stretch" style="display: none;" id="image[[widgetID]]">
+<div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; text-align: center; display: flex; justify-content: center; align-items: center;">
+    <video autoplay muted class="imageStay" id="video[[widgetID]]"></video>
+    <img class="imageStay" style="display: none;" id="image[[widgetID]]">
 </div>
 <script>
     var videoList[[widgetID]] = ["[[videos]]"];

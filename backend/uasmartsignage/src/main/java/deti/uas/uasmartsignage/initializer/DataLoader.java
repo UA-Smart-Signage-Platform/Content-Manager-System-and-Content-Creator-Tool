@@ -15,15 +15,12 @@ import java.util.stream.Stream;
 import deti.uas.uasmartsignage.Services.FileService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
 
-import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
-
-import com.influxdb.client.domain.User;
 
 import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Models.Content;
@@ -260,6 +257,36 @@ public class DataLoader implements CommandLineRunner {
         video.setWidget(mediaWidget);
         templateWidgetRepository.save(video);
 
+        TemplateWidget logo = new TemplateWidget();
+        logo.setZIndex(6);
+        logo.setTop(0);
+        logo.setLeftPosition(20);
+        logo.setHeight(10);
+        logo.setWidth(11.5364f);
+        logo.setTemplate(template1);
+        logo.setWidget(mediaWidget);
+        templateWidgetRepository.save(logo);
+
+        TemplateWidget logo2 = new TemplateWidget();
+        logo2.setZIndex(7);
+        logo2.setTop(90);
+        logo2.setLeftPosition(94.9235F);
+        logo2.setHeight(10);
+        logo2.setWidth(5.0765f);
+        logo2.setTemplate(template1);
+        logo2.setWidget(mediaWidget);
+        templateWidgetRepository.save(logo2);
+
+        TemplateWidget logo3 = new TemplateWidget();
+        logo3.setZIndex(8);
+        logo3.setTop(0);
+        logo3.setLeftPosition(31.5364f);
+        logo3.setHeight(10);
+        logo3.setWidth(27.3958f);
+        logo3.setTemplate(template1);
+        logo3.setWidget(mediaWidget);
+        templateWidgetRepository.save(logo3);
+
         TemplateWidget clock = new TemplateWidget();
         clock.setZIndex(3);
         clock.setTop(0);
@@ -275,7 +302,7 @@ public class DataLoader implements CommandLineRunner {
         news.setTop(90);
         news.setLeftPosition(0);
         news.setHeight(10);
-        news.setWidth(100);
+        news.setWidth(94.9235F);
         news.setTemplate(template1);
         news.setWidget(newsWidget);
         templateWidgetRepository.save(news);
