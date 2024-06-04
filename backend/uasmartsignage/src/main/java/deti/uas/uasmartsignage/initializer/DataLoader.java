@@ -203,6 +203,19 @@ public class DataLoader implements CommandLineRunner {
         temperatureWidgetContent.setWidget(temperatureWidget);
         contentRepository.save(temperatureWidgetContent);
 
+        Widget weatherWidget = new Widget();
+        weatherWidget.setName("WeatherWidget");
+        weatherWidget.setPath("static/widgets/weather.widget");
+        weatherWidget.setContents(new ArrayList<>());
+        widgetRepository.save(weatherWidget);
+        Content weatherWidgetContent = new Content();
+        weatherWidgetContent.setName("region");
+        weatherWidgetContent.setType("options");
+        List<String> regions = new ArrayList<>(List.of("Aveiro", "Beja", "Braga", "Guimarães", "Bragança", "Castelo Branco", "Coimbra", "Évora", "Faro", "Sagres", "Portimão", "Loulé", "Guarda", "Penhas Douradas", "Leiria", "Lisboa", "Portalegre", "Porto", "Santarém", "Setúbal", "Sines", "Viana do Castelo", "Vila Real", "Viseu", "Funchal", "Porto Santo", "Vila do Porto", "Ponta Delgada", "Angra do Heroísmo", "Santa Cruz da Graciosa", "Velas", "Madalena", "Horta", "Santa Cruz das Flores", "Vila do Corvo"));
+        weatherWidgetContent.setOptions(regions);
+        weatherWidgetContent.setWidget(weatherWidget);
+        contentRepository.save(weatherWidgetContent);
+
         Widget mediaWidget = new Widget();
         mediaWidget.setName("Media");
         mediaWidget.setPath("static/widgets/media.widget");
