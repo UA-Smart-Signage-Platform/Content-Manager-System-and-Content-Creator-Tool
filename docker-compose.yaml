@@ -11,11 +11,11 @@ services:
       
   springboot:
     build:
-      context: ./backend/uasmartsignage
+      context: ./backend
       dockerfile: Dockerfile
     volumes:
-      - ./backend/uasmartsignage:/app
-      - ./backend/uasmartsignage/.m2:/root/.m2
+      - ./backend:/app
+      - ./backend/.m2:/root/.m2
     working_dir: /app
     command: sh run.sh
     env_file:

@@ -32,7 +32,7 @@ services:
     depends_on:
       - postgresdb
     build: 
-      context: ./backend/uasmartsignage
+      context: ./backend
       dockerfile: Dockerfile.prod
     env_file:
       - ./prod.env

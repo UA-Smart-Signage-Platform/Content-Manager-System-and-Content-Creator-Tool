@@ -6,7 +6,7 @@ target/
 
 .m2/
 uploads/
-spring-server-tcpmqtt1883
+spring-server-*
 
 ### STS ###
 .apt_generated
