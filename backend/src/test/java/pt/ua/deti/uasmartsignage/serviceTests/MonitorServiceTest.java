@@ -16,11 +16,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import pt.ua.deti.uasmartsignage.services.MonitorService;
 import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
 
 @ExtendWith(MockitoExtension.class)
 class MonitorServiceTest {

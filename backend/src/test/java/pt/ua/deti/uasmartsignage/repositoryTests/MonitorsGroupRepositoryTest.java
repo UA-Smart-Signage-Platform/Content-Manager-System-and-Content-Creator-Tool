@@ -13,8 +13,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 
 @DataJpaTest
 @ActiveProfiles("test")

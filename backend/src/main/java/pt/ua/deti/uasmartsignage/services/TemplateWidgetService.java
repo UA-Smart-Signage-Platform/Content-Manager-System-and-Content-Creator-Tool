@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pt.ua.deti.uasmartsignage.models.Severity;
 import pt.ua.deti.uasmartsignage.models.TemplateWidget;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateWidgetRepository;
 
 @Service
 public class TemplateWidgetService {

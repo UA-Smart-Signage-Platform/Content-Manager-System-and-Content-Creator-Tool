@@ -9,7 +9,7 @@ import java.util.List;
 
 import pt.ua.deti.uasmartsignage.models.TemplateWidget;
 import pt.ua.deti.uasmartsignage.models.Template;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateWidgetRepository;
 import pt.ua.deti.uasmartsignage.models.Widget;
 
 import static org.assertj.core.api.Assertions.assertThat;

@@ -3,8 +3,8 @@ package pt.ua.deti.uasmartsignage.serviceTests;
 
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import pt.ua.deti.uasmartsignage.services.MonitorGroupService;
 import org.junit.jupiter.api.Test;

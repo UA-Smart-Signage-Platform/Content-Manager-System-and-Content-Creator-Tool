@@ -30,7 +30,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.FilesClass;
-import pt.ua.deti.uasmartsignage.Repositories.FileRepository;
+import pt.ua.deti.uasmartsignage.repositories.FileRepository;
 import pt.ua.deti.uasmartsignage.services.FileService;
 
 @ExtendWith(MockitoExtension.class)

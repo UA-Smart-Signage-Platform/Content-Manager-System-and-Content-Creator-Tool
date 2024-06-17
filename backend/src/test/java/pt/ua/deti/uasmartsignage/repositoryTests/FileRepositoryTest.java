@@ -11,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import pt.ua.deti.uasmartsignage.models.CustomFile;
-import pt.ua.deti.uasmartsignage.Repositories.FileRepository;
+import pt.ua.deti.uasmartsignage.repositories.FileRepository;
 
 @DataJpaTest
 class FileRepositoryTest {

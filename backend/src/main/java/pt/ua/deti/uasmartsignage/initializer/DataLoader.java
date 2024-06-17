@@ -31,13 +31,13 @@ import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.models.TemplateGroup;
 import pt.ua.deti.uasmartsignage.models.TemplateWidget;
 import pt.ua.deti.uasmartsignage.models.Widget;
-import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateRepository;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
-import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.ContentRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.WidgetRepository;
 import pt.ua.deti.uasmartsignage.services.UserService;
 
 @Component

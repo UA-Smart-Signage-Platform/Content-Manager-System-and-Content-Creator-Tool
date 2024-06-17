@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import pt.ua.deti.uasmartsignage.models.Severity;
 import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.models.TemplateWidget;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateRepository;
 
 @Service
 public class TemplateService {

@@ -18,7 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import pt.ua.deti.uasmartsignage.models.Template;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateRepository;
 import pt.ua.deti.uasmartsignage.services.TemplateService;
 
 @ExtendWith(MockitoExtension.class)

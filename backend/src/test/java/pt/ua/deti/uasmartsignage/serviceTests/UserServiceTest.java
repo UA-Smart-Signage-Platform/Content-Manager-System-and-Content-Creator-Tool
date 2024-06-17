@@ -2,7 +2,7 @@ package pt.ua.deti.uasmartsignage.serviceTests;
 
 import pt.ua.deti.uasmartsignage.services.CustomUserDetailsService;
 import pt.ua.deti.uasmartsignage.services.UserService;
-import pt.ua.deti.uasmartsignage.Repositories.UserRepository;
+import pt.ua.deti.uasmartsignage.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

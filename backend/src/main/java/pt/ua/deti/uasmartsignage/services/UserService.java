@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.util.List;
 
-import pt.ua.deti.uasmartsignage.Repositories.UserRepository;
+import pt.ua.deti.uasmartsignage.repositories.UserRepository;
 import pt.ua.deti.uasmartsignage.models.AppUser;
 
 import org.springframework.security.core.userdetails.User;

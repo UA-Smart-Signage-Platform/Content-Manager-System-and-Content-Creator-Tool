@@ -19,7 +19,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import pt.ua.deti.uasmartsignage.Repositories.ScheduleRepository;
+import pt.ua.deti.uasmartsignage.repositories.ScheduleRepository;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import pt.ua.deti.uasmartsignage.services.ScheduleService;
 

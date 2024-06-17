@@ -1,4 +1,4 @@
-package pt.ua.deti.uasmartsignage.Repositories;
+package pt.ua.deti.uasmartsignage.repositories;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;

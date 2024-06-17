@@ -16,7 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.WidgetRepository;
 import pt.ua.deti.uasmartsignage.services.WidgetService;
 
 @ExtendWith(MockitoExtension.class)

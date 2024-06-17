@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateGroupRepository;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

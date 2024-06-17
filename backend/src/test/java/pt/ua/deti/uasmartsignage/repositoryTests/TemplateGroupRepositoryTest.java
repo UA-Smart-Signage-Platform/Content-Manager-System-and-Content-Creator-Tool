@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import pt.ua.deti.uasmartsignage.models.TemplateGroup;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateGroupRepository;
 import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
 

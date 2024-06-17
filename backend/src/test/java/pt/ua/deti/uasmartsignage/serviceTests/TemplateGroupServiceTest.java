@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateGroupRepository;
 
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 

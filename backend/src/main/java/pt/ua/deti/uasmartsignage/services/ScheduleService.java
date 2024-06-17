@@ -9,7 +9,7 @@ import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
 import pt.ua.deti.uasmartsignage.models.Schedule;
 import pt.ua.deti.uasmartsignage.models.Severity;
 import pt.ua.deti.uasmartsignage.models.TemplateGroup;
-import pt.ua.deti.uasmartsignage.Repositories.ScheduleRepository;
+import pt.ua.deti.uasmartsignage.repositories.ScheduleRepository;
 
 import java.util.ArrayList;
 import java.util.List;

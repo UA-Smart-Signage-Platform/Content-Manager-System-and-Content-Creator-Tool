@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
 
 @Component
 @Profile("integration-test")

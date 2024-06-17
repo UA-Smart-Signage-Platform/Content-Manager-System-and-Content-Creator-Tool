@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import pt.ua.deti.uasmartsignage.models.Content;
 import pt.ua.deti.uasmartsignage.models.Widget;
-import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
+import pt.ua.deti.uasmartsignage.repositories.ContentRepository;
 import pt.ua.deti.uasmartsignage.services.ContentService;
 
 @ExtendWith(MockitoExtension.class)

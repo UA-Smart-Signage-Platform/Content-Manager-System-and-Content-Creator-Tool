@@ -1,4 +1,4 @@
-package pt.ua.deti.uasmartsignage.Repositories;
+package pt.ua.deti.uasmartsignage.repositories;
 
 import java.util.List;
 import java.util.Optional;

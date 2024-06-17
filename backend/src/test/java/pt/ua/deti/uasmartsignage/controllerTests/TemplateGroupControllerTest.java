@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateGroupRepository;
 import pt.ua.deti.uasmartsignage.controllers.TemplateGroupController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

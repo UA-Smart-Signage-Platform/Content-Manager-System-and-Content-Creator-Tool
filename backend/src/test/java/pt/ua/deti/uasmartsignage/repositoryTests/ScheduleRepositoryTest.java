@@ -15,7 +15,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import pt.ua.deti.uasmartsignage.models.Schedule;
 import pt.ua.deti.uasmartsignage.models.AppUser;
-import pt.ua.deti.uasmartsignage.Repositories.ScheduleRepository;
+import pt.ua.deti.uasmartsignage.repositories.ScheduleRepository;
 
 @DataJpaTest
 class ScheduleRepositoryTest {

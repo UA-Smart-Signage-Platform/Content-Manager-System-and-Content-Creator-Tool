@@ -12,13 +12,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateRepository;
-import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
-import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateRepository;
+import pt.ua.deti.uasmartsignage.repositories.WidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.ContentRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateWidgetRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

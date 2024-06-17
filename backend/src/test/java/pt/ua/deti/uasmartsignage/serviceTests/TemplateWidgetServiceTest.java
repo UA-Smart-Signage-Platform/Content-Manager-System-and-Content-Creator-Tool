@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import pt.ua.deti.uasmartsignage.models.TemplateWidget;
 import pt.ua.deti.uasmartsignage.models.Widget;
-import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.repositories.TemplateWidgetRepository;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import pt.ua.deti.uasmartsignage.services.TemplateWidgetService;
 import org.junit.jupiter.api.Test;

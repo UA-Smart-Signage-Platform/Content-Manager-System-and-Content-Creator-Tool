@@ -4,7 +4,7 @@ package pt.ua.deti.uasmartsignage.services;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.FilesClass;
 import pt.ua.deti.uasmartsignage.models.Severity;
-import pt.ua.deti.uasmartsignage.Repositories.FileRepository;
+import pt.ua.deti.uasmartsignage.repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;

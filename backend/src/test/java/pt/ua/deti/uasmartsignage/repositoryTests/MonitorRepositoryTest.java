@@ -9,7 +9,7 @@ import java.util.List;
 
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import jakarta.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;

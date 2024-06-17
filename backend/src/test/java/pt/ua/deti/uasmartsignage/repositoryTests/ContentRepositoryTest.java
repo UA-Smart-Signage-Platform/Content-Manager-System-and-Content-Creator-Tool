@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import pt.ua.deti.uasmartsignage.models.Content;
-import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
+import pt.ua.deti.uasmartsignage.repositories.ContentRepository;
 import pt.ua.deti.uasmartsignage.models.Widget;
 
 @DataJpaTest

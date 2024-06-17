@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import pt.ua.deti.uasmartsignage.models.AppUser;
-import pt.ua.deti.uasmartsignage.Repositories.UserRepository;
+import pt.ua.deti.uasmartsignage.repositories.UserRepository;
 
 import java.security.SecureRandom;
 
