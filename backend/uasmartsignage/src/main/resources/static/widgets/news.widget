@@ -1,4 +1,4 @@
-<div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; justify-content: center; align-items: center; display: flex; font-size: 50px;">
+<div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; justify-content: center; align-items: center; display: flex; font-size: 2.5vw;">
     <marquee scrollamount="10" hx-get="http://127.0.0.1:5000/ua/news" hx-trigger="load, every 30m"></marquee>
     <div style="width:40%;top:0%;left:-18%;height:200%; background:white;
     padding:0px 0px 0px 20px;display: flex;align-items: center;box-shadow: 0 0 10px #000000;
