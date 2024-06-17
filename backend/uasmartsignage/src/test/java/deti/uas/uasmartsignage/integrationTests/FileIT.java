@@ -3,10 +3,16 @@ package deti.uas.uasmartsignage.integrationTests;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import deti.uas.uasmartsignage.Models.CustomFile;
+import deti.uas.uasmartsignage.Services.LogsService;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.ByteArrayResource;
@@ -19,20 +25,20 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 @Testcontainers
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = {"spring.profiles.active=integration-test"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class FileServiceIT{
+class FileIT {
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
             .withDatabaseName("uasmartsignageIT")
             .withUsername("integrationTest")
             .withPassword("test");
+
     @DynamicPropertySource
     static void properties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgreSQLContainer::getJdbcUrl);
@@ -46,14 +52,52 @@ class FileServiceIT{
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @MockBean
+    private LogsService logsService;
+
+    @MockBean
+    private TemplateGroupService templateGroupService;
+
+    private static String jwtToken;
+    private static final TestRestTemplate restTemplate1 = new TestRestTemplate();
+
+    @BeforeAll
+    static void setup(@LocalServerPort int port1) {
+        String requestBody = "{\"username\":\"" + "admin" + "\",\"password\":\"" + "admin" + "\"}";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> response = restTemplate1.exchange(
+                "http://localhost:"+ port1 + "/api/login",
+                HttpMethod.POST,
+                requestEntity,
+                String.class
+        );
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+
+        String responseBody = response.getBody();
+
+        JsonElement jsonElement = JsonParser.parseString(responseBody);
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        jwtToken = jsonObject.get("jwt").getAsString();
+    }
+
     // Important!!!!
     // The tests are ordered because they depend on each other
     // Last one is needed to clean up
 
     @Test
     @Order(1)
-    void testGetFileByIdEndpoint() throws IOException{
-        ResponseEntity<CustomFile> response = restTemplate.getForEntity("http://localhost:" +  port  + "/api/files/3", CustomFile.class);
+    void testGetFileByIdEndpoint(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<CustomFile> response = restTemplate.exchange("http://localhost:" +  port  + "/api/files/3", HttpMethod.GET, entity, CustomFile.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, Objects.requireNonNull(response.getBody()).getId());
         assertEquals("test1.png", response.getBody().getName());
@@ -62,22 +106,30 @@ class FileServiceIT{
     @Test
     @Order(2)
     void testGetFileByIdEndpointNotFound() {
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/100", String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/100",HttpMethod.GET,entity,String.class);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
 
     @Test
     @Order(3)
     void testGetRootFilesAndDirectoriesEndpoint() {
-        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/api/files/directory/root", String.class);
-        System.out.println(response.getBody());
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/directory/root", HttpMethod.GET, entity, String.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
     @Order(4)
     void testDeleteFileByIdEndpoint() {
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/2", HttpMethod.DELETE, null, String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/2", HttpMethod.DELETE, entity, String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
     }
@@ -103,6 +155,8 @@ class FileServiceIT{
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.setBearerAuth(jwtToken);
+
 
         // Create the HTTP entity with headers and request body
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
@@ -133,6 +187,7 @@ class FileServiceIT{
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        headers.setBearerAuth(jwtToken);
 
         // Create the HTTP entity with headers and request body
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
@@ -144,7 +199,12 @@ class FileServiceIT{
     @Test
     @Order(7)
     void testCreateDirectoryEndpoint() {
-        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/1", CustomFile.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/1",HttpMethod.GET,entity ,CustomFile.class);
         CustomFile testDir = getResponse.getBody();
 
         CustomFile directory = new CustomFile();
@@ -153,9 +213,6 @@ class FileServiceIT{
         directory.setSize(0L);
         directory.setParent(testDir);
 
-        // Set up the request headers
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
 
         // Create the HTTP entity with headers and request body
         HttpEntity<CustomFile> requestEntity = new HttpEntity<>(directory, headers);
@@ -176,7 +233,10 @@ class FileServiceIT{
     @Test
     @Order(8)
     void testCreateDirectoryEndpoint400() {
-        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/1", CustomFile.class);
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers1);
+        ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/1",HttpMethod.GET,entity ,CustomFile.class);
         CustomFile testDir = getResponse.getBody();
 
         CustomFile directory = new CustomFile();
@@ -188,6 +248,7 @@ class FileServiceIT{
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(jwtToken);
 
         // Create the HTTP entity with headers and request body
         HttpEntity<CustomFile> requestEntity = new HttpEntity<>(directory, headers);
@@ -204,8 +265,11 @@ class FileServiceIT{
 
     @Test
     @Order(9)
-    void testUpdateFileEndpoint() throws IOException  {
-        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/3", CustomFile.class);
+    void testUpdateFileEndpoint(){
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers1);
+        ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/3", HttpMethod.GET,entity,CustomFile.class);
         CustomFile file = getResponse.getBody();
 
         file.setName("UpdatedFile.txt");
@@ -213,6 +277,7 @@ class FileServiceIT{
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(jwtToken);
 
         // Create the HTTP entity with headers and request body
         HttpEntity<CustomFile> requestEntity = new HttpEntity<>(file, headers);
@@ -232,8 +297,12 @@ class FileServiceIT{
 
     @Test
     @Order(10)
-    void testUpdateFileEndpoint400() throws IOException  {
-        ResponseEntity<CustomFile> getResponse = restTemplate.getForEntity("http://localhost:" + port + "/api/files/3", CustomFile.class);
+    void testUpdateFileEndpoint400(){
+        HttpHeaders headers1 = new HttpHeaders();
+        headers1.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers1);
+        ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/3", HttpMethod.GET,entity,CustomFile.class);
+
         CustomFile file = getResponse.getBody();
 
         file.setName("UpdatedFile.txt");
@@ -241,6 +310,7 @@ class FileServiceIT{
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(jwtToken);
 
         // Create the HTTP entity with headers and request body
         HttpEntity<CustomFile> requestEntity = new HttpEntity<>(file, headers);
@@ -257,9 +327,12 @@ class FileServiceIT{
 
     @Test
     @Order(999)
-    // Clean up
+        // Clean up
     void testDeleteFileByIdWithDirectoryEndpoint() {
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, null, String.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/1", HttpMethod.DELETE, entity, String.class);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertNull(response.getBody());
     }

@@ -90,9 +90,9 @@ public class ScheduleService {
      * @param schedule The Schedule to update.
      * @return The updated Schedule.
      */
-    public Schedule updateSchedule(Schedule schedule) {
+    public Schedule updateSchedule(Long id,Schedule schedule) {
         String operation = "updateSchedule";
-        String description = "Updating schedule " + schedule.getId();
+        String description = "Updating schedule " + id;
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
             logger.error(ADDLOGERROR);
         } else {

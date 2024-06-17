@@ -192,7 +192,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                         menuPortalTarget={document.body} 
                         isSearchable="true"
                         onChange={(e) => handleSelectedContent(e)}
-                        options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.widget.id, label: option }))}
+                        options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.id, label: option }))}
                         placeholder={templateWidget.widget.name + "..."}
                         defaultValue={selectedContent[templateWidget.id] !== undefined && { label: selectedContent[templateWidget.id], value: 1 }}
                         getOptionValue={(option) => option.label}

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WidgetRepository extends JpaRepository<Widget, Long> {
     Widget findByName(String name);
-    Widget findById(long id);
 
     // List<Widget> findByContent(Content content);
 

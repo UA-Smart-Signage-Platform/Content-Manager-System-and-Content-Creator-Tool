@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/content")
+@RequestMapping("content")
 public class ContentController {
 
     private ContentService contentService;

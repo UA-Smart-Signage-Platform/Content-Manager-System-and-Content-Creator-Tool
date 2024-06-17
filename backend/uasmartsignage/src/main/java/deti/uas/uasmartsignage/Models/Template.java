@@ -26,11 +26,11 @@ public class Template {
     private String name;
 
     @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties("template")
+    @JsonIgnoreProperties(value={"template","widgets"},allowSetters = true) //widegts
     private List<TemplateWidget> templateWidgets;
 
     @OneToMany(mappedBy = "template")
-    @JsonIgnoreProperties("template")
+    @JsonIgnoreProperties(value={"template"},allowSetters = true)
     private List<TemplateGroup> templateGroups;
 
 }

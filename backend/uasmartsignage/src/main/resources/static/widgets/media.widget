@@ -1,6 +1,6 @@
-<div style="top: [[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px;">
-    <video autoplay muted class="stretch" id="video[[widgetID]]"></video>
-    <img class="stretch" style="display: none;" id="image[[widgetID]]">
+<div style="top:[[top]]px; left: [[left]]px; width: [[width]]px; height: [[height]]px; text-align: center; display: flex; justify-content: center; align-items: center;">
+    <video autoplay muted class="imageStay" id="video[[widgetID]]"></video>
+    <img class="imageStay" style="display: none;" id="image[[widgetID]]">
 </div>
 <script>
     var videoList[[widgetID]] = ["[[videos]]"];
@@ -12,14 +12,15 @@
         let image = document.getElementById("image[[widgetID]]");
 
         if (videoSrc.endsWith('.mp4')) {
-            video.src = videoSrc;
             video.style.display = 'block';
             image.style.display = 'none';
+            video.src = videoSrc;
+            video.load();
             video.play();
         } else {
-            image.src = videoSrc;
             image.style.display = 'block';
             video.style.display = 'none';
+            image.src = videoSrc; 
             startTimer[[widgetID]]();
         }
 
@@ -40,6 +41,7 @@
     }
 
     document.getElementById("video[[widgetID]]").addEventListener("ended", function() {
+        this.src = ''; 
         setVideoSource[[widgetID]](videoList[[widgetID]][currentIndex[[widgetID]]]);
     });
 </script>

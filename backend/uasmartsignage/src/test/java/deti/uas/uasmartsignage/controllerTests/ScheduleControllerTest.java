@@ -33,6 +33,7 @@ import deti.uas.uasmartsignage.Models.Schedule;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,7 +89,7 @@ class ScheduleControllerTest {
         mvc.perform(get("/api/schedules").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$", hasSize(2)))
-            .andExpect(jsonPath("$[0].frequency", is(10)))
+            .andExpect(jsonPath("$[0].frequency",is(10)))
             .andExpect(jsonPath("$[1].frequency", is(5)));
     }
 
@@ -161,10 +162,64 @@ class ScheduleControllerTest {
         when(service.getScheduleById(1L)).thenReturn(schedule);
 
         mvc.perform(delete("/api/schedules/1").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+            .andExpect(status().isNoContent());
     }
 
-    //missing update test
+    @Test
+    void testUpdateMultipleSchedules() throws Exception{
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
 
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setId(2L);
+        schedule2.setFrequency(4);
+        schedule2.setCreatedBy(user);
+        schedule2.setPriority(4);
+        schedule2.setLastEditedBy(user);
+
+        when(service.updateSchedules(Mockito.any())).thenReturn(Arrays.asList(schedule,schedule2));
+
+        mvc.perform(put("/api/schedules").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(Arrays.asList(schedule,schedule2))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(2)))
+                .andExpect(jsonPath("$[0].priority", is(1)))
+                .andExpect(jsonPath("$[1].priority", is(4)));
+    }
+
+    @Test
+    void testUpdateSingleSchedule() throws Exception{
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+
+        when(service.updateSchedule(Mockito.any(Long.class) , Mockito.any(Schedule.class))).thenReturn(schedule);
+
+        mvc.perform(put("/api/schedules/1").contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(schedule)))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.priority", is(1)));
+    }
 
 }

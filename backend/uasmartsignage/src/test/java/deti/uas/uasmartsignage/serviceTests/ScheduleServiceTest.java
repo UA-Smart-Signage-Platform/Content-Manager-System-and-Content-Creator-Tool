@@ -1,6 +1,5 @@
 package deti.uas.uasmartsignage.serviceTests;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
@@ -10,16 +9,16 @@ import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
+import deti.uas.uasmartsignage.Models.*;
+import deti.uas.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Models.AppUser;
 import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
 import deti.uas.uasmartsignage.Services.LogsService;
 import deti.uas.uasmartsignage.Services.ScheduleService;
@@ -28,6 +27,9 @@ import deti.uas.uasmartsignage.Services.ScheduleService;
 class ScheduleServiceTest {
     @Mock
     private ScheduleRepository repository;
+
+    @Mock
+    private TemplateGroupService templateGroupService;
 
     @Mock
     private LogsService logsService;
@@ -136,6 +138,168 @@ class ScheduleServiceTest {
         assertFalse(repository.existsById(1L));
 
     }
-    //missing update(not know what can be updated)
+
+    @Test
+    void testUpdateMultipleSchedules(){
+        Monitor monitor = new Monitor();
+        monitor.setName("monitor");
+        monitor.setPending(false);
+        monitor.setWidth(1);
+        monitor.setHeight(1);
+
+        Monitor monitor1 = new Monitor();
+        monitor1.setName("monitor1");
+        monitor1.setPending(false);
+        monitor1.setWidth(12);
+        monitor1.setHeight(12);
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+        group.setMonitors(List.of(monitor,monitor1));
+
+        Widget widget = new Widget();
+        widget.setName("widget1");
+
+        TemplateWidget templateWidget = new TemplateWidget();
+        templateWidget.setWidget(widget);
+
+        TemplateWidget templateWidget1 = new TemplateWidget();
+        templateWidget1.setWidget(widget);
+
+        Template template = new Template();
+        template.setName("template1");
+        template.setTemplateWidgets(List.of(templateWidget,templateWidget1));
+
+
+        TemplateGroup templateGroup = new TemplateGroup();
+        templateGroup.setGroup(group);
+        templateGroup.setTemplate(template);
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setPriority(1);
+        schedule.setTemplateGroups(List.of(templateGroup));
+        schedule.setLastEditedBy(user);
+
+        Schedule schedule2 = new Schedule();
+        schedule2.setId(2L);
+        schedule2.setFrequency(4);
+        schedule2.setCreatedBy(user);
+        schedule2.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule2.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule2.setPriority(4);
+        schedule2.setTemplateGroups(List.of(templateGroup));
+        schedule2.setLastEditedBy(user);
+
+        Schedule update = new Schedule();
+        update.setId(1L);
+        update.setPriority(1);
+
+
+        when(repository.findById(1L)).thenReturn(Optional.of(schedule));
+
+        when(repository.findById(2L)).thenReturn(Optional.of(schedule2));
+
+        when(repository.save(schedule)).thenReturn(update);
+
+        when(repository.save(schedule2)).thenReturn(schedule2);
+
+
+        List<Schedule> schedules = Arrays.asList(schedule, schedule2);
+
+        List<Schedule> updatedSchedules = service.updateSchedules(schedules);
+
+        assertThat(updatedSchedules).hasSize(2);
+        assertThat(updatedSchedules.get(0).getEndDate()).isEqualTo(LocalDate.parse("2024-04-21"));
+        assertThat(updatedSchedules.get(0).getPriority()).isEqualTo(1);
+        assertThat(updatedSchedules.get(1).getPriority()).isEqualTo(4);
+    }
+
+    @Test
+    void testUpdateSchedule(){
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setName("group1");
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+
+        Schedule update = new Schedule();
+        update.setId(1L);
+        update.setFrequency(5);
+        update.setCreatedBy(user);
+        update.setEndDate(LocalDate.parse("2024-06-21"));
+        update.setStartDate(LocalDate.parse("2024-06-21"));
+        update.setPriority(1);
+        update.setLastEditedBy(user);
+
+        when(repository.save(Mockito.any())).thenReturn(update);
+
+        Schedule updatedSchedule = service.updateSchedule(1L,update);
+
+        assertThat(updatedSchedule.getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
+        assertThat(updatedSchedule.getFrequency()).isEqualTo(5);
+    }
+
+    @Test
+    void testGetSchedulesByGroupId(){
+        AppUser user = new AppUser();
+        user.setEmail("admin");
+        user.setRole("ADMIN");
+
+        MonitorsGroup group = new MonitorsGroup();
+        group.setId(1L);
+        group.setName("group1");
+
+        TemplateGroup templateGroup = new TemplateGroup();
+        templateGroup.setGroup(group);
+
+        Schedule schedule = new Schedule();
+        schedule.setId(1L);
+        schedule.setFrequency(4);
+        schedule.setCreatedBy(user);
+        schedule.setEndDate(LocalDate.parse("2024-04-21"));
+        schedule.setStartDate(LocalDate.parse("2024-04-21"));
+        schedule.setPriority(1);
+        schedule.setLastEditedBy(user);
+        schedule.setTemplateGroups(List.of(templateGroup));
+
+        Schedule update = new Schedule();
+        update.setId(1L);
+        update.setFrequency(5);
+        update.setCreatedBy(user);
+        update.setEndDate(LocalDate.parse("2024-06-21"));
+        update.setStartDate(LocalDate.parse("2024-06-21"));
+        update.setPriority(1);
+        update.setLastEditedBy(user);
+        update.setTemplateGroups(List.of(templateGroup));
+
+        when(repository.findAll()).thenReturn(Arrays.asList(schedule, update));
+
+        List<Schedule> schedules = service.getSchedulesByGroupId(1L);
+
+        assertThat(schedules).hasSize(2);
+        assertThat(schedules.get(0).getEndDate()).isEqualTo(LocalDate.parse("2024-04-21"));
+        assertThat(schedules.get(1).getEndDate()).isEqualTo(LocalDate.parse("2024-06-21"));
+
+
+    }
+
 
 }
