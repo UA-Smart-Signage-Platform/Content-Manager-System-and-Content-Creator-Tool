@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.serviceTests;
+package pt.ua.deti.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import deti.uas.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +28,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Models.FilesClass;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
-import deti.uas.uasmartsignage.Services.FileService;
+import pt.ua.deti.uasmartsignage.Models.CustomFile;
+import pt.ua.deti.uasmartsignage.Models.FilesClass;
+import pt.ua.deti.uasmartsignage.Repositories.FileRepository;
+import pt.ua.deti.uasmartsignage.Services.FileService;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {

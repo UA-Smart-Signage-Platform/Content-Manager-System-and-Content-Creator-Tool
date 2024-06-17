@@ -1,11 +1,11 @@
-package deti.uas.uasmartsignage.integrationTests;
+package pt.ua.deti.uasmartsignage.integrationTests;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import deti.uas.uasmartsignage.Models.Schedule;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.Models.Schedule;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

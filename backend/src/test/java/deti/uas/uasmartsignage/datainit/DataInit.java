@@ -1,24 +1,24 @@
-package deti.uas.uasmartsignage.datainit;
+package pt.ua.deti.uasmartsignage.datainit;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Services.*;
+import pt.ua.deti.uasmartsignage.Models.*;
+import pt.ua.deti.uasmartsignage.Services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
-import deti.uas.uasmartsignage.Repositories.MonitorRepository;
-import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
-import deti.uas.uasmartsignage.Repositories.TemplateRepository;
-import deti.uas.uasmartsignage.Repositories.WidgetRepository;
-import deti.uas.uasmartsignage.Repositories.ContentRepository;
-import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateRepository;
+import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
+import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

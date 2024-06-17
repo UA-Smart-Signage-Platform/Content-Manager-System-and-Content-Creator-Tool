@@ -1,15 +1,15 @@
-package deti.uas.uasmartsignage.serviceTests;
+package pt.ua.deti.uasmartsignage.serviceTests;
 
-import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Services.UserService;
-import deti.uas.uasmartsignage.Repositories.UserRepository;
+import pt.ua.deti.uasmartsignage.Services.CustomUserDetailsService;
+import pt.ua.deti.uasmartsignage.Services.UserService;
+import pt.ua.deti.uasmartsignage.Repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import deti.uas.uasmartsignage.Models.AppUser;
+import pt.ua.deti.uasmartsignage.Models.AppUser;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.serviceTests;
+package pt.ua.deti.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 
-import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.Models.*;
+import pt.ua.deti.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -19,9 +19,9 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import deti.uas.uasmartsignage.Repositories.ScheduleRepository;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.ScheduleService;
+import pt.ua.deti.uasmartsignage.Repositories.ScheduleRepository;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.ScheduleService;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {

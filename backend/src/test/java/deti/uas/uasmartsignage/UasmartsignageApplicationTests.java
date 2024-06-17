@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage;
+package pt.ua.deti.uasmartsignage;
 
 import org.springframework.boot.test.context.SpringBootTest;
 

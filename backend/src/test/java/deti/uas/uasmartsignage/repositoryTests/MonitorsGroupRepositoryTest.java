@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.repositoryTests;
+package pt.ua.deti.uasmartsignage.repositoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
-import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.Models.Monitor;
+import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
 
 @DataJpaTest
 @ActiveProfiles("test")

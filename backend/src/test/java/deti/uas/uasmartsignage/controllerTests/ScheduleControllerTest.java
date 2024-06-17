@@ -1,14 +1,14 @@
-package deti.uas.uasmartsignage.controllerTests;
+package pt.ua.deti.uasmartsignage.controllerTests;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.util.Arrays;
 
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Models.AppUser;
-import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Services.ScheduleService;
-import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
+import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.Models.AppUser;
+import pt.ua.deti.uasmartsignage.Services.CustomUserDetailsService;
+import pt.ua.deti.uasmartsignage.Services.ScheduleService;
+import pt.ua.deti.uasmartsignage.authentication.IAuthenticationFacade;
 
 
 import org.junit.jupiter.api.Test;
@@ -26,8 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import deti.uas.uasmartsignage.Controllers.ScheduleController;
-import deti.uas.uasmartsignage.Models.Schedule;
+import pt.ua.deti.uasmartsignage.Controllers.ScheduleController;
+import pt.ua.deti.uasmartsignage.Models.Schedule;
 
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -51,7 +51,7 @@ class ScheduleControllerTest {
     private CustomUserDetailsService customUserDetailsService;
 
     @MockBean
-    private deti.uas.uasmartsignage.Services.JwtUtilService jwtUtil;
+    private pt.ua.deti.uasmartsignage.Services.JwtUtilService jwtUtil;
 
     @MockBean
     private IAuthenticationFacade authenticationFacade;

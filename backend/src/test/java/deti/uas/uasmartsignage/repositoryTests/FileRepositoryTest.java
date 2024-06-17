@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.repositoryTests;
+package pt.ua.deti.uasmartsignage.repositoryTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Repositories.FileRepository;
+import pt.ua.deti.uasmartsignage.Models.CustomFile;
+import pt.ua.deti.uasmartsignage.Repositories.FileRepository;
 
 @DataJpaTest
 class FileRepositoryTest {

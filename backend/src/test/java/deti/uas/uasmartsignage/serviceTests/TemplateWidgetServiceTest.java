@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.serviceTests;
+package pt.ua.deti.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -7,18 +7,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import deti.uas.uasmartsignage.Models.TemplateWidget;
-import deti.uas.uasmartsignage.Models.Widget;
-import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.TemplateWidgetService;
+import pt.ua.deti.uasmartsignage.Models.TemplateWidget;
+import pt.ua.deti.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.TemplateWidgetService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import deti.uas.uasmartsignage.Models.Template;
+import pt.ua.deti.uasmartsignage.Models.Template;
 
 @ExtendWith(MockitoExtension.class)
 class TemplateWidgetServiceTest {

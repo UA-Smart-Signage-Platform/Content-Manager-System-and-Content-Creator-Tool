@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.serviceTests;
+package pt.ua.deti.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertFalse;
@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
-import deti.uas.uasmartsignage.Configuration.MqttConfig;
-import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Services.*;
+import pt.ua.deti.uasmartsignage.Configuration.MqttConfig;
+import pt.ua.deti.uasmartsignage.Models.*;
+import pt.ua.deti.uasmartsignage.Services.*;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 
-import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
 
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 

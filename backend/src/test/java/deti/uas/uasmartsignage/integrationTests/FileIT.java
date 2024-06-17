@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.integrationTests;
+package pt.ua.deti.uasmartsignage.integrationTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.Models.CustomFile;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

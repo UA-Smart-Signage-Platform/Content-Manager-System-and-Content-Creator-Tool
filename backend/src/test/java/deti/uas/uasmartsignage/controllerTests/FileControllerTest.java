@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.controllerTests;
+package pt.ua.deti.uasmartsignage.controllerTests;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -6,10 +6,10 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Optional;
 
-import deti.uas.uasmartsignage.Controllers.FileController;
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Services.FileService;
+import pt.ua.deti.uasmartsignage.Controllers.FileController;
+import pt.ua.deti.uasmartsignage.Models.CustomFile;
+import pt.ua.deti.uasmartsignage.Services.CustomUserDetailsService;
+import pt.ua.deti.uasmartsignage.Services.FileService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import deti.uas.uasmartsignage.Services.MonitorService;
-import deti.uas.uasmartsignage.Services.JwtUtilService;
-import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
+import pt.ua.deti.uasmartsignage.Services.MonitorService;
+import pt.ua.deti.uasmartsignage.Services.JwtUtilService;
+import pt.ua.deti.uasmartsignage.authentication.IAuthenticationFacade;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

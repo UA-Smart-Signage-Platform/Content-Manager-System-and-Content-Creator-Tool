@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.controllerTests;
+package pt.ua.deti.uasmartsignage.controllerTests;
 
 import static org.mockito.Mockito.when;
 
@@ -19,12 +19,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import deti.uas.uasmartsignage.Controllers.MonitorController;
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Services.CustomUserDetailsService;
-import deti.uas.uasmartsignage.Services.MonitorService;
-import deti.uas.uasmartsignage.Services.JwtUtilService;
-import deti.uas.uasmartsignage.authentication.IAuthenticationFacade;
+import pt.ua.deti.uasmartsignage.Controllers.MonitorController;
+import pt.ua.deti.uasmartsignage.Models.Monitor;
+import pt.ua.deti.uasmartsignage.Services.CustomUserDetailsService;
+import pt.ua.deti.uasmartsignage.Services.MonitorService;
+import pt.ua.deti.uasmartsignage.Services.JwtUtilService;
+import pt.ua.deti.uasmartsignage.authentication.IAuthenticationFacade;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

@@ -1,10 +1,10 @@
-package deti.uas.uasmartsignage.integrationTests;
+package pt.ua.deti.uasmartsignage.integrationTests;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.TemplateGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import deti.uas.uasmartsignage.Models.Template;
+import pt.ua.deti.uasmartsignage.Models.Template;
 
 import java.util.List;
 

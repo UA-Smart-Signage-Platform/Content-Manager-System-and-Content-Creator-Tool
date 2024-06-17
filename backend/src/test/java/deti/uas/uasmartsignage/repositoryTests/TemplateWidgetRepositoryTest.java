@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.repositoryTests;
+package pt.ua.deti.uasmartsignage.repositoryTests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,10 +7,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 
-import deti.uas.uasmartsignage.Models.TemplateWidget;
-import deti.uas.uasmartsignage.Models.Template;
-import deti.uas.uasmartsignage.Repositories.TemplateWidgetRepository;
-import deti.uas.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.Models.TemplateWidget;
+import pt.ua.deti.uasmartsignage.Models.Template;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
+import pt.ua.deti.uasmartsignage.Models.Widget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

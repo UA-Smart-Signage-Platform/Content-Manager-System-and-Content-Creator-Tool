@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.integrationTests;
+package pt.ua.deti.uasmartsignage.integrationTests;
 
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,20 +1,20 @@
-package deti.uas.uasmartsignage.datainit;
+package pt.ua.deti.uasmartsignage.datainit;
 
 
 import java.nio.charset.StandardCharsets;
 
-import deti.uas.uasmartsignage.Models.AppUser;
-import deti.uas.uasmartsignage.Models.CustomFile;
-import deti.uas.uasmartsignage.Models.FilesClass;
-import deti.uas.uasmartsignage.Services.FileService;
-import deti.uas.uasmartsignage.Services.UserService;
+import pt.ua.deti.uasmartsignage.Models.AppUser;
+import pt.ua.deti.uasmartsignage.Models.CustomFile;
+import pt.ua.deti.uasmartsignage.Models.FilesClass;
+import pt.ua.deti.uasmartsignage.Services.FileService;
+import pt.ua.deti.uasmartsignage.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
 
 @Component
 @Profile("integration-test")

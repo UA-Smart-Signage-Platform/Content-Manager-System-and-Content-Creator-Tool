@@ -1,11 +1,11 @@
-package deti.uas.uasmartsignage.controllerTests;
+package pt.ua.deti.uasmartsignage.controllerTests;
 
 import static org.mockito.Mockito.when;
 
 import java.util.*;
 
-import deti.uas.uasmartsignage.Models.*;
-import deti.uas.uasmartsignage.Services.*;
+import pt.ua.deti.uasmartsignage.Models.*;
+import pt.ua.deti.uasmartsignage.Services.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import deti.uas.uasmartsignage.Repositories.TemplateGroupRepository;
-import deti.uas.uasmartsignage.Controllers.TemplateGroupController;
+import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
+import pt.ua.deti.uasmartsignage.Controllers.TemplateGroupController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

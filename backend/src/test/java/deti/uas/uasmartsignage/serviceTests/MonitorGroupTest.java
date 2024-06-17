@@ -1,12 +1,12 @@
-package deti.uas.uasmartsignage.serviceTests;
+package pt.ua.deti.uasmartsignage.serviceTests;
 
 
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Repositories.MonitorGroupRepository;
-import deti.uas.uasmartsignage.Repositories.MonitorRepository;
-import deti.uas.uasmartsignage.Services.LogsService;
-import deti.uas.uasmartsignage.Services.MonitorGroupService;
+import pt.ua.deti.uasmartsignage.Models.Monitor;
+import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.Services.MonitorGroupService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -1,4 +1,4 @@
-package deti.uas.uasmartsignage.repositoryTests;
+package pt.ua.deti.uasmartsignage.repositoryTests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,9 +7,9 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import deti.uas.uasmartsignage.Models.Monitor;
-import deti.uas.uasmartsignage.Models.MonitorsGroup;
-import deti.uas.uasmartsignage.Repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.Models.Monitor;
+import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
 import jakarta.persistence.EntityManager;
 
 import static org.assertj.core.api.Assertions.assertThat;

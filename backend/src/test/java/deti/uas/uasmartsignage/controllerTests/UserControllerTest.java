@@ -1,10 +1,10 @@
-package deti.uas.uasmartsignage.controllerTests;
+package pt.ua.deti.uasmartsignage.controllerTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import deti.uas.uasmartsignage.Configuration.JwtAuthFilter;
-import deti.uas.uasmartsignage.Controllers.UserController;
-import deti.uas.uasmartsignage.Models.AppUser;
-import deti.uas.uasmartsignage.Services.UserService;
+import pt.ua.deti.uasmartsignage.Configuration.JwtAuthFilter;
+import pt.ua.deti.uasmartsignage.Controllers.UserController;
+import pt.ua.deti.uasmartsignage.Models.AppUser;
+import pt.ua.deti.uasmartsignage.Services.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
