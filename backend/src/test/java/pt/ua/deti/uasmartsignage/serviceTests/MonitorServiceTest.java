@@ -14,12 +14,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import pt.ua.deti.uasmartsignage.Models.Monitor;
-import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.Monitor;
+import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
 import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
-import pt.ua.deti.uasmartsignage.Services.LogsService;
-import pt.ua.deti.uasmartsignage.Services.MonitorService;
-import pt.ua.deti.uasmartsignage.Services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.services.LogsService;
+import pt.ua.deti.uasmartsignage.services.MonitorService;
+import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
 import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
 
 @ExtendWith(MockitoExtension.class)

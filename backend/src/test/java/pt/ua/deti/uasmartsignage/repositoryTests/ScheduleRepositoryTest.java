@@ -7,14 +7,14 @@ import java.time.LocalTime;
 import java.util.List;
 
 
-import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
-import pt.ua.deti.uasmartsignage.Models.Schedule;
-import pt.ua.deti.uasmartsignage.Models.AppUser;
+import pt.ua.deti.uasmartsignage.models.Schedule;
+import pt.ua.deti.uasmartsignage.models.AppUser;
 import pt.ua.deti.uasmartsignage.Repositories.ScheduleRepository;
 
 @DataJpaTest

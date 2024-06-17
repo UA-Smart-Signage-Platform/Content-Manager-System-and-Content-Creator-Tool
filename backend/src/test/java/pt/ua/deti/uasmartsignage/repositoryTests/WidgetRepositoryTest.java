@@ -1,6 +1,6 @@
 package pt.ua.deti.uasmartsignage.repositoryTests;
 
-import pt.ua.deti.uasmartsignage.Models.Template;
+import pt.ua.deti.uasmartsignage.models.Template;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 
-import pt.ua.deti.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.models.Widget;
 import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
-import pt.ua.deti.uasmartsignage.Models.Content;
+import pt.ua.deti.uasmartsignage.models.Content;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

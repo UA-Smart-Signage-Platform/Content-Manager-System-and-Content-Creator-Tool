@@ -1,7 +1,7 @@
 package pt.ua.deti.uasmartsignage;
 
 
-import pt.ua.deti.uasmartsignage.Configuration.InfluxDBProperties;
+import pt.ua.deti.uasmartsignage.configuration.InfluxDBProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

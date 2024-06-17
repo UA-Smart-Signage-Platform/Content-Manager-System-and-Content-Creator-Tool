@@ -6,10 +6,10 @@ import static org.mockito.Mockito.when;
 import java.util.Arrays;
 import java.util.Optional;
 
-import pt.ua.deti.uasmartsignage.Controllers.FileController;
-import pt.ua.deti.uasmartsignage.Models.CustomFile;
-import pt.ua.deti.uasmartsignage.Services.CustomUserDetailsService;
-import pt.ua.deti.uasmartsignage.Services.FileService;
+import pt.ua.deti.uasmartsignage.controllers.FileController;
+import pt.ua.deti.uasmartsignage.models.CustomFile;
+import pt.ua.deti.uasmartsignage.services.CustomUserDetailsService;
+import pt.ua.deti.uasmartsignage.services.FileService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import pt.ua.deti.uasmartsignage.Services.MonitorService;
-import pt.ua.deti.uasmartsignage.Services.JwtUtilService;
+import pt.ua.deti.uasmartsignage.services.MonitorService;
+import pt.ua.deti.uasmartsignage.services.JwtUtilService;
 import pt.ua.deti.uasmartsignage.authentication.IAuthenticationFacade;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

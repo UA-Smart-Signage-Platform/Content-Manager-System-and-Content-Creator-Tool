@@ -3,11 +3,11 @@ package pt.ua.deti.uasmartsignage.datainit;
 
 import java.nio.charset.StandardCharsets;
 
-import pt.ua.deti.uasmartsignage.Models.AppUser;
-import pt.ua.deti.uasmartsignage.Models.CustomFile;
-import pt.ua.deti.uasmartsignage.Models.FilesClass;
-import pt.ua.deti.uasmartsignage.Services.FileService;
-import pt.ua.deti.uasmartsignage.Services.UserService;
+import pt.ua.deti.uasmartsignage.models.AppUser;
+import pt.ua.deti.uasmartsignage.models.CustomFile;
+import pt.ua.deti.uasmartsignage.models.FilesClass;
+import pt.ua.deti.uasmartsignage.services.FileService;
+import pt.ua.deti.uasmartsignage.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;

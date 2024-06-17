@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.services.LogsService;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,10 +28,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
-import pt.ua.deti.uasmartsignage.Models.CustomFile;
-import pt.ua.deti.uasmartsignage.Models.FilesClass;
+import pt.ua.deti.uasmartsignage.models.CustomFile;
+import pt.ua.deti.uasmartsignage.models.FilesClass;
 import pt.ua.deti.uasmartsignage.Repositories.FileRepository;
-import pt.ua.deti.uasmartsignage.Services.FileService;
+import pt.ua.deti.uasmartsignage.services.FileService;
 
 @ExtendWith(MockitoExtension.class)
 class FileServiceTest {

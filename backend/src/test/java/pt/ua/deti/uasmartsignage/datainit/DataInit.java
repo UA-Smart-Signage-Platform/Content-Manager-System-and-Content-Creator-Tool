@@ -5,8 +5,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import pt.ua.deti.uasmartsignage.Models.*;
-import pt.ua.deti.uasmartsignage.Services.*;
+import pt.ua.deti.uasmartsignage.models.*;
+import pt.ua.deti.uasmartsignage.services.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;

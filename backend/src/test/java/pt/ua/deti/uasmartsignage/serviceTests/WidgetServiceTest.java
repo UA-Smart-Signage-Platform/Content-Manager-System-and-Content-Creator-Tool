@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import pt.ua.deti.uasmartsignage.Models.*;
-import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.models.*;
+import pt.ua.deti.uasmartsignage.services.LogsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
-import pt.ua.deti.uasmartsignage.Services.WidgetService;
+import pt.ua.deti.uasmartsignage.services.WidgetService;
 
 @ExtendWith(MockitoExtension.class)
 class WidgetServiceTest {

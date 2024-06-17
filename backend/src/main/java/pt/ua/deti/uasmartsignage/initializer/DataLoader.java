@@ -12,8 +12,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
-import pt.ua.deti.uasmartsignage.Services.FileService;
-import pt.ua.deti.uasmartsignage.Services.ScheduleService;
+import pt.ua.deti.uasmartsignage.services.FileService;
+import pt.ua.deti.uasmartsignage.services.ScheduleService;
 
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +22,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import pt.ua.deti.uasmartsignage.Models.AppUser;
-import pt.ua.deti.uasmartsignage.Models.Content;
-import pt.ua.deti.uasmartsignage.Models.Monitor;
-import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.Models.Schedule;
-import pt.ua.deti.uasmartsignage.Models.Template;
-import pt.ua.deti.uasmartsignage.Models.TemplateGroup;
-import pt.ua.deti.uasmartsignage.Models.TemplateWidget;
-import pt.ua.deti.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.models.AppUser;
+import pt.ua.deti.uasmartsignage.models.Content;
+import pt.ua.deti.uasmartsignage.models.Monitor;
+import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.Schedule;
+import pt.ua.deti.uasmartsignage.models.Template;
+import pt.ua.deti.uasmartsignage.models.TemplateGroup;
+import pt.ua.deti.uasmartsignage.models.TemplateWidget;
+import pt.ua.deti.uasmartsignage.models.Widget;
 import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
 import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
 import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
@@ -38,7 +38,7 @@ import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
 import pt.ua.deti.uasmartsignage.Repositories.TemplateRepository;
 import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
 import pt.ua.deti.uasmartsignage.Repositories.WidgetRepository;
-import pt.ua.deti.uasmartsignage.Services.UserService;
+import pt.ua.deti.uasmartsignage.services.UserService;
 
 @Component
 @Profile("!test & !integration-test")

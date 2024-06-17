@@ -7,18 +7,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import pt.ua.deti.uasmartsignage.Models.TemplateWidget;
-import pt.ua.deti.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.models.TemplateWidget;
+import pt.ua.deti.uasmartsignage.models.Widget;
 import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
-import pt.ua.deti.uasmartsignage.Services.LogsService;
-import pt.ua.deti.uasmartsignage.Services.TemplateWidgetService;
+import pt.ua.deti.uasmartsignage.services.LogsService;
+import pt.ua.deti.uasmartsignage.services.TemplateWidgetService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import pt.ua.deti.uasmartsignage.Models.Template;
+import pt.ua.deti.uasmartsignage.models.Template;
 
 @ExtendWith(MockitoExtension.class)
 class TemplateWidgetServiceTest {

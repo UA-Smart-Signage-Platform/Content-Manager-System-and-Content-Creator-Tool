@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.time.LocalDate;
 
-import pt.ua.deti.uasmartsignage.Models.*;
-import pt.ua.deti.uasmartsignage.Services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.models.*;
+import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,8 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 
 import pt.ua.deti.uasmartsignage.Repositories.ScheduleRepository;
-import pt.ua.deti.uasmartsignage.Services.LogsService;
-import pt.ua.deti.uasmartsignage.Services.ScheduleService;
+import pt.ua.deti.uasmartsignage.services.LogsService;
+import pt.ua.deti.uasmartsignage.services.ScheduleService;
 
 @ExtendWith(MockitoExtension.class)
 class ScheduleServiceTest {

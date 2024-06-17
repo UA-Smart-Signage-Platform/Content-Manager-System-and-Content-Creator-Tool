@@ -19,11 +19,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
-import pt.ua.deti.uasmartsignage.Controllers.MonitorController;
-import pt.ua.deti.uasmartsignage.Models.Monitor;
-import pt.ua.deti.uasmartsignage.Services.CustomUserDetailsService;
-import pt.ua.deti.uasmartsignage.Services.MonitorService;
-import pt.ua.deti.uasmartsignage.Services.JwtUtilService;
+import pt.ua.deti.uasmartsignage.controllers.MonitorController;
+import pt.ua.deti.uasmartsignage.models.Monitor;
+import pt.ua.deti.uasmartsignage.services.CustomUserDetailsService;
+import pt.ua.deti.uasmartsignage.services.MonitorService;
+import pt.ua.deti.uasmartsignage.services.JwtUtilService;
 import pt.ua.deti.uasmartsignage.authentication.IAuthenticationFacade;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;

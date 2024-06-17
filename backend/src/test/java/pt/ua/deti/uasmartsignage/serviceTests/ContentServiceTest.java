@@ -7,17 +7,17 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import pt.ua.deti.uasmartsignage.Services.LogsService;
+import pt.ua.deti.uasmartsignage.services.LogsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import pt.ua.deti.uasmartsignage.Models.Content;
-import pt.ua.deti.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.models.Content;
+import pt.ua.deti.uasmartsignage.models.Widget;
 import pt.ua.deti.uasmartsignage.Repositories.ContentRepository;
-import pt.ua.deti.uasmartsignage.Services.ContentService;
+import pt.ua.deti.uasmartsignage.services.ContentService;
 
 @ExtendWith(MockitoExtension.class)
 class ContentServiceTest {

@@ -1,6 +1,6 @@
 package pt.ua.deti.uasmartsignage.repositoryTests;
 
-import pt.ua.deti.uasmartsignage.Models.Schedule;
+import pt.ua.deti.uasmartsignage.models.Schedule;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -9,10 +9,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import java.util.List;
 import java.util.Map;
 
-import pt.ua.deti.uasmartsignage.Models.TemplateGroup;
+import pt.ua.deti.uasmartsignage.models.TemplateGroup;
 import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
-import pt.ua.deti.uasmartsignage.Models.Template;
-import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.Template;
+import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

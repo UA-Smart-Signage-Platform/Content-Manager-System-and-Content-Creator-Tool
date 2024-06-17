@@ -4,8 +4,8 @@ import static org.mockito.Mockito.when;
 
 import java.util.*;
 
-import pt.ua.deti.uasmartsignage.Models.*;
-import pt.ua.deti.uasmartsignage.Services.*;
+import pt.ua.deti.uasmartsignage.models.*;
+import pt.ua.deti.uasmartsignage.services.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import pt.ua.deti.uasmartsignage.Repositories.TemplateGroupRepository;
-import pt.ua.deti.uasmartsignage.Controllers.TemplateGroupController;
+import pt.ua.deti.uasmartsignage.controllers.TemplateGroupController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

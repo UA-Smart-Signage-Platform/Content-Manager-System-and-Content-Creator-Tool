@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-import pt.ua.deti.uasmartsignage.Models.Monitor;
-import pt.ua.deti.uasmartsignage.Models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.Monitor;
+import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
 import pt.ua.deti.uasmartsignage.Repositories.MonitorGroupRepository;
 import pt.ua.deti.uasmartsignage.Repositories.MonitorRepository;
 

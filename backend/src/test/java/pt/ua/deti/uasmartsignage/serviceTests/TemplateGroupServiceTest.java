@@ -11,9 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Optional;
 
-import pt.ua.deti.uasmartsignage.Configuration.MqttConfig;
-import pt.ua.deti.uasmartsignage.Models.*;
-import pt.ua.deti.uasmartsignage.Services.*;
+import pt.ua.deti.uasmartsignage.configuration.MqttConfig;
+import pt.ua.deti.uasmartsignage.models.*;
+import pt.ua.deti.uasmartsignage.services.*;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

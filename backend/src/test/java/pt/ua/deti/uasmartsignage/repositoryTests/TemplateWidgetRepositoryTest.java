@@ -7,10 +7,10 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.List;
 
-import pt.ua.deti.uasmartsignage.Models.TemplateWidget;
-import pt.ua.deti.uasmartsignage.Models.Template;
+import pt.ua.deti.uasmartsignage.models.TemplateWidget;
+import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.Repositories.TemplateWidgetRepository;
-import pt.ua.deti.uasmartsignage.Models.Widget;
+import pt.ua.deti.uasmartsignage.models.Widget;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
