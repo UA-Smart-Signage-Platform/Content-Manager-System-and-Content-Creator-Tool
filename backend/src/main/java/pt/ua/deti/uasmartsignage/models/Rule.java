@@ -35,7 +35,7 @@ public class Rule {
         for (TemplateWidget templateWidget : this.template.getWidgets()) {
 
             Widget widget = templateWidget.getWidget();
-            System.out.println(widget.getId() + " " + widgetId);
+
             if (widget != null && widget.getId().equals(widgetId)) {
 
                 if (templateWidget.getWidget().getVariables() == null) {
@@ -43,10 +43,8 @@ public class Rule {
                 }
 
                 for (WidgetVariable variable : widget.getVariables()) {
-                    System.out.println(variable.getName() + " " + name);
                     if (variable.getName().equals(name)) {
                         variable.setValue(value);
-                        System.out.println(variable.getValue());
                     }
                 }
 
