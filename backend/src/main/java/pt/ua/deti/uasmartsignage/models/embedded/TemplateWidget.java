@@ -9,11 +9,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class TemplateWidget {
 
-    @DBRef
     private Widget widget;
     private int top;
     private int left;

@@ -30,7 +30,7 @@ public class MonitorsGroup {
     @JsonIgnoreProperties(value = {"group"},allowSetters = true)
     private List<Monitor> monitors;
 
-    private List<Long> ruleIds;
+    private List<String> ruleIds;
 
     @Override
     public String toString() {
