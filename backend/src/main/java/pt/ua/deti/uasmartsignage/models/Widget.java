@@ -1,37 +1,27 @@
 package pt.ua.deti.uasmartsignage.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pt.ua.deti.uasmartsignage.models.embedded.Variable;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "Widgets")
+@Document(collection = "widgets")
 public class Widget {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    private String id;
     private String name;
-
     private String path;
-
-    @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL)
-    @JsonIgnoreProperties(value={"widget"},allowSetters = true)
-    private List<Content> contents;
-    
-    @OneToMany(mappedBy = "widget", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value={"widget"},allowSetters = true)
-    private List<TemplateWidget> templateWidgets;
-
+    private List<Variable> variables;
 }
+

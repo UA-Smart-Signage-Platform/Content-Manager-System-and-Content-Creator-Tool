@@ -30,9 +30,7 @@ public class MonitorsGroup {
     @JsonIgnoreProperties(value = {"group"},allowSetters = true)
     private List<Monitor> monitors;
 
-    @OneToMany(mappedBy = "group",fetch = FetchType.EAGER)
-    @JsonIgnoreProperties(value={"group"},allowSetters = true)
-    private List<TemplateGroup> templateGroups;
+    private List<Long> ruleIds;
 
     @Override
     public String toString() {
