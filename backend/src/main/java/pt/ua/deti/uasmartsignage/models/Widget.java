@@ -20,12 +20,10 @@ public class Widget {
     @Id
     private String id;
     private String name;
-    private String path;
     private List<WidgetVariable> variables;
 
-    public Widget(String name, String path){
+    public Widget(String name){
         this.name = name;
-        this.path = path;
     }
 }
 
