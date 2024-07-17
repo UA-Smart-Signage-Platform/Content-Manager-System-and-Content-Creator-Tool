@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pt.ua.deti.uasmartsignage.enums.Severity;
 
 @Getter
 @Setter

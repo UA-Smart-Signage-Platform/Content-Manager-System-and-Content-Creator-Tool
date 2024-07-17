@@ -1,32 +1,32 @@
 package pt.ua.deti.uasmartsignage.models.embedded;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
+
 import java.util.List;
+import java.util.Objects;
 
 @Getter
-@Setter
-@NoArgsConstructor
+@AllArgsConstructor
 public class WidgetVariable {
 
     private String name;
-    private String value;
-    private String defaultValue;
-    private String type;
+
+    private WidgetVariableType type;
+
     private List<String> optionsList;
-
-    public WidgetVariable(String name, String type, String defaultValue){
-        this.name = name;
-        this.type = type;
-        this.defaultValue = defaultValue;
-    }
-
-    public WidgetVariable(String name, String type, String defaultValue, List<String> optionsList){
-        this.name = name;
-        this.type = type;
-        this.optionsList = optionsList;
-        this.defaultValue = defaultValue;
-    }
     
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        WidgetVariable that = (WidgetVariable) other;
+        return name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, type, optionsList);
+    }
 }

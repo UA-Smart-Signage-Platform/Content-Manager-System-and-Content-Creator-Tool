@@ -1,8 +1,8 @@
 package pt.ua.deti.uasmartsignage.services;
 
+import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.models.Severity;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;

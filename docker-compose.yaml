@@ -8,6 +8,16 @@ services:
       - 5432:5432
     networks:
       - mqttnet
+
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    env_file:
+      - ./dev.env
+    ports:
+      - 27017:27017
+    networks:
+      - mqttnet
       
   springboot:
     build:
@@ -27,6 +37,7 @@ services:
     depends_on:
       - postgresdb
       - mosquitto
+      - mongodb
     networks:
       - mqttnet
       
