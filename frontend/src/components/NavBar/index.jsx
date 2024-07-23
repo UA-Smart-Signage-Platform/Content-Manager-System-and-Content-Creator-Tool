@@ -2,7 +2,7 @@ import { MdOutlineDashboard,MdOutlinePermMedia,
     MdCalendarToday,MdMonitor,
     MdOutlineBrandingWatermark,MdOutlineWbSunny, MdOutlineSupervisorAccount, MdOutlineLogout } from "react-icons/md";
 import { LuMoon } from "react-icons/lu";
-import  {ReactComponent as Logo}  from "../../static/logo.svg"
+import  Logo  from "../../static/logo.svg?react"
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";

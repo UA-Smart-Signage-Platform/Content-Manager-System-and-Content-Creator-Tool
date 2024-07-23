@@ -87,7 +87,7 @@ services:
         - 3000:3000
       command: >
         bash -c "cp -rfu /cache/node_modules/. /app/node_modules/  
-        && npm start"
+        && pnpm run dev"
 
 volumes:
     mosquitto_conf:
