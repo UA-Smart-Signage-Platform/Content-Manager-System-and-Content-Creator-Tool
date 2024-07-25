@@ -86,8 +86,7 @@ services:
       ports:
         - 8000:8000
       command: >
-        bash -c "cp -rfu /cache/node_modules/. /app/node_modules/  
-        && pnpm run dev"
+        bash -c "pnpm run dev"
 
 volumes:
     mosquitto_conf:

@@ -1,16 +1,15 @@
 FROM node:22
 
 # Install pnpm
-RUN npm install -g pnpm
+#ENV PNPM_HOME="/pnpm"
+#ENV PATH="$PNPM_HOME:$PATH"
+#RUN corepack enable
 
-# Create and define the node_modules's cache directory.
-WORKDIR /cache
-
-# install app dependencies
-COPY package.json .
-COPY pnpm-lock.yaml .
-RUN pnpm install --silent
+#COPY . /app
+#WORKDIR /app
 
 WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
+COPY pnpm-lock.yaml package.json ./
+RUN npm install -g pnpm
+RUN pnpm i 
 COPY . .
