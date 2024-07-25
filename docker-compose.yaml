@@ -86,7 +86,7 @@ services:
       ports:
         - 8000:8000
       command: >
-        bash -c "pnpm run dev"
+        bash -c "pnpm i && pnpm run dev"
 
 volumes:
     mosquitto_conf:
