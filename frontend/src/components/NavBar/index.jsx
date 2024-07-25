@@ -2,7 +2,7 @@ import { MdOutlineDashboard,MdOutlinePermMedia,
     MdCalendarToday,MdMonitor,
     MdOutlineBrandingWatermark,MdOutlineWbSunny, MdOutlineSupervisorAccount, MdOutlineLogout } from "react-icons/md";
 import { LuMoon } from "react-icons/lu";
-import  Logo  from "../../static/logo.svg?react"
+import  Logo  from '../../static/logo.svg?react'
 import { AnimatePresence, motion } from "framer-motion";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -35,7 +35,7 @@ function NavBar({setLogged}) {
              onMouseEnter={()=>{setIsShow(true);}}
              onMouseLeave={()=>{setIsShow(false)}}>
             <div className="w-full h-[16%]">
-                <Logo className="w-full h-full pl-2 pr-1"></Logo>
+                <Logo className="w-full h-full pl-2 pr-1" />
             </div>
             <Link to={"dashboard"} className="w-full h-[5%]">
                 <MdOutlineDashboard className=" h-full w-full px-3.5 text-white"/>

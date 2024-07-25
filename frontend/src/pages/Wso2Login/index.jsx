@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import loginService from '../../services/loginService';
 import { useNavigate } from "react-router-dom";
 
-const CLIENT_ID = process.env.REACT_APP_WSO2_CLIENT_ID;
-const REDIRECT_URI = process.env.REACT_APP_WSO2_REDIRECT_URI;
-const IDP_URI = process.env.REACT_APP_IDP_URI;
-const DEFAULT_PASSWORD = process.env.REACT_APP_DEFAULT_PASSWORD;
+const CLIENT_ID = import.meta.env.REACT_APP_WSO2_CLIENT_ID;
+const REDIRECT_URI = import.meta.env.REACT_APP_WSO2_REDIRECT_URI;
+const IDP_URI = import.meta.env.REACT_APP_IDP_URI;
+const DEFAULT_PASSWORD = import.meta.env.REACT_APP_DEFAULT_PASSWORD;
 
 const redirectToLogin = () => {
   window.location.replace(`${IDP_URI}/authorize?response_type=code&client_id=${CLIENT_ID}&state=1234567890&scope=openid&redirect_uri=${REDIRECT_URI}`);
