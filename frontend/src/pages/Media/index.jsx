@@ -20,6 +20,7 @@ const getFileIcon = (type) => {
             break;
     }
 };
+
 // code taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 const formatBytes = (bytes, decimals = 2) => {
     if (!+bytes) return '0 Bytes'
@@ -123,8 +124,8 @@ function Media() {
     ];
 
     const fetchData = ()=>{
-        setPreview(null)
-        setFile(null)
+        setPreview(null);
+        setFile(null);
         if(path === "/uploads"){
             mediaService.getFilesAtRootLevel().then((response)=>{
                 setFilesAndDirectories(response.data);
