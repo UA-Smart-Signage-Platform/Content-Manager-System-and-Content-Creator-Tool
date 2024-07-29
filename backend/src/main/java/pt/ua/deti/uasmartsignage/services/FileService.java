@@ -267,15 +267,22 @@ public class FileService {
             customFile = new CustomFile(fileName, fileType, fileSize, null);
         }
         else {
-            //update parent directory
-            logger.info("Parent directory found: {}", parent.get().getName());
-            //add the new file size
-            parent.get().setSize(parent.get().getSize() + fileSize);
-            fileRepository.save(parent.get());
-            customFile = new CustomFile(fileName, fileType, fileSize, parent.get());
+            // Update parent directory
+            CustomFile currentParent = parent.get();
+            logger.info("Parent directory found: {}", currentParent.getName());
+
+            currentParent.setSize(currentParent.getSize() + fileSize);
+            fileRepository.save(currentParent);
+            customFile = new CustomFile(fileName, fileType, fileSize, currentParent);
+            
+            // Propagate size to all parents of this file
+            while(currentParent.getParent() != null){
+                currentParent = currentParent.getParent();
+                currentParent.setSize(currentParent.getSize() + fileSize);
+            }
         }
 
-
+        
         // Creating file path for database
         Path path = Paths.get(getParentDirectoryPath(customFile) + fileName);
         customFile.setPath(path.toString());
