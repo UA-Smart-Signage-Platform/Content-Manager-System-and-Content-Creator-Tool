@@ -5,9 +5,9 @@ import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.FilesClass;
 import pt.ua.deti.uasmartsignage.models.Severity;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
-import pt.ua.deti.uasmartsignage.constants;
 import pt.ua.deti.uasmartsignage.constants.DESCRIPTION;
 import pt.ua.deti.uasmartsignage.constants.OPERATION;
+import pt.ua.deti.uasmartsignage.constants.LOG;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -17,8 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import main.java.pt.ua.deti.uasmartsignage.constants.ADDLOG;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -333,7 +331,13 @@ public class FileService {
 
         if (fileToDelete.isDirectory()) {
             if (deleteDirectory(fileToDelete)) {
+                CustomFile parent = file.getParent();
+                if (parent != null){
+                    long newSize = parent.getSize() - file.getSize();
+                    parent.setSize(newSize);
+                }
                 fileRepository.delete(file);
+                if (parent != null) fileRepository.save(parent);
                 return true;
             }
             else {
@@ -351,13 +355,19 @@ public class FileService {
         }
 
         // Delete file from repository
+        CustomFile parent = file.getParent();
+        if (parent != null){
+            long newSize = parent.getSize() - file.getSize();
+            parent.setSize(newSize);
+        }
         fileRepository.delete(file);
+        if (parent != null) fileRepository.save(parent);
 
-        if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_FILE, DESCRIPTION.DELETE_FILE + filePath)) {
-            logger.error(LOG.ERROR);
+        if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_FILE.toString(), DESCRIPTION.DELETE_FILE.toString() + filePath)) {
+            logger.error(LOG.ERROR.toString());
         }
         else {
-            logger.info(LOG.SUCCESS, DESCRIPTION.DELETE_FILE + filePath);
+            logger.info(LOG.SUCCESS.toString(), DESCRIPTION.DELETE_FILE.toString() + filePath);
         }
 
         return true;
@@ -377,11 +387,11 @@ public class FileService {
                     .map(Path::toFile)
                     .forEach(File::delete);
 
-            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_DIRECTORY, DESCRIPTION.DELETE_DIRECTORY + + directory.getAbsolutePath())) {
+            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_DIRECTORY.toString(), DESCRIPTION.DELETE_DIRECTORY.toString() + directory.getAbsolutePath())) {
                 logger.error(ADDLOGERROR);
             }
             else {
-                logger.info(ADDLOGSUCCESS, DESCRIPTION.DELETE_DIRECTORY + + directory.getAbsolutePath());
+                logger.info(ADDLOGSUCCESS, DESCRIPTION.DELETE_DIRECTORY.toString() + directory.getAbsolutePath());
             }
 
             return true;
