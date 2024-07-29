@@ -5,6 +5,10 @@ import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.FilesClass;
 import pt.ua.deti.uasmartsignage.models.Severity;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
+import pt.ua.deti.uasmartsignage.constants;
+import pt.ua.deti.uasmartsignage.constants.DESCRIPTION;
+import pt.ua.deti.uasmartsignage.constants.OPERATION;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -13,6 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import main.java.pt.ua.deti.uasmartsignage.constants.ADDLOG;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -325,18 +331,20 @@ public class FileService {
         String filePath = USERDIR + file.getPath();
         File fileToDelete = new File(filePath);
 
-        String operation = "deleteFile";
-        String description = "File deleted: " + filePath;
-
         if (fileToDelete.isDirectory()) {
-            if (!deleteDirectory(fileToDelete)) {
-                logger.error("Failed to delete directory: {}", fileToDelete.getAbsolutePath());
+            if (deleteDirectory(fileToDelete)) {
+                fileRepository.delete(file);
+                return true;
+            }
+            else {
                 return false;
             }
-        } else {
+        } 
+        else {
             try {
                 Files.deleteIfExists(Paths.get(filePath));
-            } catch (IOException e) {
+            } 
+            catch (IOException e) {
                 logger.error("Failed to delete file: {}, error: {}", filePath, e.getMessage());
                 return false;
             }
@@ -345,11 +353,11 @@ public class FileService {
         // Delete file from repository
         fileRepository.delete(file);
 
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
+        if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_FILE, DESCRIPTION.DELETE_FILE + filePath)) {
+            logger.error(LOG.ERROR);
         }
         else {
-            logger.info(ADDLOGSUCCESS, description);
+            logger.info(LOG.SUCCESS, DESCRIPTION.DELETE_FILE + filePath);
         }
 
         return true;
@@ -363,23 +371,22 @@ public class FileService {
      */
     private boolean deleteDirectory(File directory) {
         Path directoryPath = directory.toPath();
-        String operation = "deleteDirectory";
-        String description = "Directory deleted: " + directory.getAbsolutePath();
 
         try (Stream<Path> paths = Files.walk(directoryPath)) {
             paths.sorted(Comparator.reverseOrder())
                     .map(Path::toFile)
                     .forEach(File::delete);
 
-            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_DIRECTORY, DESCRIPTION.DELETE_DIRECTORY + + directory.getAbsolutePath())) {
                 logger.error(ADDLOGERROR);
             }
             else {
-                logger.info(ADDLOGSUCCESS, description);
+                logger.info(ADDLOGSUCCESS, DESCRIPTION.DELETE_DIRECTORY + + directory.getAbsolutePath());
             }
 
             return true;
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             logger.error("Failed to delete directory: {}, error: {}", directory.getAbsolutePath(), e.getMessage());
             return false;
         }
