@@ -17,9 +17,10 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
         let formData = new FormData();
         formData.append("file", file);
 
-        if (!Array.isArray(currentFolder)){
+        // Add parent to object if not in root
+        if (Object.keys(currentFolder).length !== 0){
             formData.append("parentId", currentFolder.id);
-        }   
+        }
 
         await mediaService.createFile(formData);
         setUpdater(!updater);
@@ -64,7 +65,7 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
 MediaFileModal.propTypes = {
     showPortal: PropTypes.bool.isRequired,
     setShowPortal: PropTypes.func.isRequired,
-    currentFolder: PropTypes.number.isRequired,
+    currentFolder: PropTypes.object.isRequired,
     updater: PropTypes.bool.isRequired,
     setUpdater: PropTypes.func.isRequired,
 }

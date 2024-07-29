@@ -60,7 +60,7 @@ function Media() {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
     
     const [currentFolder, setCurrentFolder] = useState(null);
-    const [folder, setFolder] = useState(null);
+    const [folder, setFolder] = useState({});
     
     const [updater, setUpdater] = useState(false);
     const [file, setFile] = useState(null);
@@ -104,18 +104,19 @@ function Media() {
             right: 'true',
         },
         {
-            selector: row => <><button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                <FiTrash2 className='size-5'/>
-                            </button>
-                            <AnimatePresence>
-                                {deletePortal && <FunctionModal
-                                    message={"Are you sure you want to delete this file/folder?"}
-                                    funcToExecute={()=>deleteFile()}
-                                    cancelFunc={()=>{setDeletePortal(false)}}
-                                    confirmMessage={"Yes"}
-                                    />}
-                            </AnimatePresence>
-                            </>,
+            selector: row => <div key={row.id + "_" + "delete"}>
+                                <button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                                    <FiTrash2 className='size-5'/>
+                                </button>
+                                <AnimatePresence>
+                                    {deletePortal && <FunctionModal
+                                        message={"Are you sure you want to delete this file/folder?"}
+                                        funcToExecute={()=>deleteFile()}
+                                        cancelFunc={()=>{setDeletePortal(false)}}
+                                        confirmMessage={"Yes"}
+                                        />}
+                                </AnimatePresence>
+                            </div>,
             sortable:false,
             width: '15%'
         }
@@ -127,7 +128,7 @@ function Media() {
         if(path === "/uploads"){
             mediaService.getFilesAtRootLevel().then((response)=>{
                 setFilesAndDirectories(response.data);
-                setFolder(response.data);
+                setFolder({});
             })
         }
         else{
@@ -151,7 +152,7 @@ function Media() {
             return
         }
         fetchData()
-    }, [currentFolder, updater,path,navigate]);
+    }, [currentFolder, updater, path, navigate]);
 
     const handleRowClick = (row) => {
         if (row.type === "directory"){
@@ -164,10 +165,10 @@ function Media() {
             setFile(change);
             if (change !== null){
                 if (path === 'home' ){
-                    setPreview(process.env.REACT_APP_API_URL + "/uploads/" + row.name);
+                    setPreview(import.meta.env.VITE_APP_API_URL + "/uploads/" + row.name);
                 }
                 else{
-                    setPreview(process.env.REACT_APP_API_URL + path + "/" + row.name);
+                    setPreview(import.meta.env.VITE_APP_API_URL + path + "/" + row.name);
                 }
             }
             else{
@@ -185,7 +186,7 @@ function Media() {
         return (
             <div className="flex flex-row">
                 {path.split("/").slice(1).map((folder, index, array) =>
-                    <div>
+                    <div key={folder + "_breadcrumb"}>
                         <motion.button key={folder.id} className={(index+1 !== array.length ? `text-secondary hover:bg-secondaryMedium rounded-lg px-1` : `text-black`)} onClick={() => breadCrumbsNavigate(index)}
                             whileHover={{scale:1.1}}
                         >
@@ -208,21 +209,16 @@ function Media() {
 
     const showFilePreview = () => {
         return (
-            fileType === "video/mp4" ? 
             <div>
                 <span className="flex flex-row text-2xl items-center font-medium mb-3">
-                    <MdLocalMovies data-tag="allowRowEvents" className="h-8 w-8 "/> 
+                    {fileType === "video/mp4" ? 
+                        <MdLocalMovies data-tag="allowRowEvents" className="h-8 w-8" /> : 
+                        <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-8 w-8" />}
                     Preview:
                 </span>
-                <video src={`${preview}`} controls muted/> 
-            </div>
-            : 
-            <div>
-                <span className="flex flex-row text-2xl items-center font-medium mb-3">
-                    <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-8 w-8"/> 
-                    Preview:
-                </span>
-                <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>
+                {fileType === "video/mp4" ? 
+                        <video src={`${preview}`} controls muted/>  : 
+                        <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>}
             </div>
         )
     }
@@ -232,7 +228,7 @@ function Media() {
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"media"} 
                             middleTitle={"dashboard"}
-                            endTitle={"dashboard"}/>
+                            endTitle={"..."}/>
             </div>
             <div id="divider" className="flex flex-col h-[92%] mr-3 ml-3 ">
                 <div id="mediaHeader" className="h-[6%] w-full text-xl flex">
