@@ -21,7 +21,7 @@ createTheme('solarized', {
     divider: {
       default: '#073642',
     },
-  });
+});
 
 function Root(){
     const theme = useThemeStore((state) =>state.theme)

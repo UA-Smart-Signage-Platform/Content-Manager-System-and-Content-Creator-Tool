@@ -28,27 +28,25 @@ function Monitors(){
     const customStyles = {
         headRow: {
             style: {
-                minHeight: '40px',
-                borderBottomWidth: '1px',
-                borderBottomStyle: 'solid',
+                fontSize: '20px',
+                borderBottomWidth: '2px'
             },
         },
         rows: {
             style: {
-                
-                minHeight: '40px', // override the row height
+                fontSize: '16px'
             },
         },
         headCells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for head cells
-                paddingRight: '8px',
+                paddingLeft: '8px',
+                paddingRight: '8px'
             },
         },
         cells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for data cells
-                paddingRight: '8px',
+                paddingLeft: '8px',
+                paddingRight: '8px'
             },
         },
     };
@@ -61,7 +59,7 @@ function Monitors(){
         },
         {
             name: 'Group',
-            selector: row => !row.group.madeForMonitor ? row.group.name:"-----",
+            selector: row => !row.group.madeForMonitor ? row.group.name : "-----",
             sortable: true,
         },
         {
@@ -71,8 +69,7 @@ function Monitors(){
         },
         {
             name: 'Status',
-            selector: row => row.online ? <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div> 
-                                        : <div className=" w-[42px] bg-red h-[20px] rounded-xl border-black border-2"></div>,
+            selector: row => <div className={`w-[42px] ${row.online ? "bg-primary" : "bg-red" } h-[20px] rounded-xl border-black border-2`} />,
             sortable: true
         }   
     ];
@@ -89,7 +86,7 @@ function Monitors(){
             </div>
             <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                 <div className="w-[30%] flex flex-col">
-                        <GroupBar id={groupId} changeId={setGroupId} page={"monitors"}/>
+                    <GroupBar id={groupId} changeId={setGroupId} page={"monitors"}/>
                 </div>
                 <DataTable className="p-3" 
                     pointerOnHover
