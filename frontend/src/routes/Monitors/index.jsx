@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PageTitle, GroupBar } from "../../components";
+import { MdGroup, MdInfo, MdMonitor, MdOutlineWarning } from "react-icons/md";
 import monitorService from "../../services/monitorService"
 import { useNavigate } from "react-router-dom";
 import DataTable from 'react-data-table-component';
@@ -45,7 +46,7 @@ function Monitors(){
         },
         cells: {
             style: {
-                paddingLeft: '8px',
+                paddingLeft: '35px',
                 paddingRight: '8px'
             },
         },
@@ -53,22 +54,38 @@ function Monitors(){
 
     const columns = [
         {
-            name: 'Name',
+            name: (                
+                <div className="flex flex-row">
+                    <MdMonitor className="h-6 w-6 mr-2"/> Name
+                </div>
+            ),
             selector: row => row.name,
             sortable: true,
         },
         {
-            name: 'Group',
+            name: (                
+                <div className="flex flex-row">
+                    <MdGroup className="h-6 w-6 mr-2"/> Group
+                </div>
+            ),
             selector: row => !row.group.madeForMonitor ? row.group.name : "-----",
             sortable: true,
         },
         {
-            name: 'Warnings',
+            name: (                
+                <div className="flex flex-row">
+                    <MdOutlineWarning className="h-6 w-6 mr-2"/> Warnings
+                </div>
+            ),
             selector: row => row.warnings,
             sortable: true,
         },
         {
-            name: 'Status',
+            name: (                
+                <div className="flex flex-row">
+                    <MdInfo className="h-6 w-6 mr-2"/> Status
+                </div>
+            ),
             selector: row => <div className={`w-[42px] ${row.online ? "bg-primary" : "bg-red" } h-[20px] rounded-xl border-black border-2`} />,
             sortable: true
         }   
