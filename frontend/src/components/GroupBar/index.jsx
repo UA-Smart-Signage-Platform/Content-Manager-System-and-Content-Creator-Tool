@@ -137,7 +137,7 @@ function GroupBar( {id, changeId, page} ) {
                         }
                     </div>
                     { groups != null && groups.map((group, index) => (
-                    <button key={group.id}
+                    <div key={group.id}
                         onClick={()=> changeId(group.id)}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 text-left `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
@@ -174,7 +174,7 @@ function GroupBar( {id, changeId, page} ) {
                                         <input className=" bg-white rounded-md w-full text-sm px-2" value={editGroup.description} onChange={(e)=>editGroupDescription(e.target.value)}/>
                                     }
                         </div>
-                    </button>
+                    </div>
                     ))}
                 </div>
             </div>

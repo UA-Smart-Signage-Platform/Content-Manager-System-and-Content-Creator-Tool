@@ -114,7 +114,7 @@ function Templates(){
                 </motion.div>}
             </AnimatePresence>
             <div className="h-[8%]">
-                <PageTitle startTitle={"templates"}/>
+                <PageTitle startTitle={"templates"} middleTitle={""} endTitle={""}/>
             </div>
             <div className="flex h-[92%]">
                 <div className="h-full w-[30%] p-4 flex flex-col">
