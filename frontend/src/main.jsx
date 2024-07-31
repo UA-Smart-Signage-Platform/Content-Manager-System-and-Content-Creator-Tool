@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Root } from './routes';
-import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin, Templates, ChangePassword, Cct } from './pages';
+import { Root, Dashboard, Admin, ChangePassword, Wso2Login, Monitors, Media, Monitor, Schedule, Templates, Cct } from './routes';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ element, requiredRoles }) => {
