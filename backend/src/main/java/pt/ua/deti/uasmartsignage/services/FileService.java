@@ -453,10 +453,10 @@ public class FileService {
      * Updates the name of the file with the specified ID.
      *
      * @param id The ID of the file to update.
-     * @param customFile The CustomFile containing the new name.
+     * @param fileName The string containing the new name.
      * @return The updated CustomFile, or {@code null} if the update fails.
      */
-    public CustomFile updateFileName(Long id, CustomFile customFile) {
+    public CustomFile updateFileName(Long id, String fileName) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
             logger.warn(FILENOTFOUND, id);
@@ -464,29 +464,43 @@ public class FileService {
         }
 
         CustomFile updatedFile = file.get();
-        updatedFile.setName(customFile.getName());
 
-        String parentDirectoryPath = getParentDirectoryPath(updatedFile);
+        // Update file in disk
+        // String filePath = USERDIR + updatedFile.getPath();
+        // Files.deleteIfExists(Paths.get(filePath));
 
-        File fileToUpdate = new File(updatedFile.getPath());
-        File newFile = new File(parentDirectoryPath + customFile.getName());
+        // Update file in repository
+        updatedFile.setPath(updatedFile.getPath().split("/", -1).replace(updatedFile.getName(), fileName));
+        updatedFile.setName(fileName);
+        fileRepository.save(updatedFile);
 
-        String operation = "updateFileName";
-        String description = "File renamed: " + newFile.getAbsolutePath();
+        // If file is a directory, update path for children as well
+        // if is directory go over every child and then update it based on the split bit
+
+        // Need to check if code below is useful or not
+
+        // --------- //
+
+        //String parentDirectoryPath = getParentDirectoryPath(updatedFile);
+
+        //File fileToUpdate = new File(updatedFile.getPath());
+        //File newFile = new File(parentDirectoryPath + customFile.getName());
+
+        /*String description = "File renamed: " + newFile.getAbsolutePath();
 
         if (fileToUpdate.renameTo(newFile)) {
             updatedFile.setPath(parentDirectoryPath + updatedFile.getName());
             fileRepository.save(updatedFile);
-            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                logger.error(ADDLOGERROR);
+            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.UPDATE_FILE.toString(), description)) {
+                logger.error(LOG.ERROR.toString());
             }
             else {
-                logger.info(ADDLOGSUCCESS, description);
+                logger.info(LOG.SUCCESS.toString(), description);
             }
         }
         else {
             logger.error("Failed to rename file: {}", newFile.getAbsolutePath());
-        }
+        }*/
 
         return updatedFile;
     }

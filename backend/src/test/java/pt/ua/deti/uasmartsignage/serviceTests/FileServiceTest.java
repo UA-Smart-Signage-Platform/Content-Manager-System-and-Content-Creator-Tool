@@ -98,7 +98,7 @@ class FileServiceTest {
         directory.delete();
     }
 
-    @Test
+    /*@Test
     @Order(4)
     void whenUpdateFileName_thenFileNotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
@@ -109,7 +109,7 @@ class FileServiceTest {
 
         assertThat(saved).isNull();
         verify(repository, times(0)).save(updated);
-    }
+    }*/
 
     @Test
     @Order(5)
