@@ -256,7 +256,7 @@ public class FileService {
         }
 
         // Get information from uploaded file
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()).replaceFirst("[.][^.]+$", ""));
         String fileType = file.getFile().getContentType();
         Long fileSize = file.getFile().getSize();
 
@@ -465,26 +465,42 @@ public class FileService {
 
         CustomFile updatedFile = file.get();
 
-        // Update file in disk
-        // String filePath = USERDIR + updatedFile.getPath();
-        // Files.deleteIfExists(Paths.get(filePath));
+        String initialPath = updatedFile.getPath();
 
-        // Update file in repository
-        updatedFile.setPath(updatedFile.getPath().split("/", -1).replace(updatedFile.getName(), fileName));
-        updatedFile.setName(fileName);
+        if (updatedFile.getParent() == null){
+            // Update file in disk
+            String oldFilePath = USERDIR + updatedFile.getPath();
+            String newFilePath = USERDIR + "/uploads/" + fileName;
+            Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
+
+            // Update file in repository
+            updatedFile.setName(fileName);
+            updatedFile.setPath("/uploads/" + fileName);
+        }
+        else{
+            int i = initialPath.lastIndexOf("/");
+            String newName =  initialPath.substring(0, i) + fileName;
+
+            // Update file in disk
+            String oldFilePath = USERDIR + updatedFile.getPath();
+            String newFilePath = USERDIR + "/uploads/" + newName;
+            Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
+        
+            // Update file in repository
+            initialPath = updatedFile.getPath();
+            updatedFile.setName(fileName);
+            updatedFile.setPath("/uploads/" + newName);
+        }
+
+        if(updatedFile.getType().equals("directory")){
+            for (CustomFile child : updatedFile.getSubDirectories()) {
+                child.setPath(child.getPath().replace(initialPath, updatedFile.getPath()));
+                fileRepository.save(child);
+            }
+        }
+        
         fileRepository.save(updatedFile);
-
-        // If file is a directory, update path for children as well
-        // if is directory go over every child and then update it based on the split bit
-
-        // Need to check if code below is useful or not
-
-        // --------- //
-
-        //String parentDirectoryPath = getParentDirectoryPath(updatedFile);
-
-        //File fileToUpdate = new File(updatedFile.getPath());
-        //File newFile = new File(parentDirectoryPath + customFile.getName());
+        return updatedFile;
 
         /*String description = "File renamed: " + newFile.getAbsolutePath();
 
@@ -495,14 +511,14 @@ public class FileService {
                 logger.error(LOG.ERROR.toString());
             }
             else {
-                logger.info(LOG.SUCCESS.toString(), description);
+                
             }
         }
         else {
             logger.error("Failed to rename file: {}", newFile.getAbsolutePath());
         }*/
 
-        return updatedFile;
+
     }
 
 
