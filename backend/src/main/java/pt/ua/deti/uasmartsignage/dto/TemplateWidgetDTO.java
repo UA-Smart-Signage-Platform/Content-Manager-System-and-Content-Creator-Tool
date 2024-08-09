@@ -11,13 +11,15 @@ public class TemplateWidgetDTO{
     @NotBlank
     private String widgetId;
 
-    private int top;
+    private float top;
 
-    private int left;
+    private float left;
 
-    private int width;
+    private float width;
 
-    private int height;
+    private float height;
+
+    private int zindex;
 
     private Map<String, Object> defaultValues;
 }

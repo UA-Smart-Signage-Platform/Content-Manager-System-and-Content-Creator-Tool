@@ -29,15 +29,20 @@ public class Widget {
 
     private String name;
 
-    private int minWidth;
+    private float minWidth;
     
-    private int minHeight;
+    private float minHeight;
 
     @Builder.Default
     private Set<WidgetVariable> variables = new HashSet<>();
 
     public void addVariable(String name, WidgetVariableType type, List<String> optionsList){
         WidgetVariable variable = new WidgetVariable(name, type, optionsList);
+        variables.add(variable);
+    }
+
+    public void addVariable(String name, WidgetVariableType type){
+        WidgetVariable variable = new WidgetVariable(name, type, null);
         variables.add(variable);
     }
 

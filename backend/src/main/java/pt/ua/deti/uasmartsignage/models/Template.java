@@ -30,9 +30,9 @@ public class Template {
     @Builder.Default
     private List<TemplateWidget> widgets = new ArrayList<>();
 
-    public TemplateWidget addWidget(Widget widget, int top, int left, int width, int height, Map<String, Object> defaultValues){
+    public TemplateWidget addWidget(Widget widget, float top, float left, float width, float height, int zindex, Map<String, Object> defaultValues){
 
-        TemplateWidget templateWidget = new TemplateWidget(widget, top, left, width, height);
+        TemplateWidget templateWidget = new TemplateWidget(widget, top, left, width, height, zindex);
         if (defaultValues != null){
             for(Map.Entry<String, Object> entry : defaultValues.entrySet()){
                 if (widget.hasVariable(entry.getKey())){
@@ -44,6 +44,12 @@ public class Template {
             }
         }
         
+        widgets.add(templateWidget);
+        return templateWidget;
+    }
+
+    public TemplateWidget addWidget(Widget widget, float top, float left, float width, float height, int zindex){
+        TemplateWidget templateWidget = new TemplateWidget(widget, top, left, width, height, zindex);        
         widgets.add(templateWidget);
         return templateWidget;
     }

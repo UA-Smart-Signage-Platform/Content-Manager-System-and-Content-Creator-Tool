@@ -61,7 +61,7 @@ public class TemplateService {
                 Widget widget = widgetService.getWidgetById(dto.getWidgetId());
                 if (widget == null)
                     return null;
-                template.addWidget(widget, dto.getTop(), dto.getLeft(), dto.getWidth(), dto.getHeight(), dto.getDefaultValues());
+                template.addWidget(widget, dto.getTop(), dto.getLeft(), dto.getWidth(), dto.getHeight(), dto.getZindex(), dto.getDefaultValues());
             }
         } catch (IllegalArgumentException exception) {
             logsService.addBackendLog(Severity.ERROR, 
