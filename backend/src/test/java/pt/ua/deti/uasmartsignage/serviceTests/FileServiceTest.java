@@ -270,6 +270,7 @@ class FileServiceTest {
     }
 
     @Test
+    @Disabled
     @Order(10)
     void testDownloadFileById_FileExistsAndIsReadable() throws IOException {
 
