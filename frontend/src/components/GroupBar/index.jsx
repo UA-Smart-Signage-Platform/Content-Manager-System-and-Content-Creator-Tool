@@ -141,6 +141,7 @@ function GroupBar( {id, changeId, page} ) {
                         onClick={()=> changeId(group.id)}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 text-left `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
+                        role="button"
                     >
                         <div className="flex flex-col p-2 h-[65px] w-full justify-around">
                             <div className="flex flex-row w-full place-items-center">
