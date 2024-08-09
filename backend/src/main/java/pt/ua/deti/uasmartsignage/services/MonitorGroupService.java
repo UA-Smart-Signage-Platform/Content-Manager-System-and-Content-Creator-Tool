@@ -58,6 +58,11 @@ public class MonitorGroupService {
         return monitorGroupRepository.save(group);
     }
 
+    public MonitorGroup updateGroup(Long id, MonitorGroup group) {
+        group.setId(id);
+        return monitorGroupRepository.save(group);
+    }
+
     public void deleteGroupById(Long id) {
 
         MonitorGroup group = getGroupById(id);

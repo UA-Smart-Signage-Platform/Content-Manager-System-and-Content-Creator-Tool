@@ -28,6 +28,10 @@ public class RuleService {
         return ruleRepository.findAll();
     }
 
+    public List<Rule> getAllRulesForGroup(Long groupId) {
+        return ruleRepository.findByGroupId(groupId);
+    }
+
     public Rule getRuleById(String id){
         return ruleRepository.findById(id).orElse(null);
     }

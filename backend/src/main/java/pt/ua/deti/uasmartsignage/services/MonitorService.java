@@ -1,42 +1,25 @@
 package pt.ua.deti.uasmartsignage.services;
 
-import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.models.Severity;
+import pt.ua.deti.uasmartsignage.models.MonitorGroup;
+import pt.ua.deti.uasmartsignage.models.Rule;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
-import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
+
+import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service 
+@Service
+@RequiredArgsConstructor
 public class MonitorService {
 
     private final MonitorRepository monitorRepository;
-
-    private final MonitorGroupRepository monitorGroupRepository;
-
-    private final TemplateGroupService templateGroupService;
-
-    private final Logger logger = org.slf4j.LoggerFactory.getLogger(MonitorService.class);
-
-    private final String source = this.getClass().getSimpleName();
-
+    private final MonitorGroupService monitorGroupService;
+    private final RuleService ruleService;
     private final LogsService logsService;
-
-    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
-    private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
-
-
-    public MonitorService(MonitorRepository monitorRepository, MonitorGroupRepository monitorGroupRepository, LogsService logsService, TemplateGroupService templateGroupService){
-        this.monitorRepository = monitorRepository;
-        this.monitorGroupRepository = monitorGroupRepository;
-        this.logsService = logsService;
-        this.templateGroupService = templateGroupService;
-    }
 
     /**
      * Retrieves and returns a Monitor by its ID.
@@ -45,8 +28,6 @@ public class MonitorService {
      * @return The Monitor with the specified ID.
      */
     public Monitor getMonitorById(Long id) {
-        String operation = "getMonitorById";
-        String description = "Getting monitor by id " + id;
 
         Monitor monitor = monitorRepository.findById(id).orElse(null);
 
@@ -56,13 +37,6 @@ public class MonitorService {
 
         boolean online = logsService.keepAliveIn10min(monitor);
         monitor.setOnline(online);
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
 
         return monitor;
     }
@@ -74,16 +48,7 @@ public class MonitorService {
      * @return The saved Monitor.
      */
     public Monitor saveMonitor(Monitor monitor) {
-        String operation = "saveMonitor";
-        String description = "Saving monitor " + monitor.getName();
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
-
+        monitor.setId(null);
         return monitorRepository.save(monitor);
     }
 
@@ -93,16 +58,6 @@ public class MonitorService {
      * @param id The ID of the Monitor to delete.
      */
     public void deleteMonitor(Long id) {
-        String operation = "deleteMonitor";
-        String description = "Deleting monitor by id " + id;
-        
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
-
         monitorRepository.deleteById(id);
     }
     
@@ -114,28 +69,27 @@ public class MonitorService {
      * @return The updated Monitor.
      */
     public Monitor updateMonitor(Long id, Monitor monitor) {
-        String operation = "updateMonitor";
-        String description = "Updating monitor by id " + id;
 
         Monitor monitorById = monitorRepository.getReferenceById(id);
-        MonitorsGroup group = monitorById.getGroup();
+        MonitorGroup group = monitorById.getGroup();
         monitorById.setName(monitor.getName());
         monitorById.setGroup(monitor.getGroup());
         Monitor returnMonitor = monitorRepository.save(monitorById);
 
-        if (group.isMadeForMonitor()) {
+        if (group.isDefaultGroup()) {
             if (group.getId() == monitorById.getGroup().getId()){
                 group.setName(monitor.getName());
-                monitorGroupRepository.save(group);
+                monitorGroupService.saveGroup(group);
             }
             else{
-                if (group.getTemplateGroups().isEmpty()){
-                    monitorGroupRepository.deleteById(group.getId());
+                List<Rule> rules = ruleService.getAllRulesForGroup(group.getId());
+                if (rules.isEmpty()){
+                    monitorGroupService.deleteGroupById(group.getId());
                 } else {
-                    for (int i = 0; i < group.getTemplateGroups().size(); i++) {
-                        templateGroupService.deleteGroup(group.getTemplateGroups().get(i).getId());
+                    for (int i = 0; i < rules.size(); i++) {
+                        ruleService.deleteRuleById(rules.get(i).getId());
                     }
-                    monitorGroupRepository.deleteById(group.getId());
+                    monitorGroupService.deleteGroupById(group.getId());
                 }
             }
         }
@@ -143,14 +97,7 @@ public class MonitorService {
         // Send all schedules to the new monitor
         List<Monitor> monitors = new ArrayList<>();
         monitors.add(returnMonitor);
-        templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
+        // templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
 
         return returnMonitor;
     }
@@ -161,18 +108,9 @@ public class MonitorService {
      * @return A list of all Monitors.
      */
     public Monitor updatePending(Long id,boolean pending){
-        String operation = "updatePending";
-        String description = "Updating monitor pending by id " + id;
 
         Monitor monitorById = monitorRepository.getReferenceById(id);
         monitorById.setPending(pending);
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
 
         return monitorRepository.save(monitorById);
     }
@@ -183,21 +121,12 @@ public class MonitorService {
      * @return A list of all Monitors.
      */
     public List<Monitor> getAllMonitorsByPending(boolean pending) {
-        String operation = "getAllMonitorsByPending";
-        String description = "Getting all monitors by pending " + pending;
 
         List<Monitor> monitors = monitorRepository.findByPending(pending);
 
         for (Monitor monitor : monitors) {
             boolean online = logsService.keepAliveIn10min(monitor);
             monitor.setOnline(online);
-        }
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
         }
         return monitors;
     }
@@ -208,22 +137,12 @@ public class MonitorService {
      * @return A list of all Monitors.
      */
     public List<Monitor> getMonitorsByGroup(long groupId) {
-        String operation = "getMonitorsByGroup";
-        String description = "Getting all monitors by group " + groupId;
 
         List<Monitor> monitors = monitorRepository.findByPendingAndGroup_Id(false,groupId);
 
         for (Monitor monitor : monitors) {
             boolean online = logsService.keepAliveIn10min(monitor);
             monitor.setOnline(online);
-        }
-
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
         }
         
         return monitors;
