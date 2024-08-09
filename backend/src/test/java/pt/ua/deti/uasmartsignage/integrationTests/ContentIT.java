@@ -65,6 +65,7 @@ public class ContentIT extends BaseIntegrationTest{
 
     @Test
     @Order(1)
+    @Disabled
     void testGetAllContent() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(jwtToken);

@@ -34,15 +34,6 @@ const formatBytes = (bytes, decimals = 2) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 };
 
-const headNameStyle = (row) => {
-    return(
-        <div data-tag="allowRowEvents" className="flex flex-row items-center">
-            {getFileIcon(row.type)}
-            <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-        </div>
-    )
-};
-
 const customStyles = {
     headRow: {
         style: {
@@ -71,7 +62,7 @@ const customStyles = {
 
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
     const [currentFolder, setCurrentFolder] = useState(null);
     const [folder, setFolder] = useState({});
@@ -98,14 +89,7 @@ function Media() {
                     <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
                 </div>
             ),
-            selector: row => <div>
-                {toEdit === row.id ? 
-                <div>
-                    <input className=" bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
-                </div> 
-                : 
-                headNameStyle(row)}
-                </div>,
+            selector: row => columnNameData(row),
             width: '35%',
         },
         {
@@ -135,42 +119,71 @@ function Media() {
             right: 'true',
         },
         {
-            selector: row => <div key={row.id + "_" + "edit"}>
-                                {toEdit === row.id ? 
-                                    <button onClick={()=>{editFile(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                        <MdCheck className='size-5'/>
-                                    </button>
-                                    :
-                                    <button onClick={()=>{setToEdit(row.id); setEditFileName(row.name)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                        <FiEdit className='size-5'/>
-                                    </button>
-                                }
-                            </div>,
+            selector: row => columnEditData(row),
             sortable:false,
             width: '6%'
         },
         {
-            selector: row => 
-                            <div key={row.id + "_" + "delete"}>
-                                {toEdit !== row.id &&  
-                                <div>
-                                    <button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                        <FiTrash2 className='size-5'/>
-                                    </button>
-                                    <AnimatePresence>
-                                        {deletePortal && <FunctionModal
-                                            message={"Are you sure you want to delete this file/folder?"}
-                                            funcToExecute={()=>deleteFile()}
-                                            cancelFunc={()=>{setDeletePortal(false)}}
-                                            confirmMessage={"Yes"}
-                                            />}
-                                    </AnimatePresence>
-                                </div>}
-                            </div>,
+            selector: row => columnDeleteData(row),
             sortable:false,
             width: '6%'
         }
     ];
+
+    const columnNameData = (row) => {
+        return (
+            <div>
+                {toEdit === row.id ? 
+                <div>
+                    <input className="bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
+                </div> 
+                : 
+                <div data-tag="allowRowEvents" className="flex flex-row items-center">
+                    {getFileIcon(row.type)}
+                    <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+                </div>
+                }
+            </div>
+
+        )
+    }
+
+    const columnEditData = (row) => {
+        return (
+            <div key={row.id + "_" + "edit"}>
+                {toEdit === row.id ? 
+                    <button onClick={()=>{editFile(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <MdCheck className='size-5'/>
+                    </button>
+                    :
+                    <button onClick={()=>{setToEdit(row.id); setEditFileName(row.name)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <FiEdit className='size-5'/>
+                    </button>
+                }
+            </div>
+        )
+    }
+
+    const columnDeleteData = (row) => {
+        return (
+            <div key={row.id + "_" + "delete"}>
+                {toEdit !== row.id &&  
+                <div>
+                    <button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <FiTrash2 className='size-5'/>
+                    </button>
+                    <AnimatePresence>
+                        {deletePortal && <FunctionModal
+                            message={"Are you sure you want to delete this file/folder?"}
+                            funcToExecute={()=>deleteFile()}
+                            cancelFunc={()=>{setDeletePortal(false)}}
+                            confirmMessage={"Yes"}
+                            />}
+                    </AnimatePresence>
+                </div>}
+            </div>
+        )
+    }
 
     const fetchData = ()=>{
         setPreview(null);
@@ -289,16 +302,17 @@ function Media() {
             </div>
             <div id="divider" className="flex flex-col h-[92%] mr-3 ml-3 ">
                 <div id="mediaHeader" className="h-[6%] w-full text-xl flex">
-                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
+                    <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
                         <span className="h-full w-[60%]"><MdAdd className="h-full w-full"/></span>
                         <span className="h-full text-sm flex items-center pr-1">ADD</span>
                     </button>
                     {isDropdownOpen && (
                         <div className="fixed text-md mt-10 z-10 bg-slate-300 w-[10%] h-16 rounded-md">
-                        <ul>
-                            <li onClick={() => {setShowPortalFolder(true); setDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New Folder</li>
-                            <li onClick={() => {setShowPortalFile(true); setDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</li>
-                        </ul>
+                            <button onClick={() => {setShowPortalFolder(true); setIsDropdownOpen(false)}} 
+                                    className="pl-1 pb-2 cursor-pointer">
+                                    New Folder
+                            </button>
+                            <button onClick={() => {setShowPortalFile(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</button>
                         </div>
                     )}
                     <MediaFileModal

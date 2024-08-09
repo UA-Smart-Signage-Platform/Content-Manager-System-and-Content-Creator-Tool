@@ -46,6 +46,8 @@ public class FileService {
     private static final String FILENOTFOUND = "File with ID {} not found";
     private static final String USERDIR = System.getProperty("user.dir");
 
+    private final String defaultFolder = "defaultFolder";
+
 
     @Autowired
     public FileService(FileRepository fileRepository, LogsService logsService) {
@@ -202,7 +204,7 @@ public class FileService {
             pathBuilder.append("/");
         }
         else{
-            pathBuilder.append("/uploads/");
+            pathBuilder.append(defaultFolder);
         }
 
        
@@ -256,7 +258,7 @@ public class FileService {
         }
 
         // Get information from uploaded file
-        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()));
+        String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()).replaceFirst("[.][^.]+$", ""));
         String fileType = file.getFile().getContentType();
         Long fileSize = file.getFile().getSize();
 
@@ -363,18 +365,11 @@ public class FileService {
 
         // Delete file from repository
         CustomFile parent = file.getParent();
-        if (parent != null){
-            long newSize = parent.getSize() - file.getSize();
-            parent.setSize(newSize);
-        }
         fileRepository.delete(file);
-        if (parent != null) fileRepository.save(parent);
 
-        if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_FILE.toString(), DESCRIPTION.DELETE_FILE.toString() + filePath)) {
-            logger.error(LOG.ERROR.toString());
-        }
-        else {
-            logger.info(LOG.SUCCESS.toString(), DESCRIPTION.DELETE_FILE.toString() + filePath);
+        if (parent != null){
+            parent.setSize(parent.getSize() - file.getSize());
+            fileRepository.save(parent);
         }
 
         return true;
@@ -465,45 +460,41 @@ public class FileService {
 
         CustomFile updatedFile = file.get();
 
-        // Update file in disk
-        // String filePath = USERDIR + updatedFile.getPath();
-        // Files.deleteIfExists(Paths.get(filePath));
+        String initialPath = updatedFile.getPath();
 
-        // Update file in repository
-        updatedFile.setPath(updatedFile.getPath().split("/", -1).replace(updatedFile.getName(), fileName));
-        updatedFile.setName(fileName);
-        fileRepository.save(updatedFile);
+        if (updatedFile.getParent() == null){
+            // Update file in disk
+            String oldFilePath = USERDIR + updatedFile.getPath();
+            String newFilePath = USERDIR + defaultFolder + fileName;
+            Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
 
-        // If file is a directory, update path for children as well
-        // if is directory go over every child and then update it based on the split bit
+            // Update file in repository
+            updatedFile.setName(fileName);
+            updatedFile.setPath(defaultFolder + fileName);
+        }
+        else{
+            int i = initialPath.lastIndexOf("/");
+            String newName =  initialPath.substring(0, i) + fileName;
 
-        // Need to check if code below is useful or not
+            // Update file in disk
+            String oldFilePath = USERDIR + updatedFile.getPath();
+            String newFilePath = USERDIR + defaultFolder + newName;
+            Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
+        
+            // Update file in repository
+            initialPath = updatedFile.getPath();
+            updatedFile.setName(fileName);
+            updatedFile.setPath(defaultFolder + newName);
+        }
 
-        // --------- //
-
-        //String parentDirectoryPath = getParentDirectoryPath(updatedFile);
-
-        //File fileToUpdate = new File(updatedFile.getPath());
-        //File newFile = new File(parentDirectoryPath + customFile.getName());
-
-        /*String description = "File renamed: " + newFile.getAbsolutePath();
-
-        if (fileToUpdate.renameTo(newFile)) {
-            updatedFile.setPath(parentDirectoryPath + updatedFile.getName());
-            fileRepository.save(updatedFile);
-            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.UPDATE_FILE.toString(), description)) {
-                logger.error(LOG.ERROR.toString());
-            }
-            else {
-                logger.info(LOG.SUCCESS.toString(), description);
+        if(updatedFile.getType().equals("directory")){
+            for (CustomFile child : updatedFile.getSubDirectories()) {
+                child.setPath(child.getPath().replace(initialPath, updatedFile.getPath()));
+                fileRepository.save(child);
             }
         }
-        else {
-            logger.error("Failed to rename file: {}", newFile.getAbsolutePath());
-        }*/
-
+        
+        fileRepository.save(updatedFile);
         return updatedFile;
     }
-
-
 }

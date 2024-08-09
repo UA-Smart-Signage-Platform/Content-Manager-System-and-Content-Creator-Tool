@@ -46,6 +46,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/files/download/**").permitAll()
                                 .requestMatchers("/api/login").permitAll()
                                 //.requestMatchers("/api/logs/backend").permitAll() 
+                                .requestMatchers("/docs/**").permitAll()
                                 .requestMatchers("/swagger-ui/**").permitAll()
                                 .requestMatchers("/v3/api-docs/**").permitAll()
                                 .requestMatchers("/uploads/**").permitAll()
