@@ -3,8 +3,8 @@ import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadFull } from "tsparticles";
 import loginService from '../../services/loginService';
 import { useNavigate } from "react-router-dom";
-import  Logo  from '../../static/green-name.svg?react';
 import { greenParticles,nyanParticles } from './particlesConfigs';
+import SignInDiv from './SignInDiv';
 
 const CLIENT_ID = import.meta.env.REACT_APP_WSO2_CLIENT_ID;
 const REDIRECT_URI = import.meta.env.REACT_APP_WSO2_REDIRECT_URI;
@@ -25,10 +25,7 @@ const setWithExpiry = (key, value, ttl) => {
 };
 
 const Wso2Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginRoot,setLoginRoot] = useState(false);
-  const [nyan,setNyan] = useState(0);
+  const [nyan,setNyan] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const [init, setInit] = useState(false);
@@ -74,7 +71,7 @@ const Wso2Login = () => {
 
   const options = useMemo(
     ()=> {
-      if(nyan > 9){
+      if(nyan){
         return nyanParticles
       }else{
         return greenParticles
@@ -92,32 +89,7 @@ const Wso2Login = () => {
           particlesLoaded={particlesLoaded}
           options={options}
         />
-        <div className='flex flex-col gap-20 w-[50%] mx-auto items-center z-40 pt-[10%] relative'>
-          <div onClick={()=>setNyan(nyan+1)}><Logo></Logo></div>
-          {loginRoot ? 
-          <div className='flex flex-col gap-6 items-center justify-center'>
-            <div className='w-full'>
-              <p className=' justify-start w-full text-2xl text-[#95A967]'>Sign in as Root</p>
-              <input className=' border-secondary border-2 rounded-md font-bold p-1 text-xl bg-secondaryLight'
-                    placeholder='password'
-              />
-            </div>
-            <button className='bg-primary font-bold text-lg p-1 rounded-md w-full'>Sign In</button>
-            <button className='bg-secondary font-bold text-lg p-1 rounded-md w-[75%]'
-                    onMouseDown={()=> setLoginRoot(!loginRoot)}>
-                    Back
-            </button>
-          </div>
-          : 
-          <div className='flex flex-col gap-6 items-center justify-center'>
-            <button className='bg-primary font-bold text-xl p-3 rounded-md px-16'>Sign in with IDP</button>
-            <button className='bg-[#95A967] font-bold text-lg p-1 rounded-md w-[75%]'
-                    onMouseDown={()=> setLoginRoot(!loginRoot)}>
-                    Admin Sign in
-            </button>
-          </div>
-          }
-        </div>
+        <SignInDiv setNyan={setNyan}/>
       </div>
     );
   }
