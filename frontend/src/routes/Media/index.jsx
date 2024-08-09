@@ -34,15 +34,6 @@ const formatBytes = (bytes, decimals = 2) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 };
 
-const headNameStyle = (row) => {
-    return(
-        <div data-tag="allowRowEvents" className="flex flex-row items-center">
-            {getFileIcon(row.type)}
-            <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-        </div>
-    )
-};
-
 const customStyles = {
     headRow: {
         style: {
@@ -98,12 +89,7 @@ function Media() {
                     <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
                 </div>
             ),
-            selector: row => <div>
-                {toEdit === row.id ? 
-                columnNameEdit()
-                : 
-                headNameStyle(row)}
-                </div>,
+            selector: row => columnNameData(row),
             width: '35%',
         },
         {
@@ -133,48 +119,69 @@ function Media() {
             right: 'true',
         },
         {
-            selector: row => <div key={row.id + "_" + "edit"}>
-                                {toEdit === row.id ? 
-                                    <button onClick={()=>{editFile(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                        <MdCheck className='size-5'/>
-                                    </button>
-                                    :
-                                    <button onClick={()=>{setToEdit(row.id); setEditFileName(row.name)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                        <FiEdit className='size-5'/>
-                                    </button>
-                                }
-                            </div>,
+            selector: row => columnEditData(row),
             sortable:false,
             width: '6%'
         },
         {
-            selector: row => 
-                            <div key={row.id + "_" + "delete"}>
-                                {toEdit !== row.id &&  
-                                <div>
-                                    <button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                        <FiTrash2 className='size-5'/>
-                                    </button>
-                                    <AnimatePresence>
-                                        {deletePortal && <FunctionModal
-                                            message={"Are you sure you want to delete this file/folder?"}
-                                            funcToExecute={()=>deleteFile()}
-                                            cancelFunc={()=>{setDeletePortal(false)}}
-                                            confirmMessage={"Yes"}
-                                            />}
-                                    </AnimatePresence>
-                                </div>}
-                            </div>,
+            selector: row => columnDeleteData(row),
             sortable:false,
             width: '6%'
         }
     ];
 
-    const columnNameEdit = () => {
+    const columnNameData = (row) => {
         return (
             <div>
-                <input className="bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
-            </div> 
+                {toEdit === row.id ? 
+                <div>
+                    <input className="bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
+                </div> 
+                : 
+                <div data-tag="allowRowEvents" className="flex flex-row items-center">
+                    {getFileIcon(row.type)}
+                    <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+                </div>
+                }
+            </div>
+
+        )
+    }
+
+    const columnEditData = (row) => {
+        return (
+            <div key={row.id + "_" + "edit"}>
+                {toEdit === row.id ? 
+                    <button onClick={()=>{editFile(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <MdCheck className='size-5'/>
+                    </button>
+                    :
+                    <button onClick={()=>{setToEdit(row.id); setEditFileName(row.name)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <FiEdit className='size-5'/>
+                    </button>
+                }
+            </div>
+        )
+    }
+
+    const columnDeleteData = (row) => {
+        return (
+            <div key={row.id + "_" + "delete"}>
+                {toEdit !== row.id &&  
+                <div>
+                    <button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <FiTrash2 className='size-5'/>
+                    </button>
+                    <AnimatePresence>
+                        {deletePortal && <FunctionModal
+                            message={"Are you sure you want to delete this file/folder?"}
+                            funcToExecute={()=>deleteFile()}
+                            cancelFunc={()=>{setDeletePortal(false)}}
+                            confirmMessage={"Yes"}
+                            />}
+                    </AnimatePresence>
+                </div>}
+            </div>
         )
     }
 
@@ -301,10 +308,11 @@ function Media() {
                     </button>
                     {isDropdownOpen && (
                         <div className="fixed text-md mt-10 z-10 bg-slate-300 w-[10%] h-16 rounded-md">
-                        <ul>
-                            <li onClick={() => {setShowPortalFolder(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New Folder</li>
-                            <li onClick={() => {setShowPortalFile(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</li>
-                        </ul>
+                            <button onClick={() => {setShowPortalFolder(true); setIsDropdownOpen(false)}} 
+                                    className="pl-1 pb-2 cursor-pointer">
+                                    New Folder
+                            </button>
+                            <button onClick={() => {setShowPortalFile(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</button>
                         </div>
                     )}
                     <MediaFileModal

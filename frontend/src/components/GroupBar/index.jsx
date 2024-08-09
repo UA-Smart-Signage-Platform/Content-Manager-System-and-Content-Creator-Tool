@@ -136,7 +136,7 @@ function GroupBar( {id, changeId, page} ) {
                             </button>
                         }
                     </div>
-                    { groups != null && groups.map((group, index) => (
+                    {groups?.map((group, index) => (
                     <div key={group.id}
                         onClick={()=> changeId(group.id)}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 text-left `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
