@@ -35,8 +35,8 @@ function EndTitleHtml( { page, updater, setUpdater } ) {
 
 EndTitleHtml.propTypes = {
     page: PropTypes.string.isRequired,
-    updater: PropTypes.bool.isRequired,
-    setUpdater: PropTypes.func.isRequired
+    updater: PropTypes.bool,
+    setUpdater: PropTypes.func
 }
 
 export default EndTitleHtml

@@ -26,8 +26,8 @@ PageTitle.propTypes = {
     startTitle: PropTypes.string.isRequired,
     middleTitle: PropTypes.string.isRequired,
     endTitle: PropTypes.string.isRequired,
-    updater: PropTypes.bool.isRequired,
-    setUpdater: PropTypes.func.isRequired
+    updater: PropTypes.bool,
+    setUpdater: PropTypes.func
 }
 
 export default PageTitle;

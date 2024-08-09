@@ -1,10 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import './index.css';
-import reportWebVitals from './reportWebVitals';
 import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Root } from './routes';
-import { Dashboard, Monitors, Media, Monitor, Schedule, Wso2Login, Admin, Templates, ChangePassword, Cct } from './pages';
+import { Root, Dashboard, Admin, ChangePassword, Wso2Login, Monitors, Media, Monitor, Schedule, Templates, Cct } from './routes';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ element, requiredRoles }) => {
@@ -78,8 +76,3 @@ root.render(
     <RouterProvider router={router}/>
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

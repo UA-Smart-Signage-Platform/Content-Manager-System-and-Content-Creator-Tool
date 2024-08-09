@@ -170,7 +170,7 @@ function Cct(){
                     </motion.div>}
                 </AnimatePresence>
                 <div className="h-[8%]">
-                    <PageTitle startTitle={"templates"}/>
+                    <PageTitle startTitle={"templates"} middleTitle={""} endTitle={""}/>
                 </div>
                 <div className="h-[92%] flex">
                     {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets} WidgetsList={widgetList} setWidgetList={setWidgetList} setAbleSave={setAbleSave}/>}
@@ -184,9 +184,9 @@ function Cct(){
                             </button>
                         </div>
                         <div className="flex font-bold px-2 pt-3 justify-between">
-                            Widgets
+                            Widgets{/* */}
                             <button className=" bg-secondaryMedium p-1 rounded-md font-normal" onClick={()=>setPortal(true)}>
-                                + Add Widget
+                                + Add Widget{/* */}
                             </button>
                         </div>
                         <div className="flex flex-col gap-1 p-3 relative">

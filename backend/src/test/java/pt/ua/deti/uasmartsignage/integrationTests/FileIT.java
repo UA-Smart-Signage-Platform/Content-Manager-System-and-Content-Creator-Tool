@@ -100,7 +100,7 @@ class FileIT {
         ResponseEntity<CustomFile> response = restTemplate.exchange("http://localhost:" +  port  + "/api/files/3", HttpMethod.GET, entity, CustomFile.class);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(3, Objects.requireNonNull(response.getBody()).getId());
-        assertEquals("test1.png", response.getBody().getName());
+        assertEquals("test1", response.getBody().getName());
     }
 
     @Test
@@ -266,21 +266,13 @@ class FileIT {
     @Test
     @Order(9)
     void testUpdateFileEndpoint(){
-        HttpHeaders headers1 = new HttpHeaders();
-        headers1.setBearerAuth(jwtToken);
-        HttpEntity<?> entity = new HttpEntity<>(headers1);
-        ResponseEntity<CustomFile> getResponse = restTemplate.exchange("http://localhost:" + port + "/api/files/3", HttpMethod.GET,entity,CustomFile.class);
-        CustomFile file = getResponse.getBody();
-
-        file.setName("UpdatedFile.txt");
-
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setBearerAuth(jwtToken);
 
         // Create the HTTP entity with headers and request body
-        HttpEntity<CustomFile> requestEntity = new HttpEntity<>(file, headers);
+        HttpEntity<String> requestEntity = new HttpEntity<>("UpdatedFile", headers);
 
         ResponseEntity<CustomFile> response = restTemplate.exchange(
                 "http://localhost:" + port + "/api/files/3",
@@ -291,8 +283,7 @@ class FileIT {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         CustomFile updatedFile = response.getBody();
-        assertEquals("UpdatedFile.txt", updatedFile.getName());
-
+        assertEquals("UpdatedFile", updatedFile.getName());
     }
 
     @Test

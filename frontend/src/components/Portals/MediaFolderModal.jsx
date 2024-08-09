@@ -6,13 +6,13 @@ import PropTypes from 'prop-types';
 
 function MediaFolderModal( { showPortal, setShowPortal, currentFolder, updater, setUpdater } ) {
 
-    const [folderName, setFolderName] = useState(null);
+    const [folderName, setFolderName] = useState("");
 
     const submitFolder = async () => {
         const folder = {
             name: folderName,
             type: "directory",
-            parent: Array.isArray(currentFolder) ? null : currentFolder,
+            parent: Object.keys(currentFolder).length === 0 ? null : currentFolder,
             size: 0,
         }
 
@@ -56,7 +56,7 @@ function MediaFolderModal( { showPortal, setShowPortal, currentFolder, updater, 
 MediaFolderModal.propTypes = {
     showPortal: PropTypes.bool.isRequired,
     setShowPortal: PropTypes.func.isRequired,
-    currentFolder: PropTypes.number.isRequired,
+    currentFolder: PropTypes.object.isRequired,
     updater: PropTypes.bool.isRequired,
     setUpdater: PropTypes.func.isRequired,
 }

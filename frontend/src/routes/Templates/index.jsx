@@ -46,6 +46,8 @@ const colors = [
     'bg-stone-200 border-stone-400'
 ];
 
+
+
 function Templates(){
     const [templates,setTemplates] = useState([]);
     const [templateDisplay,setTemplateDisplay] = useState(null);
@@ -65,10 +67,21 @@ function Templates(){
             sortable:true,
         },
         {
-            selector: row => <button disabled={row.templateGroups.length !== 0} onClick={()=>deleteTemplate(row.id)} className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400"><FiTrash2/></button>,
+            selector: row => columnButtonDelete(row),
             sortable:false,
         }
     ];
+    
+
+    const columnButtonDelete = (row) => {
+        return(
+            <button disabled={row.templateGroups.length !== 0} 
+                    onClick={()=>deleteTemplate(row.id)} 
+                    className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400">
+                <FiTrash2/>
+            </button>
+        )
+    }
     
     const deleteTemplate = (id) =>{
         templateservice.deleteTemplate(id).then(()=>{
@@ -80,6 +93,7 @@ function Templates(){
             })
         })
     }
+
 
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{
@@ -114,7 +128,7 @@ function Templates(){
                 </motion.div>}
             </AnimatePresence>
             <div className="h-[8%]">
-                <PageTitle startTitle={"templates"}/>
+                <PageTitle startTitle={"templates"} middleTitle={""} endTitle={""}/>
             </div>
             <div className="flex h-[92%]">
                 <div className="h-full w-[30%] p-4 flex flex-col">
@@ -139,7 +153,7 @@ function Templates(){
                     <div className="h-full w-[70%] flex flex-col">
                         <div className="aspect-video relative border-4 border-gray-300 rounded-md my-auto">
                             {templateDisplay !== null && templateDisplay.templateWidgets.map((templateWidget, index) => 
-                            <motion.div key={index} className={`absolute`}
+                            <motion.div key={templateWidget.id} className={`absolute`}
                                 initial={{
                                     width: `${templateWidget.width}%`,
                                     height: `${templateWidget.height}%`,

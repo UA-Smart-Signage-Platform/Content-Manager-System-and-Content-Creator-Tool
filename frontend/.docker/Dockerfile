@@ -1,13 +1,6 @@
-FROM node:14
-
-# Create and define the node_modules's cache directory.
-WORKDIR /cache
-
-# install app dependencies
-COPY package.json .
-COPY package-lock.json .
-RUN npm install --silent
+FROM node:22
 
 WORKDIR /app
-ENV PATH /app/node_modules/.bin:$PATH
-COPY . .
+COPY pnpm-lock.yaml .
+COPY package.json .
+RUN npm install -g pnpm

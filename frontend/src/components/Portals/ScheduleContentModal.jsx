@@ -215,9 +215,4 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
 }
 
 
-ScheduleContentModal.propTypes = {
-    showPortal: PropTypes.bool.isRequired,
-    setShowPortal: PropTypes.func.isRequired
-}
-
 export default ScheduleContentModal;

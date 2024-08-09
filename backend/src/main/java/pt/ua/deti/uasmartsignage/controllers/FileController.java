@@ -120,8 +120,8 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @PutMapping("/files/{id}")
-    public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody CustomFile customFile) {
-        CustomFile updatedFile = fileService.updateFileName(id, customFile);
+    public ResponseEntity<CustomFile> updateFile(@PathVariable Long id, @RequestBody String fileName) {
+        CustomFile updatedFile = fileService.updateFileName(id, fileName);
         if (updatedFile == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
