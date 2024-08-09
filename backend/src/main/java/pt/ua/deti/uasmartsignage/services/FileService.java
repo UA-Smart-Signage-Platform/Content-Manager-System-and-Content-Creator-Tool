@@ -46,6 +46,8 @@ public class FileService {
     private static final String FILENOTFOUND = "File with ID {} not found";
     private static final String USERDIR = System.getProperty("user.dir");
 
+    private final String defaultFolder = "defaultFolder";
+
 
     @Autowired
     public FileService(FileRepository fileRepository, LogsService logsService) {
@@ -202,7 +204,7 @@ public class FileService {
             pathBuilder.append("/");
         }
         else{
-            pathBuilder.append("/uploads/");
+            pathBuilder.append(defaultFolder);
         }
 
        
@@ -363,18 +365,11 @@ public class FileService {
 
         // Delete file from repository
         CustomFile parent = file.getParent();
-        if (parent != null){
-            long newSize = parent.getSize() - file.getSize();
-            parent.setSize(newSize);
-        }
         fileRepository.delete(file);
-        if (parent != null) fileRepository.save(parent);
 
-        if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_FILE.toString(), DESCRIPTION.DELETE_FILE.toString() + filePath)) {
-            logger.error(LOG.ERROR.toString());
-        }
-        else {
-            logger.info(LOG.SUCCESS.toString(), DESCRIPTION.DELETE_FILE.toString() + filePath);
+        if (parent != null){
+            parent.setSize(parent.getSize() - file.getSize());
+            fileRepository.save(parent);
         }
 
         return true;
@@ -470,12 +465,12 @@ public class FileService {
         if (updatedFile.getParent() == null){
             // Update file in disk
             String oldFilePath = USERDIR + updatedFile.getPath();
-            String newFilePath = USERDIR + "/uploads/" + fileName;
+            String newFilePath = USERDIR + defaultFolder + fileName;
             Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
 
             // Update file in repository
             updatedFile.setName(fileName);
-            updatedFile.setPath("/uploads/" + fileName);
+            updatedFile.setPath(defaultFolder + fileName);
         }
         else{
             int i = initialPath.lastIndexOf("/");
@@ -483,13 +478,13 @@ public class FileService {
 
             // Update file in disk
             String oldFilePath = USERDIR + updatedFile.getPath();
-            String newFilePath = USERDIR + "/uploads/" + newName;
+            String newFilePath = USERDIR + defaultFolder + newName;
             Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
         
             // Update file in repository
             initialPath = updatedFile.getPath();
             updatedFile.setName(fileName);
-            updatedFile.setPath("/uploads/" + newName);
+            updatedFile.setPath(defaultFolder + newName);
         }
 
         if(updatedFile.getType().equals("directory")){
@@ -501,25 +496,5 @@ public class FileService {
         
         fileRepository.save(updatedFile);
         return updatedFile;
-
-        /*String description = "File renamed: " + newFile.getAbsolutePath();
-
-        if (fileToUpdate.renameTo(newFile)) {
-            updatedFile.setPath(parentDirectoryPath + updatedFile.getName());
-            fileRepository.save(updatedFile);
-            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.UPDATE_FILE.toString(), description)) {
-                logger.error(LOG.ERROR.toString());
-            }
-            else {
-                
-            }
-        }
-        else {
-            logger.error("Failed to rename file: {}", newFile.getAbsolutePath());
-        }*/
-
-
     }
-
-
 }

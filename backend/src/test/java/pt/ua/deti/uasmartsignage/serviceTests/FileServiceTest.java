@@ -100,18 +100,19 @@ class FileServiceTest {
         directory.delete();
     }
 
-    /*@Test
+    @Test
     @Order(4)
+    @Disabled
     void whenUpdateFileName_thenFileNotFound() {
         when(repository.findById(1L)).thenReturn(Optional.empty());
         CustomFile updated = new CustomFile("Updated directory", "directory", 0L, null);
         updated.setId(1L);
 
-        CustomFile saved = service.updateFileName(1L,updated);
+        CustomFile saved = service.updateFileName(1L,"");
 
         assertThat(saved).isNull();
         verify(repository, times(0)).save(updated);
-    }*/
+    }
 
     @Test
     @Order(5)
