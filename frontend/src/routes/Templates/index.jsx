@@ -47,16 +47,6 @@ const colors = [
 ];
 
 
-const columnButtonDelete = (row) => {
-    return(
-        <button disabled={row.templateGroups.length !== 0} 
-                onClick={()=>deleteTemplate(row.id)} 
-                className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400">
-            <FiTrash2/>
-        </button>
-    )
-}
-
 
 function Templates(){
     const [templates,setTemplates] = useState([]);
@@ -83,7 +73,16 @@ function Templates(){
     ];
     
 
-
+    const columnButtonDelete = (row) => {
+        return(
+            <button disabled={row.templateGroups.length !== 0} 
+                    onClick={()=>deleteTemplate(row.id)} 
+                    className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400">
+                <FiTrash2/>
+            </button>
+        )
+    }
+    
     const deleteTemplate = (id) =>{
         templateservice.deleteTemplate(id).then(()=>{
             templateservice.getTemplates().then((response)=>{
@@ -94,6 +93,7 @@ function Templates(){
             })
         })
     }
+
 
     useEffect(()=>{
         templateservice.getTemplates().then((response)=>{

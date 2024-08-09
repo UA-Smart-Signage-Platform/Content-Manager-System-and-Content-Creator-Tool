@@ -71,7 +71,7 @@ const customStyles = {
 
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
     const [currentFolder, setCurrentFolder] = useState(null);
     const [folder, setFolder] = useState({});
@@ -100,9 +100,7 @@ function Media() {
             ),
             selector: row => <div>
                 {toEdit === row.id ? 
-                <div>
-                    <input className=" bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
-                </div> 
+                columnNameEdit()
                 : 
                 headNameStyle(row)}
                 </div>,
@@ -171,6 +169,14 @@ function Media() {
             width: '6%'
         }
     ];
+
+    const columnNameEdit = () => {
+        return (
+            <div>
+                <input className="bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
+            </div> 
+        )
+    }
 
     const fetchData = ()=>{
         setPreview(null);
@@ -289,15 +295,15 @@ function Media() {
             </div>
             <div id="divider" className="flex flex-col h-[92%] mr-3 ml-3 ">
                 <div id="mediaHeader" className="h-[6%] w-full text-xl flex">
-                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
+                    <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
                         <span className="h-full w-[60%]"><MdAdd className="h-full w-full"/></span>
                         <span className="h-full text-sm flex items-center pr-1">ADD</span>
                     </button>
                     {isDropdownOpen && (
                         <div className="fixed text-md mt-10 z-10 bg-slate-300 w-[10%] h-16 rounded-md">
                         <ul>
-                            <li onClick={() => {setShowPortalFolder(true); setDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New Folder</li>
-                            <li onClick={() => {setShowPortalFile(true); setDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</li>
+                            <li onClick={() => {setShowPortalFolder(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New Folder</li>
+                            <li onClick={() => {setShowPortalFile(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</li>
                         </ul>
                         </div>
                     )}

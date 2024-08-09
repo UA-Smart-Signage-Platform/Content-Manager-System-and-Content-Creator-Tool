@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PageTitle, MemorySvg } from "../../components";
+import { PageTitle } from "../../components";
 import { MdCreate, MdArrowBack, MdMonitor,MdCheck } from "react-icons/md";
 import { useLocation, useParams } from "react-router";
 import monitorService from "../../services/monitorService";
@@ -160,7 +160,7 @@ function Monitor(){
                         </div>
                         <div className="w-[50%] h-full">
                             <div className="h-[60%] bg-secondaryLight rounded-[30px] p-3 w-full">
-                                <img src="https://w.wallhaven.cc/full/ex/wallhaven-exrqrr.jpg" className="h-full w-full  rounded-[20px]">
+                                <img alt="Monitor template" src="https://w.wallhaven.cc/full/ex/wallhaven-exrqrr.jpg" className="h-full w-full  rounded-[20px]">
 
                                 </img>
                             </div>

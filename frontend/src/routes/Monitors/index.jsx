@@ -86,11 +86,17 @@ function Monitors(){
                     <MdInfo className="h-6 w-6 mr-2"/> Status
                 </div>
             ),
-            selector: row => <div className={`w-[42px] ${row.online ? "bg-primary" : "bg-red" } h-[20px] rounded-xl border-black border-2`} />,
+            selector: row => columnStatus(row),
             sortable: true
         }   
     ];
     
+    const columnStatus = (row) => {
+        return (
+            <div className={`w-[42px] ${row.online ? "bg-primary" : "bg-red" } h-[20px] rounded-xl border-black border-2`} />
+        )
+    } 
+
 
     return(
         <div className="flex flex-col h-full">
