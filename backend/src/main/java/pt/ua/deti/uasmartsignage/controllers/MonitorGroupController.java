@@ -2,9 +2,8 @@ package pt.ua.deti.uasmartsignage.controllers;
 
 import java.util.List;
 
-import pt.ua.deti.uasmartsignage.models.Monitor;
-import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.models.TemplateGroup;
+import pt.ua.deti.uasmartsignage.dto.MonitorGroupDTO;
+import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,134 +13,99 @@ import org.springframework.web.bind.annotation.RestController;
 
 import pt.ua.deti.uasmartsignage.services.MonitorGroupService;
 import org.springframework.web.bind.annotation.*;
-import lombok.AllArgsConstructor;
-
+import lombok.RequiredArgsConstructor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 
 @RestController
-@AllArgsConstructor
-@CrossOrigin(origins = "*") //NOSONAR
+@CrossOrigin(origins = "*") // NOSONAR
+@RequiredArgsConstructor
 @RequestMapping("/api/groups")
 public class MonitorGroupController {
 
-    private MonitorGroupService monitorGroupService;
+    private final MonitorGroupService monitorGroupService;
 
-    @Operation(summary = "Get all groups")
+    @Operation(summary = "Get all monitor groups")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all groups", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved all monitor groups")
     })
     @GetMapping
-    public ResponseEntity<List<MonitorsGroup>> getAllGroups() {
-        List<MonitorsGroup> monitorsGroups =  monitorGroupService.getAllGroups();
-        return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
+    public ResponseEntity<List<MonitorGroup>> getAllGroups() {
+        List<MonitorGroup> groups = monitorGroupService.getAllGroups();
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get all groups without the ones made for unique monitor")
+    @Operation(summary = "Get all the monitor groups, ignoring the ones that are created for only a specific monitor")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all groups", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved all non default monitor groups")
     })
-    @GetMapping("/notMadeForMonitor")
-    public ResponseEntity<List<MonitorsGroup>> getAllGroupsNotMadeForMonitor() {
-        List<MonitorsGroup> monitorsGroups = monitorGroupService.getAllGroupsNotMadeForMonitor();
-        return new ResponseEntity<>(monitorsGroups, HttpStatus.OK);
+    @GetMapping("/ignoreDefault")
+    public ResponseEntity<List<MonitorGroup>> getAllNonDefaultGroups() {
+        List<MonitorGroup> groups = monitorGroupService.getAllNonDefaultGroups();
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get group by id")
+    @Operation(summary = "Get monitor group by id")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Group found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved monitor group"),
+            @ApiResponse(responseCode = "404", description = "Monitor group not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<MonitorsGroup> getGroupById(@PathVariable("id") Long id) {
-        MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
-        if (monitorsGroup == null) {
+    public ResponseEntity<MonitorGroup> getGroupById(@PathVariable("id") Long id) {
+        MonitorGroup group = monitorGroupService.getGroupById(id);
+        if (group == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(monitorsGroup, HttpStatus.OK);
+        return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get group by name")
+    @Operation(summary = "Save monitor group")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Group found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-    })
-    @GetMapping("/name/{name}")
-    public ResponseEntity<MonitorsGroup> getGroupByName(@PathVariable("name") String name) {
-        MonitorsGroup monitorsGroup = monitorGroupService.getGroupByName(name);
-        if (monitorsGroup == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(monitorsGroup, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Get all monitors from group")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all groups found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "No groups found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-    })
-    @GetMapping("/{id}/monitors")
-    public ResponseEntity<List<Monitor>> getMonitorsByGroup(@PathVariable("id") Long id){
-        MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
-        if (monitorsGroup == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        List<Monitor> monitors = monitorsGroup.getMonitors();
-        return new ResponseEntity<>(monitors, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Get template from group")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Template found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Template not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-    })
-    @GetMapping("/{id}/template")
-    public ResponseEntity<List<TemplateGroup>> getTemplateByGroup(@PathVariable("id") Long id) {
-        MonitorsGroup monitorsGroup = monitorGroupService.getGroupById(id);
-        if (monitorsGroup == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(monitorsGroup.getTemplateGroups(), HttpStatus.OK);
-    }
-
-    @Operation(summary = "Create a new group")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Group created", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Bad request", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "201", description = "Successfully saved monitor group"),
+            @ApiResponse(responseCode = "409", description = "A group with the given name already exists"),
+            @ApiResponse(responseCode = "400", description = "Bad request")
     })
     @PostMapping
-    public ResponseEntity<MonitorsGroup> createGroup(@RequestBody MonitorsGroup monitorsGroup) {
-        MonitorsGroup newMonitorsGroup = monitorGroupService.saveGroup(monitorsGroup);
-        if (newMonitorsGroup == null) {
+    public ResponseEntity<MonitorGroup> saveGroup(@RequestBody @Valid MonitorGroupDTO groupDTO) {
+        MonitorGroup existingGroup = monitorGroupService.getGroupByName(groupDTO.getName());
+        if (existingGroup != null){
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+        MonitorGroup savedGroup = monitorGroupService.saveGroup(groupDTO);
+        if (savedGroup == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(newMonitorsGroup, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedGroup, HttpStatus.CREATED);
     }
 
-    @Operation(summary = "Update a group")
+    @Operation(summary = "Delete monitor group")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Group updated", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
-    })
-    @PutMapping("/{id}")
-    public ResponseEntity<MonitorsGroup> updateGroup(@PathVariable("id") Long id, @RequestBody MonitorsGroup monitorsGroup) {
-        MonitorsGroup updatedMonitorsGroup = monitorGroupService.updateGroup(id, monitorsGroup);
-        if (updatedMonitorsGroup == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(updatedMonitorsGroup, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Delete a group")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Group deleted", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "Group not found", content = @io.swagger.v3.oas.annotations.media.Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "204", description = "Successfully deleted monitor group"),
+            @ApiResponse(responseCode = "404", description = "Monitor group not found")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable("id") Long id) {
-        monitorGroupService.deleteGroup(id);
+        if (monitorGroupService.getGroupById(id) == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        monitorGroupService.deleteGroupById(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Operation(summary = "Update monitor group")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Successfully updated monitor group"),
+            @ApiResponse(responseCode = "404", description = "Monitor group not found")
+    })
+    @PutMapping("/{id}")
+    public ResponseEntity<MonitorGroup> updateGroup(@PathVariable("id") Long id, @RequestBody @Valid MonitorGroupDTO groupDTO) {
+        MonitorGroup updatedGroup = monitorGroupService.updateGroup(id, groupDTO);
+        if (updatedGroup == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(updatedGroup, HttpStatus.OK);
     }
     
 }

@@ -9,11 +9,12 @@ import lombok.*;
 
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "MonitorsGroup")
-public class MonitorsGroup {
+public class MonitorGroup {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +23,7 @@ public class MonitorsGroup {
     @Column(nullable = false, unique = true)
     private String name;
 
-    private boolean madeForMonitor;
+    private boolean isDefaultGroup;
 
     private String description;
 
@@ -32,6 +33,6 @@ public class MonitorsGroup {
 
     @Override
     public String toString() {
-        return "MonitorsGroup [id=" + id + ", name=" + name + "]";
+        return "MonitorGroup [id=" + id + ", name=" + name + "]";
     }
 }
