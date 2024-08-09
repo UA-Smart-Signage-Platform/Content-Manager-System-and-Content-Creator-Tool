@@ -5,18 +5,13 @@ import { useState } from "react";
 function StartTitleHtml( {page} ){
     const [displayInfo, setDisplayInfo] = useState(false);
 
-    if (page === "default")
+    if (page === "dashboard")
         return (
-        <div className="flex">
-            <MdAccountCircle className="h-6 w-6"/>
-            <span className="ml-2">
-                Welcome Nuno
-            </span>
-        </div>
+            <span className="font-bold text-3xl">Dashboard</span>
         )
     if (page === "monitors")
         return(
-                <span className="font-bold text-3xl">Monitors</span>
+            <span className="font-bold text-3xl">Monitors</span>
         )
     if (page === "media")
         return(
