@@ -1,5 +1,6 @@
 import  Logo  from '../../static/green-name.svg?react';
 import React, { useCallback, useState } from 'react';
+import PropTypes from 'prop-types';
 
 function SignInDiv({setNyan}) {
     const [loginRoot,setLoginRoot] = useState(false);
@@ -43,6 +44,10 @@ function SignInDiv({setNyan}) {
           }
         </div>
     )
+}
+
+SignInDiv.protTypes = {
+  setNyan: PropTypes.func
 }
 
 export default SignInDiv;
