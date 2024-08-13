@@ -7,9 +7,10 @@ function SignInDiv({setNyan}) {
     const [clickTimes,setClickTimes] = useState(0);
 
     const clickTimeCheck = useCallback(()=>{
-        if(clickTimes < 9){
+        if(clickTimes < 9) {
             setClickTimes(clickTimes+1)
-        }else if (clickTimes === 9){
+        }
+        else if (clickTimes === 9) {
             setNyan(true);
             setClickTimes(11);
         }

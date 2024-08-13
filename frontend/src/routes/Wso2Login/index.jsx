@@ -68,11 +68,11 @@ const Wso2Login = () => {
     }
   };
 
-  const options = useMemo(
-    ()=> {
-      if(nyan){
+  const options = useMemo(()=> {
+      if(nyan) {
         return nyanParticles
-      }else{
+      }
+      else {
         return greenParticles
       }
     },
