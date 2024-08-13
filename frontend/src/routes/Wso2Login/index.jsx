@@ -39,7 +39,6 @@ const Wso2Login = () => {
   }, []);
 
   const particlesLoaded = (container) => {
-    console.log(container);
   };
 
   useEffect(() => {
