@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { DashboardGraph, GroupBar, PageTitle } from '../../components'
 import { MdBugReport, MdWarning } from 'react-icons/md';
 import monitorService from '../../services/monitorService';
@@ -8,17 +8,80 @@ import monitorService from '../../services/monitorService';
 
 function Dashboard() {
     const queryClient = useQueryClient();
-
     const [groupId, setGroupId] = useState(null);
-    const {isPending, isError, data, error } = useQuery({
-        queryKey: ['repoData'],
-        queryFn: () =>
-          monitorService.getMonitors().then((res) =>
-            res.data,
-          ),
+
+    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery] = useQueries({
+        queries : [
+            {
+                queryKey: ['onlineMonitors', { onlineStatus: true }],
+                queryFn: () => monitorService.getMonitors(true),
+                enabled: groupId === null
+              },
+              {
+                queryKey: ['offlineMonitors', { onlineStatus: false }],
+                queryFn: () => monitorService.getMonitors(false),
+                enabled: groupId === null
+              },
+              {
+                queryKey: ['onlineMonitorsByGroup', { groupId, onlineStatus: true }],
+                queryFn: () => monitorService.getMonitorsByGroup(groupId, true),
+                enabled: groupId != null
+              },
+              {
+                queryKey: ['offlineMonitorsByGroup', { groupId, onlineStatus: false }],
+                queryFn: () => monitorService.getMonitorsByGroup(groupId, false),
+                enabled: groupId != null
+              }
+        ]
     })
 
-    console.log(data);
+    const LoadingDisplay = () => (
+        <div className="flex flex-col items-center place-content-center">
+            <p className="text-xl">Loading...</p>
+        </div>
+    );
+
+    const ErrorDisplay = ({ message }) => (
+        <div className="flex flex-col items-center place-content-center">
+            <p className="text-xl text-red-500">Error: {message}</p>
+        </div>
+    );
+
+    const DataDisplay = ({ numberMonitors }) => (
+        <div className="flex flex-col items-center place-content-center">
+          <span className="text-6xl pb-2 font-medium">{numberMonitors}</span>
+          <span className="text-lg">Online</span>
+        </div>
+    );
+
+    const showOnlineMonitors = () => {
+        const query = (groupId === null) ? onlineMonitorsQuery : onlineMonitorsByGroupQuery;
+
+        if (query.isLoading) {
+            return <LoadingDisplay />;
+        } 
+
+        if (query.isError) {
+            return <ErrorDisplay message={query.error.message} />;
+        }
+
+        return <DataDisplay numberMonitors={query.data.data.length} />;
+    }
+
+    const showOfflineMonitors = () => {
+        const query = (groupId === null) ? offlineMonitorsQuery : offlineMonitorsByGroupQuery;
+
+        if (query.isLoading) {
+            return <LoadingDisplay />;
+        } 
+
+        if (query.isError) {
+            return <ErrorDisplay message={query.error.message} />;
+        }
+
+        return <DataDisplay numberMonitors={query.data.data.length} />;
+    }
+
 
     const data1 = [];
     const data2 = [];
@@ -60,12 +123,10 @@ function Dashboard() {
                                     </div>
                                     <div className="h-[90%] flex flex-row items-center place-content-center">
                                         <div className="hover:opacity-90 cursor-pointer h-[55%] w-[22%] rounded-md bg-gradient-to-b from-[#96D600] from-25% to-[#76A701] flex flex-col items-center place-content-center mr-[10%]">
-                                            <span className="text-6xl pb-2 font-medium">6</span>
-                                            <span className="text-lg">Online</span>
+                                            {showOnlineMonitors()}
                                         </div>
                                         <div className="hover:opacity-90 cursor-pointer h-[55%] w-[22%] rounded-md bg-gradient-to-b from-[#D12E2E] from-46% to-[#A12626] to-90% flex flex-col items-center place-content-center mr-[10%]">
-                                            <span className="text-6xl pb-2 font-medium">3</span>
-                                            <span className="text-lg">Offline</span>
+                                            {showOfflineMonitors()}
                                         </div>
                                     </div>
                                 </div>
