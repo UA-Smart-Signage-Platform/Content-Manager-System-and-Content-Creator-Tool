@@ -4,12 +4,15 @@ import { DashboardGraph, GroupBar, PageTitle } from '../../components'
 import { MdArrowBack, MdBugReport, MdRemoveRedEye, MdWarning } from 'react-icons/md';
 import monitorService from '../../services/monitorService';
 import DataTable from 'react-data-table-component';
+import { useNavigate } from 'react-router';
 
 
 
 function Dashboard() {
     const queryClient = useQueryClient();
+    const navigate = useNavigate();
     const [groupId, setGroupId] = useState(null);
+    const [groupName, setGroupName] = useState(null);
     const [showMonitorList, setShowMonitorList] = useState(false);
     const [selectedOnline, setSelectedOnline] = useState(false);
 
@@ -174,10 +177,9 @@ function Dashboard() {
                      Name
                 </div>
             ),
-            selector: row => <div className='flex items-center'>
-                                <MdRemoveRedEye className="border h-5 w-5 rounded border-black mr-3" /> 
-                                <span>{row.name}</span> 
-                                <span className=" ml-7">/</span>
+            selector: row => <div data-tag="allowRowEvents" className='flex items-center'>
+                                <MdRemoveRedEye data-tag="allowRowEvents" className="border h-5 w-5 rounded border-black mr-3" /> 
+                                <span data-tag="allowRowEvents">{row.name}</span> 
                             </div>,
             sortable: true,
         },
@@ -189,6 +191,7 @@ function Dashboard() {
             ),
             selector: row => !row.group.madeForMonitor ? row.group.name : "-----",
             sortable: true,
+            width: "220px"
         },
         {
             name: (                
@@ -196,7 +199,8 @@ function Dashboard() {
                      Warns (5 days)
                 </div>
             ),
-            selector: row => row.warnings
+            selector: row => row.warnings,
+            width: "175px"
         },
         {
             name: (                
@@ -204,12 +208,22 @@ function Dashboard() {
                      Online for
                 </div>
             ),
-            selector: row => row.online
+            selector: row => row.online,
+            width: "160px"
         }   
     ];
 
     const showGraphOrMonitorsList = () => {
         if (showMonitorList){
+            let query = null;
+
+            if (groupId === null){
+                query = selectedOnline ? onlineMonitorsQuery : offlineMonitorsQuery;
+            }
+            else {
+                query = selectedOnline ? onlineMonitorsByGroupQuery : offlineMonitorsByGroupQuery;
+            }
+
             return (
                 <div className="w-[75%] h-full pr-6 pt-4 pb-4 rounded">
                     <DataTable
@@ -219,10 +233,8 @@ function Dashboard() {
                     paginationComponentOptions={paginationComponentOptions}
                     onRowClicked={(row) => navigate('/monitor/' + row.id, { state: row })}
                     columns={columns}
-                    data={(groupId === null ? 
-                            (selectedOnline ? onlineMonitorsQuery.data.data : offlineMonitorsQuery.data.data) 
-                            : 
-                            (selectedOnline ? onlineMonitorsByGroupQuery.data.data : offlineMonitorsByGroupQuery.data.data))}
+                    progressPending={query.isLoading}
+                    data={query.data?.data || []}
                     theme="solarized"
                     customStyles={customStyles}/>
                 </div>
@@ -265,16 +277,15 @@ function Dashboard() {
     }
 
     return (
-        
             <div className="flex flex-col h-full">
                 <div id="title" className="pt-4 h-[8%]">
                     <PageTitle startTitle={"dashboard"} 
-                                middleTitle={"default"}
+                                middleTitle={{name: showMonitorList ? "dashboard" : "default", groupName, selectedOnline}}
                                 endTitle={"default"}/>
                 </div>
                 <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                     <div className="w-[30%] flex flex-col">
-                        <GroupBar id={groupId} changeId={setGroupId} />
+                        <GroupBar id={groupId} changeId={setGroupId} changeName={setGroupName}/>
                     </div>
                     <div id="content" className="flex flex-col w-full p-3">
                         <div className="h-[49%]">

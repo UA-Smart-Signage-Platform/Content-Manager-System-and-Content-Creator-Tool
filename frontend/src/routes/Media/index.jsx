@@ -297,7 +297,7 @@ function Media() {
         <div className="h-full flex flex-col">
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"media"} 
-                            middleTitle={"dashboard"}
+                            middleTitle={"default"}
                             endTitle={"..."}/>
             </div>
             <div id="divider" className="flex flex-col h-[92%] mr-3 ml-3 ">

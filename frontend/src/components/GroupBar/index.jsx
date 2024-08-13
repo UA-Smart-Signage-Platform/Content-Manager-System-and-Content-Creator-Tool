@@ -5,7 +5,7 @@ import { IoWarningOutline } from "react-icons/io5";
 import monitorsGroupService from "../../services/monitorsGroupService"
 import {motion,AnimatePresence} from "framer-motion"
 
-function GroupBar( {id, changeId, page} ) {
+function GroupBar( {id, changeId, page, changeName} ) {
     const [groups, setGroups] = useState([]);
     const [editMode, setEditMode] = useState(false);
     const [editGroup,setEditGroup] = useState({id:-1,name:"",description:""});
@@ -113,7 +113,7 @@ function GroupBar( {id, changeId, page} ) {
                             </button>
                         }
                     </div>
-                    <div id="selected" group-id="0" onClick={()=> changeId(null)} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
+                    <div id="selected" group-id="0" onClick={()=> {changeId(null), changeName(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
                         <div className="flex flex-col mt-1 mb-1 ml-4">
                             <div className="flex flex-row">
                                 <div>
@@ -138,7 +138,7 @@ function GroupBar( {id, changeId, page} ) {
                     </div>
                     {groups?.map((group, index) => (
                     <div key={group.id}
-                        onClick={()=> changeId(group.id)}
+                        onClick={()=> {changeId(group.id), changeName(group.name)}}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 text-left `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
                     >

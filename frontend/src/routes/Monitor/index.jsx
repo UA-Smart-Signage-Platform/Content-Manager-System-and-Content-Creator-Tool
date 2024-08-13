@@ -60,7 +60,7 @@ function Monitor(){
                 </AnimatePresence>
                 <div id="title" className="pt-4 h-[8%]">
                     <PageTitle startTitle={"monitor"} 
-                                middleTitle={"dashboard"}
+                                middleTitle={"default"}
                                 endTitle={"dashboard"}/>
                 </div>
                 <div id="monitor" className="h-[92%]">
