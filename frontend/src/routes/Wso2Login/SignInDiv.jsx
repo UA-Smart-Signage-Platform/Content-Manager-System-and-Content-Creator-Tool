@@ -2,8 +2,6 @@ import  Logo  from '../../static/green-name.svg?react';
 import React, { useCallback, useState } from 'react';
 
 function SignInDiv({setNyan}) {
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
     const [loginRoot,setLoginRoot] = useState(false);
     const [clickTimes,setClickTimes] = useState(0);
 
