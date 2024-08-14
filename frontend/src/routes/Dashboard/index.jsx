@@ -5,6 +5,8 @@ import { MdArrowBack, MdBugReport, MdRemoveRedEye, MdWarning } from 'react-icons
 import monitorService from '../../services/monitorService';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router';
+import { tableStyle } from "./tableStyleConfig";
+import { paginationComponentOptions, columns } from './tableDataConfig';
 
 
 
@@ -124,95 +126,6 @@ function Dashboard() {
         }
     }
 
-    const customStyles = {
-        head: {
-            style: {
-                fontWeight: 400,
-            },
-        },
-        headRow: {
-            style: {
-                fontSize: '16px',
-                minHeight: '32px',
-                backgroundColor: "#C1C1C1",
-                borderradius: '20px',
-                borderBottomWidth: '0px'
-            },
-        },
-        headCells: {
-            style: {
-                paddingLeft: '16px',
-            },
-        },
-        rows: {
-            style: {
-                fontSize: '16px',
-                minHeight: '32px',
-                backgroundColor: "#E9E9E9",
-                '&:not(:last-of-type)': {
-                    borderBottomStyle: 'solid',
-                    borderBottomWidth: '1px',
-                    borderBottomColor: "#A7A8AA",
-                },
-            },
-        },
-        cells: {
-            style: {
-                paddingLeft: '10px',
-                paddingRight: '0px',
-                wordBreak: 'break-word',
-            }
-        }
-    };
-
-    const paginationComponentOptions = {
-        noRowsPerPage: true,
-        selectAllRowsItem: false,
-    };
-
-    const columns = [
-        {
-            name: (                
-                <div className="flex flex-row">
-                     Name
-                </div>
-            ),
-            selector: row => <div data-tag="allowRowEvents" className='flex items-center'>
-                                <MdRemoveRedEye data-tag="allowRowEvents" className="border h-5 w-5 rounded border-black mr-3" /> 
-                                <span data-tag="allowRowEvents">{row.name}</span> 
-                            </div>,
-            sortable: true,
-        },
-        {
-            name: (                
-                <div className="flex flex-row">
-                    Group
-                </div>
-            ),
-            selector: row => !row.group.madeForMonitor ? row.group.name : "-----",
-            sortable: true,
-            width: "220px"
-        },
-        {
-            name: (                
-                <div className="flex flex-row">
-                     Warns (5 days)
-                </div>
-            ),
-            selector: row => row.warnings,
-            width: "175px"
-        },
-        {
-            name: (                
-                <div className="flex flex-row">
-                     Online for
-                </div>
-            ),
-            selector: row => row.online,
-            width: "160px"
-        }   
-    ];
-
     const showGraphOrMonitorsList = () => {
         if (showMonitorList){
             let query = null;
@@ -236,7 +149,7 @@ function Dashboard() {
                     progressPending={query.isLoading}
                     data={query.data?.data || []}
                     theme="solarized"
-                    customStyles={customStyles}/>
+                    customStyles={tableStyle}/>
                 </div>
             )
         }
@@ -254,8 +167,6 @@ function Dashboard() {
             )
         }
     }
-
-
 
     const data1 = [];
     const data2 = [];
