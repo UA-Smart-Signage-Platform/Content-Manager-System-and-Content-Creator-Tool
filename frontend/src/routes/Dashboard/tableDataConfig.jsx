@@ -1,3 +1,5 @@
+import { MdRemoveRedEye } from 'react-icons/md';
+
 export const paginationComponentOptions = {
     noRowsPerPage: true,
     selectAllRowsItem: false,
