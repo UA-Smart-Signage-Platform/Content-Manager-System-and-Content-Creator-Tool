@@ -195,7 +195,7 @@ function Schedule(){
         <div className="h-full flex flex-col">
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"schedule"} 
-                            middleTitle={"dashboard"}
+                            middleTitle={"default"}
                             endTitle={"dashboard"}/>
             </div>
             <div id="divider" className="flex h-[92%] mr-3 ml-3 ">

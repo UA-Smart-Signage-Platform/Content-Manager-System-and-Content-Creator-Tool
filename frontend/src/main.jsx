@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Root, Dashboard, Admin, ChangePassword, Wso2Login, Monitors, Media, Monitor, Schedule, Templates, Cct } from './routes';
+import { Root, Dashboard, Admin, ChangePassword, Wso2Login, Monitors, Media, Monitor, Schedule, Templates, Cct, Logs } from './routes';
 import PropTypes from 'prop-types';
 
 const ProtectedRoute = ({ element, requiredRoles }) => {
@@ -25,6 +25,10 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element:<Dashboard/>
+      },
+      {
+        path: "dashboard/logs",
+        element:<Logs/>
       },
       {
         path: "media/*",

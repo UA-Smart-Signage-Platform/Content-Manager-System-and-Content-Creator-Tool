@@ -28,19 +28,27 @@ public class MonitorController {
         this.monitorService = monitorService;
     }
 
-    @Operation(summary = "Get all monitors not Pending")
+    @Operation(summary = "Get all non Pending monitors")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all monitors that are not pending", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "List of all monitors that are not pending. List can be filtered by online status.", content = @Content(mediaType = "application/json")),
     })
     @GetMapping
-    public ResponseEntity<List<Monitor>> getAllMonitors() {
-        List<Monitor> monitors = monitorService.getAllMonitorsByPending(false);
+    public ResponseEntity<List<Monitor>> getAllMonitors(@RequestParam(required = false) Boolean onlineStatus) {
+        List<Monitor> monitors;
+
+        if (onlineStatus != null){
+            monitors = monitorService.getAllMonitorsByPendingAndOnline(false, onlineStatus);
+        }
+        else {
+            monitors = monitorService.getAllMonitorsByPending(false);
+        }
+
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
 
-    @Operation(summary = "Get all pendign monitors")
+    @Operation(summary = "Get all Pending monitors")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of all pendign monitors", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "List of all pending monitors", content = @Content(mediaType = "application/json")),
     })
     @GetMapping("/pending")
     public ResponseEntity<List<Monitor>> getPendingMonitors(){
@@ -78,11 +86,19 @@ public class MonitorController {
 
     @Operation(summary = "Get monitors by group")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "List of monitors found", content = @Content(mediaType = "application/json")),
+            @ApiResponse(responseCode = "200", description = "List of monitors found. List can be filtered by online status.", content = @Content(mediaType = "application/json")),
     })
     @GetMapping("/group/{group}")
-    public ResponseEntity<List<Monitor>> getMonitorsByGroup(@PathVariable("group") Long group) {
-        List<Monitor> monitors = monitorService.getMonitorsByGroup(group);
+    public ResponseEntity<List<Monitor>> getMonitorsByGroup(@PathVariable("group") Long group, @RequestParam(value = "onlineStatus", required = false) Boolean onlineStatus) {
+        List<Monitor> monitors;
+
+        if (onlineStatus != null){
+            monitors = monitorService.getMonitorsByGroupAndOnline(group, onlineStatus);
+        }
+        else {
+            monitors = monitorService.getMonitorsByGroup(group);
+        }
+        
         return new ResponseEntity<>(monitors, HttpStatus.OK);
     }
 

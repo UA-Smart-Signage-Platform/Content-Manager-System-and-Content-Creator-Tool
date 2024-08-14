@@ -102,7 +102,7 @@ function Monitors(){
         <div className="flex flex-col h-full">
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"monitors"} 
-                            middleTitle={"dashboard"}
+                            middleTitle={"default"}
                             endTitle={"monitors"}
                             updater={updater}
                             setUpdater={setUpdater}/>

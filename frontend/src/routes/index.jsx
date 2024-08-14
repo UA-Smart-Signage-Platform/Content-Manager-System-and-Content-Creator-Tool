@@ -1,5 +1,6 @@
 export {default as Root} from './Root'
 export {default as Dashboard} from './Dashboard'
+export {default as Logs} from './Logs'
 export {default as Monitor} from './Monitor'
 export {default as Monitors} from './Monitors'
 export {default as Media} from './Media'
