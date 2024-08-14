@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.services.LogsService;
-import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -54,9 +53,6 @@ class FileIT {
 
     @MockBean
     private LogsService logsService;
-
-    @MockBean
-    private TemplateGroupService templateGroupService;
 
     private static String jwtToken;
     private static final TestRestTemplate restTemplate1 = new TestRestTemplate();

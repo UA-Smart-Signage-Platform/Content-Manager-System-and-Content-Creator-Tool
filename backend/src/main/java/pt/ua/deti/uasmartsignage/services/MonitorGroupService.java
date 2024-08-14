@@ -6,7 +6,7 @@ import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import org.springframework.stereotype.Service;
 
 import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
-
+import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
 public class MonitorGroupService {
 
     private final MonitorGroupRepository monitorGroupRepository;
-    private final MonitorService monitorService;
+    private final MonitorRepository monitorRepository;
 
     public List<MonitorGroup> getAllGroups() {
         return monitorGroupRepository.findAllByMonitorsIsEmptyOrMonitorsPendingFalse();
@@ -82,7 +82,7 @@ public class MonitorGroupService {
 
                 newGroup = saveGroup(newGroup);
                 monitor.setGroup(newGroup);
-                monitorService.updateMonitor(monitor.getId(), monitor);
+                monitorRepository.save(monitor);
                 monitorGroupRepository.deleteById(id);
             }
         }
@@ -100,7 +100,7 @@ public class MonitorGroupService {
 
         List<Monitor> monitors = new ArrayList<>();
         for(Long monitorId : groupDTO.getMonitorIds()){
-            Monitor monitor = monitorService.getMonitorById(monitorId);
+            Monitor monitor = monitorRepository.findById(monitorId).get();
             if (monitor == null)
                 return null;
             monitors.add(monitor);

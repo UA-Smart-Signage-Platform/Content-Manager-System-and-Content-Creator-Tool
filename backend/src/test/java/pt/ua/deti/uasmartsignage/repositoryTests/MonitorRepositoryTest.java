@@ -8,7 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.List;
 
 import pt.ua.deti.uasmartsignage.models.Monitor;
-import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import jakarta.persistence.EntityManager;
 
@@ -26,7 +26,7 @@ class MonitorRepositoryTest {
 
     @Test void
     whenSavedFindAllGetAllMonitors(){
-        MonitorsGroup group = new MonitorsGroup();
+        MonitorGroup group = new MonitorGroup();
         group.setName("departamento");
         entityManager.persist(group);
         entityManager.flush();
@@ -52,12 +52,12 @@ class MonitorRepositoryTest {
 
     @Test void 
     findMonitorsByGroupId(){
-        MonitorsGroup group = new MonitorsGroup();
+        MonitorGroup group = new MonitorGroup();
         group.setName("departamento");
         entityManager.persist(group);
         entityManager.flush();
 
-        MonitorsGroup group2 = new MonitorsGroup();
+        MonitorGroup group2 = new MonitorGroup();
         group2.setName("departamento2");
         entityManager.persist(group2);
         entityManager.flush();
@@ -90,12 +90,12 @@ class MonitorRepositoryTest {
 
     @Test void
     findPendingMonitors(){
-        MonitorsGroup group = new MonitorsGroup();
+        MonitorGroup group = new MonitorGroup();
         group.setName("departamento");
         entityManager.persist(group);
         entityManager.flush();
 
-        MonitorsGroup group2 = new MonitorsGroup();
+        MonitorGroup group2 = new MonitorGroup();
         group2.setName("departamento2");
         entityManager.persist(group2);
         entityManager.flush();
@@ -127,12 +127,12 @@ class MonitorRepositoryTest {
     } 
     @Test void
     findNotPendingMonitors(){
-        MonitorsGroup group = new MonitorsGroup();
+        MonitorGroup group = new MonitorGroup();
         group.setName("departamento");
         entityManager.persist(group);
         entityManager.flush();
 
-        MonitorsGroup group2 = new MonitorsGroup();
+        MonitorGroup group2 = new MonitorGroup();
         group2.setName("departamento2");
         entityManager.persist(group2);
         entityManager.flush();
@@ -165,7 +165,7 @@ class MonitorRepositoryTest {
 
     @Test void
     removeMonitor(){
-        MonitorsGroup group = new MonitorsGroup();
+        MonitorGroup group = new MonitorGroup();
         group.setName("departamento");
         entityManager.persist(group);
         entityManager.flush();

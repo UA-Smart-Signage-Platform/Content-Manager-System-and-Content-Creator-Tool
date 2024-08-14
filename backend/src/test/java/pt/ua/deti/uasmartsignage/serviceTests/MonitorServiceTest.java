@@ -15,11 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import pt.ua.deti.uasmartsignage.models.Monitor;
-import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import pt.ua.deti.uasmartsignage.services.MonitorService;
-import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
 import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,10 +34,7 @@ class MonitorServiceTest {
     private MonitorService service;
 
     @Mock
-    private TemplateGroupService templateGroupService;
-
-    @Mock
-    private MonitorGroupRepository monitorsGroupRepository;
+    private MonitorGroupRepository MonitorGroupRepository;
 
     @Test void
     getMonitorByIdTestReturnsMonitor(){
@@ -68,11 +64,11 @@ class MonitorServiceTest {
 
     @Test void
     UpdateMonitorServiceTest(){
-        MonitorsGroup group1 = new MonitorsGroup();
+        MonitorGroup group1 = new MonitorGroup();
         group1.setId(1L);
         group1.setName("group1");
 
-        MonitorsGroup group2 = new MonitorsGroup();
+        MonitorGroup group2 = new MonitorGroup();
         group2.setId(2L);
         group2.setName("group2");
 
@@ -100,7 +96,7 @@ class MonitorServiceTest {
     
     @Test void
     whenUpdatePendingInServiceThenPendingIsUpdated(){
-        MonitorsGroup group2 = new MonitorsGroup();
+        MonitorGroup group2 = new MonitorGroup();
         group2.setId(2L);
         group2.setName("group2");
 
@@ -121,11 +117,11 @@ class MonitorServiceTest {
 
     @Test void
     WhenServiceGetAllMonitorsByPendingThenRepositoryGetAllMonitorsByPending(){
-        MonitorsGroup group1 = new MonitorsGroup();
+        MonitorGroup group1 = new MonitorGroup();
         group1.setId(1L);
         group1.setName("group1");
 
-        MonitorsGroup group2 = new MonitorsGroup();
+        MonitorGroup group2 = new MonitorGroup();
         group2.setId(2L);
         group2.setName("group2");
 
@@ -150,7 +146,7 @@ class MonitorServiceTest {
 
     @Test void
     whenServiceGetMonitorsByGroupThenRepositoryGetMonitorsByGroupNotPending(){
-        MonitorsGroup group1 = new MonitorsGroup();
+        MonitorGroup group1 = new MonitorGroup();
         group1.setId(1L);
         group1.setName("group2");
 

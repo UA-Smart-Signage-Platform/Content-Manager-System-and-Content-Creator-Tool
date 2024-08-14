@@ -8,9 +8,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import pt.ua.deti.uasmartsignage.models.Monitor;
-import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
+import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import pt.ua.deti.uasmartsignage.services.LogsService;
-import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -27,9 +26,6 @@ class MonitorIT extends BaseIntegrationTest{
 
     @MockBean
     private LogsService logsService;
-
-    @MockBean
-    private TemplateGroupService templateGroupService;
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -176,7 +172,7 @@ class MonitorIT extends BaseIntegrationTest{
             headers.setBearerAuth(jwtToken);
             HttpEntity<?> entity = new HttpEntity<>( headers);
 
-            ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.GET, entity , MonitorsGroup.class);
+            ResponseEntity<MonitorGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.GET, entity , MonitorGroup.class);
 
             Monitor monitor = new Monitor();
             monitor.setUuid("192.168.20");
@@ -204,7 +200,7 @@ class MonitorIT extends BaseIntegrationTest{
             Monitor monitor = response.getBody();
             monitor.setName("update_monitor");
 
-            ResponseEntity<MonitorsGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.GET, entity , MonitorsGroup.class);
+            ResponseEntity<MonitorGroup> response1 = restTemplate.exchange("http://localhost:" + port + "/api/groups/4", HttpMethod.GET, entity , MonitorGroup.class);
             assertEquals(HttpStatus.OK, response1.getStatusCode());
             monitor.setGroup(response1.getBody());
 
