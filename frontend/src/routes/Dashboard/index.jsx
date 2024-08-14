@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useQueries, useQueryClient } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { DashboardGraph, GroupBar, PageTitle } from '../../components'
-import { MdArrowBack, MdBugReport, MdRemoveRedEye, MdWarning } from 'react-icons/md';
+import { MdArrowBack, MdBugReport, MdWarning } from 'react-icons/md';
 import monitorService from '../../services/monitorService';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router';
@@ -11,7 +11,6 @@ import { paginationComponentOptions, columns } from './tableDataConfig';
 
 
 function Dashboard() {
-    const queryClient = useQueryClient();
     const navigate = useNavigate();
     const [groupId, setGroupId] = useState(null);
     const [groupName, setGroupName] = useState(null);
