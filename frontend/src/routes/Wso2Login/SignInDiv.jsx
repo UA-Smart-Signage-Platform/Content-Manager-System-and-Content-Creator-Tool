@@ -43,7 +43,7 @@ function SignInDiv({setNyan}) {
           />
         </div>
         <button className='bg-primary font-bold text-lg p-1 rounded-md w-full'
-                onClick={() => {mutation.mutate(password);console.log("click")}}
+                onClick={() => mutation.mutate(password)}
         >
           Sign In</button>
         <button className='bg-secondary font-bold text-lg p-1 rounded-md w-[75%]'
