@@ -17,42 +17,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import pt.ua.deti.uasmartsignage.configuration.MqttConfig;
 import pt.ua.deti.uasmartsignage.exceptions.MqttException;
 import jakarta.annotation.PostConstruct;
-
+import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.services.MonitorService;
-import pt.ua.deti.uasmartsignage.services.TemplateGroupService;
+import pt.ua.deti.uasmartsignage.services.RuleService;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import pt.ua.deti.uasmartsignage.services.MonitorGroupService;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 
-import pt.ua.deti.uasmartsignage.models.MonitorsGroup;
-import pt.ua.deti.uasmartsignage.models.Severity;
+import pt.ua.deti.uasmartsignage.models.MonitorGroup;
+import pt.ua.deti.uasmartsignage.enums.Severity;
 
 @Component
 @Profile("!test & !integration-test")
+@RequiredArgsConstructor
 public class MqttSubscriberService {
 
     private final ObjectMapper objectMapper;
-
     private final MonitorService monitorService;
-
     private final MonitorGroupService monitorGroupService;
-
     private final LogsService logsService;
-
     private final MqttConfig mqttConfig;
-
-    private final TemplateGroupService templateGroupService;
+    private final RuleService ruleService;
 
     private static Logger logger = org.slf4j.LoggerFactory.getLogger(MqttSubscriberService.class);
-
-    public MqttSubscriberService(MqttConfig mqttConfig, ObjectMapper objectMapper, MonitorService monitorService, MonitorGroupService monitorGroupService, LogsService logsService, TemplateGroupService templateGroupService) {
-        this.mqttConfig = mqttConfig;
-        this.objectMapper = objectMapper;
-        this.monitorService = monitorService;
-        this.monitorGroupService = monitorGroupService;
-        this.logsService = logsService;
-        this.templateGroupService = templateGroupService;
-    }
 
     @PostConstruct
     public void subscribeToRegistrationTopic() throws MqttSecurityException, org.eclipse.paho.client.mqttv3.MqttException {
@@ -123,14 +110,14 @@ public class MqttSubscriberService {
             logger.info("Monitor: {}", tempMonitor);
 
             if(tempMonitor == null){
-                MonitorsGroup monitorsGroup = new MonitorsGroup();
-                monitorsGroup.setName(registrationMessage.getName());
-                monitorsGroup.setMadeForMonitor(true);
-                monitorGroupService.saveGroup(monitorsGroup);
+                MonitorGroup MonitorGroup = new MonitorGroup();
+                MonitorGroup.setName(registrationMessage.getName());
+                MonitorGroup.setDefaultGroup(true);
+                monitorGroupService.saveGroup(MonitorGroup);
         
                 Monitor monitor = new Monitor();
                 monitor.setName(registrationMessage.getName());
-                monitor.setGroup(monitorsGroup);
+                monitor.setGroup(MonitorGroup);
                 monitor.setHeight(Integer.parseInt(registrationMessage.getHeight()));
                 monitor.setWidth(Integer.parseInt(registrationMessage.getWidth()));
                 monitor.setUuid(registrationMessage.getUuid());
@@ -156,7 +143,7 @@ public class MqttSubscriberService {
                 logger.info("Monitor already exists, sending all schedules to monitor");
                 List<Monitor> monitors = new ArrayList<>();
                 monitors.add(tempMonitor);
-                templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
+                // templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
             }
         }
 
