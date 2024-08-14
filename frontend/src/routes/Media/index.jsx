@@ -1,11 +1,11 @@
 import { PageTitle, MediaFileModal, MediaFolderModal, FunctionModal } from '../../components';
-import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile } from "react-icons/md";
+import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile, MdOutlineFormatIndentIncrease, MdCalendarMonth, MdCheck } from "react-icons/md";
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import mediaService from '../../services/mediaService';
 import { useLocation, useNavigate} from 'react-router';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FiTrash2 } from "react-icons/fi";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
 
 
 const getFileIcon = (type) => {
@@ -20,6 +20,7 @@ const getFileIcon = (type) => {
             break;
     }
 };
+
 // code taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
 const formatBytes = (bytes, decimals = 2) => {
     if (!+bytes) return '0 Bytes'
@@ -33,34 +34,38 @@ const formatBytes = (bytes, decimals = 2) => {
     return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
 };
 
-const headNameStyle = (row) => {
-    return(
-        <div data-tag="allowRowEvents" className="flex flex-row items-center">
-            {getFileIcon(row.type)}
-            <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-        </div>
-    )
-};
-
 const customStyles = {
-    head: {
+    headRow: {
         style: {
             fontSize: '20px',
+            borderBottomWidth: '2px'
         },
     },
     rows: {
         style: {
-            fontSize: '16px',
+            fontSize: '16px'
+        },
+    },
+    headCells: {
+        style: {
+            paddingLeft: '8px',
+            paddingRight: '8px'
+        },
+    },
+    cells: {
+        style: {
+            paddingLeft: '8px',
+            paddingRight: '8px'
         },
     },
 };
 
 function Media() {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
-    const [isDropdownOpen, setDropdownOpen] = useState(false);
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     
     const [currentFolder, setCurrentFolder] = useState(null);
-    const [folder, setFolder] = useState(null);
+    const [folder, setFolder] = useState({});
     
     const [updater, setUpdater] = useState(false);
     const [file, setFile] = useState(null);
@@ -69,8 +74,10 @@ function Media() {
     
     const [showPortalFile, setShowPortalFile] = useState(false);
     const [showPortalFolder, setShowPortalFolder] = useState(false);
-    const [deletePortal,setDeletePortal] = useState(false);
+    const [deletePortal, setDeletePortal] = useState(false);
     const [toDelete,setToDelete] = useState(null);
+    const [toEdit, setToEdit] = useState(null);
+    const [editFileName, setEditFileName] = useState(null);
     
     const path = useLocation().pathname.replace("/media/home","/uploads").replace(/\/$/, '');
     const navigate = useNavigate();
@@ -82,7 +89,7 @@ function Media() {
                     <MdOutlineInsertDriveFile className="h-6 w-6 mr-2"/> Name
                 </div>
             ),
-            selector: row => headNameStyle(row),
+            selector: row => columnNameData(row),
             width: '35%',
         },
         {
@@ -91,43 +98,100 @@ function Media() {
             omit: true,
         },
         {
-            name: 'Size',
+            name: (                
+                <div className="flex flex-row">
+                    <MdOutlineFormatIndentIncrease className="h-6 w-6 mr-2"/> Size
+                </div>
+            ),
             selector: row => formatBytes(row.size, 0),
             sortable: true,
             width: '25%',
         },
         {
-            name: 'Date',
+            name: (                
+                <div className="flex flex-row pr-8">
+                    <MdCalendarMonth className="h-6 w-6 mr-2"/> Date
+                </div>
+            ),
             selector: row => row.date,
             sortable: true,
             width: '25%',
             right: 'true',
         },
         {
-            selector: row => <><button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
-                                <FiTrash2 className='size-5'/>
-                            </button>
-                            <AnimatePresence>
-                                {deletePortal && <FunctionModal
-                                    message={"Are you sure you want to delete this file/folder?"}
-                                    funcToExecute={()=>deleteFile()}
-                                    cancelFunc={()=>{setDeletePortal(false)}}
-                                    confirmMessage={"Yes"}
-                                    />}
-                            </AnimatePresence>
-                            </>,
+            selector: row => columnEditData(row),
             sortable:false,
-            width: '15%'
+            width: '6%'
+        },
+        {
+            selector: row => columnDeleteData(row),
+            sortable:false,
+            width: '6%'
         }
     ];
 
+    const columnNameData = (row) => {
+        return (
+            <div>
+                {toEdit === row.id ? 
+                <div>
+                    <input className="bg-primary rounded-sm w-full text-md px-2" value={editFileName} onChange={(e)=>setEditFileName(e.target.value)}/>
+                </div> 
+                : 
+                <div data-tag="allowRowEvents" className="flex flex-row items-center">
+                    {getFileIcon(row.type)}
+                    <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+                </div>
+                }
+            </div>
+
+        )
+    }
+
+    const columnEditData = (row) => {
+        return (
+            <div key={row.id + "_" + "edit"}>
+                {toEdit === row.id ? 
+                    <button onClick={()=>{editFile(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <MdCheck className='size-5'/>
+                    </button>
+                    :
+                    <button onClick={()=>{setToEdit(row.id); setEditFileName(row.name)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <FiEdit className='size-5'/>
+                    </button>
+                }
+            </div>
+        )
+    }
+
+    const columnDeleteData = (row) => {
+        return (
+            <div key={row.id + "_" + "delete"}>
+                {toEdit !== row.id &&  
+                <div>
+                    <button onClick={()=>{setDeletePortal(true);setToDelete(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                        <FiTrash2 className='size-5'/>
+                    </button>
+                    <AnimatePresence>
+                        {deletePortal && <FunctionModal
+                            message={"Are you sure you want to delete this file/folder?"}
+                            funcToExecute={()=>deleteFile()}
+                            cancelFunc={()=>{setDeletePortal(false)}}
+                            confirmMessage={"Yes"}
+                            />}
+                    </AnimatePresence>
+                </div>}
+            </div>
+        )
+    }
+
     const fetchData = ()=>{
-        setPreview(null)
-        setFile(null)
+        setPreview(null);
+        setFile(null);
         if(path === "/uploads"){
             mediaService.getFilesAtRootLevel().then((response)=>{
                 setFilesAndDirectories(response.data);
-                setFolder(response.data);
+                setFolder({});
             })
         }
         else{
@@ -138,9 +202,16 @@ function Media() {
         }
     }
 
-    const deleteFile = ()=>{
+    const deleteFile = () => {
         setDeletePortal(false);
         mediaService.deleteFileOrFolder(toDelete).then(()=>{
+            fetchData();
+        })
+    }
+
+    const editFile = (id) => {
+        setToEdit(null);
+        mediaService.editFileOrFolder(id, editFileName).then(()=>{
             fetchData();
         })
     }
@@ -151,7 +222,7 @@ function Media() {
             return
         }
         fetchData()
-    }, [currentFolder, updater,path,navigate]);
+    }, [currentFolder, updater, path, navigate]);
 
     const handleRowClick = (row) => {
         if (row.type === "directory"){
@@ -164,10 +235,10 @@ function Media() {
             setFile(change);
             if (change !== null){
                 if (path === 'home' ){
-                    setPreview(process.env.REACT_APP_API_URL + "/uploads/" + row.name);
+                    setPreview(import.meta.env.VITE_APP_API_URL + "/uploads/" + row.name);
                 }
                 else{
-                    setPreview(process.env.REACT_APP_API_URL + path + "/" + row.name);
+                    setPreview(import.meta.env.VITE_APP_API_URL + path + "/" + row.name);
                 }
             }
             else{
@@ -185,7 +256,7 @@ function Media() {
         return (
             <div className="flex flex-row">
                 {path.split("/").slice(1).map((folder, index, array) =>
-                    <div>
+                    <div key={folder + "_breadcrumb"}>
                         <motion.button key={folder.id} className={(index+1 !== array.length ? `text-secondary hover:bg-secondaryMedium rounded-lg px-1` : `text-black`)} onClick={() => breadCrumbsNavigate(index)}
                             whileHover={{scale:1.1}}
                         >
@@ -208,21 +279,16 @@ function Media() {
 
     const showFilePreview = () => {
         return (
-            fileType === "video/mp4" ? 
             <div>
                 <span className="flex flex-row text-2xl items-center font-medium mb-3">
-                    <MdLocalMovies data-tag="allowRowEvents" className="h-8 w-8 "/> 
+                    {fileType === "video/mp4" ? 
+                        <MdLocalMovies data-tag="allowRowEvents" className="h-8 w-8" /> : 
+                        <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-8 w-8" />}
                     Preview:
                 </span>
-                <video src={`${preview}`} controls muted/> 
-            </div>
-            : 
-            <div>
-                <span className="flex flex-row text-2xl items-center font-medium mb-3">
-                    <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-8 w-8"/> 
-                    Preview:
-                </span>
-                <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>
+                {fileType === "video/mp4" ? 
+                        <video src={`${preview}`} controls muted/>  : 
+                        <img className=" max-h-[720px]" src={`${preview}`} alt={`${file}`}/>}
             </div>
         )
     }
@@ -232,20 +298,21 @@ function Media() {
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"media"} 
                             middleTitle={"dashboard"}
-                            endTitle={"dashboard"}/>
+                            endTitle={"..."}/>
             </div>
             <div id="divider" className="flex flex-col h-[92%] mr-3 ml-3 ">
                 <div id="mediaHeader" className="h-[6%] w-full text-xl flex">
-                    <button onClick={() => setDropdownOpen(!isDropdownOpen)} className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
+                    <button onClick={() => setIsDropdownOpen(!isDropdownOpen)} className="flex mt-auto mb-auto rounded-md w-[3.5%] h-[50%] bg-secondaryLight mr-3 cursor-pointer">
                         <span className="h-full w-[60%]"><MdAdd className="h-full w-full"/></span>
                         <span className="h-full text-sm flex items-center pr-1">ADD</span>
                     </button>
                     {isDropdownOpen && (
                         <div className="fixed text-md mt-10 z-10 bg-slate-300 w-[10%] h-16 rounded-md">
-                        <ul>
-                            <li onClick={() => {setShowPortalFolder(true); setDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New Folder</li>
-                            <li onClick={() => {setShowPortalFile(true); setDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</li>
-                        </ul>
+                            <button onClick={() => {setShowPortalFolder(true); setIsDropdownOpen(false)}} 
+                                    className="pl-1 pb-2 cursor-pointer">
+                                    New Folder
+                            </button>
+                            <button onClick={() => {setShowPortalFile(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</button>
                         </div>
                     )}
                     <MediaFileModal

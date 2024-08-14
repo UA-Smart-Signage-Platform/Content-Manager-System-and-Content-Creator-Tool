@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { PageTitle, GroupBar } from "../../components";
+import { MdGroup, MdInfo, MdMonitor, MdOutlineWarning } from "react-icons/md";
 import monitorService from "../../services/monitorService"
 import { useNavigate } from "react-router-dom";
 import DataTable from 'react-data-table-component';
@@ -28,55 +29,74 @@ function Monitors(){
     const customStyles = {
         headRow: {
             style: {
-                minHeight: '40px',
-                borderBottomWidth: '1px',
-                borderBottomStyle: 'solid',
+                fontSize: '20px',
+                borderBottomWidth: '2px'
             },
         },
         rows: {
             style: {
-                
-                minHeight: '40px', // override the row height
+                fontSize: '16px'
             },
         },
         headCells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for head cells
-                paddingRight: '8px',
+                paddingLeft: '8px',
+                paddingRight: '8px'
             },
         },
         cells: {
             style: {
-                paddingLeft: '8px', // override the cell padding for data cells
-                paddingRight: '8px',
+                paddingLeft: '35px',
+                paddingRight: '8px'
             },
         },
     };
 
     const columns = [
         {
-            name: 'Name',
+            name: (                
+                <div className="flex flex-row">
+                    <MdMonitor className="h-6 w-6 mr-2"/> Name
+                </div>
+            ),
             selector: row => row.name,
             sortable: true,
         },
         {
-            name: 'Group',
-            selector: row => !row.group.madeForMonitor ? row.group.name:"-----",
+            name: (                
+                <div className="flex flex-row">
+                    <MdGroup className="h-6 w-6 mr-2"/> Group
+                </div>
+            ),
+            selector: row => !row.group.madeForMonitor ? row.group.name : "-----",
             sortable: true,
         },
         {
-            name: 'Warnings',
+            name: (                
+                <div className="flex flex-row">
+                    <MdOutlineWarning className="h-6 w-6 mr-2"/> Warnings
+                </div>
+            ),
             selector: row => row.warnings,
             sortable: true,
         },
         {
-            name: 'Status',
-            selector: row => row.online ? <div className=" w-[42px] bg-primary h-[20px] rounded-xl border-black border-2"></div> 
-                                        : <div className=" w-[42px] bg-red h-[20px] rounded-xl border-black border-2"></div>,
+            name: (                
+                <div className="flex flex-row">
+                    <MdInfo className="h-6 w-6 mr-2"/> Status
+                </div>
+            ),
+            selector: row => columnStatus(row),
             sortable: true
         }   
     ];
     
+    const columnStatus = (row) => {
+        return (
+            <div className={`w-[42px] ${row.online ? "bg-primary" : "bg-red" } h-[20px] rounded-xl border-black border-2`} />
+        )
+    } 
+
 
     return(
         <div className="flex flex-col h-full">
@@ -89,7 +109,7 @@ function Monitors(){
             </div>
             <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                 <div className="w-[30%] flex flex-col">
-                        <GroupBar id={groupId} changeId={setGroupId} page={"monitors"}/>
+                    <GroupBar id={groupId} changeId={setGroupId} page={"monitors"}/>
                 </div>
                 <DataTable className="p-3" 
                     pointerOnHover

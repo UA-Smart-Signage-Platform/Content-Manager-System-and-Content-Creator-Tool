@@ -241,7 +241,7 @@ function Schedule(){
                                 className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
                                 <option selected disabled hidden>Group</option>
                                 {groups.length !== 0 && groups.map((group) => 
-                                    <option value={group.id}>{group.name}</option>
+                                    <option key={group.id} value={group.id}>{group.name}</option>
                                 )}
                             </motion.select>
                             {showGroupNeeded && 

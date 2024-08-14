@@ -16,12 +16,18 @@ const mediaService = {
     async createFolder(folder){
         return await client.post("files/directory", folder);
     },
+
     async getDirectoryOrFileByPath(path){
         return await client.get("files/byPath",{params:{path:path}});
     },
+
     async deleteFileOrFolder(id){
-        return await client.delete(`files/${id}`)
-    }
+        return await client.delete(`files/${id}`);
+    },
+
+    async editFileOrFolder(id, name){
+        return await client.put(`files/${id}`, name);
+    },
 }
 
 export default mediaService;
