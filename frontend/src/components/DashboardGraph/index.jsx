@@ -24,9 +24,9 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 CustomTooltip.propTypes = {
-    active: PropTypes.bool.isRequired,
-    payload: PropTypes.object.isRequired,
-    label: PropTypes.object.isRequired
+    active: PropTypes.bool,
+    payload: PropTypes.array,
+    label: PropTypes.string
 }
 
 function DashboardGraph( { data, xLabel, yLabel, height, title, linkTo } ) {

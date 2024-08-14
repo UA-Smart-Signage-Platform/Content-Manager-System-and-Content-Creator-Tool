@@ -178,8 +178,9 @@ public class MonitorService {
     }
     
     /**
-     * Retrieves and returns all Monitors.
-     *
+     * Retrieves and returns all Monitors based on PENDING.
+     * 
+     * @param pending The PENDING status of the Monitors.
      * @return A list of all Monitors.
      */
     public List<Monitor> getAllMonitorsByPending(boolean pending) {
@@ -203,6 +204,60 @@ public class MonitorService {
     }
 
     /**
+     * Retrieves and returns all Monitors based on PENDING and filtered by ONLINE status.
+     * 
+     * @param pending The PENDING status of the Monitors.
+     * @param online The ONLINE status of the Monitors.
+     * @return A list of all Monitors.
+     */
+    public List<Monitor> getAllMonitorsByPendingAndOnline(boolean pending, boolean onlineStatus) {
+        String operation = "getAllMonitorsByPendingAndOnline";
+        String description = "Getting all monitors by pending " + pending + " and by status " + onlineStatus;
+
+        List<Monitor> monitors = monitorRepository.findByPendingAndOnline(pending, onlineStatus);
+
+        for (Monitor monitor : monitors) {
+            boolean online = logsService.keepAliveIn10min(monitor);
+            monitor.setOnline(online);
+        }
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+        return monitors;
+    }
+
+    /**
+     * Retrieves and returns all Monitors.
+     *
+     * @return A list of all Monitors.
+     */
+    public List<Monitor> getMonitorsByGroupAndOnline(long groupId, boolean onlineStatus) {
+        String operation = "getMonitorsByGroupAndOnline";
+        String description = "Getting all monitors by group " + groupId + " and by status " + onlineStatus;
+
+        List<Monitor> monitors = monitorRepository.findByPendingAndGroup_IdAndOnline(false, groupId, onlineStatus);
+
+        for (Monitor monitor : monitors) {
+            boolean online = logsService.keepAliveIn10min(monitor);
+            monitor.setOnline(online);
+        }
+
+
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(ADDLOGERROR);
+        }
+        else {
+            logger.info(ADDLOGSUCCESS, description);
+        }
+        
+        return monitors;
+    }
+
+        /**
      * Retrieves and returns all Monitors.
      *
      * @return A list of all Monitors.
