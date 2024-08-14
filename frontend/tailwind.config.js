@@ -21,6 +21,8 @@ module.exports = {
         'secondaryMedium':'#d7dad6',
         'secondaryLight':"#E9E9E9",
         'red':"#D12E2E",
+        'orange': "#DC8331",
+        'grey': "#A1A1A1",
         'textcolor':'#101604',
         'backgroundcolor':'#fafdf7',
         'searchButton':'#AFAFAF',

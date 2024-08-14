@@ -302,7 +302,7 @@ function Dashboard() {
                                     yLabel={"monitors"}
                                     height={"90%"}
                                     title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (past 30 days)</>}
-                                    linkTo={"/"} />
+                                    linkTo={"/dashboard/logs"} />
                         </div>
                     </div>
                 </div>
