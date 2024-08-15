@@ -1,7 +1,7 @@
 package pt.ua.deti.uasmartsignage.controllers;
 
 import pt.ua.deti.uasmartsignage.models.CustomFile;
-import pt.ua.deti.uasmartsignage.models.FilesClass;
+import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.services.FileService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "*") //NOSONAR
+@CrossOrigin(origins = "*")
 public class FileController {
 
     private final FileService fileService;
@@ -34,35 +34,20 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/{id}")
-    public ResponseEntity<Optional<CustomFile>> getFileOrDirectoryById(@PathVariable Long id) {
-        Optional<CustomFile> customFile = fileService.getFileOrDirectoryById(id);
+    public ResponseEntity<Optional<CustomFile>> getFileById(@PathVariable Long id) {
+        Optional<CustomFile> customFile = fileService.getFileById(id);
         if (customFile.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(customFile);
     }
-
-    @Operation(summary = "Get file by path")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "File found", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-    })
-    @GetMapping("/files/byPath")
-    public ResponseEntity<Optional<CustomFile>> getFileOrDirectoryByPath(@RequestParam String path) {
-        Optional<CustomFile> customFile = fileService.getFileOrDirectoryByPath(path);
-        if (customFile.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(customFile);
-    }
-
 
     @Operation(summary = "Get all files and folders located in root")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "List of all files and folders at root level", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/files/directory/root")
-    public ResponseEntity<List<CustomFile>> getRootFilesAndDirectories() {
+    public ResponseEntity<List<CustomFile>> getRootFiles() {
         List<CustomFile> customFiles = fileService.getFilesAtRoot();
         return new ResponseEntity<>(customFiles, HttpStatus.OK);
     }
@@ -89,7 +74,9 @@ public class FileController {
     @PostMapping("/files/directory")
     public ResponseEntity<CustomFile> createDirectory(@RequestBody CustomFile customFile) {
         CustomFile newCustomFile = fileService.createDirectory(customFile);
-        if (newCustomFile == null) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (newCustomFile == null){
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        } 
         return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);
     }
 
@@ -109,6 +96,10 @@ public class FileController {
     }
 
     @Operation(summary = "Download a file")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "File found", content = @Content(mediaType = "application/json")),
+        @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
+})
     @GetMapping("/files/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
         return fileService.downloadFileById(fileId);

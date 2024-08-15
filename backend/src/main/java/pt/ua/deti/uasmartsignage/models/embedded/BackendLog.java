@@ -1,4 +1,4 @@
-package pt.ua.deti.uasmartsignage.models;
+package pt.ua.deti.uasmartsignage.models.embedded;
 
 
 import lombok.AllArgsConstructor;

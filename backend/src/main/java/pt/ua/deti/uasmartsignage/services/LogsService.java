@@ -12,8 +12,8 @@ import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import pt.ua.deti.uasmartsignage.configuration.InfluxDBProperties;
 import pt.ua.deti.uasmartsignage.enums.Severity;
-import pt.ua.deti.uasmartsignage.models.BackendLog;
 import pt.ua.deti.uasmartsignage.models.Monitor;
+import pt.ua.deti.uasmartsignage.models.embedded.BackendLog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

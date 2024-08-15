@@ -9,10 +9,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "File")
+@JsonIgnoreProperties({"parent", "subDirectories"})
 public class CustomFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,36 +22,41 @@ public class CustomFile {
     private String name;
 
     @Column(nullable = false)
+    private String uuid;
+
+    @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
+    private String extension;
 
     @Column(nullable = false)
     private Long size;
 
-    @Column(unique = true)
-    private String path;
-
     @ManyToOne
-    @JsonIgnoreProperties({"subDirectories", "parent"})
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties({"parent", "subDirectories"})
     private List<CustomFile> subDirectories;
 
-    public CustomFile(String name, String type, Long size, CustomFile parent) {
+    public CustomFile(String name, String uuid, String type, String extension, Long size, CustomFile parent) {
         this.name = name;
+        this.uuid = uuid;
         this.type = type;
+        this.extension = extension;
         this.size = size;
         this.parent = parent;
-        this.subDirectories = null;
     }
 
+    @Override
     public String toString() {
         return "File{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", uuid='" + uuid + '\'' +     
                 ", type='" + type + '\'' +
+                ", extension='" + extension + '\'' +
                 ", parent=" + (parent != null ? parent : "null") +
                 ", subDirectories=" + (subDirectories == null ? "null" : Arrays.toString(subDirectories.toArray())) +
                 '}';

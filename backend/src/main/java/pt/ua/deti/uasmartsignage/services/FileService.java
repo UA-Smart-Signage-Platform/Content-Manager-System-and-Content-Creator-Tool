@@ -1,13 +1,13 @@
 package pt.ua.deti.uasmartsignage.services;
 
 
+import pt.ua.deti.uasmartsignage.enums.Description;
+import pt.ua.deti.uasmartsignage.enums.Log;
+import pt.ua.deti.uasmartsignage.enums.Operation;
 import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
-import pt.ua.deti.uasmartsignage.models.FilesClass;
+import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
-import pt.ua.deti.uasmartsignage.constants.DESCRIPTION;
-import pt.ua.deti.uasmartsignage.constants.OPERATION;
-import pt.ua.deti.uasmartsignage.constants.LOG;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -41,11 +41,6 @@ public class FileService {
 
     private final String source = this.getClass().getSimpleName();
 
-    private static final String ADDLOGERROR = "Failed to add log to InfluxDB";
-    private static final String ADDLOGSUCCESS = "Added log to InfluxDB: {}";
-    private static final String FILENOTFOUND = "File with ID {} not found";
-    private static final String USERDIR = System.getProperty("user.dir");
-
     private final String defaultFolder = "defaultFolder";
 
 
@@ -69,10 +64,10 @@ public class FileService {
         String operation = "getFilesAtRoot";
         String description = "Retrieved files and folders located at root level";
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
+            logger.error(Log.ERROR.toString());
         }
         else {
-            logger.info(ADDLOGSUCCESS, description);
+            logger.info(Log.SUCCESS.toString(), description);
         }
             
         return files;
@@ -85,11 +80,11 @@ public class FileService {
      * @param id The ID of the CustomFile to retrieve.
      * @return The CustomFile with the specified ID, or null if no such file is found.
      */
-    public Optional<CustomFile> getFileOrDirectoryById(Long id) {
+    public Optional<CustomFile> getFileById(Long id) {
         logger.info("Retrieving file with ID: {}", id);
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
-            logger.warn(FILENOTFOUND, id);
+            logger.warn(Log.FILENOTFOUND.toString(), id);
             return Optional.empty();
         }
         else {
@@ -100,39 +95,13 @@ public class FileService {
         String operation = "getFileOrDirectoryById";
         String description = "Retrieved file with ID: " + id;
         if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
+            logger.error(Log.ERROR.toString());
         }
-        else 
-            logger.info(ADDLOGSUCCESS, description);
+        else {
+            logger.info(Log.SUCCESS.toString(), description);
+        }
+        
         return file;
-    }
-
-    /***
-     * Retrieves and returns CustomFile with the specified Path from the file repository.
-     * 
-     * @param path The Path of the CustomFile to retrieve.
-     * @return The CustomFile with the specified ID, or null if no such file is found.
-     */
-    public Optional<CustomFile> getFileOrDirectoryByPath(String path){
-        path = path.replaceAll("[\n\r]", "_");
-        logger.info("Retrieving file with path: {}", path);
-        Optional<CustomFile> file = fileRepository.findByPath(path);
-        if (file.isEmpty()) {
-            logger.warn(FILENOTFOUND, path);
-            return Optional.empty();
-        } else {
-            logger.info("File with Path {} found", path);
-        }
-
-        // Add log to InfluxDB
-        String operation = "getFileOrDirectoryByPath";
-        String description = "Retrieved file with path: " + path;
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        logger.info(ADDLOGSUCCESS, description);
-        return file;
-
     }
 
 
@@ -147,34 +116,19 @@ public class FileService {
             return null;
         }
 
-        //filesystem path
-        StringBuilder pathBuilder = new StringBuilder();
-
-        //database path
-        String parentDirectoryPath = getParentDirectoryPath(customFile);
-        pathBuilder.insert(0, parentDirectoryPath);
-        pathBuilder.insert(0, USERDIR);
-
-        File directory = new File(pathBuilder + customFile.getName());
+        File directory = new File(Log.USERDIR.toString() + "/uploads/" + customFile.getUuid());
 
         String operation = "createDirectory";
         String description = "Directory created: " + directory.getAbsolutePath();
-        
-
-        if (directory.exists()){
-            logger.info("Directory already exists: {}", directory.getAbsolutePath());
-            return null;
-        }
 
         if (directory.mkdir()) {
-            customFile.setPath(parentDirectoryPath + customFile.getName());
             customFile.setSubDirectories(new ArrayList<>());
             CustomFile savedFile = fileRepository.save(customFile);
             if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                logger.error(ADDLOGERROR);
+                logger.error(Log.ERROR.toString());
             }
             else {
-                logger.info(ADDLOGSUCCESS, description);
+                logger.info(Log.SUCCESS.toString(), description);
             }
             return savedFile;
         }
@@ -182,65 +136,7 @@ public class FileService {
             logger.info("Failed to create directory: {}",directory.getAbsolutePath());
             return null;
         }
-        
     }
-
-
-    /**
-     * Constructs and returns the parent directory path for the provided CustomFile.
-     * The directory path is determined by traversing the parent directories of the CustomFile.
-     * If the root directory for uploads does not exist, it will be created.
-     *
-     * @param customFile The CustomFile for which the parent directory path is generated.
-     * @return The parent directory path for the given CustomFile.
-     */
-    public String getParentDirectoryPath(CustomFile customFile) {
-        StringBuilder pathBuilder = new StringBuilder();
-
-        
-        if (customFile.getParent() != null){
-            CustomFile parent = fileRepository.findById(customFile.getParent().getId()).orElse(null);
-            pathBuilder.append(parent.getPath());
-            pathBuilder.append("/");
-        }
-        else{
-            pathBuilder.append(defaultFolder);
-        }
-
-       
-
-        //Creating upload dir
-        File rootDirectory = new File(USERDIR + File.separator + "uploads");
-
-        String operation = "getParentDirectoryPath";
-        String description = "Root Directory created: " + rootDirectory.getAbsolutePath();
-        String sDescription = "Parent Directory path: " + pathBuilder.toString();
-
-        if (!rootDirectory.exists()) {
-            if (rootDirectory.mkdir()) {
-                if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                    logger.error(ADDLOGERROR);
-                }
-                else {
-                    logger.info(ADDLOGSUCCESS, description);
-                }
-            } 
-            else {
-                logger.error("Failed to create directory: {}", rootDirectory.getAbsolutePath());
-            }
-        }
-
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, sDescription)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, sDescription);
-        }
-
-        //adding upload path
-        return pathBuilder.toString();
-    }
-
 
     /**
      * Creates a new CustomFile from the provided FilesClass and saves it to the repository.
@@ -259,58 +155,28 @@ public class FileService {
 
         // Get information from uploaded file
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getFile().getOriginalFilename()).replaceFirst("[.][^.]+$", ""));
-        String fileType = file.getFile().getContentType();
+        String[] fileContentType= file.getFile().getContentType().split("/");
+        String fileType = fileContentType[0];
+        String fileExtension = fileContentType[1];
         Long fileSize = file.getFile().getSize();
 
-        // Get parent and transform FilesClass onto a CustomFile
-        Optional<CustomFile> parent = (file.getParentId() != null) ? getFileOrDirectoryById(file.getParentId()) : Optional.empty();
+        Optional<CustomFile> parent = (file.getParentId() != null) ? getFileById(file.getParentId()) : Optional.empty();
         if (parent.isEmpty()) {
-            logger.info("Parent directory not found (Going to root).");
-            customFile = new CustomFile(fileName, fileType, fileSize, null);
+            customFile = new CustomFile(fileName, UUID.randomUUID().toString(), fileType, fileExtension, fileSize, null);
         }
         else {
-            // Update parent directory
-            CustomFile currentParent = parent.get();
-            logger.info("Parent directory found: {}", currentParent.getName());
-
-            currentParent.setSize(currentParent.getSize() + fileSize);
-            fileRepository.save(currentParent);
-            customFile = new CustomFile(fileName, fileType, fileSize, currentParent);
-            
-            // Propagate size to all parents of this file
-            while(currentParent.getParent() != null){
-                currentParent = currentParent.getParent();
-                currentParent.setSize(currentParent.getSize() + fileSize);
-            }
+            customFile = new CustomFile(fileName, UUID.randomUUID().toString(), fileType, fileExtension, fileSize, parent.get());
+            updateParentSize(parent, fileSize);
         }
 
-        
-        // Creating file path for database
-        Path path = Paths.get(getParentDirectoryPath(customFile) + fileName);
-        customFile.setPath(path.toString());
-
-        // Creating file path for filesystem
-        StringBuilder pathBuilder = new StringBuilder();
-        // Get parent path and add the filename
-        String parentDirectoryPath = getParentDirectoryPath(customFile) + fileName;
-        pathBuilder.insert(0, parentDirectoryPath);
-        pathBuilder.insert(0, USERDIR);
-
-        Path fileSysPath = Paths.get(pathBuilder.toString());
-
+        Path fileSystemPath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile.getUuid() + "." + customFile.getExtension());
         String operation = "createFile";
-        String description = "File created: " + fileSysPath;
+        String description = "File created: " + fileSystemPath;
         
-
         try {
-            Files.copy(file.getFile().getInputStream(), fileSysPath);
+            Files.copy(file.getFile().getInputStream(), fileSystemPath);
             fileRepository.save(customFile);
-            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                logger.error(ADDLOGERROR);
-            }
-            else {
-                logger.info(ADDLOGSUCCESS, description);
-            }
+            addLogEntry(operation, description);
             return customFile;
         } 
         catch (IOException e) {
@@ -318,6 +184,42 @@ public class FileService {
             return null;
         }
     }
+
+    
+    /**
+     * Updates parent size and propagates size to upper folders.
+     *
+     * @param parent The parent to be updated.
+     * @param fileSize The size of the newly added file to be added to the parent's size
+     */
+    private void updateParentSize(Optional<CustomFile> parent, Long fileSize) {
+        if (parent.isPresent()) {
+            CustomFile currentParent = parent.get();
+            currentParent.setSize(currentParent.getSize() + fileSize);
+            fileRepository.save(currentParent);
+            
+            while(currentParent.getParent() != null){
+                currentParent = currentParent.getParent();
+                currentParent.setSize(currentParent.getSize() + fileSize);
+            }
+        }
+    }
+
+
+    /**
+     * TODO
+     *
+     * @param operation TODO
+     * @param description TODO
+     */
+    private void addLogEntry(String operation, String description) {
+        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+            logger.error(Log.ERROR.toString());
+        } else {
+            logger.info(Log.SUCCESS.toString(), description);
+        }
+    }
+
 
     /**
      * Deletes the desired file from the repository and the filesystem.
@@ -328,30 +230,16 @@ public class FileService {
     public boolean deleteFile(Long id) {
         Optional<CustomFile> fileOptional = fileRepository.findById(id);
         if (fileOptional.isEmpty()) {
-            logger.warn(FILENOTFOUND, id);
+            logger.warn(Log.FILENOTFOUND.toString(), id);
             return false;
         }
 
         // Delete file from disk
         CustomFile file = fileOptional.get();
+        String filePath =  Log.USERDIR.toString() + "/uploads/" + file.getUuid() + "." + file.getExtension();
 
-        String filePath = USERDIR + file.getPath();
-        File fileToDelete = new File(filePath);
-
-        if (fileToDelete.isDirectory()) {
-            if (deleteDirectory(fileToDelete)) {
-                CustomFile parent = file.getParent();
-                if (parent != null){
-                    long newSize = parent.getSize() - file.getSize();
-                    parent.setSize(newSize);
-                }
-                fileRepository.delete(file);
-                if (parent != null) fileRepository.save(parent);
-                return true;
-            }
-            else {
-                return false;
-            }
+        if (file.getType().equals("directory")) {
+            fileRepository.deleteAll(file.getSubDirectories());
         } 
         else {
             try {
@@ -375,34 +263,6 @@ public class FileService {
         return true;
     }
 
-    /**
-     * Deletes the specified directory and all its contents.
-     *
-     * @param directory The directory to delete.
-     * @return true if the directory was successfully deleted, false otherwise.
-     */
-    private boolean deleteDirectory(File directory) {
-        Path directoryPath = directory.toPath();
-
-        try (Stream<Path> paths = Files.walk(directoryPath)) {
-            paths.sorted(Comparator.reverseOrder())
-                    .map(Path::toFile)
-                    .forEach(File::delete);
-
-            if (!logsService.addBackendLog(Severity.INFO, source, OPERATION.DELETE_DIRECTORY.toString(), DESCRIPTION.DELETE_DIRECTORY.toString() + directory.getAbsolutePath())) {
-                logger.error(ADDLOGERROR);
-            }
-            else {
-                logger.info(ADDLOGSUCCESS, DESCRIPTION.DELETE_DIRECTORY.toString() + directory.getAbsolutePath());
-            }
-
-            return true;
-        } 
-        catch (IOException e) {
-            logger.error("Failed to delete directory: {}, error: {}", directory.getAbsolutePath(), e.getMessage());
-            return false;
-        }
-    }
 
     /**
      * Downloads the file with the specified id.
@@ -416,10 +276,7 @@ public class FileService {
             return ResponseEntity.notFound().build();
         }
 
-        String sFilePath = customFile.get().getPath();
-        sFilePath = USERDIR + sFilePath;
-
-        Path filePath = Paths.get(sFilePath);
+        Path filePath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile.get().getUuid() + "." + customFile.get().getExtension());
         Resource fileResource = new UrlResource(filePath.toUri());
 
         String operation = "downloadFileById";
@@ -430,16 +287,15 @@ public class FileService {
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
 
             if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                logger.error(ADDLOGERROR);
+                logger.error(Log.ERROR.toString());
             }
             else {
-                logger.info(ADDLOGSUCCESS, description);
+                logger.info(Log.SUCCESS.toString(), description);
             }
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(fileResource);
-        } else {
+            return ResponseEntity.ok().headers(headers).body(fileResource);
+        } 
+        else {
             return ResponseEntity.notFound().build();
         }
     }
@@ -454,47 +310,14 @@ public class FileService {
     public CustomFile updateFileName(Long id, String fileName) {
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
-            logger.warn(FILENOTFOUND, id);
+            logger.warn(Log.FILENOTFOUND.toString(), id);
             return null;
         }
 
         CustomFile updatedFile = file.get();
 
-        String initialPath = updatedFile.getPath();
-
-        if (updatedFile.getParent() == null){
-            // Update file in disk
-            String oldFilePath = USERDIR + updatedFile.getPath();
-            String newFilePath = USERDIR + defaultFolder + fileName;
-            Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
-
-            // Update file in repository
-            updatedFile.setName(fileName);
-            updatedFile.setPath(defaultFolder + fileName);
-        }
-        else{
-            int i = initialPath.lastIndexOf("/");
-            String newName =  initialPath.substring(0, i) + fileName;
-
-            // Update file in disk
-            String oldFilePath = USERDIR + updatedFile.getPath();
-            String newFilePath = USERDIR + defaultFolder + newName;
-            Paths.get(oldFilePath).toFile().renameTo(new File(newFilePath));
         
-            // Update file in repository
-            initialPath = updatedFile.getPath();
-            updatedFile.setName(fileName);
-            updatedFile.setPath(defaultFolder + newName);
-        }
 
-        if(updatedFile.getType().equals("directory")){
-            for (CustomFile child : updatedFile.getSubDirectories()) {
-                child.setPath(child.getPath().replace(initialPath, updatedFile.getPath()));
-                fileRepository.save(child);
-            }
-        }
-        
-        fileRepository.save(updatedFile);
         return updatedFile;
     }
 }

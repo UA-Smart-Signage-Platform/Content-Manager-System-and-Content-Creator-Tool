@@ -70,23 +70,23 @@ class FileControllerTest {
         file.setId(1L);
         file.setName("testFile");
 
-        when(fileService.getFileOrDirectoryById(1L)).thenReturn(Optional.of(file));
+        when(fileService.getFileById(1L)).thenReturn(Optional.of(file));
 
         mvc.perform(get("/api/files/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.name", is("testFile")));
 
-        verify(fileService, Mockito.times(1)).getFileOrDirectoryById(1L);
+        verify(fileService, Mockito.times(1)).getFileById(1L);
     }
 
     @Test
     void testGetFileByIdEndpoint404() throws Exception {
-        when(fileService.getFileOrDirectoryById(1L)).thenReturn(Optional.empty());
+        when(fileService.getFileById(1L)).thenReturn(Optional.empty());
 
         mvc.perform(get("/api/files/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
 
-        verify(fileService, Mockito.times(1)).getFileOrDirectoryById(1L);
+        verify(fileService, Mockito.times(1)).getFileById(1L);
     }
 
     @Test
