@@ -76,25 +76,6 @@ public class DataLoader implements CommandLineRunner {
         if(isProduction.equals("false")){
             this.loadGroupsAndMonitors();
         }
-
-        List<String> stations = new ArrayList<>(List.of("Olhão, EPPO", "Tavira"));
-        
-        Widget temperatureWidget = Widget.builder().name("Text").build();
-        temperatureWidget.addVariable("station", WidgetVariableType.OPTION, stations);
-        temperatureWidget = widgetRepository.save(temperatureWidget);
-        
-        Template template = Template.builder().name("TemplateTest").build();
-        Map<String, Object> defaultValues = new HashMap<>();
-        defaultValues.put("station", "Aveiro (Universidade)");
-        TemplateWidget templateWidget = template.addWidget(temperatureWidget, 0, 0, 0, 0, 1, defaultValues);
-        template = templateRepository.save(template);
-
-        Rule rule = new Rule();
-        rule.setGroupId(1);
-        rule.setSchedule(new Schedule());
-        rule.setTemplate(template);
-        rule.setChosenValue(templateWidget.getId(), "station", "Aveiro (Tavira)");
-        rule = ruleRepository.save(rule);
     }
 
     private void loadAdminUser() {
@@ -182,31 +163,31 @@ public class DataLoader implements CommandLineRunner {
 
         // Temperature Widget
         List<String> stations = new ArrayList<>(List.of("Olhão, EPPO", "Tavira", "Graciosa / Serra das Fontes (DROTRH)", "Terras de Bouro/Barral (CIM)", "Amares Caldelas (CIM)", "Faja / Ilha das Flores", "Braga (CIM)", "Barcelos (CIM)", "Esposende (CIM)", "Sabugal, Martim Rei", "Viana do Castelo", "Nelas / Vilar Seco (CIM)", "Santa Maria / Praia Formosa (DROTRH)", "S. Miguel, Nordeste", "Oliveira de Frades (CIM)", "Setúbal, Areias", "Madeira, Porto Moniz", "Santa Maria / Maia (DROTRH)", "Madeira, S. Jorge, Santana", "Madeira, Santana", "Mação (CIM)", "Madeira, São Vicente", "Madeira, Bica da Cana", "Madeira, Pico Alto", "Madeira, Areeiro", "Madeira, Pico do Areeiro", "Madeira, Santo da Serra", "Madeira, Monte", "Madeira, Cancela", "Madeira, S. Lourenço", "Viseu (Cidade)", "Madeira, Lombo da Terça", "São Jorge / Pico do Areeiro (DROTRH)", "Madeira, Quinta Grande", "Madeira, Ponta do Sol", "Prazeres (Calheta)", "Madeira, Calheta", "Alcochete / Campo Tiro", "Mealhada / Quinta do Vale (CIM)", "P. Delgada (Obs. A. Chaves)", "São Miguel - Pico Santos De Cima", "Ilhas selvagens", "Pico (Aeródromo)", "Vila Verde (CIM)", "Mortágua / Aeródromo (CIM)", "Coruche / Cruz Do Leão", "Loulé / Cavalos De Caldeirão", "Oeiras / Vila Fria (CMO)", "Penacova / Hombres (CIM)", "Odemira, S.Teotónio", "Lisboa, Amoreiras (LFCL)", "Tondela, Caramulinho (CIM)", "Pico / Cabeço do Teicho (DROTRH)", "Horta (Obs. Principe Alberto)", "Graciosa (Aeródromo)", "V.N.Cerveira (Aeródromo)", "Monção, Valinha", "Lamas de Mouro, P.Ribeiro", "Montalegre", "Vinhais", "São Jorge", "Ponte de Lima", "Chaves (Aeródromo)", "Cabril", "Braga, Merelim", "Vila Nova de Poiares (CIM)", "Ponte de Sôr / Aeródromo", "Cabeceiras de Basto", "Mirandela", "Macedo Cavaleiros, Bagueixe", "Miranda do Douro", "Mogadouro", "Paços Ferreira", "Carrazêda de Ansiães", "Vouzela (CIM)", "S. Gens", "Faial / Cabeço Verde (DROTRH)", "Moncorvo", "Pinhão, Santa Bárbara", "Luzim", "Pico / Cabecinho (DROTRH)", "Moimenta da Beira", "Trancoso, Bandarra", "Arouca", "Faial / Alto do Cabouco (DROTRH)", "F. Castelo Rodrigo, V.Torpim", "Loulé (CML)", "Vila Nova Famalicão (CIM)", "Guarda", "Lisboa, Tapada da Ajuda", "Pampilhosa da Serra, Fajão", "Covilhã (Aeródromo)", "São Miguel / Santana (DROTRH)", "Aldeia Souto (Q. Lageosa)", "Porto, Massarelos", "Almada, P.Rainha", "Lousã (Aeródromo)", "Fundão", "Aveiro (Universidade)", "Dunas de Mira", "Anadia", "Coimbra, Bencanta", "Leiria", "Figueira da Foz, Vila Verde", "Mação/Cardigos (CIM)", "Ansião", "Leiria (Aeródromo)", "São Pedro de Moel", "São Miguel / Lagoa das Furnas (DROTRH)", "Tomar, Valdonas", "Alcobaça", "Amadora", "Rio Maior", "Santarém, Fonte Boa", "Nelas", "Torres Vedras, Dois Portos", "Flores (Aeródromo)", "Corvo (Aeródromo)", "Coruche", "Mação/Envendos(CIM)", "Santa Cruz (Aeródromo)", "Sintra, Colares", "Cabo da Roca", "Angra do Heroísmo", "P. Delgada (Aeródromo)", "Santa Maria (Aeródromo)", "Santa Catarina (Aeródromo)", "Funchal", "Madeira, Funchal, Lido", "Porto Santo", "Cabo Raso", "Barreiro, Lavradio", "Pegões", "Portimão (Praia da Rocha)", "Setúbal", "Cabo Carvoeiro", "Carregal do Sal (CIM)", "Sagres", "Mangualde / Chãs de Tavares  (CIM)", "Lisboa (Geofísico)", "Alcácer do Sal, Barrosinha", "Penalva do Castelo (CIM)", "São Pedro do Sul (CIM)", "Santa Comba Dão (CIM)", "Satão (CIM)", "Sines", "Vila Nova do Paiva (CIM)", "Alvalade", "Viseu / Torredeita (CIM)", "Porto, Pedras Rubras (Aeródromo)", "Coimbra (Aeródromo)", "Aljezur", "Fóia", "Viana Castelo, Chafé", "Faro (Aeródromo)", "Aguiar da Beira (CIM)", "Penela / Serra do Espinhal (CIM)", "Évora (C.Coordenação)", "Viseu (Aeródromo)", "Viseu (C.Coordenação)", "Beja", "Zebreira", "Proença-a-Nova, P.Moitas", "Vila Real", "Penhas Douradas", "Portalegre (cidade)", "Castelo Branco", "Portalegre", "Alvega", "Bragança", "Bragança (Aeródromo)", "Lisboa (G.Coutinho)", "Avis, Benavila", "Mora", "Elvas", "Estremoz", "Reguengos, S. P. do Corval", "Zambujeira", "Terceira / Ribeira das Nove (DROTRH)", "Terceira / Serra do Cume (DROTRH)", "São Miguel / Sete Cidades (DROTRH)", "Viana do Alentejo", "Portel, Oriola", "Porto, Serra do Pilar", "Amareleja", "Castro Daire / Mézio (CIM)", "Arganil / Aeródromo (CIM)", "Cantanhede / Fonte Dom Pedro (CIM)", "Coimbra / Mata de São Pedro (CIM)", "Góis / Quinta da Ribeira (CIM)", "Mértola, Vale Formoso", "Castro Verde, N.Corvo", "Alcoutim, Mart.Longo", "Vila Real de S.António", "Castro Marim (RN Sapal)", "Oliveira do Hospital (CIM)", "Soure (CIM)", "Vila Real (Cidade)", "Albufeira", "Portimão (Aeródromo)"));
-        Widget temperatureWidget = Widget.builder().name("Temperature").build();
+        Widget temperatureWidget = Widget.builder().name("temperature").build();
         temperatureWidget.addVariable("station", WidgetVariableType.OPTION, stations);
         temperatureWidget = widgetRepository.save(temperatureWidget);
 
         // Weather Widget
         List<String> regions = new ArrayList<>(List.of("Aveiro", "Beja", "Braga", "Guimarães", "Bragança", "Castelo Branco", "Coimbra", "Évora", "Faro", "Sagres", "Portimão", "Loulé", "Guarda", "Penhas Douradas", "Leiria", "Lisboa", "Portalegre", "Porto", "Santarém", "Setúbal", "Sines", "Viana do Castelo", "Vila Real", "Viseu", "Funchal", "Porto Santo", "Vila do Porto", "Ponta Delgada", "Angra do Heroísmo", "Santa Cruz da Graciosa", "Velas", "Madalena", "Horta", "Santa Cruz das Flores", "Vila do Corvo"));
-        Widget weatherWidget = Widget.builder().name("Weather").build();
+        Widget weatherWidget = Widget.builder().name("weather").build();
         weatherWidget.addVariable("region", WidgetVariableType.OPTION, regions);
         weatherWidget = widgetRepository.save(weatherWidget);    
 
         // Media Widget
-        Widget mediaWidget = Widget.builder().name("Media").build();
+        Widget mediaWidget = Widget.builder().name("media").build();
         mediaWidget.addVariable("videos", WidgetVariableType.MEDIA);
         mediaWidget = widgetRepository.save(mediaWidget); 
 
         // Time Widget
-        Widget timeWidget = Widget.builder().name("Time").build();
+        Widget timeWidget = Widget.builder().name("time").build();
         timeWidget = widgetRepository.save(timeWidget); 
 
         // News Widget
-        Widget newsWidget = Widget.builder().name("News").build();
+        Widget newsWidget = Widget.builder().name("news").build();
         newsWidget = widgetRepository.save(newsWidget); 
 
         // News Widget
-        Widget eventsWidget = Widget.builder().name("Events").build();
+        Widget eventsWidget = Widget.builder().name("events").build();
         eventsWidget = widgetRepository.save(eventsWidget); 
 
 
@@ -215,18 +196,18 @@ public class DataLoader implements CommandLineRunner {
 
         Map<String, Object> defaultValuesTemperature = new HashMap<>();
         defaultValuesTemperature.put("station", "Aveiro (Universidade)");
-        template1.addWidget(temperatureWidget, 0, 0, 10, 20, 1, defaultValuesTemperature);
+        template1.addWidget(temperatureWidget, 0, 0, 20, 10, 1, defaultValuesTemperature);
         
         // video
         template1.addWidget(mediaWidget, 10, 20, 80, 80, 2);
         // logos
-        template1.addWidget(mediaWidget, 0, 20, 10, 11.5364f, 6);
-        template1.addWidget(mediaWidget, 90, 94.9235f, 10, 5.0765f, 7);
-        template1.addWidget(mediaWidget, 0, 31.5364f, 10, 27.3958f, 8);
+        template1.addWidget(mediaWidget, 0, 20, 11.5364f, 10, 6);
+        template1.addWidget(mediaWidget, 90, 94.9235f, 5.0765f, 10, 7);
+        template1.addWidget(mediaWidget, 0, 31.5364f, 27.3958f, 10, 8);
         
-        template1.addWidget(timeWidget, 0, 80, 10, 20, 3);
-        template1.addWidget(newsWidget, 90, 0, 10, 94.9235f, 4);
-        template1.addWidget(eventsWidget, 10, 0, 80, 20, 5);
+        template1.addWidget(timeWidget, 0, 80, 20, 10, 3);
+        template1.addWidget(newsWidget, 90, 0, 94.9235f, 10, 4);
+        template1.addWidget(eventsWidget, 10, 0, 20, 80, 5);
         template1 = templateRepository.save(template1);
     
         // // create template2

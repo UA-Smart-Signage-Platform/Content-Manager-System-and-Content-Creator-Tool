@@ -1,0 +1,5 @@
+<div 
+    th:hx-get="'http://127.0.0.1:5000/ipma/weather?region=' + ${region}" 
+    hx-trigger="load, every 30m" 
+    th:style="'top:' + ${top} + 'px; left:' + ${left} + 'px; width:' + ${width} + 'px; height:' + ${height} + 'px; display: flex; justify-content: center; align-items: center; font-size: 45px;'">
+</div>

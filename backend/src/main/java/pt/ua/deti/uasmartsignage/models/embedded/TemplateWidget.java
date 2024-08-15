@@ -30,14 +30,23 @@ public class TemplateWidget {
         id = ++lastId;
         this.widget = widget;
         setTop(top);
-        setLeft(top);
-        setWidth(top);
-        setHeight(top);
+        setLeft(left);
+        setWidth(width);
+        setHeight(height);
         this.zindex = zindex;
     }
 
     public void setDefaultValue(String name, Object value){
         defaultValues.put(name, value);
+    }
+
+    public Object getDefaultValue(String variableName){
+        if (defaultValues.containsKey(variableName)){
+            return defaultValues.get(variableName);
+        }
+        else {
+            return null;
+        }
     }
 
     public void setTop(float top) {

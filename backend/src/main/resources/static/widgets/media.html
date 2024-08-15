@@ -1,0 +1,53 @@
+<div 
+    th:style="'top:' + ${top} + 'px; left:' + ${left} + 'px; width:' + ${width} + 'px; height:' + ${height} + 'px; text-align: center; display: flex; justify-content: center; align-items: center;'"
+    th:data-videos="${#strings.arrayJoin(videos, ',')}">
+    <video autoplay muted class="imageStay" style="display: block;"></video>
+    <img class="imageStay" style="display: none;">
+</div>
+
+<script>
+    // Function to initialize each widget
+    function initializeWidget(widgetElement) {
+        var videoList = widgetElement.getAttribute('data-videos').split(',');
+        var currentIndex = 0;
+
+        let video = widgetElement.querySelector('video');
+        let image = widgetElement.querySelector('img');
+
+        function setVideoSource(videoSrc) {
+            if (videoSrc.endsWith('.mp4')) {
+                video.style.display = 'block';
+                image.style.display = 'none';
+                video.src = videoSrc;
+                video.load();
+                video.play();
+            } else {
+                image.style.display = 'block';
+                video.style.display = 'none';
+                image.src = videoSrc; 
+                startTimer();
+            }
+
+            currentIndex = (currentIndex === videoList.length - 1) ? 0 : currentIndex + 1;
+        }
+
+        function startTimer() {
+            setTimeout(function() {
+                setVideoSource(videoList[currentIndex]);
+            }, 5000);
+        }
+
+        video.addEventListener('ended', function() {
+            this.src = ''; 
+            setVideoSource(videoList[currentIndex]);
+        });
+
+        // Initialize the first video/image
+        setVideoSource(videoList[0]);
+    }
+
+    // Initialize all widgets
+    document.querySelectorAll('[data-videos]').forEach(function(widgetElement) {
+        initializeWidget(widgetElement);
+    });
+</script>

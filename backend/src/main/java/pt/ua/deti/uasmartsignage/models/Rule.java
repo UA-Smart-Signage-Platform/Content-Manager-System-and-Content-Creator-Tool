@@ -51,6 +51,21 @@ public class Rule {
         }
     }
 
+    public Object getChosenValue(Long templateWidgetId, String name) {
+
+        if (!isValidWidgetVariable(templateWidgetId, name)){
+            throw new IllegalArgumentException("Invalid widgetId or invalid variable name provided");
+        }
+
+        if (chosenValues.containsKey(templateWidgetId)){
+            if (chosenValues.get(templateWidgetId).containsKey(name)){
+                return chosenValues.get(templateWidgetId).get(name);
+            }
+        }
+        
+        return null;
+    }
+
     // TODO if the variable type is "options", check if the value is an option
     public boolean isValidWidgetVariable(Long templateWidgetId, String name) {
         if (template == null || template.getWidgets() == null) {

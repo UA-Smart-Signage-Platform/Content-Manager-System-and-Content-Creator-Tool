@@ -29,19 +29,7 @@ creating the full HTML from a template -->
             height: auto;
         }
     </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var videos = document.querySelectorAll('video');
-
-            videos.forEach(function (video) {
-                video.addEventListener('ended', function () {
-                    video.play();
-                });
-            });
-        });
-    </script>
 </head>
-<body style="background-color:#0eb4bd;">
+<body style="background-color:#0eb4bd;" th:utext="${insertContent}">
 </body>
 </html>
