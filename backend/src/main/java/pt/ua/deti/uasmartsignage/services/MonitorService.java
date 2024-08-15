@@ -150,12 +150,12 @@ public class MonitorService {
             monitor.setOnline(online);
         }
 
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
+        // if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+        //     logger.error(ADDLOGERROR);
+        // }
+        // else {
+        //     logger.info(ADDLOGSUCCESS, description);
+        // }
         return monitors;
     }
 
@@ -176,12 +176,12 @@ public class MonitorService {
         }
 
 
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(ADDLOGERROR);
-        }
-        else {
-            logger.info(ADDLOGSUCCESS, description);
-        }
+        // if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+        //     logger.error(ADDLOGERROR);
+        // }
+        // else {
+        //     logger.info(ADDLOGSUCCESS, description);
+        // }
         
         return monitors;
     }
