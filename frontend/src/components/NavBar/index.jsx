@@ -8,25 +8,22 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useThemeStore } from "../../stores/useThemeStore";
 import PropTypes from 'prop-types';
+import { useUserStore } from "../../stores/useUserStore";
 
 
-function NavBar({setLogged}) {
+function NavBar() {
+    const userState = useUserStore((state) => state)
+    const isLoggedIn = userState.logged;
+    const userRole = userState.role;
     const [isShow,setIsShow] = useState(false);
     const theme = useThemeStore((state) =>state.theme)
     const changeTheme = useThemeStore((state)=> state.changeTheme)
     const navigate = useNavigate();
-    const isLoggedIn = localStorage.getItem('access_token');
-    const userInfo = localStorage.getItem('userInfo');
-    const userRole = userInfo ? JSON.parse(userInfo).role : null;
 
 
     const handleLogout = () => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('id_token');
-        localStorage.removeItem('refresh_token');
-        localStorage.removeItem('userInfo');
+        userState.logout();
         navigate("/Login");
-        setLogged(false);
     };
 
     return(
@@ -149,9 +146,5 @@ function NavBar({setLogged}) {
         </>
     )
 }
-
-NavBar.propTypes = {
-    setLogged: PropTypes.func.isRequired,
-};
 
 export default NavBar;

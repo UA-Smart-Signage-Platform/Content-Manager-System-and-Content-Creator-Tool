@@ -26,8 +26,6 @@ const setWithExpiry = (key, value, ttl) => {
 
 const Wso2Login = () => {
   const [nyan,setNyan] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
   const [init, setInit] = useState(false);
 
   useEffect(() => {
@@ -39,33 +37,6 @@ const Wso2Login = () => {
   }, []);
 
   const particlesLoaded = (container) => {
-  };
-
-  useEffect(() => {
-    localStorage.removeItem('access_token');
-    localStorage.removeItem('id_token');
-    localStorage.removeItem('refresh_token');
-    localStorage.removeItem('userInfo');
-  }, []);
-
-  const handleLogin = async () => {
-    try {
-      const response = await loginService.login(username, password);
-      const jwt = response.data.jwt;
-      const user_data = { username: response.data.username, role: response.data.role };
-
-      setWithExpiry('access_token', jwt, 3600 * 1000 * 10);
-      localStorage.setItem('userInfo', JSON.stringify(user_data));
-
-      if (password === DEFAULT_PASSWORD) {
-        navigate("/change-password");
-      } else {
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      setError('Invalid username or password');
-      console.error('Error logging in:', error.response?.data || error.message);
-    }
   };
 
   const options = useMemo(()=> {

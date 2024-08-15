@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.51.23",
     "@tsparticles/react": "^3.0.0",
     "axios": "^1.6.8",
     "framer-motion": "^11.0.8",
@@ -32,6 +33,7 @@
     "tailwindcss": "^3.4.6",
     "tsparticles": "^3.5.0",
     "tw-colors": "^3.3.1",
+    "typescript-cookie": "^1.0.6",
     "vite-plugin-svgr": "^4.2.0",
     "web-vitals": "^4.2.2",
     "zustand": "^4.5.4"
