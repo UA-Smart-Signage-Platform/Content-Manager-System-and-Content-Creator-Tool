@@ -158,14 +158,15 @@ public class FileService {
         String[] fileContentType= file.getFile().getContentType().split("/");
         String fileType = fileContentType[0];
         String fileExtension = fileContentType[1];
+        String fileUuid = UUID.randomUUID().toString();
         Long fileSize = file.getFile().getSize();
 
         Optional<CustomFile> parent = (file.getParentId() != null) ? getFileById(file.getParentId()) : Optional.empty();
         if (parent.isEmpty()) {
-            customFile = new CustomFile(fileName, UUID.randomUUID().toString(), fileType, fileExtension, fileSize, null);
+            customFile = new CustomFile(fileName, fileUuid, fileType, fileExtension, fileSize, null);
         }
         else {
-            customFile = new CustomFile(fileName, UUID.randomUUID().toString(), fileType, fileExtension, fileSize, parent.get());
+            customFile = new CustomFile(fileName, fileUuid, fileType, fileExtension, fileSize, parent.get());
             updateParentSize(parent, fileSize);
         }
 
@@ -201,6 +202,7 @@ public class FileService {
             while(currentParent.getParent() != null){
                 currentParent = currentParent.getParent();
                 currentParent.setSize(currentParent.getSize() + fileSize);
+                fileRepository.save(currentParent);
             }
         }
     }
@@ -239,7 +241,7 @@ public class FileService {
         String filePath =  Log.USERDIR.toString() + "/uploads/" + file.getUuid() + "." + file.getExtension();
 
         if (file.getType().equals("directory")) {
-            fileRepository.deleteAll(file.getSubDirectories());
+            
         } 
         else {
             try {
@@ -263,6 +265,25 @@ public class FileService {
         return true;
     }
 
+    /**
+     * Updates the name of the file with the specified ID.
+     *
+     * @param id The ID of the file to update.
+     * @param fileName The string containing the new name.
+     * @return The updated CustomFile, or {@code null} if the update fails.
+     */
+    public CustomFile updateFileName(Long id, String fileName) {
+        Optional<CustomFile> file = fileRepository.findById(id);
+        if (file.isEmpty()) {
+            logger.warn(Log.FILENOTFOUND.toString(), id);
+            return null;
+        }
+
+        CustomFile updatedFile = file.get();
+        updatedFile.setName(fileName);
+
+        return fileRepository.save(updatedFile);
+    }
 
     /**
      * Downloads the file with the specified id.
@@ -273,7 +294,7 @@ public class FileService {
     public ResponseEntity<Resource> downloadFileById(Long fileId) throws MalformedURLException {
         Optional<CustomFile> customFile = fileRepository.findById(fileId);
         if (customFile.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return null;
         }
 
         Path filePath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile.get().getUuid() + "." + customFile.get().getExtension());
@@ -296,28 +317,7 @@ public class FileService {
             return ResponseEntity.ok().headers(headers).body(fileResource);
         } 
         else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
-    /**
-     * Updates the name of the file with the specified ID.
-     *
-     * @param id The ID of the file to update.
-     * @param fileName The string containing the new name.
-     * @return The updated CustomFile, or {@code null} if the update fails.
-     */
-    public CustomFile updateFileName(Long id, String fileName) {
-        Optional<CustomFile> file = fileRepository.findById(id);
-        if (file.isEmpty()) {
-            logger.warn(Log.FILENOTFOUND.toString(), id);
             return null;
         }
-
-        CustomFile updatedFile = file.get();
-
-        
-
-        return updatedFile;
     }
 }

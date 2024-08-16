@@ -37,9 +37,9 @@ public class FileController {
     public ResponseEntity<Optional<CustomFile>> getFileById(@PathVariable Long id) {
         Optional<CustomFile> customFile = fileService.getFileById(id);
         if (customFile.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return ResponseEntity.ok(customFile);
+        return new ResponseEntity<>(customFile, HttpStatus.OK);
     }
 
     @Operation(summary = "Get all files and folders located in root")
@@ -73,11 +73,11 @@ public class FileController {
     })
     @PostMapping("/files/directory")
     public ResponseEntity<CustomFile> createDirectory(@RequestBody CustomFile customFile) {
-        CustomFile newCustomFile = fileService.createDirectory(customFile);
-        if (newCustomFile == null){
+        CustomFile savedFile = fileService.createDirectory(customFile);
+        if (savedFile == null){
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } 
-        return new ResponseEntity<>(newCustomFile, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedFile, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Delete a file")
@@ -86,23 +86,26 @@ public class FileController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/files/{id}")
-    public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
+    public ResponseEntity<Boolean> deleteFile(@PathVariable Long id) {
         boolean deleted = fileService.deleteFile(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        if (!deleted) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } 
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Download a file")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "File found", content = @Content(mediaType = "application/json")),
         @ApiResponse(responseCode = "404", description = "File not found", content = @Content(mediaType = "application/json"))
-})
+    })
     @GetMapping("/files/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
-        return fileService.downloadFileById(fileId);
+        ResponseEntity<Resource> file = fileService.downloadFileById(fileId);
+        if (file == null){
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return file;
     }
 
     @Operation(summary = "Update a file")

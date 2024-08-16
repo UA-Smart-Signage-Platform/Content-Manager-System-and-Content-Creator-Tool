@@ -12,7 +12,6 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,8 +20,6 @@ import java.util.UUID;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,11 +51,13 @@ class FileServiceTest {
 
     CustomFile customFile = new CustomFile();
     CustomFile customFile2 = new CustomFile();
+    CustomFile customFile3 = new CustomFile();
 
     @BeforeEach
     void setUp(){
         customFile = new CustomFile("New directory", UUID.randomUUID().toString(), "directory", "", 0L, null);
         customFile2 = new CustomFile("Old directory", UUID.randomUUID().toString(), "file", "png", 0L, customFile);
+        customFile3 = new CustomFile("Inner directory", UUID.randomUUID().toString(), "directory", "", 0L, customFile);
     }
 
     @Test
@@ -256,10 +255,15 @@ class FileServiceTest {
     @Test
     void givenValidId_whenUpdateFileName_thenReturnUpdatedFile() {
         when(repository.findById(anyLong())).thenReturn(Optional.of(customFile));
+        
+        customFile.setName("NewName");
+
+        when(repository.save(any())).thenReturn(customFile);
 
         CustomFile updatedFile = service.updateFileName(1L, "NewName");
         
         verify(repository, times(1)).findById(1L);
+        verify(repository, times(1)).save(any());
         assertThat(updatedFile.getName()).isEqualTo("NewName"); 
     }
 
@@ -273,96 +277,35 @@ class FileServiceTest {
         verify(repository, times(0)).save(any());
     }
 
-    /*
     @Test
-    @Order(5)
-    @Disabled
-    void whenSaveFolderInsideFolder_thenFolderIsSavedInsideFolder() {
-        CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
-        outerFolder.setId(1L);
-
-        service.createDirectory(outerFolder);
-
-        String parentDirectoryPathOuterF = service.getParentDirectoryPath(outerFolder);
-        String rootPath = System.getProperty("user.dir");
-        File outerDirectory = new File(rootPath + parentDirectoryPathOuterF + outerFolder.getName());
-
-        assertThat(outerDirectory).exists();
-
-        CustomFile innerFolder = new CustomFile("Inner directory", "directory", 100L, outerFolder);
-        when(repository.save(innerFolder)).thenReturn(innerFolder);
-        when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
-
-        CustomFile savedInner = service.createDirectory(innerFolder);
-
-        assertThat(savedInner).isEqualTo(innerFolder);
-        verify(repository, times(1)).save(innerFolder);
-
-        String parentDirectoryPathInnerF = service.getParentDirectoryPath(innerFolder);
-        File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + innerFolder.getName());
-
-        assertThat(innerDirectory).exists().hasParent(outerDirectory);
-
-        innerDirectory.delete();
-        outerDirectory.delete();
-    }
-
-
-
-    @Test
-    @Order(7)
-    @Disabled
-    void whenSaveFileInsideFolder_thenFileIsSavedInsideFolder() throws IOException {
-        CustomFile outerFolder = new CustomFile("Outer directory", "directory", 0L, null);
-        outerFolder.setId(1L);
-
-        service.createDirectory(outerFolder);
-
-        String parentDirectoryPathOuterF = service.getParentDirectoryPath(outerFolder);
-        String rootPath = System.getProperty("user.dir");
-        File outerDirectory = new File(rootPath + parentDirectoryPathOuterF + outerFolder.getName());
-
-        assertThat(outerDirectory).exists();
-
+    void givenValidFile_whenCreateFileInsideDirectory_thenFileIsSaved() throws IOException {
         Path tempFile = Files.createTempFile("test", ".png");
 
         byte[] content = "Hello, World!".getBytes();
         Files.write(tempFile, content);
 
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
-                "file",                     // parameter name
-                tempFile.getFileName().toString(), // file name
+                "file",                             // parameter name
+                tempFile.getFileName().toString(),      // file name
                 "image/png",                // content type
-                Files.readAllBytes(tempFile) // content as byte array
+                Files.readAllBytes(tempFile)            // content as byte array
         );
 
-        long fileSize = Files.size(tempFile);
+        // Repository test
+        when(repository.findById(1L)).thenReturn(Optional.of(customFile3));
 
+        FilesClass filesClass = new FilesClass(1L, mockMultipartFile);
+        CustomFile saved = service.createFile(filesClass);
 
-        when(repository.findById(1L)).thenReturn(Optional.of(outerFolder));
-
-
-        FilesClass filesClass = new FilesClass(outerFolder.getId(), mockMultipartFile);
-        CustomFile savedInner = service.createFile(filesClass);
-
-
-        String parentDirectoryPathInnerF = service.getParentDirectoryPath(savedInner);
-        File innerDirectory = new File(rootPath + parentDirectoryPathInnerF + savedInner.getName());
-
-        assertThat(innerDirectory).exists().hasParent(outerDirectory);
-        //check if the parent size is updated
-        assertThat(outerFolder.getSize()).isEqualTo(fileSize);
+        verify(repository, times(1)).findById(anyLong());
         verify(repository, times(3)).save(any());
+        assertThat(saved.getName()).isEqualTo(tempFile.getFileName().toString().replaceFirst("[.][^.]+$", ""));
+        assertThat(saved.getParent()).isEqualTo(customFile3);
 
-        // Clean up
-        if (innerDirectory.exists()) {
-            innerDirectory.delete();
-        }
-        if (outerDirectory.exists()) {
-            outerDirectory.delete();
-        }
-        Files.deleteIfExists(tempFile);
+        // Disk test
+        File file = new File(System.getProperty("user.dir") + "/uploads/" + saved.getUuid() + "." + saved.getExtension());
+        assertThat(file).exists();
+        file.delete();
     }
-    */
 
 }
