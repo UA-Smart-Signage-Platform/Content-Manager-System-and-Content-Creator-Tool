@@ -4,6 +4,7 @@ import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.services.FileService;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -101,11 +102,25 @@ public class FileController {
     })
     @GetMapping("/files/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
-        ResponseEntity<Resource> file = fileService.downloadFileById(fileId);
+        Resource file = fileService.downloadFileById(fileId);
+
+        // String operation = "downloadFileById";
+        // String description = "File downloaded: " + filePath;
+        // if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
+        //     logger.error(Log.ERROR.toString());
+        // }
+        // else {
+        //     logger.info(Log.SUCCESS.toString(), description);
+        // }
+
         if (file == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return file;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"");
+
+        return ResponseEntity.ok().headers(headers).body(file);
     }
 
     @Operation(summary = "Update a file")

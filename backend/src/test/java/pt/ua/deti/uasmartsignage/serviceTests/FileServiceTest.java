@@ -221,20 +221,11 @@ class FileServiceTest {
 
         // Paths to the saved file and the root directory
         String path = System.getProperty("user.dir") + "/uploads/" + saved.getUuid() + "." + saved.getExtension();
-        Path filePath = Paths.get(path);
         
         when(repository.findById(1L)).thenReturn(Optional.of(saved));
-        ResponseEntity<Resource> response = service.downloadFileById(1L);
+        Resource response = service.downloadFileById(1L);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(filePath.getFileName().toString(), response.getBody().getFilename());
-
-        HttpHeaders headers = response.getHeaders();
-        assertTrue(headers.containsKey(HttpHeaders.CONTENT_DISPOSITION));
-        assertEquals("attachment; filename=\"" + filePath.getFileName().toString() + "\"",
-               headers.getFirst(HttpHeaders.CONTENT_DISPOSITION));
-
+        assertThat(response).isNotNull();
 
         File file = new File(path);
         assertTrue(file.exists());
@@ -243,13 +234,12 @@ class FileServiceTest {
     }
 
     @Test
-    void testDownloadFileById_FileNotFound() throws MalformedURLException {
+    void givenInvalidId_whenDownloadFileById_thenReturnNull() throws MalformedURLException {
         when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        ResponseEntity<Resource> response = service.downloadFileById(1L);
+        Resource file = service.downloadFileById(1L);
 
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertNull(response.getBody());
+        assertThat(file).isNull();
     }
 
     @Test

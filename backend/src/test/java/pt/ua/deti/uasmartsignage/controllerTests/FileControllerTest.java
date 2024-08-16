@@ -28,7 +28,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -48,6 +47,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 
 
@@ -185,18 +186,17 @@ class FileControllerTest {
         verify(fileService, Mockito.times(1)).deleteFile(1L);
     }
 
-    // TODO MISSING DOWNLOAD LOGIC
+    // maybe test with better file i dont know
     @Test
-    @Disabled
     void givenValidId_whenDownloadFile_thenReturnResource() throws Exception {
-        Path filePath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile2.getUuid() + "." + customFile2.getExtension());
+        Path filePath = Paths.get(Log.USERDIR.toString() + "/src/test/resources/test.txt");
         Resource fileResource = new UrlResource(filePath.toUri());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
-        when(fileService.downloadFileById(1L)).thenReturn(ResponseEntity.ok().headers(headers).body(fileResource));
+        when(fileService.downloadFileById(1L)).thenReturn(fileResource);
 
-        mvc.perform(get("/api/files/download/1").contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk());
+        mvc.perform(get("/api/files/download/1"))
+            .andExpect(status().isOk())
+            .andExpect(header().string("Content-Disposition", "attachment; filename=\"test.txt\""))
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON));
 
         verify(fileService, Mockito.times(1)).downloadFileById(1L);
     }

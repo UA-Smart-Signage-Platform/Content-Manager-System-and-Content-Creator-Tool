@@ -291,7 +291,7 @@ public class FileService {
      * @param fileId The id of the file to download.
      * @return ResponseEntity with the file resource and headers.
      */
-    public ResponseEntity<Resource> downloadFileById(Long fileId) throws MalformedURLException {
+    public Resource downloadFileById(Long fileId) throws MalformedURLException {
         Optional<CustomFile> customFile = fileRepository.findById(fileId);
         if (customFile.isEmpty()) {
             return null;
@@ -300,21 +300,9 @@ public class FileService {
         Path filePath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile.get().getUuid() + "." + customFile.get().getExtension());
         Resource fileResource = new UrlResource(filePath.toUri());
 
-        String operation = "downloadFileById";
-        String description = "File downloaded: " + filePath;
-
+        
         if (fileResource.exists() && fileResource.isReadable()) {
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileResource.getFilename() + "\"");
-
-            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                logger.error(Log.ERROR.toString());
-            }
-            else {
-                logger.info(Log.SUCCESS.toString(), description);
-            }
-
-            return ResponseEntity.ok().headers(headers).body(fileResource);
+            return fileResource;
         } 
         else {
             return null;
