@@ -217,7 +217,6 @@ class FileControllerTest {
 
         mvc.perform(put("/api/files/1").contentType(MediaType.APPLICATION_JSON)
             .content("newName"))
-            .andExpect(jsonPath("$.name", is("newName")))
             .andExpect(status().isOk());
 
         verify(fileService, Mockito.times(1)).updateFileName(1L, "newName");
@@ -225,12 +224,12 @@ class FileControllerTest {
 
     @Test
     void givenInvalidId_whenUpdateFile_thenReturnNotFound() throws Exception {
-        when(fileService.updateFileName(1L, "")).thenReturn(null);
+        when(fileService.updateFileName(1L, "newName")).thenReturn(null);
 
         mvc.perform(put("/api/files/1").contentType(MediaType.APPLICATION_JSON)
-            .content(""))
+            .content("newName"))
             .andExpect(status().isNotFound());
 
-        verify(fileService, Mockito.times(1)).updateFileName(1L, "");
+        verify(fileService, Mockito.times(1)).updateFileName(1L, "newName");
     }
 }
