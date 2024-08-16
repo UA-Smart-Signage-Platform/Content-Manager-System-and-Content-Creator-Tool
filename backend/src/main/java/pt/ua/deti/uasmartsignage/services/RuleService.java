@@ -1,13 +1,17 @@
 package pt.ua.deti.uasmartsignage.services;
 
+import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.Rule;
 import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.models.Widget;
 import pt.ua.deti.uasmartsignage.models.embedded.TemplateWidget;
 import pt.ua.deti.uasmartsignage.models.embedded.WidgetVariable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -17,6 +21,8 @@ import pt.ua.deti.uasmartsignage.repositories.RuleRepository;
 import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.dto.RuleDTO;
 import pt.ua.deti.uasmartsignage.enums.Severity;
+import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
+import pt.ua.deti.uasmartsignage.events.RuleCreatedEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +35,8 @@ public class RuleService {
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
     private final LogsService logsService;
+    private final FileService fileService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public List<Rule> getAllRules() {
         return ruleRepository.findAll();
@@ -46,7 +54,9 @@ public class RuleService {
         Rule rule = convertDTOToRule(ruleDTO);
         if (rule == null) return null;
         rule.setId(null);
-        return ruleRepository.save(rule);
+        rule = ruleRepository.save(rule);
+        eventPublisher.publishEvent(new RuleCreatedEvent(this, rule));
+        return rule;
     }
 
     public void deleteRuleById(String id) {
@@ -117,7 +127,12 @@ public class RuleService {
 
         StringBuilder htmlBody = new StringBuilder();
 
-        // TODO: zindex
+        // sort the widgets by their zindex
+        // so that the ones with lower zindex
+        // get added first to the html
+        List<TemplateWidget> sortedWidgets = rule.getTemplate().getWidgets();
+        sortedWidgets.sort(new TemplateWidget.ZIndexComparator());
+
         for (TemplateWidget templateWidget : rule.getTemplate().getWidgets()){
             Widget widget = templateWidget.getWidget();
 
@@ -147,8 +162,11 @@ public class RuleService {
         return templateEngine.process("base", baseContext);
     }
 
-    // TODO: add logic for media variables
     private Object processVariable(WidgetVariable variable, Object variableValue){
+        if(variable.getType() == WidgetVariableType.MEDIA){
+            CustomFile file = fileService.getFileOrDirectoryById(((long)variableValue)).get();
+            return file.getName();
+        }
         return variableValue;
     }
 

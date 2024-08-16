@@ -8,7 +8,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
@@ -66,7 +69,43 @@ public class Rule {
         return null;
     }
 
+    public List<Long> getMediaWidgetValues() {
+        if (template == null || template.getWidgets() == null) {
+            return Collections.emptyList(); // Return an empty list if no template or widgets are found
+        }
+    
+        List<Long> mediaValues = new ArrayList<>();
+    
+        // Loop through the chosenValues map, checking if the variable name has type 'media'
+        for (Map.Entry<Long, Map<String, Object>> entry : chosenValues.entrySet()) {
+            Long templateWidgetId = entry.getKey();
+            Map<String, Object> variablesMap = entry.getValue();
+    
+            // Get the template widget that matches the given templateWidgetId
+            template.getWidgets().stream()
+                .filter(widget -> widget != null && widget.getId() == templateWidgetId)
+                .findFirst() // Ensure we get only the first match
+                .ifPresent(widget -> {
+                    // Loop through each variable in the variables map
+                    variablesMap.forEach((variableName, value) -> {
+                        // Check if the widget contains a variable with the given name and type 'media'
+                        widget.getWidget().getVariables().stream()
+                            .filter(variable -> variable.getName().equals(variableName) && "media".equals(variable.getType().name()))
+                            .findFirst() // Ensure we get the correct variable
+                            .ifPresent(variable -> {
+                                // Add the value to the mediaValues list
+                                mediaValues.add((long)value);
+                            });
+                    });
+                });
+        }
+    
+        return mediaValues;
+    }
+    
+
     // TODO if the variable type is "options", check if the value is an option
+    // TODO if the variable type is "media", check if the file exists
     public boolean isValidWidgetVariable(Long templateWidgetId, String name) {
         if (template == null || template.getWidgets() == null) {
             return false;

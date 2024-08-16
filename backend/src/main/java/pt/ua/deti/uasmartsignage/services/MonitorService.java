@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
+import pt.ua.deti.uasmartsignage.repositories.RuleRepository;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class MonitorService {
 
     private final MonitorRepository monitorRepository;
     private final MonitorGroupService monitorGroupService;
-    private final RuleService ruleService;
+    private final RuleRepository ruleRepository;
     private final LogsService logsService;
 
     /**
@@ -82,12 +83,12 @@ public class MonitorService {
                 monitorGroupService.saveGroup(group);
             }
             else{
-                List<Rule> rules = ruleService.getAllRulesForGroup(group.getId());
+                List<Rule> rules = ruleRepository.findByGroupId(group.getId());
                 if (rules.isEmpty()){
                     monitorGroupService.deleteGroupById(group.getId());
                 } else {
                     for (int i = 0; i < rules.size(); i++) {
-                        ruleService.deleteRuleById(rules.get(i).getId());
+                        ruleRepository.deleteById(rules.get(i).getId());
                     }
                     monitorGroupService.deleteGroupById(group.getId());
                 }

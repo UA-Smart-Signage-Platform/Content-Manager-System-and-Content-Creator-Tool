@@ -1,18 +1,16 @@
-package pt.ua.deti.uasmartsignage.mqtt;
+package pt.ua.deti.uasmartsignage.dto.mqtt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class KeepAliveMessage {
+public class ConfirmRegistrationMessage implements MqttPayload {
 
     private String method;
-    private String uuid;
-    
+
 }
