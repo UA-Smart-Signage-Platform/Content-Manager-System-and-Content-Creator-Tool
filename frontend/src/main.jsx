@@ -1,21 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import {Navigate, createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { Root, Dashboard, Admin, ChangePassword, Wso2Login, Monitors, Media, Monitor, Schedule, Templates, Cct, Logs } from './routes';
-import PropTypes from 'prop-types';
-
-const ProtectedRoute = ({ element, requiredRoles }) => {
-  const userRoles = localStorage.getItem('userInfo') ? JSON.parse(localStorage.getItem('userInfo')).role : null;
-  const hasRequiredRole = userRoles && requiredRoles.some(role => userRoles.includes(role));
-
-  return hasRequiredRole ? element : <Navigate to="/dashboard" />;
-};
-
-ProtectedRoute.propTypes = {
-  element: PropTypes.element.isRequired,
-  requiredRoles: PropTypes.arrayOf(PropTypes.string).isRequired
-};
+import {createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {ProtectedRoute, Root, Dashboard, Admin, 
+        ChangePassword, Wso2Login, Monitors, 
+        Media, Monitor, Schedule, Templates, 
+        Cct, Logs } from './routes';
 
 const router = createBrowserRouter([
   {
@@ -48,7 +38,7 @@ const router = createBrowserRouter([
       },
       {
         path: "contentcreator",
-        element: <ProtectedRoute element={<Templates/>} requiredRoles={["ROLE_ADMIN"]} />
+        element: <ProtectedRoute element={<Templates/>} requiredRole={"ROLE_ADMIN"} />
       },
       {
         path: "login",
@@ -60,15 +50,15 @@ const router = createBrowserRouter([
       },
       {
         path: "admin",
-        element: <ProtectedRoute element={<Admin/>} requiredRoles={["ROLE_ADMIN"]} />
+        element: <ProtectedRoute element={<Admin/>} requiredRole={"ROLE_ADMIN"} />
       },
       {
         path: "change-password",
-        element: <ProtectedRoute element={<ChangePassword/>} requiredRoles={["ROLE_ADMIN"]} />
+        element: <ProtectedRoute element={<ChangePassword/>} requiredRole={"ROLE_ADMIN"} />
       },
       {
         path: "contentcreator/:id",
-        element:<Cct/>
+        element:<ProtectedRoute element={<Cct/>} requiredRole={"ROLE_ADMIN"} />
       }
     ]
   },
