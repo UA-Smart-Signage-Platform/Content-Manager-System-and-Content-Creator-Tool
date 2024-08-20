@@ -4,14 +4,17 @@ import PropTypes from 'prop-types';
 import { useMutation } from '@tanstack/react-query';
 import loginService from '../../services/loginService';
 import { useUserStore } from '../../stores/useUserStore';
+import { useNavigate } from 'react-router';
 
 function SignInDiv({setNyan}) {
     const login = useUserStore((state) => state.login)
+    const navigate = useNavigate();
     const mutation = useMutation({
       mutationFn: (password) => loginService.login("admin",password),
       onSuccess: (data, variable, context) =>{
         let user = data.data;
         login(user.username,user.role,user.jwt);
+        navigate("/monitors")
       },
       onError: (error, variables, context) => {
         console.log("error",error)

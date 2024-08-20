@@ -45,10 +45,6 @@ const router = createBrowserRouter([
         element:<Wso2Login/>,
       },
       {
-        path: "",
-        element:<Wso2Login/>
-      },
-      {
         path: "admin",
         element: <ProtectedRoute element={<Admin/>} requiredRole={"ROLE_ADMIN"} />
       },
