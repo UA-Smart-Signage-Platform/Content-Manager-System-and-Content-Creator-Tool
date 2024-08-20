@@ -39,6 +39,7 @@ function SignInDiv({setNyan}) {
           <p className=' justify-start w-full text-2xl text-[#95A967]'>Sign in as Root</p>
           <input className=' border-secondary border-2 rounded-md font-bold p-1 text-xl bg-secondaryLight'
                 placeholder='password'
+                type='password'
                 onChange={(e) => setPassword(e.target.value)}
           />
         </div>
