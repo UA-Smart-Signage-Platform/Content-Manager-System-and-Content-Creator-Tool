@@ -38,7 +38,7 @@ function Root(){
       if (!logged){
         navigate("/login");
       }else if (location.pathname === "/"){
-        navigate("/dashboard")
+        navigate("/monitors")
       }
     },[logged])
 
