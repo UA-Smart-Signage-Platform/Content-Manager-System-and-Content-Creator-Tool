@@ -10,7 +10,7 @@ function ProtectedRoute({ element, requiredRole }){
     if (userRole === requiredRole){
         return element
     }else{
-        <Navigate to="/monitors"/>
+        return <Navigate to="/monitors"/>
     }
   
 }

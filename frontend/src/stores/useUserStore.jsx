@@ -1,8 +1,6 @@
 import { create } from "zustand";
 import {getCookie,setCookie,removeCookie} from "typescript-cookie"
 import { createJSONStorage, persist } from "zustand/middleware";
-import { useQuery } from "@tanstack/react-query";
-import loginService from "../services/loginService";
 
 
 const TOKEN_NAME = "jwtToken";
