@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { loadFull } from "tsparticles";
-import loginService from '../../services/loginService';
 import { useNavigate } from "react-router-dom";
 import { greenParticles,nyanParticles } from './particlesConfigs';
 import SignInDiv from './SignInDiv';

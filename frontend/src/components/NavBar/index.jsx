@@ -23,7 +23,7 @@ function NavBar() {
 
     const handleLogout = () => {
         userState.logout();
-        navigate("/Login");
+        navigate("/login");
     };
 
     return(

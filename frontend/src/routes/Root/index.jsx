@@ -30,8 +30,17 @@ const queryClient = new QueryClient();
 function Root(){
     const theme = useThemeStore((state) =>state.theme)
     const logged = useUserStore((state) => state.logged)
+    const navigate = useNavigate();
 
     const location = useLocation();
+
+    useEffect(()=>{
+      if (!logged){
+        navigate("/login");
+      }else if (location.pathname === "/"){
+        navigate("/monitors")
+      }
+    },[logged])
 
     return(
         <div className={`h-screen flex ${theme} text-textcolor bg-backgroundcolor`}>
