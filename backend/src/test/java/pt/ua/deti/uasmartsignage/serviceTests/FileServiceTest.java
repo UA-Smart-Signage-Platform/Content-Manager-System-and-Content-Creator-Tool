@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -27,9 +26,6 @@ import org.mockito.Mock;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 
 import pt.ua.deti.uasmartsignage.models.CustomFile;
@@ -275,9 +271,9 @@ class FileServiceTest {
         Files.write(tempFile, content);
 
         MockMultipartFile mockMultipartFile = new MockMultipartFile(
-                "file",                             // parameter name
+                "file",                                 // parameter name
                 tempFile.getFileName().toString(),      // file name
-                "image/png",                // content type
+                "image/png",                            // content type
                 Files.readAllBytes(tempFile)            // content as byte array
         );
 

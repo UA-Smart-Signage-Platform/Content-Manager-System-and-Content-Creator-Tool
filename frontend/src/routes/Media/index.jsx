@@ -1,4 +1,4 @@
-import { PageTitle, MediaFileModal, MediaFolderModal, FunctionModal } from '../../components';
+import { PageTitle, MediaModal, FunctionModal } from '../../components';
 import { MdAdd, MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdOutlineInsertDriveFile, MdOutlineFormatIndentIncrease, MdCalendarMonth, MdCheck } from "react-icons/md";
 import { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
@@ -6,81 +6,124 @@ import mediaService from '../../services/mediaService';
 import { useLocation, useNavigate} from 'react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import { useMutation, useQueries, useQueryClient } from '@tanstack/react-query';
+import { customStyles } from './tableStyleConfig';
+import Breadcrumbs from './breadCrumbs';
+import { formatBytes, getFileIcon } from './utils';
 
 
-const getFileIcon = (type) => {
-    switch (type) {
-        case "directory":
-            return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-        case "image/":
-            return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
-        case "video/mp4":
-            return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-        default:
-            break;
-    }
-};
-
-// code taken from https://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
-const formatBytes = (bytes, decimals = 2) => {
-    if (!+bytes) return '0 Bytes'
-
-    const k = 1024
-    const dm = decimals < 0 ? 0 : decimals
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-
-    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
-};
-
-const customStyles = {
-    headRow: {
-        style: {
-            fontSize: '20px',
-            borderBottomWidth: '2px'
-        },
-    },
-    rows: {
-        style: {
-            fontSize: '16px'
-        },
-    },
-    headCells: {
-        style: {
-            paddingLeft: '8px',
-            paddingRight: '8px'
-        },
-    },
-    cells: {
-        style: {
-            paddingLeft: '8px',
-            paddingRight: '8px'
-        },
-    },
-};
 
 function Media() {
-    const [filesAndDirectories, setFilesAndDirectories] = useState([]);
+    const queryClient = useQueryClient();
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    
     const [currentFolder, setCurrentFolder] = useState(null);
     const [folder, setFolder] = useState({});
-    
-    const [updater, setUpdater] = useState(false);
     const [file, setFile] = useState(null);
     const [fileType, setFileType] = useState(null);
     const [preview, setPreview] = useState(null);
-    
-    const [showPortalFile, setShowPortalFile] = useState(false);
-    const [showPortalFolder, setShowPortalFolder] = useState(false);
-    const [deletePortal, setDeletePortal] = useState(false);
-    const [toDelete,setToDelete] = useState(null);
+    const [toDelete, setToDelete] = useState(null);
     const [toEdit, setToEdit] = useState(null);
     const [editFileName, setEditFileName] = useState(null);
+    const [action, setAction] = useState("");
+
+    const [showAddPortal, setShowAddPortal] = useState(false);
+    const [deletePortal, setDeletePortal] = useState(false);
     
     const path = useLocation().pathname.replace("/media/home","/uploads").replace(/\/$/, '');
     const navigate = useNavigate();
+    
+    const [rootFilesQuery, fileByIdQuery] = useQueries({
+        queries : [
+            {
+                queryKey: ['rootFiles', path, showAddPortal],
+                queryFn: () => mediaService.getFilesAtRootLevel(),
+                enabled: path === "/uploads",
+            },
+            {
+                queryKey: ['fileById', path, showAddPortal, currentFolder],
+                queryFn: () => mediaService.getFileOrDirectoryById(currentFolder),
+                enabled: path !== "/uploads",
+            }
+        ]
+    })
+
+    useEffect(() => {
+        if (rootFilesQuery.data) {
+            setFolder({});
+        } else if (fileByIdQuery.data) {
+            setFolder(fileByIdQuery.data.data);
+        }
+    }, [rootFilesQuery.data, fileByIdQuery.data])
+
+
+    const deleteFile = useMutation({
+        mutationFn: () => mediaService.deleteFileOrFolder(toDelete),
+        onSuccess: async () => {
+            setDeletePortal(false);
+            setPreview(null);
+            setFile(null);
+
+            await queryClient.invalidateQueries(
+                {
+                    predicate: (query) => 
+                        query.queryKey.some((key) => 
+                            ['rootFiles', 'fileById'].includes(key)
+                        ),
+                    refetchType: 'active',
+                },
+            );
+        }
+    });
+
+    const editFile = useMutation({
+        mutationFn: (id) => mediaService.editFileOrFolder(id, editFileName),
+        onSuccess: async () => {
+            setToEdit(null);
+            setPreview(null);
+            setFile(null);
+
+            await queryClient.invalidateQueries(
+                {
+                    predicate: (query) => 
+                        query.queryKey.some((key) => 
+                            ['rootFiles', 'fileById'].includes(key)
+                        ),
+                    refetchType: 'active',
+                },
+            );
+        }
+    });
+    
+    const { mutate: deleteFileMutate } = deleteFile;
+    const { mutate: editFileMutate } = editFile;
+
+
+    const showFilesDataTable = () => {
+        const inRoot = (path === "/uploads");
+        const query = inRoot ? rootFilesQuery : fileByIdQuery;
+
+        return (
+            <DataTable className="p-3" 
+            defaultSortFieldId="isFolder"
+            theme='solarized'
+            pointerOnHover
+            highlightOnHover
+            pagination
+            columns={columns}
+            progressPending={query.isLoading}
+            data={(inRoot ? query.data?.data : query.data?.data.subDirectories) || []}
+            onRowClicked={handleRowClick}
+            customStyles={customStyles}/>
+        )
+    }
+    
+
+    const [stack, setStack] = useState([]);
+
+    const pushToStack = (item) => {
+      setStack(prevStack => [...prevStack, item]);
+    };
 
     const columns = [
         {
@@ -140,7 +183,7 @@ function Media() {
                 : 
                 <div data-tag="allowRowEvents" className="flex flex-row items-center">
                     {getFileIcon(row.type)}
-                    <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
+                    <span data-tag="allowRowEvents" className="ml-2">{row.name}{row.extension === "" ? "" : "."}{row.extension}</span>
                 </div>
                 }
             </div>
@@ -152,7 +195,7 @@ function Media() {
         return (
             <div key={row.id + "_" + "edit"}>
                 {toEdit === row.id ? 
-                    <button onClick={()=>{editFile(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
+                    <button onClick={()=>{editFileMutate(row.id)}} className=" border-[2px] border-black rounded-sm size-7 flex items-center justify-center">
                         <MdCheck className='size-5'/>
                     </button>
                     :
@@ -175,7 +218,7 @@ function Media() {
                     <AnimatePresence>
                         {deletePortal && <FunctionModal
                             message={"Are you sure you want to delete this file/folder?"}
-                            funcToExecute={()=>deleteFile()}
+                            funcToExecute={()=>deleteFileMutate()}
                             cancelFunc={()=>{setDeletePortal(false)}}
                             confirmMessage={"Yes"}
                             />}
@@ -185,47 +228,11 @@ function Media() {
         )
     }
 
-    const fetchData = ()=>{
-        setPreview(null);
-        setFile(null);
-        if(path === "/uploads"){
-            mediaService.getFilesAtRootLevel().then((response)=>{
-                setFilesAndDirectories(response.data);
-                setFolder({});
-            })
-        }
-        else{
-            mediaService.getDirectoryOrFileByPath(path).then((response)=>{
-                setFilesAndDirectories(response.data.subDirectories);
-                setFolder(response.data);
-            })
-        }
-    }
-
-    const deleteFile = () => {
-        setDeletePortal(false);
-        mediaService.deleteFileOrFolder(toDelete).then(()=>{
-            fetchData();
-        })
-    }
-
-    const editFile = (id) => {
-        setToEdit(null);
-        mediaService.editFileOrFolder(id, editFileName).then(()=>{
-            fetchData();
-        })
-    }
-
-    useEffect(() => {
-        if(path === "/media"){
-            navigate("/media/home")
-            return
-        }
-        fetchData()
-    }, [currentFolder, updater, path, navigate]);
-
     const handleRowClick = (row) => {
         if (row.type === "directory"){
+            setPreview(null);
+            setFile(null);
+            pushToStack(row.id);
             setCurrentFolder(row.id);
             navigate(window.location.pathname.replace(/\/$/, '') + "/" + row.name);
         }
@@ -234,39 +241,12 @@ function Media() {
             setFileType(row.type);
             setFile(change);
             if (change !== null){
-                if (path === 'home' ){
-                    setPreview(import.meta.env.VITE_APP_API_URL + "/uploads/" + row.name);
-                }
-                else{
-                    setPreview(import.meta.env.VITE_APP_API_URL + path + "/" + row.name);
-                }
+                setPreview(import.meta.env.VITE_APP_API_URL + "/uploads/" + row.uuid + "." + row.extension);
             }
             else{
                 setPreview(null);
             }
         }
-    };
-
-    const breadCrumbsNavigate = (index) =>{
-        let newpath = "home/" + path.split("/").slice(2,index + 2).join("/");
-        navigate(newpath)
-    }
-
-    const breadCrumbs = () => {
-        return (
-            <div className="flex flex-row">
-                {path.split("/").slice(1).map((folder, index, array) =>
-                    <div key={folder + "_breadcrumb"}>
-                        <motion.button key={folder.id} className={(index+1 !== array.length ? `text-secondary hover:bg-secondaryMedium rounded-lg px-1` : `text-black`)} onClick={() => breadCrumbsNavigate(index)}
-                            whileHover={{scale:1.1}}
-                        >
-                                {folder !== "uploads" ? folder : "home"}
-                        </motion.button>
-                        {(array.length > index + 1) && <span className="pr-2 pl-2 text-secondary">&gt;</span>}
-                    </div>
-                )}
-            </div>
-        )
     };
 
     const showText = () => {
@@ -308,42 +288,36 @@ function Media() {
                     </button>
                     {isDropdownOpen && (
                         <div className="fixed text-md mt-10 z-10 bg-slate-300 w-[10%] h-16 rounded-md">
-                            <button onClick={() => {setShowPortalFolder(true); setIsDropdownOpen(false)}} 
+                            <button onClick={() => {setShowAddPortal(true); setIsDropdownOpen(false); setAction("folder")}} 
                                     className="pl-1 pb-2 cursor-pointer">
                                     New Folder
                             </button>
-                            <button onClick={() => {setShowPortalFile(true); setIsDropdownOpen(false)}} className="pl-1 pb-2 cursor-pointer">New File</button>
+                            <button onClick={() => {setShowAddPortal(true); setIsDropdownOpen(false); setAction("file")}} 
+                                    className="pl-1 pb-2 cursor-pointer">
+                                        New File
+                            </button>
                         </div>
                     )}
-                    <MediaFileModal
-                            showPortal={showPortalFile} 
-                            setShowPortal={setShowPortalFile} 
+                    <MediaModal
+                            showPortal={showAddPortal} 
+                            setShowPortal={setShowAddPortal} 
                             currentFolder={folder}
-                            updater={updater}
-                            setUpdater={setUpdater}/>
-                    <MediaFolderModal
-                            showPortal={showPortalFolder} 
-                            setShowPortal={setShowPortalFolder} 
-                            currentFolder={folder}
-                            updater={updater}
-                            setUpdater={setUpdater}/>
+                            action={action}/>
                     <div className="flex items-center w-[24%] ml-6 flex-row">
-                        {breadCrumbs()}
+                        <Breadcrumbs 
+                            path={path} 
+                            stack={stack} 
+                            setCurrentFolder={setCurrentFolder} 
+                            navigate={navigate} 
+                            setPreview={setPreview} 
+                            setFile={setFile} 
+                        />
                     </div>
                 </div>
                 <div id="dividerHr" className="border-[1px] border-secondary"/>
                 <div className="h-[94%] flex flex-row">
                     <div id="mediaContent" className="flex flex-col w-[50%] ml-[4%] overflow-scroll max-h-[760px]">
-                        <DataTable className="p-3" 
-                            defaultSortFieldId="isFolder"
-                            theme='solarized'
-                            pointerOnHover
-                            highlightOnHover
-                            pagination
-                            columns={columns}
-                            data={filesAndDirectories}
-                            onRowClicked={handleRowClick}
-                            customStyles={customStyles}/>
+                        {showFilesDataTable()}
                     </div>
                     <div id="mediaDividerHr" className=" w-[1px] h-full border-[1px] border-secondary"/>
                     <div id="mediaImage" className="flex h-full w-[45%]">

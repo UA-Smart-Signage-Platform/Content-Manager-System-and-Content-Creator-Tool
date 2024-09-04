@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
+import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
 import pt.ua.deti.uasmartsignage.models.AppUser;
 import pt.ua.deti.uasmartsignage.models.Monitor;
@@ -69,6 +70,8 @@ public class DataLoader implements CommandLineRunner {
             } catch (IOException e) {
                 logger.error("Error deleting files in uploads folder");
             }
+            File directory = new File(Log.USERDIR.toString() + "/uploads/");
+            directory.mkdir();
         }
             
         this.loadWidgetsAndTemplates();

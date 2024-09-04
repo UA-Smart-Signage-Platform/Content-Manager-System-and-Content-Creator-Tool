@@ -12,8 +12,6 @@ import pt.ua.deti.uasmartsignage.repositories.FileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,7 +23,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.io.File;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,6 +113,8 @@ public class FileService {
             return null;
         }
 
+        customFile.setUuid(UUID.randomUUID().toString());
+        customFile.setExtension("");
         File directory = new File(Log.USERDIR.toString() + "/uploads/" + customFile.getUuid());
 
         String operation = "createDirectory";
@@ -167,7 +166,7 @@ public class FileService {
         }
         else {
             customFile = new CustomFile(fileName, fileUuid, fileType, fileExtension, fileSize, parent.get());
-            updateParentSize(parent, fileSize);
+            updateParentSize(parent.get(), fileSize, false);
         }
 
         Path fileSystemPath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile.getUuid() + "." + customFile.getExtension());
@@ -192,19 +191,18 @@ public class FileService {
      *
      * @param parent The parent to be updated.
      * @param fileSize The size of the newly added file to be added to the parent's size
+     * @param deletingFiles Boolean to decide wether we remove or add the size to the parent files
      */
-    private void updateParentSize(Optional<CustomFile> parent, Long fileSize) {
-        if (parent.isPresent()) {
-            CustomFile currentParent = parent.get();
+    private void updateParentSize(CustomFile parent, Long fileSize, boolean deletingFiles) {
+        CustomFile currentParent = parent;
+        fileSize = deletingFiles ? -fileSize : fileSize;
+
+        do {
             currentParent.setSize(currentParent.getSize() + fileSize);
             fileRepository.save(currentParent);
-            
-            while(currentParent.getParent() != null){
-                currentParent = currentParent.getParent();
-                currentParent.setSize(currentParent.getSize() + fileSize);
-                fileRepository.save(currentParent);
-            }
-        }
+
+            currentParent = currentParent.getParent();
+        } while (currentParent != null);
     }
 
 
@@ -238,14 +236,15 @@ public class FileService {
 
         // Delete file from disk
         CustomFile file = fileOptional.get();
-        String filePath =  Log.USERDIR.toString() + "/uploads/" + file.getUuid() + "." + file.getExtension();
 
         if (file.getType().equals("directory")) {
-            
+            deleteChildren(file);
         } 
         else {
+            String filePath =  Log.USERDIR.toString() + "/uploads/" + file.getUuid() + "." + file.getExtension();
             try {
                 Files.deleteIfExists(Paths.get(filePath));
+                logger.info("Deleted file: {}", filePath);
             } 
             catch (IOException e) {
                 logger.error("Failed to delete file: {}, error: {}", filePath, e.getMessage());
@@ -258,12 +257,49 @@ public class FileService {
         fileRepository.delete(file);
 
         if (parent != null){
-            parent.setSize(parent.getSize() - file.getSize());
-            fileRepository.save(parent);
+            updateParentSize(parent, file.getSize(), true);
         }
 
         return true;
     }
+
+    private boolean deleteChildren(CustomFile rootFile) {
+        List<CustomFile> allFiles = new ArrayList<>();
+        Queue<CustomFile> queue = new LinkedList<>();
+        queue.add(rootFile);
+    
+        // Breadth-first traversal to collect all files and directories
+        while (!queue.isEmpty()) {
+            CustomFile file = queue.poll();
+            allFiles.add(file);
+            
+            if (file.getType().equals("directory")) {
+                queue.addAll(file.getSubDirectories());
+            }
+        }
+    
+        // Delete files and directories in reverse order (children before parents)
+        for (int i = allFiles.size() - 1; i >= 0; i--) {
+            CustomFile file = allFiles.get(i);
+            String filePath = Log.USERDIR.toString() + "/uploads/" + file.getUuid();
+            if(!file.getType().equals("directory")){
+                filePath = filePath + "." + file.getExtension();
+            }
+            
+            try {
+                Files.deleteIfExists(Paths.get(filePath));
+                logger.info("Deleted child: {}", filePath);
+            } catch (IOException e) {
+                logger.error("Failed to delete child: {}, error: {}", filePath, e.getMessage());
+                return false;
+            }
+        }
+    
+        return true;
+    }
+    
+    
+
 
     /**
      * Updates the name of the file with the specified ID.

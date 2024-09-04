@@ -12,7 +12,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "File")
-@JsonIgnoreProperties({"parent", "subDirectories"})
 public class CustomFile {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,10 +33,12 @@ public class CustomFile {
     private Long size;
 
     @ManyToOne
+    @JsonIgnoreProperties({"subDirectories", "parent"})
     @JoinColumn(name = "parentId")
     private CustomFile parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties({"parent", "subDirectories"})
     private List<CustomFile> subDirectories;
 
     public CustomFile(String name, String uuid, String type, String extension, Long size, CustomFile parent) {
