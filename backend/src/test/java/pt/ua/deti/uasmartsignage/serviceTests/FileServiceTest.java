@@ -18,6 +18,7 @@ import java.util.UUID;
 
 import pt.ua.deti.uasmartsignage.services.LogsService;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 
+import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
@@ -48,6 +50,14 @@ class FileServiceTest {
     CustomFile customFile = new CustomFile();
     CustomFile customFile2 = new CustomFile();
     CustomFile customFile3 = new CustomFile();
+
+    @BeforeAll
+    static void preSetUp(){
+        File directory = new File(Log.USERDIR.toString() + "/uploads/");
+        if (!directory.exists()){
+            directory.mkdir();
+        }
+    }
 
     @BeforeEach
     void setUp(){
