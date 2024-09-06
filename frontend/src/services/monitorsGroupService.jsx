@@ -17,8 +17,8 @@ const monitorsGroupService = {
         return await client.delete(`/groups/${id}`)
     },
     
-    async getGroupsNotMadeForMonitor(){
-        return await client.get("/groups/notMadeForMonitor");
+    async getNonDefaultGroups(){
+        return await client.get("/groups/ignoreDefault");
     },
 
     async getGroup(id){
