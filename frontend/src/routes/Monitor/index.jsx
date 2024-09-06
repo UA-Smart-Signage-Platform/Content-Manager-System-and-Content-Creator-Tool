@@ -21,7 +21,7 @@ function Monitor(){
     const [warning,setWarning] = useState(false);
 
     useEffect(()=>{
-        axios.all([monitorService.getMonitorById(id),monitorsGroupService.getGroupsNotMadeForMonitor()]).then(
+        axios.all([monitorService.getMonitorById(id),monitorsGroupService.getNonDefaultGroups()]).then(
             axios.spread((monitorRes,groupsRes)=>{
                 setMonitor(monitorRes.data)
                 setName(monitorRes.data.name)
