@@ -55,7 +55,9 @@ function Monitor(){
         mutationFn: () => {
             let monitorsend = monitorByIdQuery.data.data;
             monitorsend.name = name;
-            monitorsend.group = { id: monitorsQuery.data.data.find(element => element.id == groupId).id };
+
+            const group = monitorsQuery.data.data.find(element => element.id == groupId);
+            monitorsend.group = group.defaultGroup ? { id: null } : { id: group.id };
 
             return monitorService.updateMonitor(id, monitorsend);
         },

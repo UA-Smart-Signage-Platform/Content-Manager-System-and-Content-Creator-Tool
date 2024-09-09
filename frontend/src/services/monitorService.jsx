@@ -9,10 +9,6 @@ const monitorService = {
         return await client.get(`/monitors/${id}`)
     },
 
-    async acceptMonitor() {
-        return await client.post("/monitors")
-    },
-
     async getMonitorsByGroup(id, onlineStatus){
         return await client.get(`/monitors/group/${id}`, { params: { onlineStatus } })
     },
