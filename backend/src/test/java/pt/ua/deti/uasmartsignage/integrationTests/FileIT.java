@@ -89,64 +89,20 @@ class FileIT {
 
     @Test
     @Order(1)
-    void testGetFileByIdEndpoint(){
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<CustomFile> response = restTemplate.exchange("http://localhost:" +  port  + "/api/files/3", HttpMethod.GET, entity, CustomFile.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(3, Objects.requireNonNull(response.getBody()).getId());
-        assertEquals("test1", response.getBody().getName());
-    }
-
-    @Test
-    @Order(2)
-    void testGetFileByIdEndpointNotFound() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/100",HttpMethod.GET,entity,String.class);
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-    }
-
-    @Test
-    @Order(3)
-    void testGetRootFilesAndDirectoriesEndpoint() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/directory/root", HttpMethod.GET, entity, String.class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-    }
-
-    @Test
-    @Order(4)
-    void testDeleteFileByIdEndpoint() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(jwtToken);
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/2", HttpMethod.DELETE, entity, String.class);
-        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        assertNull(response.getBody());
-    }
-
-    @Test
-    @Order(5)
     void testCreateFileEndpoint() {
-
         byte[] content = "This is a test file content".getBytes(StandardCharsets.UTF_8);
         // Create a ByteArrayResource from the file content with a custom filename
         ByteArrayResource resource = new ByteArrayResource(content) {
             @Override
             public String getFilename() {
-                return "test3.png";
+                return "test1.png";
             }
         };
 
         // Set up the request body with the file and parentId
         MultiValueMap<String, Object> requestBody = new LinkedMultiValueMap<>();
         requestBody.add("file", resource);
-        requestBody.add("parentId", 1);
+        requestBody.add("parentId", null);
 
         // Set up the request headers
         HttpHeaders headers = new HttpHeaders();
@@ -161,7 +117,51 @@ class FileIT {
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
     }
 
+    @Test
+    @Order(2)
+    void testGetFileByIdEndpoint(){
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<CustomFile> response = restTemplate.exchange("http://localhost:" +  port  + "/api/files/1", HttpMethod.GET, entity, CustomFile.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, Objects.requireNonNull(response.getBody()).getId());
+        assertEquals("test1", response.getBody().getName());
+    }
 
+    @Test
+    @Order(3)
+    void testGetFileByIdEndpointNotFound() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/100",HttpMethod.GET,entity,String.class);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+    }
+
+    @Test
+    @Order(4)
+    void testGetRootFilesAndDirectoriesEndpoint() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/directory/root", HttpMethod.GET, entity, String.class);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(1, response.getBody().length());
+    }
+
+    @Test
+    @Order(4)
+    void testDeleteFileByIdEndpoint() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(jwtToken);
+        HttpEntity<?> entity = new HttpEntity<>(headers);
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:" + port + "/api/files/2", HttpMethod.DELETE, entity, String.class);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertNull(response.getBody());
+    }
+
+    
     // Bad request because file already exists
     @Test
     @Order(6)

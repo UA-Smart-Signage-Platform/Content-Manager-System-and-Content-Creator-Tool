@@ -1,13 +1,13 @@
-package pt.ua.deti.uasmartsignage.constants;
+package pt.ua.deti.uasmartsignage.enums;
 
-public enum OPERATION {
+public enum Operation {
     DELETE_FILE("deleteFile"),
     DELETE_DIRECTORY("deleteDirectory"),
     UPDATE_FILE("updateFileName");
 
     private final String text;
 
-    OPERATION(final String text) {
+    Operation(final String text) {
         this.text = text;
     }
 

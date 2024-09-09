@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 
 import pt.ua.deti.uasmartsignage.models.AppUser;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
-import pt.ua.deti.uasmartsignage.models.FilesClass;
+import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.services.FileService;
 import pt.ua.deti.uasmartsignage.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
