@@ -23,11 +23,8 @@ import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
 import pt.ua.deti.uasmartsignage.models.AppUser;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
-import pt.ua.deti.uasmartsignage.models.Rule;
 import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.models.Widget;
-import pt.ua.deti.uasmartsignage.models.embedded.Schedule;
-import pt.ua.deti.uasmartsignage.models.embedded.TemplateWidget;
 import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.repositories.RuleRepository;
@@ -156,6 +153,18 @@ public class DataLoader implements CommandLineRunner {
         car2.setPending(true);
         car2.setGroup(dBio);
         monitorRepository.save(car2);
+
+        MonitorGroup monitorGroupDeti = new MonitorGroup();
+        monitorGroupDeti.setName("DEFAULT GROUP HERE (hi)");
+        monitorGroupDeti.setDefaultGroup(true);
+        groupRepository.save(monitorGroupDeti);
+
+        Monitor detiEntry = new Monitor();
+        detiEntry.setUuid("0f6a21fa-fbe1-4d9a-9ba1-fce9f1922f6e");
+        detiEntry.setName("DETI Entrance Television");
+        detiEntry.setPending(true);
+        detiEntry.setGroup(monitorGroupDeti);
+        monitorRepository.save(detiEntry);
 
     }
 

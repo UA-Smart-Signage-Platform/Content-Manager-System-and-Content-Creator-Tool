@@ -3,7 +3,8 @@ export {default as PageTitle} from "./PageTitle";
 export {default as GroupBar} from "./GroupBar";
 export {default as MemorySvg} from "./MemorySvg";
 export {default as DashboardGraph} from "./DashboardGraph";
-export {default as MovableDiv} from "./MovableDiv"
+export {default as MovableDiv} from "./MovableDiv";
+export {default as Errors} from "./Errors";
 
 // Portals exports
 export {default as MediaFileModal} from './Portals/MediaFileModal';

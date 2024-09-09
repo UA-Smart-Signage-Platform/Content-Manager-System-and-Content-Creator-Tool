@@ -16,7 +16,7 @@ export const columns = [
                 <MdGroup className="h-6 w-6 mr-2"/> Group
             </div>
         ),
-        selector: row => !row.group.madeForMonitor ? row.group.name : "-----",
+        selector: row => !row.group.defaultGroup ? row.group.name : "-----",
         sortable: true,
     },
     {
