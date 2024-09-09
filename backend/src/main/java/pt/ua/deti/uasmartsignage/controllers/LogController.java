@@ -1,7 +1,7 @@
 package pt.ua.deti.uasmartsignage.controllers;
 
 import pt.ua.deti.uasmartsignage.configuration.InfluxDBProperties;
-import pt.ua.deti.uasmartsignage.models.BackendLog;
+import pt.ua.deti.uasmartsignage.models.embedded.BackendLog;
 import pt.ua.deti.uasmartsignage.services.LogsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
