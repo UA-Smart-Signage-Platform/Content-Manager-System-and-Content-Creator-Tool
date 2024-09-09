@@ -70,36 +70,52 @@ public class MonitorService {
      */
     public Monitor updateMonitor(Long id, Monitor monitor) {
 
-        Monitor monitorById = monitorRepository.getReferenceById(id);
-        MonitorGroup group = monitorById.getGroup();
-        monitorById.setName(monitor.getName());
-        monitorById.setGroup(monitor.getGroup());
-        Monitor returnMonitor = monitorRepository.save(monitorById);
+        Monitor currentMonitor = getMonitorById(id);
+        MonitorGroup currentGroup = currentMonitor.getGroup();
 
-        if (group.isDefaultGroup()) {
-            if (group.getId() == monitorById.getGroup().getId()){
-                group.setName(monitor.getName());
-                monitorGroupService.saveGroup(group);
+        MonitorGroup group = null;
+        if(monitor.getGroup() != null && monitor.getGroup().getId() != null){
+            group = monitorGroupService.getGroupById(monitor.getGroup().getId());
+        }
+        
+        if(group == null){
+            monitor.setGroup(currentGroup);
+        }
+        else{
+            monitor.setGroup(group);
+        }
+
+        monitor.setId(id);
+        Monitor updatedMonitor = monitorRepository.save(monitor);
+
+        if (currentGroup.isDefaultGroup()) {
+
+            // if the group is still a default group
+            // we only change the name to the new monitor name
+            if (currentGroup.getId() == updatedMonitor.getGroup().getId()){
+                currentGroup.setName(monitor.getName());
+                monitorGroupService.updateGroup(currentGroup.getId(), currentGroup);
             }
+
+            // if the group changes we delete all the rules
+            // that were related to the previous groups
             else{
-                List<Rule> rules = ruleService.getAllRulesForGroup(group.getId());
-                if (rules.isEmpty()){
-                    monitorGroupService.deleteGroupById(group.getId());
-                } else {
-                    for (int i = 0; i < rules.size(); i++) {
-                        ruleService.deleteRuleById(rules.get(i).getId());
-                    }
-                    monitorGroupService.deleteGroupById(group.getId());
+
+                List<Rule> rules = ruleService.getAllRulesForGroup(currentGroup.getId());
+                for (int i = 0; i < rules.size(); i++) {
+                    ruleService.deleteRuleById(rules.get(i).getId());
                 }
+                monitorGroupService.deleteGroupById(currentGroup.getId());
+
             }
         }
 
         // Send all schedules to the new monitor
-        List<Monitor> monitors = new ArrayList<>();
-        monitors.add(returnMonitor);
+        // List<Monitor> monitors = new ArrayList<>();
+        // monitors.add(returnMonitor);
         // templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
 
-        return returnMonitor;
+        return updatedMonitor;
     }
 
     /**
