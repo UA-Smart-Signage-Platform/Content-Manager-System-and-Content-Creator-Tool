@@ -128,8 +128,8 @@ function GroupBar( {id, changeId, page} ) {
                             </button>
                         }
                     </div>
-                    <div id="selected" onClick={()=> {changeId(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
-                        <div className="flex flex-col mt-1 mb-1 ml-4">
+                    <button id="selected" onClick={()=> {changeId(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
+                        <div className="flex flex-col mt-1 mb-1 ml-4 text-left">
                             <div className="flex flex-row">
                                 <div>
                                     <span className="text-2xl">All monitors</span>
@@ -137,7 +137,7 @@ function GroupBar( {id, changeId, page} ) {
                             </div>
                             <span className="text-sm">All monitors in a single place</span>
                         </div>
-                    </div>
+                    </button>
                 </div>
                 <div className="flex flex-col mt-5 overflow-scroll">
                     <div className="flex flex-row justify-between">
@@ -152,7 +152,7 @@ function GroupBar( {id, changeId, page} ) {
                         }
                     </div>
                     {groupsQuery.data?.data.map((group, index) => (
-                    <div key={group.id}
+                    <button key={group.id}
                         onClick={()=> {changeId(group.id)}}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 text-left `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
@@ -192,7 +192,7 @@ function GroupBar( {id, changeId, page} ) {
                                         <input className=" bg-white rounded-md w-full text-sm px-2" value={editGroup.description} onChange={(e)=>editGroupDescription(e.target.value)}/>
                                     }
                         </div>
-                    </div>
+                    </button>
                     ))}
                 </div>
             </div>
