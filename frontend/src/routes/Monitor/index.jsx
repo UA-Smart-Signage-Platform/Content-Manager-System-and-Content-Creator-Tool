@@ -39,12 +39,9 @@ function Monitor(){
     });
 
     const monitorsQuery = useQuery({
-        queryKey: ['monitors'],
+        queryKey: ['monitors', {updatingMonitor: false}],
         queryFn: async() => {
             return await monitorsGroupService.getNonDefaultGroups().then((response) => {
-                if (response.data.find((element) => element.id == monitorByIdQuery.data.data.group.id) == undefined){
-                    response.data.push(monitorByIdQuery.data.data.group);
-                }
                 return response;
             })
         },

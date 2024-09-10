@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,16 +69,16 @@ public class MonitorService {
      */
     public Monitor updateMonitor(Long id, Monitor monitor) {
 
-        Monitor currentMonitor = getMonitorById(id);
-        MonitorGroup currentGroup = currentMonitor.getGroup();
+        Monitor oldMonitor = getMonitorById(id);
+        MonitorGroup oldGroup = oldMonitor.getGroup();
 
         MonitorGroup group = null;
-        if(monitor.getGroup() != null && monitor.getGroup().getId() != null){
+        if(monitor.getGroup().getId() != null){
             group = monitorGroupService.getGroupById(monitor.getGroup().getId());
         }
-        
+
         if(group == null){
-            monitor.setGroup(currentGroup);
+            monitor.setGroup(oldGroup);
         }
         else{
             monitor.setGroup(group);
@@ -88,32 +87,9 @@ public class MonitorService {
         monitor.setId(id);
         Monitor updatedMonitor = monitorRepository.save(monitor);
 
-        if (currentGroup.isDefaultGroup()) {
-
-            // if the group is still a default group
-            // we only change the name to the new monitor name
-            if (currentGroup.getId() == updatedMonitor.getGroup().getId()){
-                currentGroup.setName(monitor.getName());
-                monitorGroupService.updateGroup(currentGroup.getId(), currentGroup);
-            }
-
-            // if the group changes we delete all the rules
-            // that were related to the previous groups
-            else{
-
-                List<Rule> rules = ruleService.getAllRulesForGroup(currentGroup.getId());
-                for (int i = 0; i < rules.size(); i++) {
-                    ruleService.deleteRuleById(rules.get(i).getId());
-                }
-                monitorGroupService.deleteGroupById(currentGroup.getId());
-
-            }
+        if (oldGroup.isDefaultGroup()) {
+            monitorGroupService.deleteGroupById(oldGroup.getId());
         }
-
-        // Send all schedules to the new monitor
-        // List<Monitor> monitors = new ArrayList<>();
-        // monitors.add(returnMonitor);
-        // templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
 
         return updatedMonitor;
     }
