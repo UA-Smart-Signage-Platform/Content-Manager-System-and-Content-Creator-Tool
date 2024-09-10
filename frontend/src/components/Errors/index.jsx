@@ -9,10 +9,10 @@ function Errors( { errorCode } ) {
             break;
         case ErrorCode.FORBIDDEN:
             break;
-        case ErrorCode.UNAUTHORIZED:
-            break;
-        case ErrorCode.SERVER_ERROR:
+        case ErrorCode.PAGE_NOT_FOUND:
             return pageNotFound(); 
+        case ErrorCode.SERVER_ERROR:
+            break;
         default:
             break;
     }

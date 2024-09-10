@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Errors, PageTitle } from "../../components";
-import { MdCreate, MdArrowBack, MdMonitor,MdCheck } from "react-icons/md";
-import { useLocation, useParams } from "react-router";
+import { MdArrowBack, MdMonitor } from "react-icons/md";
+import { useParams } from "react-router";
 import monitorService from "../../services/monitorService";
 import monitorsGroupService from "../../services/monitorsGroupService";
-import axios from "axios";
 import { Link } from "react-router-dom";
 import { templateBlock } from "./templateConfig";
 import { memoryBlock } from "./memoryConfig";
@@ -17,6 +16,7 @@ import { previewBlock } from "./previewConfig";
 import { ErrorCode } from "../../components/Errors/errorUtils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { loadingBlock } from "./loadingConfig";
+import { showUpdatingMonitor } from "./updatingMonitorConfig";
 
 
 function Monitor(){
@@ -86,19 +86,7 @@ function Monitor(){
                             <div className="h-[92%] w-full flex flex-row gap-5">
                                 <div className="w-[50%] h-full bg-secondaryLight rounded-[30px] flex flex-col p-5 gap-5">
                                     <div className=" text-center text-4xl flex flex-row items-center justify-center gap-4">
-                                        {updatingMonitor ? 
-                                            <div className="rounded-lg bg-secondaryMedium px-2 flex flex-row items-center">
-                                                <input className="bg-secondaryMedium rounded-lg" value={name} onChange={(e)=>setName(e.target.value)}></input>
-                                                <MdCreate className="ml-auto text-2xl text-gray-500"/>
-                                            </div>
-                                            :
-                                            <div className="">{monitorByIdQuery.data.data.name}</div>
-                                        }
-                                        {updatingMonitor ? 
-                                            <MdCheck className="transition ml-auto cursor-pointer text-3xl hover:text-4xl hover:translate-y-[-5px] hover:translate-x-1" onClick={()=>updateMonitor()}/>
-                                            :
-                                            <MdCreate className="transition ml-auto cursor-pointer text-3xl hover:text-4xl hover:translate-y-[-5px] hover:translate-x-1" onClick={()=>setUpdatingMonitor(true)}/>
-                                        }
+                                        {showUpdatingMonitor(updatingMonitor, name, setName, updateMonitor, setUpdatingMonitor, monitorByIdQuery)}
                                     </div>
                                     <div className=" bg-secondaryMedium rounded-[20px] h-[30%] text-center flex flex-col p-4 pb-6">
                                         {templateBlock()}

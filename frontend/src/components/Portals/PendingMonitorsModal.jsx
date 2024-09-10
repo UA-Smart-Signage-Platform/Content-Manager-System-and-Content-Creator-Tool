@@ -36,13 +36,21 @@ function PendingMonitorsModal( { showPortal, setShowPortal, monitorListUpdate, s
         },
         {
             name: 'accept',
-            cell: (row) => <button className="bg-[#97D700] size-8 mr-3 rounded-sm flex items-center text-lg" onClick={()=>acceptMonitor(row.id)}><MdCheck className='mx-auto'/></button>
+            cell: row => acceptColumn(row)
         },
         {
             name: 'decline',
             cell: (row) => <button className="bg-[#D12E2E] size-8 rounded-sm flex items-center text-lg"><span className='mx-auto'>X</span></button>
         },
     ];
+
+    const acceptColumn = (row) => {
+        return (
+            <button className="bg-[#97D700] size-8 mr-3 rounded-sm flex items-center text-lg" onClick={()=>acceptMonitor(row.id)}>
+                <MdCheck className='mx-auto'/>
+            </button>
+        )
+    }
 
     const handleRefresh = () => {
         queryClient.invalidateQueries({queryKey: ['pendingMonitorsQuery']});
