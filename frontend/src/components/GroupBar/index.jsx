@@ -5,6 +5,7 @@ import { IoWarningOutline } from "react-icons/io5";
 import monitorsGroupService from "../../services/monitorsGroupService"
 import {motion,AnimatePresence} from "framer-motion"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import PropTypes from 'prop-types';
 
 function GroupBar( {id, changeId, page} ) {
     const queryClient = useQueryClient();
@@ -127,7 +128,7 @@ function GroupBar( {id, changeId, page} ) {
                             </button>
                         }
                     </div>
-                    <div id="selected" group-id="0" onClick={()=> {changeId(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
+                    <div id="selected" onClick={()=> {changeId(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
                         <div className="flex flex-col mt-1 mb-1 ml-4">
                             <div className="flex flex-row">
                                 <div>
@@ -198,6 +199,12 @@ function GroupBar( {id, changeId, page} ) {
             <div id="divider" className="mt-1 mb-1 w-[1px] h-full border-[1px] border-secondary"/>
         </div>
     )
+}
+
+GroupBar.propTypes = {
+    id: PropTypes.number.isRequired,
+    changeId: PropTypes.func.isRequired,
+    page: PropTypes.string.isRequired,
 }
 
 export default GroupBar;
