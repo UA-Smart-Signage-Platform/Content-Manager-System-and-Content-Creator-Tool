@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { PageTitle, ScheduleModal, FunctionModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import ruleService from "../../services/ruleService";
@@ -8,7 +8,10 @@ import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
 import { FiTrash2 } from "react-icons/fi";
 import scheduleService from "../../services/scheduleService";
 import activeTemplateService from "../../services/activeTemplateService";
-import { useQueries } from '@tanstack/react-query';
+import { useMutation, useQueries } from '@tanstack/react-query';
+import { priorityDown, priorityUp } from "./priorityConfig";
+import { addRuleButton, saveButton, selectGroupButton } from "./buttonsConfig";
+import { warningPopUp } from "./utilsConfig";
 
 function Schedule(){
     const [selectedGroupId, setSelectedGroupId] = useState(null);
@@ -38,54 +41,12 @@ function Schedule(){
         ]
     });
 
-    const priorityDown = (rule) => {
-        const priority = rule.schedule.priority;
-
-        if (priority === rulesByGroupIdQuery.data.data.length - 1){
-            return;
-        }
-
-        let arr = rulesByGroupIdQuery.data.data.map((element) => {
-            if (element.schedule.priority === priority){
-                element.schedule.priority++;
-            }
-            else if (element.schedule.priority - 1 === priority){
-                element.schedule.priority--;
-            }
-            return element;
-        })
-
-        rulesByGroupIdQuery.data.data = arr;
-        setChangesMade(true);
-    };
-
-    const priorityUp = (rule) => {
-        const priority = rule.schedule.priority;
-
-        if (priority === 0){
-            return;
-        }
-
-        let arr = rulesByGroupIdQuery.data.data.map((element) => {
-            if (element.schedule.priority === priority){
-                element.schedule.priority--;
-            }
-            else if (element.schedule.priority + 1 === priority){
-                element.schedule.priority++;
-            }
-            return element;
-        })
-
-        rulesByGroupIdQuery.data.data = arr;
-        setChangesMade(true);
-    };
-
     const handleSave = () => {
         const idsArr = [];
         rulesToDelete.forEach(rule => {
             idsArr.push(rule.id);
         })
-
+    
         let promise1;
         
         if (idsArr.length !== 0){
@@ -98,36 +59,38 @@ function Schedule(){
         });
     
         let promise2 = scheduleService.updateSchedule(arr);
-
+    
         Promise.all([promise1,promise2]).then(() => {
             setChangesMade(false);
             setUpdater(!updater);
         });
     };
-
+    
     const handleUpdateSingleRule = (ruleId) => {
         setScheduleModalTitle("Editing rule for ");
         setRuleId(ruleId);
         setEdit(true);
         setShowPortal(true);
     }
-
+    
     const deleteRule = () => {
         setRulesToDelete(previousRules => [...previousRules, ruleToDelete]);
-
+    
         const ruleToDeletePriority = ruleToDelete.schedule.priority;
-
+    
         let arr = rulesByGroupIdQuery.data.data.filter(rule => rule.schedule.priority !== ruleToDeletePriority).map((rule)=>{
             if (rule.schedule.priority > ruleToDeletePriority){
                 rule.schedule.priority = rule.schedule.priority - 1;
             }
             return rule
         })
-
+    
         rulesByGroupIdQuery.data.data = arr;
         setChangesMade(true);
         setShowDeletePortal(false);
     }
+    
+
 
     const displayRules = () => {
         if (selectedGroupId === null){
@@ -166,11 +129,11 @@ function Schedule(){
                                 <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
                                 <div className="flex flex-col w-full gap-2 m-auto">
                                         <div className="flex flex-row  gap-2 m-auto">
-                                            <motion.button onClick={() => priorityDown(rule)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade)} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <IoMdArrowDown/>
                                             </motion.button>
-                                            <motion.button onClick={() => priorityUp(rule)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade)} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <IoMdArrowUp/>
                                             </motion.button>
@@ -190,9 +153,7 @@ function Schedule(){
         }
     };
 
-    console.log(selectedGroupId)
-
-    if (!groupsQuery.isPending && !rulesByGroupIdQuery.isLoading){
+    if (!groupsQuery.isLoading && !rulesByGroupIdQuery.isLoading){
         return(
             <div className="h-full flex flex-col">
                 <div id="title" className="pt-4 h-[8%]">
@@ -204,53 +165,12 @@ function Schedule(){
                     <div className="flex flex-col w-[25%] h-full pt-4">
                         <div className="flex flex-row w-full h-[5%]">
                             <div className="flex w-[50%] h-full items-center">
-                                <motion.button 
-                                    whileHover={changesMade ? {} : { 
-                                        scale: 1.1, 
-                                        border: "2px solid", 
-                                        transition: {
-                                            duration: 0.2,
-                                            ease: "easeInOut",
-                                        }, 
-                                    }}
-                                    whileTap={changesMade ? {} : { scale: 0.9 }}
-                                    onClick={() => { 
-                                        if(!changesMade) 
-                                        {selectedGroupId === null ? 
-                                        setShowGroupNeeded(true) 
-                                        : 
-                                        setShowPortal(true); 
-                                        setScheduleModalTitle("Creating new rule for ") 
-                                        }
-                                    }}
-                                    className={`bg-secondaryLight rounded-md h-[80%] pr-4 pl-4 ${changesMade ? "disabled cursor-not-allowed opacity-70" : ""}`}>
-                                    + Add rule
-                                </motion.button>
+                                {addRuleButton(changesMade, selectedGroupId, setShowGroupNeeded, setShowPortal, setScheduleModalTitle)}
                             </div>
-                            
                             <div className="flex w-[50%] h-full items-center relative">
-                                {selectedGroupId !== null &&
-                                    <button disabled={!changesMade}
-                                        onClick={() => handleSave()} 
-                                        className={`bg-primary p-1 pr-4 pl-4 rounded-md ${changesMade ? "" : "opacity-45 cursor-not-allowed"}`}>
-                                    Save
-                                </button>
-                                }
-                                <motion.select
-                                    whileHover={{ border: "2px solid" }}
-                                    whileTap={{ border: "2px solid" }}
-                                    onChange={(e) => {setSelectedGroupId(e.target.value - 1); setShowGroupNeeded(false); setChangesMade(false)}} 
-                                    className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
-                                    <option selected disabled hidden>Group</option>
-                                    {groupsQuery.data.data.length !== 0 && groupsQuery.data.data.map((group) => 
-                                        <option key={group.id} value={group.id}>{group.name}</option>
-                                    )}
-                                </motion.select>
-                                {showGroupNeeded && 
-                                    <div className="absolute text-md text-red h-full top-10 right-1">
-                                        You must select a group
-                                    </div>
-                                }
+                                {saveButton(selectedGroupId, changesMade, handleSave)}
+                                {selectGroupButton(setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery)}
+                                {warningPopUp(showGroupNeeded)}
                             </div>
                         </div>
                         <AnimatePresence>

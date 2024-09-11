@@ -1,7 +1,7 @@
 import { createPortal } from 'react-dom';
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import mediaService from '../../services/mediaService';
+import mediaService from '../../../services/mediaService';
 import DataTable, { createTheme } from 'react-data-table-component';
 import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdArrowBack } from "react-icons/md";
 import { AnimatePresence, motion } from 'framer-motion';
@@ -73,7 +73,7 @@ const getFileIcon = (type) => {
     }
 };
 
-function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setContents } ) {
+function MediaContentModal( { setShowContentsPortal, widgetId, contents, setContents } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
 
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -215,4 +215,4 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
 }
 
 
-export default ScheduleContentModal;
+export default MediaContentModal;
