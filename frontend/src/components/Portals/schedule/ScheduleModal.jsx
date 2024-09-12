@@ -13,6 +13,8 @@ import 'react-calendar/dist/Calendar.css';
 import { AnimatePresence, motion } from 'framer-motion';
 import { colors, weekDays, timeHour, timeMinute } from './scheduleModalUtils';
 import Widgets from '../../Widgets';
+import { useUserStore } from '../../../stores/useUserStore';
+import ruleService from '../../../services/ruleService';
 
 
 function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules, titleMessage, ruleId, setRuleId, edit, setEdit } ) {
@@ -33,8 +35,9 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     const [selectedWidgetId, setSelectedWidgetId] = useState(null);
 
     const [displayInfo, setDisplayInfo] = useState(false);
+    const username = useUserStore((state) => state.username);
 
-    
+
     useEffect(()=>{
         if (templates.length !== 0 && selectedTemplateId !== null){
             let template = templates.at(selectedButtonTemplateIndex).widgets.length;
@@ -101,24 +104,22 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     }
 
 
-
     const handleSubmit = () => {
-        Object.keys(selectedContent).forEach(key => {
-            if (selectedContent[key].id !== undefined){
-                selectedContent[key] = selectedContent[key].id;
-            }
-        });
-
         const data = {
-            template: { id: selectedTemplateId },
-            group: { id: selectedGroup.id },
-            content: selectedContent,
-            schedule: { weekdays : selectedDays,
-                    startTime : selectedStartTime[0] + ":" + selectedStartTime[1],
-                    endTime : selectedEndTime[0] + ":" + selectedEndTime[1],
-                    startDate : selectedStartDate,
-                    endDate : selectedEndDate,
-                    priority: edit ? priority : totalRules}
+            groupdId: { id: selectedGroup.id },
+            templateId: { id: selectedTemplateId },
+            schedule: { 
+                startTime: selectedStartTime[0] + ":" + selectedStartTime[1],
+                endTime: selectedEndTime[0] + ":" + selectedEndTime[1],
+                startDate: selectedStartDate,
+                endDate: selectedEndDate,
+                priority: edit ? priority : totalRules,
+                weekdays: selectedDays,
+                createdBy: username,
+                lastEditedBy: username,
+                createdOn: new Date() 
+            },
+            chosenValues: selectedContent
         }
 
         if (edit){
@@ -129,7 +130,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             });
         }
         else {
-            activeTemplateService.addRule(data).then(()=>{
+            ruleService.addRule(data).then(()=>{
                 setUpdater(!updater);
                 setShowPortal(false);
             });
@@ -430,7 +431,6 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
     }
 
-    console.log(selectedContent)
 
     return createPortal(
             <motion.div key="background"

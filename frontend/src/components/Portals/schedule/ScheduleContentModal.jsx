@@ -1,12 +1,15 @@
 import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { MdArrowBack } from "react-icons/md";
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Select from 'react-select'
+import MediaContentModal from './MediaContentModal';
 
 function ScheduleContentModal( { setShowContentsPortal, templateWidget, selectedContent, setSelectedContent } ) {
 
     const [localContent, setLocalContent] = useState(selectedContent);
+    const [showMediaContentPortal, setShowMediaContentPortal] = useState(false);
+    const [mediaVariableName, setMediaVariableName] = useState(-1);
 
     const handleSelectedContent = (event) => {
         setLocalContent({
@@ -37,7 +40,8 @@ function ScheduleContentModal( { setShowContentsPortal, templateWidget, selected
                                 getOptionValue={(option) => option.label}
                             />
                         :
-                        <button className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full p-3 w-[40%] shadow-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 ease-in-out transform hover:scale-105">
+                        <button onClick={() => {setShowMediaContentPortal(true); setMediaVariableName(variable.name)}} 
+                            className="bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-full p-3 w-[40%] shadow-lg hover:from-purple-600 hover:to-indigo-700 transition-all duration-300 ease-in-out transform hover:scale-105">
                             Choose files
                         </button>
                         }
@@ -53,7 +57,7 @@ function ScheduleContentModal( { setShowContentsPortal, templateWidget, selected
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }} 
                 className="fixed z-20 top-0 h-screen w-screen backdrop-blur-sm flex">
-                    <div className="bg-black h-screen w-screen opacity-75"></div>
+                    <div className="bg-black h-screen w-screen opacity-75"/>
                     <motion.div key="contents"
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
@@ -81,6 +85,15 @@ function ScheduleContentModal( { setShowContentsPortal, templateWidget, selected
                             </div>
                         </div>
                     </motion.div>
+                    <AnimatePresence>
+                        {showMediaContentPortal && <MediaContentModal 
+                                            setShowMediaContentPortal={setShowMediaContentPortal} 
+                                            localContent={localContent} 
+                                            setLocalContent={setLocalContent}
+                                            templateWidget={templateWidget}
+                                            variableName={mediaVariableName}/>
+                        }
+                    </AnimatePresence>
             </motion.div>,
         document.body
     );
