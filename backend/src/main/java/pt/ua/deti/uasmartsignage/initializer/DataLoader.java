@@ -185,6 +185,13 @@ public class DataLoader implements CommandLineRunner {
         Widget timeWidget = Widget.builder().name("time").build();
         timeWidget = widgetRepository.save(timeWidget); 
 
+        // Time Widget with more variables
+        List<String> colors = new ArrayList<>(List.of("black", "green", "blue", "orange"));
+        Widget customTimeWidget = Widget.builder().name("timeCustom").build();
+        customTimeWidget.addVariable("textColor", WidgetVariableType.OPTION, colors);
+        customTimeWidget.addVariable("backgroundColor", WidgetVariableType.OPTION, colors);
+        customTimeWidget = widgetRepository.save(customTimeWidget); 
+
         // News Widget
         Widget newsWidget = Widget.builder().name("news").build();
         newsWidget = widgetRepository.save(newsWidget); 
@@ -192,7 +199,6 @@ public class DataLoader implements CommandLineRunner {
         // News Widget
         Widget eventsWidget = Widget.builder().name("events").build();
         eventsWidget = widgetRepository.save(eventsWidget); 
-
 
         // Template 1
         Template template1 = Template.builder().name("Template1").build();
@@ -208,7 +214,10 @@ public class DataLoader implements CommandLineRunner {
         template1.addWidget(mediaWidget, 90, 94.9235f, 5.0765f, 10, 7);
         template1.addWidget(mediaWidget, 0, 31.5364f, 27.3958f, 10, 8);
         
-        template1.addWidget(timeWidget, 0, 80, 20, 10, 3);
+        Map<String, Object> defaultValuesColor = new HashMap<>();
+        defaultValuesColor.put("textColor", "white");
+        defaultValuesColor.put("backgroundColor", "white");
+        template1.addWidget(customTimeWidget, 0, 80, 20, 10, 3, defaultValuesColor);
         template1.addWidget(newsWidget, 90, 0, 94.9235f, 10, 4);
         template1.addWidget(eventsWidget, 10, 0, 20, 80, 5);
         template1 = templateRepository.save(template1);
