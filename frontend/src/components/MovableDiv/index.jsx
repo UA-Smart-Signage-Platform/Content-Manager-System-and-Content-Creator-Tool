@@ -7,7 +7,7 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
     const width = useMotionValue((widget.width)+"%");
     const height = useMotionValue((widget.height)+"%");
     const top = useMotionValue((widget.top)+"%");
-    const left = useMotionValue((widget.leftPosition)+"%");
+    const left = useMotionValue((widget.left)+"%");
     const [initial,setInitial] = useState({x:0,y:0});
     const [initialWidth,setInitialWidth] = useState(null);
     const [initialHeight,setInitialHeight] = useState(null);
@@ -30,14 +30,14 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
                 if (element.id === widget.id){
                     return
                 }
-                if (Math.abs(element.leftPosition - newLeft) < 1){
-                    newLeft = element.leftPosition;
+                if (Math.abs(element.left - newLeft) < 1){
+                    newLeft = element.left;
                 }
                 if (Math.abs(element.top - newTop) < 1){
                     newTop = element.top;
                 }
-                if (Math.abs(element.leftPosition - (newLeft + percentagetoNumber(width.get()))) < 1){
-                    newLeft = element.leftPosition - percentagetoNumber(width.get());
+                if (Math.abs(element.left - (newLeft + percentagetoNumber(width.get()))) < 1){
+                    newLeft = element.left - percentagetoNumber(width.get());
                 }
                 if (Math.abs(element.top - (newTop + percentagetoNumber(height.get()))) < 1){
                     newTop = element.top - percentagetoNumber(height.get());
@@ -45,8 +45,8 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
                 if (Math.abs(element.top + element.height - (newTop)) < 1){
                     newTop = element.top + element.height;
                 }
-                if (Math.abs(element.leftPosition + element.width - (newLeft)) < 1){
-                    newLeft = element.leftPosition + element.width;
+                if (Math.abs(element.left + element.width - (newLeft)) < 1){
+                    newLeft = element.left + element.width;
                 }
 
             })
@@ -103,7 +103,7 @@ function MovableDiv( {parentRef,color,widget,widgetList,setWidgetList,setSave} )
         setInitialHeight(null);
         setInitialWidth(null);
         let widgetobj = widget
-        widgetobj.leftPosition = truncate4numbers(parseFloat(percentagetoNumber(left.get())));
+        widgetobj.left = truncate4numbers(parseFloat(percentagetoNumber(left.get())));
         widgetobj.top = truncate4numbers(parseFloat(percentagetoNumber(top.get())));
         widgetobj.height = truncate4numbers(parseFloat(percentagetoNumber(height.get())));
         widgetobj.width = truncate4numbers(parseFloat(percentagetoNumber(width.get())));

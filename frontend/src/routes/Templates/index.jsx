@@ -52,7 +52,6 @@ function Templates(){
     const [templates,setTemplates] = useState([]);
     const [templateDisplay,setTemplateDisplay] = useState(null);
     const [selectedColors,setSelectedColors] = useState([]);
-    const [warning,setWarning] = useState(false);
     const navigate = useNavigate();
 
     const columns = [
@@ -63,7 +62,7 @@ function Templates(){
         },
         {
             name: "widget count",
-            selector: row => row.templateWidgets.length,
+            selector: row => row.widgets.length,
             sortable:true,
         },
         {
@@ -75,8 +74,7 @@ function Templates(){
 
     const columnButtonDelete = (row) => {
         return(
-            <button disabled={row.templateGroups.length !== 0} 
-                    onClick={()=>deleteTemplate(row.id)} 
+            <button onClick={()=>deleteTemplate(row.id)} 
                     className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400">
                 <FiTrash2/>
             </button>
@@ -106,7 +104,7 @@ function Templates(){
 
     useEffect(()=>{
         if (templates.length !== 0 && templateDisplay !== null){
-            let widgetCount = templateDisplay.templateWidgets.length;
+            let widgetCount = templateDisplay.widgets.length;
             let arr = [];
             for (let i = 0; i < widgetCount; i++){
                 arr.push(colors[Math.floor(Math.random() * colors.length)]);
@@ -118,15 +116,6 @@ function Templates(){
 
     return(
         <div className="h-full w-full flex flex-col">
-            <AnimatePresence>
-                {warning && <motion.div className=" bg-rose-500 text-white p-4 absolute rounded-lg flex items-center justify-center gap-3 left-[15%]"
-                                        initial={{y:-100}}
-                                        animate={{y:0}}
-                                        exit={{y:-100}}
-                >
-                    <IoWarningOutline className="size-6"/>Cant Edit/Delete Template In Use
-                </motion.div>}
-            </AnimatePresence>
             <div className="h-[8%]">
                 <PageTitle startTitle={"templates"} middleTitle={""} endTitle={""}/>
             </div>
@@ -141,9 +130,8 @@ function Templates(){
                     <DataTable
                         pointerOnHover
                         highlightOnHover
-                        onRowClicked={(row)=> {if(row.templateGroups.length === 0)navigate(`${row.id}`,{state:row})}}
-                        onRowMouseEnter={(row) => {setTemplateDisplay(row);if(row.templateGroups.length !== 0) setWarning(true)}}
-                        onRowMouseLeave={(row)=>setWarning(false)}
+                        onRowClicked={(row)=> {navigate(`${row.id}`,{state:row})}}
+                        onRowMouseEnter={(row) => setTemplateDisplay(row)}
                         columns={columns}
                         data={templates}
                         theme="solarized"
@@ -152,20 +140,20 @@ function Templates(){
                 </div>
                     <div className="h-full w-[70%] flex flex-col">
                         <div className="aspect-video relative border-4 border-gray-300 rounded-md my-auto">
-                            {templateDisplay !== null && templateDisplay.templateWidgets.map((templateWidget, index) => 
+                            {templateDisplay !== null && templateDisplay.widgets.map((templateWidget, index) => 
                             <motion.div key={templateWidget.id} className={`absolute`}
                                 initial={{
                                     width: `${templateWidget.width}%`,
                                     height: `${templateWidget.height}%`,
                                     top: `${templateWidget.top}%`,
-                                    left: `${templateWidget.leftPosition}%`,
+                                    left: `${templateWidget.left}%`,
                                     zIndex: templateWidget.zindex
                                 }}
                                 animate={{
                                     width: `${templateWidget.width}%`,
                                     height: `${templateWidget.height}%`,
                                     top: `${templateWidget.top}%`,
-                                    left: `${templateWidget.leftPosition}%`,
+                                    left: `${templateWidget.left}%`,
                                     zIndex: templateWidget.zindex
                                 }}
                                 exit={{

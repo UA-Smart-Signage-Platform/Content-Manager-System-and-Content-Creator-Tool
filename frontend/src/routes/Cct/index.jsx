@@ -26,7 +26,7 @@ function Cct(){
     const [templates,setTemplates] = useState([]);
     const [sameName,setSameName] = useState(false);
     const [template,setTemplate] = useState(state !== null ? state:null);
-    const [widgetList,setWidgetList] = useState(state !== null ? state.templateWidgets:[])
+    const [widgetList,setWidgetList] = useState(state !== null ? state.widgets:[])
     const [name,setName] = useState(state !== null ? state.name:"")
     const [ableSave,setAbleSave] = useState(false);
     const [ableSaveName,setAbleSaveName] = useState(true);
@@ -47,7 +47,7 @@ function Cct(){
         if (id.toString() !== "0"){
             templateservice.getTemplate(id).then((response)=>{
                 setTemplate(response.data)
-                setWidgetList(response.data.templateWidgets)
+                setWidgetList(response.data.widgets)
                 setName(response.data.name)
             })
         }else{
