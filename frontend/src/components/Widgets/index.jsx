@@ -7,7 +7,7 @@ function Widgets( { widgetType, templateWidget, setShowContentsPortal, setSelect
         case WidgetType.MEDIA:
             return mediaWidget(templateWidget, setShowContentsPortal, setSelectedWidgetId, selectedContent);
         case WidgetType.OPTION:
-            return optionWidget(templateWidget);
+            return optionWidget(templateWidget, setShowContentsPortal, setSelectedWidgetId, selectedContent);
         case WidgetType.TEXT:
             break;
         default:

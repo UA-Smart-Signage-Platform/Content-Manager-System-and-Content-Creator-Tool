@@ -6,7 +6,7 @@ import templateService from "../../../services/templateService";
 import activeTemplateService from '../../../services/activeTemplateService';
 import mediaService from '../../../services/mediaService';
 import ScheduleContentModal from './ScheduleContentModal';
-import Select from 'react-select'
+
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
@@ -34,7 +34,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
 
     const [displayInfo, setDisplayInfo] = useState(false);
 
-
+    
     useEffect(()=>{
         if (templates.length !== 0 && selectedTemplateId !== null){
             let template = templates.at(selectedButtonTemplateIndex).widgets.length;
@@ -147,10 +147,6 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
     };
 
-    const handleSelectedContent = (event) => {
-        setSelectedContent({...selectedContent, [event.value] : event.label });
-    }
-
 
     const handleDisplayAllTime = () => {
         setSelectedStartTime(["00", "00"]);
@@ -200,8 +196,9 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             <select id="templateSelect" 
                     value={selectedTemplateId}
                     onChange={(e) => {setSelectedContent({}); setSelectedButtonTemplateIndex(JSON.parse(e.target.value).values[0]); setSelectedTemplateId(JSON.parse(e.target.value).values[1])}} 
+                    defaultValue=""
                     className="bg-[#E9E9E9] rounded-md p-2">
-                <option selected disabled hidden>Template</option>
+                <option value="" disabled hidden>Template</option>
                 {templates.length !== 0 && templates.map((template, index) => 
                     <option key={template.id} value={JSON.stringify({ values: [index, template.id] })}>{template.name}</option>
                 )}
@@ -211,14 +208,14 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
 
     const selectRulesButton = () => {
         return (
-            <select className="bg-[#E9E9E9] rounded-md p-2 cursor-pointer">
-                <option selected disabled hidden>Default rules</option>
+            <select defaultValue="" className="bg-[#E9E9E9] rounded-md p-2 cursor-pointer">
+                <option value="" disabled hidden>Default rules</option>
                 <option onClick={handleDisplayAllTime}>Display 24/7</option>
                 <option onClick={handleDisplayWeeklyFrom8Till23}>Weekly 08:40 - 23:00</option>
             </select>
         )
     }
-console.log(templates)
+
     const startTimeDisplay = () => {
         return (
             <div className="h-full w-[50%] flex flex-col items-center justify-center">
@@ -433,6 +430,7 @@ console.log(templates)
         }
     }
 
+    console.log(selectedContent)
 
     return createPortal(
             <motion.div key="background"
@@ -495,7 +493,9 @@ console.log(templates)
                                     <AnimatePresence>
                                         {showContentsPortal && <ScheduleContentModal
                                             setShowContentsPortal={setShowContentsPortal}
-                                            templateWidget={templates[selectedButtonTemplateIndex].widgets.find(x => x.id == selectedWidgetId)} />
+                                            templateWidget={templates[selectedButtonTemplateIndex].widgets.find(x => x.id == selectedWidgetId)}
+                                            selectedContent={selectedContent}
+                                            setSelectedContent={setSelectedContent} />
                                         }
                                     </AnimatePresence>
                                 </div>

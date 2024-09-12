@@ -1,19 +1,17 @@
-export const optionWidget = () => {
+export const optionWidget = (templateWidget, setShowContentsPortal, setSelectedWidgetId, selectedContent) => {
     /*
             <div className="text-sm min-w-[90%] max-w-[90%]">
-            <Select
-                styles={{ menuPortal: base => ({ ...base, zIndex: 9999 }) }}
-                menuPortalTarget={document.body} 
-                isSearchable="true"
-                onChange={(e) => handleSelectedContent(e)}
-                options={templateWidget.widget.contents[0].options.map(option => ({ value: templateWidget.id, label: option }))}
-                placeholder={templateWidget.widget.name + "..."}
-                defaultValue={selectedContent[templateWidget.id] !== undefined && { label: selectedContent[templateWidget.id], value: 1 }}
-                getOptionValue={(option) => option.label}
-            />
+
         </div>
     */
     return (
-        <></>
+        <>
+            <span className='z-10'>{templateWidget.widget.name}</span>
+            <button onClick={() => { setSelectedWidgetId(`${templateWidget.id}`); setShowContentsPortal(true) }} 
+                    className="bg-gradient-to-r from-blue-400 to-purple-500 text-white px-6 py-1 rounded-full border-none shadow-lg hover:from-blue-500 hover:to-purple-600 transition-all duration-300 ease-in-out transform hover:scale-105">
+                <span className="text-lg font-semibold">...</span>
+            </button>
+            {selectedContent[templateWidget.id] !== undefined && (selectedContent[templateWidget.id]).name}
+        </>
     )
 }

@@ -47,8 +47,9 @@ export const selectGroupButton = (setSelectedGroupId, setShowGroupNeeded, setCha
             whileHover={{ border: "2px solid" }}
             whileTap={{ border: "2px solid" }}
             onChange={(e) => {setSelectedGroupId(e.target.value - 1); setShowGroupNeeded(false); setChangesMade(false)}} 
+            defaultValue=""
             className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
-            <option selected disabled hidden>Group</option>
+            <option value="" disabled hidden>Group</option>
             {groupsQuery.data.data.length !== 0 && groupsQuery.data.data.map((group) => 
                 <option key={group.id} value={group.id}>{group.name}</option>
             )}

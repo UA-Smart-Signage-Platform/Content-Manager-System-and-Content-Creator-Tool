@@ -1,5 +1,5 @@
 export const WidgetType = Object.freeze({
     MEDIA: "MEDIA",
-    OPTION: "OPTIONS",
+    OPTION: "OPTION",
     TEXT: "TEXT"
 });
