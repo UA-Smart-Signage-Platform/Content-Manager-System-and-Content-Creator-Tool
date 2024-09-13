@@ -40,6 +40,18 @@ export const saveButton = (selectedGroupId, changesMade, handleSave) => {
     }
 }
 
+export const cancelButton = (selectedGroupId, changesMade, setChangesMade, setUpdater, updater) => {
+    if (selectedGroupId !== null){
+        return (
+            <button disabled={!changesMade}
+                onClick={() => {setUpdater(!updater); setChangesMade(false)}} 
+                className={`bg-secondaryMedium p-1 pr-4 pl-4 ml-3 rounded-md ${changesMade ? "" : "opacity-45 cursor-not-allowed"}`}>
+                Cancel
+            </button>
+        )
+    }
+}
+
 
 export const selectGroupButton = (selectedGroupId, setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery) => {
     return (    

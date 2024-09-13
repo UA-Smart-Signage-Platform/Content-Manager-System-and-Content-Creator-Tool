@@ -10,17 +10,15 @@ import scheduleService from "../../services/scheduleService";
 import activeTemplateService from "../../services/activeTemplateService";
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { priorityDown, priorityUp } from "./priorityConfig";
-import { addRuleButton, saveButton, selectGroupButton } from "./buttonsConfig";
+import { addRuleButton, cancelButton, saveButton, selectGroupButton } from "./buttonsConfig";
 import { warningPopUp } from "./utilsConfig";
 
 function Schedule(){
     const [selectedGroupId, setSelectedGroupId] = useState(null);
     const [showPortal, setShowPortal] = useState(false);
-    const [showDeletePortal, setShowDeletePortal] = useState(false);
     const [showGroupNeeded, setShowGroupNeeded] = useState(false);
     const [updater, setUpdater] = useState(false);
     const [changesMade, setChangesMade] = useState(false);
-    const [ruleToDelete, setRuleToDelete] = useState(null);
     const [scheduleModalTitle, setScheduleModalTitle] = useState("");
     const [ruleId, setRuleId] = useState(null);
     const [edit, setEdit] = useState(false);
@@ -41,29 +39,24 @@ function Schedule(){
         ]
     });
 
-    const handleSave = () => {
-        const idsArr = [];
-        rulesToDelete.forEach(rule => {
-            idsArr.push(rule.id);
-        })
+    console.log(rulesByGroupIdQuery.data?.data.map(rule => rule.schedule.priority))
+
+    const handleSave = async () => {
+        const idsArr = rulesToDelete.map(rule => rule.id);
+
+        const deletePromises = idsArr.map(ruleId => ruleService.deleteRule(ruleId));
     
-        let promise1;
-        
-        if (idsArr.length !== 0){
-            promise1 = activeTemplateService.deleteRules(idsArr);
-        }
+        const rulesArr = rulesByGroupIdQuery.data.data;
     
-        const arr = [];
-        rulesByGroupIdQuery.data.data.forEach(element => {
-            arr.push(element.schedule);
-        });
+        const updatePromises = rulesArr.map(rule => ruleService.updateRule(rule.id, {groupId: rule.groupId, 
+                                                                                        templateId: rule.template.id, 
+                                                                                        schedule: rule.schedule,
+                                                                                        chosenValues: rule.chosenValues}));
     
-        let promise2 = scheduleService.updateSchedule(arr);
+        await Promise.all([...deletePromises, ...updatePromises]);
     
-        Promise.all([promise1,promise2]).then(() => {
-            setChangesMade(false);
-            setUpdater(!updater);
-        });
+        setChangesMade(false);
+        setUpdater(!updater);
     };
     
     const handleUpdateSingleRule = (ruleId) => {
@@ -73,7 +66,7 @@ function Schedule(){
         setShowPortal(true);
     }
     
-    const deleteRule = () => {
+    const deleteRule = (ruleToDelete) => {
         setRulesToDelete(previousRules => [...previousRules, ruleToDelete]);
     
         const ruleToDeletePriority = ruleToDelete.schedule.priority;
@@ -87,7 +80,6 @@ function Schedule(){
     
         rulesByGroupIdQuery.data.data = arr;
         setChangesMade(true);
-        setShowDeletePortal(false);
     }
     
 
@@ -138,7 +130,7 @@ function Schedule(){
                                             </motion.button>
                                         </div>
                                         <div className="flex items-center object-center place-content-center">
-                                            <motion.button onClick={() => {setRuleToDelete(rule); setShowDeletePortal(true)}} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => {deleteRule(rule)}} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <FiTrash2 />
                                             </motion.button>
@@ -168,6 +160,7 @@ function Schedule(){
                             </div>
                             <div className="flex w-[50%] h-full items-center relative">
                                 {saveButton(selectedGroupId, changesMade, handleSave)}
+                                {cancelButton(selectedGroupId, changesMade, setChangesMade, setUpdater, updater)}
                                 {selectGroupButton(selectedGroupId, setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery)}
                                 {warningPopUp(showGroupNeeded)}
                             </div>
@@ -184,12 +177,6 @@ function Schedule(){
                                     setRuleId={setRuleId}
                                     edit={edit}
                                     setEdit={setEdit} />
-                            }
-                            {showDeletePortal && <FunctionModal
-                                                        message={"Are you sure you want to delete this Rule?"}
-                                                        funcToExecute={deleteRule}
-                                                        cancelFunc={()=>setShowDeletePortal(false)}
-                                                        confirmMessage={"Delete"} />
                             }
                         </AnimatePresence>
                         <div className="flex flex-col w-full h-[95%] pt-3 overflow-scroll">

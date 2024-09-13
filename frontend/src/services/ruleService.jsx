@@ -13,8 +13,12 @@ const ruleService = {
         return await client.get(`/rules/${id}`)
     },
 
-    async updateRule(id, data) {
-        return await client.put(`/rules/${id}`, data)
+    async updateRule(id, rule) {
+        return await client.put(`/rules/${id}`, rule)
+    },
+
+    async deleteRule(id) {
+        return await client.delete(`/rules/${id}`)
     }
 }
 
