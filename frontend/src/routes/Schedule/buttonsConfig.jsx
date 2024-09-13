@@ -41,13 +41,13 @@ export const saveButton = (selectedGroupId, changesMade, handleSave) => {
 }
 
 
-export const selectGroupButton = (setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery) => {
+export const selectGroupButton = (selectedGroupId, setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery) => {
     return (    
         <motion.select
             whileHover={{ border: "2px solid" }}
             whileTap={{ border: "2px solid" }}
-            onChange={(e) => {setSelectedGroupId(e.target.value - 1); setShowGroupNeeded(false); setChangesMade(false)}} 
-            defaultValue=""
+            onChange={(e) => {setSelectedGroupId(e.target.value); setShowGroupNeeded(false); setChangesMade(false)}} 
+            value={selectedGroupId === null ? "" : selectedGroupId}
             className="ml-auto mr-5 bg-secondaryLight rounded-md h-[80%] pr-3 pl-3 cursor-pointer">
             <option value="" disabled hidden>Group</option>
             {groupsQuery.data.data.length !== 0 && groupsQuery.data.data.map((group) => 

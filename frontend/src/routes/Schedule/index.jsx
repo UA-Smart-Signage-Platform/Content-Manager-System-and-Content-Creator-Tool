@@ -34,8 +34,8 @@ function Schedule(){
                 queryFn: () => monitorsGroupService.getGroups()
             },
             {
-                queryKey: ['rules', selectedGroupId],
-                queryFn: () => ruleService.getRulesByGroupId(selectedGroupId + 1),
+                queryKey: ['rules', selectedGroupId, updater],
+                queryFn: () => ruleService.getRulesByGroupId(selectedGroupId),
                 enabled: selectedGroupId !== null
             }
         ]
@@ -90,7 +90,6 @@ function Schedule(){
         setShowDeletePortal(false);
     }
     
-
 
     const displayRules = () => {
         if (selectedGroupId === null){
@@ -169,14 +168,14 @@ function Schedule(){
                             </div>
                             <div className="flex w-[50%] h-full items-center relative">
                                 {saveButton(selectedGroupId, changesMade, handleSave)}
-                                {selectGroupButton(setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery)}
+                                {selectGroupButton(selectedGroupId, setSelectedGroupId, setShowGroupNeeded, setChangesMade, groupsQuery)}
                                 {warningPopUp(showGroupNeeded)}
                             </div>
                         </div>
                         <AnimatePresence>
                             {showPortal && !changesMade && <ScheduleModal
                                     setShowPortal={setShowPortal}
-                                    selectedGroup={groupsQuery.data.data.find(x => x.id === selectedGroupId + 1)}
+                                    selectedGroup={groupsQuery.data.data.find(x => x.id == selectedGroupId)}
                                     updater={updater}
                                     setUpdater={setUpdater}
                                     totalRules={rulesByGroupIdQuery.data.data.length}

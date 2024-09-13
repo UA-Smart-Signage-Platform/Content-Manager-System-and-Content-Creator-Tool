@@ -52,25 +52,25 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     useEffect(() => {
         templateService.getTemplates().then((response) => {
             setTemplates(response.data);
-        })
 
-        if (ruleId !== null){
-            getRuleInfo();
-        }
+            if (ruleId !== null){
+                getRuleInfo(response.data);
+            }
+        })
     }, []);
 
 
 
-    const getRuleInfo = () => {
-        activeTemplateService.getRule(ruleId).then((response) => {
+    const getRuleInfo = (localTemplates) => {
+        ruleService.getRuleById(ruleId).then((response) => {
             const data = response.data;
             const schedule = data.schedule;
-            const content = data.content;
+            const content = data.chosenValues;
             const hourStart = schedule.startTime[0].toString();
             const minuteStart = schedule.startTime[1].toString();
             const hourEnd = schedule.endTime[0].toString();
             const minuteEnd = schedule.endTime[1].toString();
-
+            
             setPriority(schedule.priority)
             setSelectedTemplateId(data.template.id);
             setSelectedDays(schedule.weekdays);
@@ -79,18 +79,29 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             setSelectedEndTime([hourEnd.length === 1 ? "0".concat(hourEnd) : hourEnd,
                                     minuteEnd.length === 1 ? "0".concat(minuteEnd) : minuteEnd]);
 
+
+            // load existing content to widgets
+            const tmpSelectedContent = { ...selectedContent };
+
+            for (const widgetId of Object.keys(content)){
+                if (!tmpSelectedContent[widgetId]) {
+                    tmpSelectedContent[widgetId] = {};
+                }
             
-            const templateWidgets = data.template.templateWidgets;
-            for (const [widgetId, contentId] of Object.entries(content)) {
-                if ((templateWidgets.find(x => x.id === parseInt(widgetId))).widget.name === "Media"){
-                    mediaService.getFileOrDirectoryById(contentId).then((response) => { 
-                        setSelectedContent(previousData => ({...previousData, [widgetId] : response.data }));
-                    })
+                for (const variable of Object.keys(content[widgetId])) {
+                    // if variable is media type
+                    if (data.template.widgets.find(x => x.id == widgetId).widget.variables.find(x => x.name == variable).type === "MEDIA"){
+                        mediaService.getFileOrDirectoryById(content[widgetId][variable]).then((response) => { 
+                            tmpSelectedContent[widgetId][variable] = response.data;
+                        })
+                    }
+                    else {
+                        tmpSelectedContent[widgetId][variable] = content[widgetId][variable];
+                    }
                 }
-                else{
-                    setSelectedContent(previousData => ({...previousData, [widgetId] : contentId }));
-                }
-            };
+            }
+
+            setSelectedContent(tmpSelectedContent);
 
             if (schedule.startDate !== null){
                 setSelectedStartDate(new Date(schedule.startDate));
@@ -100,30 +111,32 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             if (schedule.endDate !== null){
                 setSelectedEndDate(new Date(schedule.endDate));
             }
+
+            setSelectedButtonTemplateIndex(localTemplates.map(x => x.id).indexOf(data.template.id));
         })
     }
 
 
     const handleSubmit = () => {
         const data = {
-            groupdId: { id: selectedGroup.id },
-            templateId: { id: selectedTemplateId },
-            schedule: { 
-                startTime: selectedStartTime[0] + ":" + selectedStartTime[1],
-                endTime: selectedEndTime[0] + ":" + selectedEndTime[1],
-                startDate: selectedStartDate,
-                endDate: selectedEndDate,
-                priority: edit ? priority : totalRules,
-                weekdays: selectedDays,
-                createdBy: username,
-                lastEditedBy: username,
-                createdOn: new Date() 
+            "groupId": selectedGroup.id,
+            "templateId": selectedTemplateId,
+            "schedule": { 
+                "startTime": selectedStartTime[0] + ":" + selectedStartTime[1],
+                "endTime": selectedEndTime[0] + ":" + selectedEndTime[1],
+                "startDate": selectedStartDate,
+                "endDate": selectedEndDate,
+                "priority": edit ? priority : totalRules,
+                "weekdays": selectedDays,
+                "createdBy": username,
+                "lastEditedBy": username,
+                "createdOn": new Date() 
             },
-            chosenValues: selectedContent
+            "chosenValues": selectedContent
         }
 
         if (edit){
-            activeTemplateService.updateRule(ruleId, data).then(() => {
+            ruleService.updateRule(ruleId, data).then(() => {
                 setUpdater(!updater);
                 setEdit(false);
                 setShowPortal(false);
@@ -195,9 +208,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     const selectTemplateButton = () => {
         return (
             <select id="templateSelect" 
-                    value={selectedTemplateId}
+                    value={selectedTemplateId || ""}
                     onChange={(e) => {setSelectedContent({}); setSelectedButtonTemplateIndex(JSON.parse(e.target.value).values[0]); setSelectedTemplateId(JSON.parse(e.target.value).values[1])}} 
-                    defaultValue=""
                     className="bg-[#E9E9E9] rounded-md p-2">
                 <option value="" disabled hidden>Template</option>
                 {templates.length !== 0 && templates.map((template, index) => 
@@ -222,25 +234,25 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             <div className="h-full w-[50%] flex flex-col items-center justify-center">
                 <span className="pb-1">Start Time:</span>
                 <div className="flex items-center rounded-md border border-gray-300">
-                    <select value={selectedStartTime[0]} 
+                    <select value={selectedStartTime[0] || ""} 
                             onChange={(event) => setSelectedStartTime([event.target.value, selectedStartTime[1]])} 
                             className="p-2 pr-0 appearance-none bg-transparent border-none outline-none">
-                        <option selected disabled hidden>--</option>
+                        <option value="" disabled hidden>--</option>
                         {timeHour
                             .filter(hour => selectedEndTime[0] === null || hour < selectedEndTime[0])
                             .map((hour) => (
-                                <option key={hour} selected={selectedStartTime[0] === hour} value={hour}>
+                                <option key={hour} value={hour}>
                                     {hour}
                                 </option>
                         ))}
                     </select>
                     <span className="mx-2">:</span>
-                    <select value={selectedStartTime[1]} 
+                    <select value={selectedStartTime[1] || ""} 
                             onChange={(event) => setSelectedStartTime([selectedStartTime[0], event.target.value])} 
                             className="p-2 pl-0 appearance-none bg-transparent border-none outline-none">
-                        <option selected disabled hidden>--</option>
+                        <option value="" disabled hidden>--</option>
                         {timeMinute.map((minute) => (
-                            <option key={minute} selected={selectedStartTime[1] === minute} value={minute}>
+                            <option key={minute} value={minute}>
                                 {minute}
                             </option>
                         ))}
@@ -255,25 +267,25 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             <div className="h-full w-[50%] flex flex-col items-center justify-center">
                 <span className="pb-1">End Time:</span>
                 <div className="flex items-center rounded-md border border-gray-300">
-                    <select value={selectedEndTime[0]} 
+                    <select value={selectedEndTime[0] || ""} 
                             onChange={(event) => setSelectedEndTime([event.target.value, selectedEndTime[1]])} 
                             className="p-2 pr-0 appearance-none bg-transparent border-none outline-none">
-                        <option selected disabled hidden>--</option>
+                        <option value="" disabled hidden>--</option>
                         {timeHour
                             .filter(hour => selectedStartTime[0] === null || hour > selectedStartTime[0])
                             .map((hour) => (
-                                <option key={hour} selected={selectedEndTime[0] === hour} value={hour}>
+                                <option key={hour} value={hour}>
                                     {hour}
                                 </option>
                         ))}
                     </select>
                     <span className="mx-2">:</span>
-                    <select value={selectedEndTime[1]} 
+                    <select value={selectedEndTime[1] || ""} 
                             onChange={(event) => setSelectedEndTime([selectedEndTime[0], event.target.value])} 
                             className="p-2 pl-0 appearance-none bg-transparent border-none outline-none">
-                        <option selected disabled hidden>--</option>
+                        <option value="" disabled hidden>--</option>
                         {timeMinute.map((minute) => (
-                            <option key={minute} selected={selectedEndTime[1] === minute} value={minute}>
+                            <option key={minute} value={minute}>
                                 {minute}
                             </option>
                         ))}
