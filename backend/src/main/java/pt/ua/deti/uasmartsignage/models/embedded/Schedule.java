@@ -1,7 +1,6 @@
 package pt.ua.deti.uasmartsignage.models.embedded;
 
 import pt.ua.deti.uasmartsignage.dto.mqtt.embedded.MqttSchedule;
-import pt.ua.deti.uasmartsignage.models.AppUser;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,8 +22,8 @@ public class Schedule {
     private List<Integer> weekdays;
     private int priority;
 
-    private AppUser createdBy;
-    private AppUser lastEditedBy;
+    private String createdBy;
+    private String lastEditedBy;
     private LocalDate createdOn;
 
     // TODO: make sure to test if values are null or empty

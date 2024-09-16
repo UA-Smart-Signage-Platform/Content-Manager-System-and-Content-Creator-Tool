@@ -43,7 +43,9 @@ public class RuleService {
     }
 
     public List<Rule> getAllRulesForGroup(Long groupId) {
-        return ruleRepository.findByGroupId(groupId);
+        List<Rule> rules = ruleRepository.findByGroupId(groupId);
+        if (rules == null) return null;
+        return rules;
     }
 
     public Rule getRuleById(String id){

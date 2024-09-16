@@ -1,13 +1,13 @@
-package pt.ua.deti.uasmartsignage.constants;
+package pt.ua.deti.uasmartsignage.enums;
 
-public enum DESCRIPTION {
+public enum Description {
     DELETE_FILE("File deleted: "),
     DELETE_DIRECTORY("Directory deleted: "),
     UPDATE_FILE("File renamed: ");
 
     private final String text;
 
-    DESCRIPTION(final String text) {
+    Description(final String text) {
         this.text = text;
     }
 

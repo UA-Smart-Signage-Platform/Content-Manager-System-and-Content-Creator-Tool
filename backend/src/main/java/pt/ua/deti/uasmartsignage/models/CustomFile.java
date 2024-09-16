@@ -9,7 +9,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "File")
@@ -22,13 +21,16 @@ public class CustomFile {
     private String name;
 
     @Column(nullable = false)
+    private String uuid;
+
+    @Column(nullable = false)
     private String type;
 
     @Column(nullable = false)
-    private Long size;
+    private String extension;
 
-    @Column(unique = true)
-    private String path;
+    @Column(nullable = false)
+    private Long size;
 
     @ManyToOne
     @JsonIgnoreProperties({"subDirectories", "parent"})
@@ -39,19 +41,23 @@ public class CustomFile {
     @JsonIgnoreProperties({"parent", "subDirectories"})
     private List<CustomFile> subDirectories;
 
-    public CustomFile(String name, String type, Long size, CustomFile parent) {
+    public CustomFile(String name, String uuid, String type, String extension, Long size, CustomFile parent) {
         this.name = name;
+        this.uuid = uuid;
         this.type = type;
+        this.extension = extension;
         this.size = size;
         this.parent = parent;
-        this.subDirectories = null;
     }
 
+    @Override
     public String toString() {
         return "File{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", uuid='" + uuid + '\'' +     
                 ", type='" + type + '\'' +
+                ", extension='" + extension + '\'' +
                 ", parent=" + (parent != null ? parent : "null") +
                 ", subDirectories=" + (subDirectories == null ? "null" : Arrays.toString(subDirectories.toArray())) +
                 '}';

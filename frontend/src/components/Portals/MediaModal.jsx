@@ -4,9 +4,10 @@ import { useState } from 'react';
 import mediaService from '../../services/mediaService';
 import PropTypes from 'prop-types';
 
-function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setUpdater }){
+function MediaModal({showPortal, setShowPortal, currentFolder, action }){
 
     const [file, setFile] = useState(null);
+    const [folderName, setFolderName] = useState("");
 
     const submitFile = async (event) => {
         event.preventDefault();
@@ -23,9 +24,47 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
         }
 
         await mediaService.createFile(formData);
-        setUpdater(!updater);
         setShowPortal(false);
     }
+
+
+    const submitFolder = async () => {
+        const folder = {
+            name: folderName,
+            type: "directory",
+            parent: Object.keys(currentFolder).length === 0 ? null : currentFolder,
+            size: 0,
+        }
+
+        await mediaService.createFolder(folder);
+        setFolderName("")
+        setShowPortal(false);
+    }
+
+
+    const showContent = () => {
+        if (action === "folder") {
+            return (
+                <div className="h-[80%] p-[2%] text-lg flex flex-col">
+                    <label htmlFor="folderName">Folder name:</label>
+                    <input onChange={(event) => setFolderName(event.target.value.trim().replace("/",""))} value={folderName} className="rounded-md bg-slate-300 pl-2 pr-2 w-[55%]" type="text" placeholder="Name..." id="folderName" name="folderName" />
+                    <button onClick={submitFolder} className="rounded-md bg-slate-300 mr-auto p-2 mt-10" type="submit">Create folder</button>
+                </div>
+            )
+        }
+        else {
+            return (
+                <div className="h-[80%] p-[2%] text-lg flex flex-col">
+                    <form onSubmit={submitFile}>
+                        <label htmlFor="file">Select File:</label>
+                        <input autoFocus onChange={(e) => setFile(e.target.files[0])} type="file" id="file" name="file" />
+                        <button className="rounded-md bg-slate-300 mr-auto p-2 mt-10" type="submit">Upload File</button>
+                    </form>
+                </div>
+            )
+        }
+    }
+
 
     return (
         <>
@@ -42,15 +81,8 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
                             </div>
                             <div className="h-[90%] p-[4%]">
                                 <div className="h-[20%] font-bold text-3xl">
-                                    Upload a new file
-                                </div>
-                                <div className="h-[80%] p-[2%] text-lg flex flex-col">
-                                    <form onSubmit={submitFile}>
-                                        <label htmlFor="file">Select File:</label>
-                                        <input autoFocus onChange={(e) => setFile(e.target.files[0])} type="file" id="file" name="file" />
-                                        <button className="rounded-md bg-slate-300 mr-auto p-2 mt-10" type="submit">Upload File</button>
-                                    </form>
-                                    
+                                    {action === "folder" ? "Create new folder" : "Upload a new file"}
+                                    {showContent()}
                                 </div>
                             </div>
                         </div>
@@ -62,12 +94,10 @@ function MediaFileModal({showPortal, setShowPortal, currentFolder, updater, setU
     )
 }
 
-MediaFileModal.propTypes = {
+MediaModal.propTypes = {
     showPortal: PropTypes.bool.isRequired,
     setShowPortal: PropTypes.func.isRequired,
     currentFolder: PropTypes.object.isRequired,
-    updater: PropTypes.bool.isRequired,
-    setUpdater: PropTypes.func.isRequired,
 }
 
-export default MediaFileModal;
+export default MediaModal;
