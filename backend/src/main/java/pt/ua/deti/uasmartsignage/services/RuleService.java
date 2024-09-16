@@ -165,9 +165,11 @@ public class RuleService {
     }
 
     private Object processVariable(WidgetVariable variable, Object variableValue){
+        // TODO: check if its a folder
         if(variable.getType() == WidgetVariableType.MEDIA){
-            CustomFile file = fileService.getFileOrDirectoryById(((long)variableValue)).get();
-            return file.getName();
+            Integer fileId = (Integer) variableValue;
+            CustomFile file = fileService.getFileById(Long.valueOf(fileId)).get();
+            return file.getNameWithExtention();
         }
         return variableValue;
     }

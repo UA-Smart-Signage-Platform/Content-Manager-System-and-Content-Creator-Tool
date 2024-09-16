@@ -1,5 +1,6 @@
 package pt.ua.deti.uasmartsignage.models;
 
+import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
 import pt.ua.deti.uasmartsignage.models.embedded.Schedule;
 import pt.ua.deti.uasmartsignage.models.embedded.TemplateWidget;
 import lombok.AllArgsConstructor;
@@ -90,11 +91,12 @@ public class Rule {
                     variablesMap.forEach((variableName, value) -> {
                         // Check if the widget contains a variable with the given name and type 'media'
                         widget.getWidget().getVariables().stream()
-                            .filter(variable -> variable.getName().equals(variableName) && "media".equals(variable.getType().name()))
+                            .filter(variable -> variable.getName().equals(variableName) && WidgetVariableType.MEDIA.equals(variable.getType()))
                             .findFirst() // Ensure we get the correct variable
                             .ifPresent(variable -> {
                                 // Add the value to the mediaValues list
-                                mediaValues.add((long)value);
+                                Integer mediaValue = (Integer) value;
+                                mediaValues.add(Long.valueOf(mediaValue));
                             });
                     });
                 });

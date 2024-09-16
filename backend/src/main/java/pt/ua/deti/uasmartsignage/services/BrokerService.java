@@ -80,7 +80,7 @@ public class BrokerService {
                 message.addMqttRule(mqttRule);
 
                 for (Long value : rule.getMediaWidgetValues()){
-                    Optional<CustomFile> file = fileService.getFileOrDirectoryById(value);
+                    Optional<CustomFile> file = fileService.getFileById(value);
                     file.ifPresent(customFile -> {
                         if ("directory".equals(customFile.getType())) {
                             ; // TODO: go through directory

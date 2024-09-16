@@ -50,6 +50,10 @@ public class CustomFile {
         this.parent = parent;
     }
 
+    public String getNameWithExtention(){
+        return this.getName() + "." + this.getExtension();
+    }
+
     @Override
     public String toString() {
         return "File{" +
