@@ -139,12 +139,14 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             ruleService.updateRule(ruleId, data).then(() => {
                 setUpdater(!updater);
                 setEdit(false);
+                resetEverything();
                 setShowPortal(false);
             });
         }
         else {
             ruleService.addRule(data).then(()=>{
                 setUpdater(!updater);
+                resetEverything();
                 setShowPortal(false);
             });
         }

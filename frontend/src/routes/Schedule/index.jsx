@@ -1,13 +1,11 @@
 import { useState } from "react";
-import { PageTitle, ScheduleModal, FunctionModal } from "../../components";
+import { PageTitle, ScheduleModal } from "../../components";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import ruleService from "../../services/ruleService";
 import { AnimatePresence, motion } from "framer-motion"
 import { ALL_WEEKDAYS } from 'rrule'
 import { IoMdArrowDown, IoMdArrowUp } from "react-icons/io";
 import { FiTrash2 } from "react-icons/fi";
-import scheduleService from "../../services/scheduleService";
-import activeTemplateService from "../../services/activeTemplateService";
 import { useMutation, useQueries } from '@tanstack/react-query';
 import { priorityDown, priorityUp } from "./priorityConfig";
 import { addRuleButton, cancelButton, saveButton, selectGroupButton } from "./buttonsConfig";
@@ -19,6 +17,7 @@ function Schedule(){
     const [showGroupNeeded, setShowGroupNeeded] = useState(false);
     const [updater, setUpdater] = useState(false);
     const [changesMade, setChangesMade] = useState(false);
+    const [priorityChanged, setPriorityChanged] = useState(false);
     const [scheduleModalTitle, setScheduleModalTitle] = useState("");
     const [ruleId, setRuleId] = useState(null);
     const [edit, setEdit] = useState(false);
@@ -39,8 +38,6 @@ function Schedule(){
         ]
     });
 
-    console.log(rulesByGroupIdQuery.data?.data.map(rule => rule.schedule.priority))
-
     const handleSave = async () => {
         const idsArr = rulesToDelete.map(rule => rule.id);
 
@@ -56,6 +53,7 @@ function Schedule(){
         await Promise.all([...deletePromises, ...updatePromises]);
     
         setChangesMade(false);
+        setRulesToDelete([]);
         setUpdater(!updater);
     };
     
@@ -120,11 +118,11 @@ function Schedule(){
                                 <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
                                 <div className="flex flex-col w-full gap-2 m-auto">
                                         <div className="flex flex-row  gap-2 m-auto">
-                                            <motion.button onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <IoMdArrowDown/>
                                             </motion.button>
-                                            <motion.button onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade)} whileHover={{scale:1.2}}
+                                            <motion.button onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)} whileHover={{scale:1.2}}
                                                     className=" border border-black rounded size-5 flex justify-center items-center">
                                                 <IoMdArrowUp/>
                                             </motion.button>
@@ -185,7 +183,7 @@ function Schedule(){
                     </div>
                     <div id="dividerHr" className="mt-1 mb-1 w-[1px] h-full border-[1px] border-secondary"/>
                     <div className="w-[74%] bg-secondaryLight rounded-md ml-3 mt-3">
-    
+                            
                     </div>
                 </div>
             </div>
