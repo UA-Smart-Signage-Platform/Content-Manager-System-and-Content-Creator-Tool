@@ -67,7 +67,7 @@ public class MonitorGroupService {
 
         MonitorGroup group = getGroupById(id);
         if (group != null) {
-            if (group.getMonitors().isEmpty()) {
+            if (group.getMonitors().isEmpty() || group.isDefaultGroup()) {
                 monitorGroupRepository.deleteById(id);
                 return;
             }

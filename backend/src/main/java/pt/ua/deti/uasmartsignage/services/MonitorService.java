@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -70,36 +69,29 @@ public class MonitorService {
      */
     public Monitor updateMonitor(Long id, Monitor monitor) {
 
-        Monitor monitorById = monitorRepository.getReferenceById(id);
-        MonitorGroup group = monitorById.getGroup();
-        monitorById.setName(monitor.getName());
-        monitorById.setGroup(monitor.getGroup());
-        Monitor returnMonitor = monitorRepository.save(monitorById);
+        Monitor oldMonitor = getMonitorById(id);
+        MonitorGroup oldGroup = oldMonitor.getGroup();
 
-        if (group.isDefaultGroup()) {
-            if (group.getId() == monitorById.getGroup().getId()){
-                group.setName(monitor.getName());
-                monitorGroupService.saveGroup(group);
-            }
-            else{
-                List<Rule> rules = ruleService.getAllRulesForGroup(group.getId());
-                if (rules.isEmpty()){
-                    monitorGroupService.deleteGroupById(group.getId());
-                } else {
-                    for (int i = 0; i < rules.size(); i++) {
-                        ruleService.deleteRuleById(rules.get(i).getId());
-                    }
-                    monitorGroupService.deleteGroupById(group.getId());
-                }
-            }
+        MonitorGroup group = null;
+        if(monitor.getGroup().getId() != null){
+            group = monitorGroupService.getGroupById(monitor.getGroup().getId());
         }
 
-        // Send all schedules to the new monitor
-        List<Monitor> monitors = new ArrayList<>();
-        monitors.add(returnMonitor);
-        // templateGroupService.sendAllSchedulesToMonitorGroup(monitors);
+        if(group == null){
+            monitor.setGroup(oldGroup);
+        }
+        else{
+            monitor.setGroup(group);
+        }
 
-        return returnMonitor;
+        monitor.setId(id);
+        Monitor updatedMonitor = monitorRepository.save(monitor);
+
+        if (oldGroup.isDefaultGroup()) {
+            monitorGroupService.deleteGroupById(oldGroup.getId());
+        }
+
+        return updatedMonitor;
     }
 
     /**

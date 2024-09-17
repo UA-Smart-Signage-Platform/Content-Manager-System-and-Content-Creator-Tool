@@ -24,7 +24,7 @@ function EndTitleHtml( { page, updater, setUpdater } ) {
                     <MdAdd className="h-6 w-6 mr-1 ml-1"/>
                     <span>Pending Monitors</span>
                 </button>
-                <PendingMonitorsModal showPortal={showPortal} setShowPortal={setShowPortal} monitorsUpdater={updater} setMonitorsUpdater={setUpdater}/>
+                <PendingMonitorsModal showPortal={showPortal} setShowPortal={setShowPortal} monitorListUpdate={updater} setMonitorListUpdate={setUpdater}/>
             </div>
         )
     if (page === "...")

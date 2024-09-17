@@ -2,6 +2,7 @@ package pt.ua.deti.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.services.LogsService;
+import pt.ua.deti.uasmartsignage.services.MonitorGroupService;
 import pt.ua.deti.uasmartsignage.services.MonitorService;
 import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
 
@@ -32,6 +34,9 @@ class MonitorServiceTest {
 
     @InjectMocks
     private MonitorService service;
+
+    @Mock
+    private MonitorGroupService groupService;
 
     @Mock
     private MonitorGroupRepository MonitorGroupRepository;
@@ -84,8 +89,9 @@ class MonitorServiceTest {
         monitorUpdated.setUuid("1c832f8c-1f6b-4722-a693-a3956b0cbbc9");
         monitorUpdated.setPending(false);
 
-        when(repository.save(monitor)).thenReturn(monitor);
-        when(repository.getReferenceById(1L)).thenReturn(monitor);
+        when(repository.findById(1L)).thenReturn(Optional.of(monitor));
+        when(groupService.getGroupById(2L)).thenReturn(group2);
+        when(repository.save(any())).thenReturn(monitorUpdated);
 
         Monitor retu = service.updateMonitor(1L, monitorUpdated);
 
