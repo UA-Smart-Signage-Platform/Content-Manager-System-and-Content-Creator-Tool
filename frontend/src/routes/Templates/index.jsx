@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import templateservice from "../../services/templateService";
-import { PageTitle } from "../../components";
+import { PageTitle,FunctionModal } from "../../components";
 import DataTable from "react-data-table-component";
-import { motion } from "framer-motion";
+import { motion,AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router";
 import { FiTrash2 } from "react-icons/fi";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useMutation } from "@tanstack/react-query";
 
 const customStyles = {
     headRow: {
@@ -49,9 +49,9 @@ const colors = [
 
 
 function Templates(){
-    const [templates,setTemplates] = useState([]);
     const [templateDisplay,setTemplateDisplay] = useState(null);
     const [selectedColors,setSelectedColors] = useState([]);
+    const [deletePortal,setDeletePortal] = useState(false);
     const navigate = useNavigate();
 
     const columns = [
@@ -74,26 +74,34 @@ function Templates(){
 
     const columnButtonDelete = (row) => {
         return(
-            <button onClick={()=>deleteTemplate(row.id)} 
-                    className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400">
-                <FiTrash2/>
-            </button>
+            <>
+                <button onClick={()=>setDeletePortal(true)} 
+                        className=" border border-black rounded-sm size-5 flex items-center justify-center disabled:text-gray-400 disabled:border-gray-400">
+                    <FiTrash2/>
+                </button>
+                <AnimatePresence>
+                {deletePortal && <FunctionModal
+                    message={"Are you sure you want to delete this Template?"}
+                    funcToExecute={()=>{deleteTemplate.mutate(row.id);
+                                        setDeletePortal(false)
+                    }}
+                    cancelFunc={()=>{setDeletePortal(false)}}
+                    confirmMessage={"Yes"}
+                    />}
+                </AnimatePresence>
+            </>
         )
     }
     
-    const deleteTemplate = (id) =>{
-        templateservice.deleteTemplate(id).then(()=>{
-            templateservice.getTemplates().then((response)=>{
-                setTemplates(response.data)
-                if(response.data.length !== 0){
-                    setTemplateDisplay(response.data[0])
-                }
-            })
-        })
-    }
+    const deleteTemplate = useMutation({
+        mutationFn: (id) => templateservice.deleteTemplate(id),
+        onSuccess: () =>{
+            queryTemplates.refetch();
+        }
+    })
 
     const queryTemplates = useQuery({
-        queryKey:"templates",
+        queryKey:["templates"],
         queryFn: () =>  templateservice.getTemplates().then((response)=>{
             if(response.data.length !== 0){
                 setTemplateDisplay(response.data[0])
