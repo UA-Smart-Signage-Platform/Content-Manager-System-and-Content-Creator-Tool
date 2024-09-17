@@ -81,7 +81,7 @@ function Templates(){
                 </button>
                 <AnimatePresence>
                 {deletePortal && <FunctionModal
-                    message={"Are you sure you want to delete this Template?"}
+                    message={`Are you sure you want to delete the Template ${row.name}.`}
                     funcToExecute={()=>{deleteTemplate.mutate(row.id);
                                         setDeletePortal(false)
                     }}
