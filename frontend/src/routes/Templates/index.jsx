@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import templateservice from "../../services/templateService";
 import { PageTitle } from "../../components";
 import DataTable from "react-data-table-component";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router";
 import { FiTrash2 } from "react-icons/fi";
-import { IoWarningOutline } from "react-icons/io5";
+import { useQuery } from "@tanstack/react-query";
 
 const customStyles = {
     headRow: {
@@ -92,18 +92,18 @@ function Templates(){
         })
     }
 
-
-    useEffect(()=>{
-        templateservice.getTemplates().then((response)=>{
-            setTemplates(response.data)
+    const queryTemplates = useQuery({
+        queryKey:"templates",
+        queryFn: () =>  templateservice.getTemplates().then((response)=>{
             if(response.data.length !== 0){
                 setTemplateDisplay(response.data[0])
             }
+            return response.data;
         })
-    },[])
+    })
 
     useEffect(()=>{
-        if (templates.length !== 0 && templateDisplay !== null){
+        if (!queryTemplates.isLoading && queryTemplates.data.length !== 0 && templateDisplay !== null){
             let widgetCount = templateDisplay.widgets.length;
             let arr = [];
             for (let i = 0; i < widgetCount; i++){
@@ -112,7 +112,7 @@ function Templates(){
             setSelectedColors(arr)
         }
 
-    },[templateDisplay,templates]);
+    },[templateDisplay,queryTemplates.data]);
 
     return(
         <div className="h-full w-full flex flex-col">
@@ -121,22 +121,28 @@ function Templates(){
             </div>
             <div className="flex h-[92%]">
                 <div className="h-full w-[30%] p-4 flex flex-col">
-                    <div>
-                        <button onClick={()=>navigate("/contentcreator/0")}
-                             className=" bg-secondaryMedium p-1 rounded-md">
-                            + Create Template
-                        </button>
-                    </div>
-                    <DataTable
-                        pointerOnHover
-                        highlightOnHover
-                        onRowClicked={(row)=> {navigate(`${row.id}`,{state:row})}}
-                        onRowMouseEnter={(row) => setTemplateDisplay(row)}
-                        columns={columns}
-                        data={templates}
-                        theme="solarized"
-                        customStyles={customStyles}
-                    />
+                    {queryTemplates.isLoading ? 
+                    <div className="text-lg">Loding Templates</div>
+                    :
+                    <>
+                        <div>
+                            <button onClick={()=>navigate("/contentcreator/0")}
+                                className=" bg-secondaryMedium p-1 rounded-md">
+                                + Create Template
+                            </button>
+                        </div>
+                        <DataTable
+                            pointerOnHover
+                            highlightOnHover
+                            onRowClicked={(row)=> {navigate(`${row.id}`,{state:row})}}
+                            onRowMouseEnter={(row) => setTemplateDisplay(row)}
+                            columns={columns}
+                            data={queryTemplates.data}
+                            theme="solarized"
+                            customStyles={customStyles}
+                        />
+                    </>
+                    }
                 </div>
                     <div className="h-full w-[70%] flex flex-col">
                         <div className="aspect-video relative border-4 border-gray-300 rounded-md my-auto">
@@ -175,6 +181,7 @@ function Templates(){
             </div>
         </div>
     )
+
 }
 
 export default Templates;
