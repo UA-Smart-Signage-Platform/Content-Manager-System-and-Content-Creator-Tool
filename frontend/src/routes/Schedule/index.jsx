@@ -110,12 +110,13 @@ function Schedule(){
         }
         else {
             return(
-                <div className="w-full h-full p-2">
+                <div className="w-full h-full p-2 relative">
                     {[].concat(rulesByGroupIdQuery.data.data).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
                         <motion.div 
-                            animate={{y:index * 20}}
                             key={rule.id} 
-                            className="flex w-full p-2 bg-white rounded-lg shadow-md mb-4">
+                            initial={{x:0,y:0}}
+                            animate={{x:0,y:index * 120 }}               
+                            className="flex w-full p-2 bg-white rounded-lg shadow-md mb-4 absolute">
                             <button
                                 onClick={() => handleUpdateSingleRule(`${rule.id}`)}
                                 className="w-[80%] bg-secondaryLight hover:bg-secondaryDark transition-all duration-200 rounded-l-lg p-4 text-left text-textcolorNotSelected cursor-pointer"
