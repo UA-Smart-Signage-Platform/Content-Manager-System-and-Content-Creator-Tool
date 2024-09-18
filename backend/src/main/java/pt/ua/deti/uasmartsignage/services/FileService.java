@@ -38,8 +38,6 @@ public class FileService {
 
     private final String source = this.getClass().getSimpleName();
 
-    private final String defaultFolder = "defaultFolder";
-
 
     @Autowired
     public FileService(FileRepository fileRepository, LogsService logsService) {
@@ -55,17 +53,10 @@ public class FileService {
     */
     public List<CustomFile> getFilesAtRoot() {
         List<CustomFile> files = fileRepository.findAllByParentIsNull();
-        logger.debug("Retrieved {} files and folders located at root level.", files.size());
 
-        // Add log to InfluxDB
         String operation = "getFilesAtRoot";
-        String description = "Retrieved files and folders located at root level";
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(Log.ERROR.toString());
-        }
-        else {
-            logger.info(Log.SUCCESS.toString(), description);
-        }
+        String description = "Retrieved " + files.size() + " files and folders located at root level.";
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
             
         return files;
     }
@@ -80,23 +71,17 @@ public class FileService {
     public Optional<CustomFile> getFileById(Long id) {
         logger.info("Retrieving file with ID: {}", id);
         Optional<CustomFile> file = fileRepository.findById(id);
-        if (file.isEmpty()) {
-            logger.warn(Log.FILENOTFOUND.toString(), id);
-            return Optional.empty();
-        }
-        else {
-            logger.info("File with ID {} found", id);
-        }
 
-        // Add log to InfluxDB
         String operation = "getFileOrDirectoryById";
         String description = "Retrieved file with ID: " + id;
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(Log.ERROR.toString());
+
+        if (file.isEmpty()) {
+            description = Log.FILENOTFOUND.format(id);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+            return Optional.empty();
         }
-        else {
-            logger.info(Log.SUCCESS.toString(), description);
-        }
+        
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
         
         return file;
     }
@@ -109,7 +94,11 @@ public class FileService {
      * @return The created CustomFile, or {@code null} if creation fails.
      */
     public CustomFile createDirectory(CustomFile customFile) {
+        String operation = "createDirectory";
+        String description = "Given file is not a directory! Execution ignored and terminated.";
+
         if (!customFile.getType().equals("directory")) {
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
 
@@ -117,22 +106,18 @@ public class FileService {
         customFile.setExtension("");
         File directory = new File(Log.USERDIR.toString() + "/uploads/" + customFile.getUuid());
 
-        String operation = "createDirectory";
-        String description = "Directory created: " + directory.getAbsolutePath();
-
         if (directory.mkdir()) {
             customFile.setSubDirectories(new ArrayList<>());
             CustomFile savedFile = fileRepository.save(customFile);
-            if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-                logger.error(Log.ERROR.toString());
-            }
-            else {
-                logger.info(Log.SUCCESS.toString(), description);
-            }
+
+            description = "Directory created: " + directory.getAbsolutePath();
+            logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
             return savedFile;
         }
         else {
-            logger.info("Failed to create directory: {}",directory.getAbsolutePath());
+            description = "Failed to create directory: " + directory.getAbsolutePath();
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
     }
@@ -146,9 +131,11 @@ public class FileService {
     @Transactional
     public CustomFile createFile(FilesClass file) {
         CustomFile customFile;
+        String operation = "createFile";
+        String description = "Given file is empty! Execution ignored and terminated.";
 
         if (file.getFile().isEmpty()) {
-            logger.info("Provided file is empty.");
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
 
@@ -170,17 +157,18 @@ public class FileService {
         }
 
         Path fileSystemPath = Paths.get(Log.USERDIR.toString() + "/uploads/" + customFile.getUuid() + "." + customFile.getExtension());
-        String operation = "createFile";
-        String description = "File created: " + fileSystemPath;
+
+        description = "File created: " + fileSystemPath;
         
         try {
             Files.copy(file.getFile().getInputStream(), fileSystemPath);
             fileRepository.save(customFile);
-            addLogEntry(operation, description);
+            logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
             return customFile;
         } 
         catch (IOException e) {
-            logger.error("Failed to save file: {}", e.getMessage());
+            description = "Failed to save file with name: " + fileName + "; Error message: " + e.getMessage();
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
     }
@@ -207,21 +195,6 @@ public class FileService {
 
 
     /**
-     * TODO
-     *
-     * @param operation TODO
-     * @param description TODO
-     */
-    private void addLogEntry(String operation, String description) {
-        if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-            logger.error(Log.ERROR.toString());
-        } else {
-            logger.info(Log.SUCCESS.toString(), description);
-        }
-    }
-
-
-    /**
      * Deletes the desired file from the repository and the filesystem.
      *
      * @param id The ID of the file to delete.
@@ -229,8 +202,12 @@ public class FileService {
      */
     public boolean deleteFile(Long id) {
         Optional<CustomFile> fileOptional = fileRepository.findById(id);
+        String operation = "deleteFile";
+        String description = "";
+
         if (fileOptional.isEmpty()) {
-            logger.warn(Log.FILENOTFOUND.toString(), id);
+            description = Log.FILENOTFOUND.format(id);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return false;
         }
 
@@ -244,10 +221,12 @@ public class FileService {
             String filePath =  Log.USERDIR.toString() + "/uploads/" + file.getUuid() + "." + file.getExtension();
             try {
                 Files.deleteIfExists(Paths.get(filePath));
-                logger.info("Deleted file: {}", filePath);
+                description = "Deleted file: " + filePath;
+                logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
             } 
             catch (IOException e) {
-                logger.error("Failed to delete file: {}, error: {}", filePath, e.getMessage());
+                description = "Failed to delete file: " + filePath + " , error: " + e.getMessage();
+                logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
                 return false;
             }
         }
@@ -263,7 +242,16 @@ public class FileService {
         return true;
     }
 
+    /**
+     * Deletes children from parent
+     *
+     * @param rootFile The parent file.
+     * @return true if the file was successfully deleted, false otherwise.
+     */
     private boolean deleteChildren(CustomFile rootFile) {
+        String operation = "deleteChildren";
+        String description = "";
+
         List<CustomFile> allFiles = new ArrayList<>();
         Queue<CustomFile> queue = new LinkedList<>();
         queue.add(rootFile);
@@ -288,18 +276,18 @@ public class FileService {
             
             try {
                 Files.deleteIfExists(Paths.get(filePath));
-                logger.info("Deleted child: {}", filePath);
-            } catch (IOException e) {
-                logger.error("Failed to delete child: {}, error: {}", filePath, e.getMessage());
+                description = "Deleted child: " + filePath;
+                logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+            } 
+            catch (IOException e) {
+                description = "Failed to delete child: " + filePath + "; error: " + e.getMessage();
+                logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
                 return false;
             }
         }
     
         return true;
     }
-    
-    
-
 
     /**
      * Updates the name of the file with the specified ID.
@@ -309,9 +297,13 @@ public class FileService {
      * @return The updated CustomFile, or {@code null} if the update fails.
      */
     public CustomFile updateFileName(Long id, String fileName) {
+        String operation = "updateFileName";
+        String description = "";
+
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
-            logger.warn(Log.FILENOTFOUND.toString(), id);
+            description = Log.FILENOTFOUND.format(id);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
 
@@ -328,8 +320,13 @@ public class FileService {
      * @return ResponseEntity with the file resource and headers.
      */
     public Resource downloadFileById(Long fileId) throws MalformedURLException {
+        String operation = "downloadFileById";
+        String description = "";
+
         Optional<CustomFile> customFile = fileRepository.findById(fileId);
         if (customFile.isEmpty()) {
+            description = Log.FILENOTFOUND.format(fileId);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
 
@@ -338,9 +335,13 @@ public class FileService {
 
         
         if (fileResource.exists() && fileResource.isReadable()) {
+            description = "Downloading file with ID: " + fileId;
+            logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
             return fileResource;
         } 
         else {
+            description = "File does not exist OR is not readable! ID: " + fileId;
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
     }
