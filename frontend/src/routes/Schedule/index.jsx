@@ -38,23 +38,35 @@ function Schedule(){
         ]
     });
 
+    const deleteRuleMutation = useMutation({
+        mutationFn: (id) => ruleService.deleteRule(id),
+    });
+
+    const updateRuleMutation = useMutation({
+        mutationFn: (rule) => ruleService.updateRule(rule.id, {
+            groupId: rule.groupId,
+            templateId: rule.template.id,
+            schedule: rule.schedule,
+            chosenValues: rule.chosenValues,
+        })
+    });
+
+    const { mutate: deleteRuleMutate } = deleteRuleMutation;
+    const { mutate: updateRuleMutate } = updateRuleMutation;
+
     const handleSave = async () => {
         const idsArr = rulesToDelete.map(rule => rule.id);
 
-        const deletePromises = idsArr.map(ruleId => ruleService.deleteRule(ruleId));
-    
+        const deletePromises = idsArr.map(ruleId => deleteRuleMutate(ruleId));
+
         const rulesArr = rulesByGroupIdQuery.data.data;
-    
-        const updatePromises = rulesArr.map(rule => ruleService.updateRule(rule.id, {groupId: rule.groupId, 
-                                                                                        templateId: rule.template.id, 
-                                                                                        schedule: rule.schedule,
-                                                                                        chosenValues: rule.chosenValues}));
-    
+
+        const updatePromises = rulesArr.map(rule => updateRuleMutate(rule));
+
         await Promise.all([...deletePromises, ...updatePromises]);
-    
+
         setChangesMade(false);
         setRulesToDelete([]);
-        setUpdater(!updater);
     };
     
     const handleUpdateSingleRule = (ruleId) => {
@@ -98,42 +110,65 @@ function Schedule(){
         }
         else {
             return(
-                <div className="relative w-full h-full">
+                <div className="w-full h-full p-2">
                     {[].concat(rulesByGroupIdQuery.data.data).sort((a,b) => {return b.schedule.priority < a.schedule.priority}).map((rule, index) => (
                         <motion.div 
-                            animate={{y:index * 96}}
+                            animate={{y:index * 20}}
                             key={rule.id} 
-                            className="flex w-full p-2 absolute h-24">
-                            <button onClick={() => handleUpdateSingleRule(`${rule.id}`)}
-                                className="w-[85%] bg-secondaryLight rounded-l-md pl-2 pb-2 text-textcolorNotSelected place-content-center cursor-pointer">
-                                <span className="text-textcolor">{rule.template.name}</span> running {/* */}
-                                <span className="text-textcolor">weekly</span> from {/* */}
-                                <span className="text-textcolor">{rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}</span> to {/* */}
-                                <span className="text-textcolor">{rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}</span><br/> during {/* */}
-                                {rule.schedule.weekdays.map((day, index) => (
-                                    <span key={ALL_WEEKDAYS[day]} className="text-textcolor">{ALL_WEEKDAYS[day]}{index < rule.schedule.weekdays.length - 1 && <>,</>}{/* */} </span>
-                                ))}
-                            </button>
-                            <div className="flex w-[15%] bg-secondaryLight rounded-r-md">
-                                <div id="dividerHr" className="w-[1px] h-full border-[1px] border-secondaryMedium"/>
-                                <div className="flex flex-col w-full gap-2 m-auto">
-                                        <div className="flex flex-row  gap-2 m-auto">
-                                            <motion.button onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)} whileHover={{scale:1.2}}
-                                                    className=" border border-black rounded size-5 flex justify-center items-center">
-                                                <IoMdArrowDown/>
-                                            </motion.button>
-                                            <motion.button onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)} whileHover={{scale:1.2}}
-                                                    className=" border border-black rounded size-5 flex justify-center items-center">
-                                                <IoMdArrowUp/>
-                                            </motion.button>
-                                        </div>
-                                        <div className="flex items-center object-center place-content-center">
-                                            <motion.button onClick={() => {deleteRule(rule)}} whileHover={{scale:1.2}}
-                                                    className=" border border-black rounded size-5 flex justify-center items-center">
-                                                <FiTrash2 />
-                                            </motion.button>
-                                        </div>
+                            className="flex w-full p-2 bg-white rounded-lg shadow-md mb-4">
+                            <button
+                                onClick={() => handleUpdateSingleRule(`${rule.id}`)}
+                                className="w-[80%] bg-secondaryLight hover:bg-secondaryDark transition-all duration-200 rounded-l-lg p-4 text-left text-textcolorNotSelected cursor-pointer"
+                            >
+                                <div className="font-semibold text-textcolor">{rule.template.name}</div>
+                                <div className="text-sm text-textcolor">
+                                    Running <span className="font-bold">weekly</span> from{" "}
+                                    <span className="font-bold">
+                                        {rule.schedule.startTime[0]}:{rule.schedule.startTime[1]}
+                                    </span>{" "}
+                                    to{" "}
+                                    <span className="font-bold">
+                                        {rule.schedule.endTime[0]}:{rule.schedule.endTime[1]}
+                                    </span>{" "}
+                                    <br />
+                                    During:{" "}
+                                    {rule.schedule.weekdays.map((day, index) => (
+                                        <span key={ALL_WEEKDAYS[day]} className="inline-block">
+                                            {ALL_WEEKDAYS[day]}
+                                            {index < rule.schedule.weekdays.length - 1 && <>, </>}
+                                        </span>
+                                    ))}
                                 </div>
+                            </button>
+                            <div className="flex w-[20%] bg-secondaryLight rounded-r-lg items-center justify-center">
+                                <div id="dividerHr" className="w-[1px] mr-2 h-full border-[1px] border-secondaryMedium"/>
+                                <div className="flex flex-col space-y-2">
+                                    <motion.button
+                                        onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)}
+                                        whileHover={{ scale: rule.schedule.priority === 0 ? 1 : 1.1 }} 
+                                        disabled={rule.schedule.priority === 0}
+                                        className={`p-2 rounded-full shadow-md transition-all duration-200 
+                                            ${rule.schedule.priority === 0 ? 'bg-secondaryLight text-gray-500 cursor-not-allowed' : 'bg-primary hover:bg-green-500 text-white'}`}
+                                    >
+                                        <IoMdArrowUp />
+                                    </motion.button>
+                                    <motion.button
+                                        onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)}
+                                        whileHover={{ scale: rule.schedule.priority + 1 === rulesByGroupIdQuery.data.data.length ? 1 : 1.1 }}
+                                        disabled={rule.schedule.priority + 1 === rulesByGroupIdQuery.data.data.length}
+                                        className={`p-2 rounded-full shadow-md transition-all duration-200 
+                                            ${rule.schedule.priority + 1 === rulesByGroupIdQuery.data.data.length ? 'bg-secondaryLight text-gray-500 cursor-not-allowed' : 'bg-primary hover:bg-green-500 text-white'}`}
+                                    >
+                                        <IoMdArrowDown />
+                                    </motion.button>
+                                </div>
+                                <motion.button
+                                    onClick={() => deleteRule(rule)}
+                                    whileHover={{ scale: 1.1 }}
+                                    className="ml-4 p-2 bg-secondaryLight hover:bg-secondary text-gray-700 rounded-full shadow-md transition-all duration-200"
+                                >
+                                    <FiTrash2 />
+                                </motion.button>
                             </div>
                         </motion.div>
                     ))}

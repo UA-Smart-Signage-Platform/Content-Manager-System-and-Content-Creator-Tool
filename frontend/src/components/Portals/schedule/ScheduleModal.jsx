@@ -3,7 +3,6 @@ import { MdArrowBack, MdArrowDropUp } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../../services/templateService";
-import activeTemplateService from '../../../services/activeTemplateService';
 import mediaService from '../../../services/mediaService';
 import ScheduleContentModal from './ScheduleContentModal';
 
