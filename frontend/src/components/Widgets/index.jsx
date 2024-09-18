@@ -1,6 +1,7 @@
 import { mediaWidget } from "./mediaWidgetConfig";
 import { optionWidget } from "./optionWidgetConfig";
 import { WidgetType } from "./widgetUtils";
+import PropTypes from 'prop-types';
 
 function Widgets( { widgetType, templateWidget, setShowContentsPortal, setSelectedWidgetId, selectedContent } ) {
     switch (widgetType) {
@@ -13,6 +14,14 @@ function Widgets( { widgetType, templateWidget, setShowContentsPortal, setSelect
         default:
             return <span>{templateWidget.widget.name}</span>;
     }
+}
+
+Widgets.propTypes = {
+    widgetType: PropTypes.string.isRequired,
+    templateWidget: PropTypes.object.isRequired,
+    setShowContentsPortal:PropTypes.func,
+    setSelectedWidgetId: PropTypes.func,
+    selectedContent: PropTypes.array
 }
 
 export default Widgets;

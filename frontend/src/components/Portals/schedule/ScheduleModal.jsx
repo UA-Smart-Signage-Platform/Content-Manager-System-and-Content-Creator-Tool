@@ -355,7 +355,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
         else{
             return (
-                <div
+                <button
                     onMouseEnter={() => setDisplayInfo(true)}
                     onMouseLeave={() => setDisplayInfo(false)}
                     className='relative'>
@@ -385,7 +385,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                             <MdArrowDropUp className="absolute top-[85%] left-[50%] translate-x-[-50%]"/>
                         </>
                     }
-                </div>
+                </button>
             )
         }
     }

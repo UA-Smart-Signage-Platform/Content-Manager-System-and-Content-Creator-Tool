@@ -1,5 +1,4 @@
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import mediaService from '../../../services/mediaService';
 import DataTable from 'react-data-table-component';

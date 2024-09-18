@@ -144,7 +144,7 @@ function Schedule(){
                                 <div id="dividerHr" className="w-[1px] mr-2 h-full border-[1px] border-secondaryMedium"/>
                                 <div className="flex flex-col space-y-2">
                                     <motion.button
-                                        onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)}
+                                        onClick={() => priorityUp(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged)}
                                         whileHover={{ scale: rule.schedule.priority === 0 ? 1 : 1.1 }} 
                                         disabled={rule.schedule.priority === 0}
                                         className={`p-2 rounded-full shadow-md transition-all duration-200 
@@ -153,7 +153,7 @@ function Schedule(){
                                         <IoMdArrowUp />
                                     </motion.button>
                                     <motion.button
-                                        onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged)}
+                                        onClick={() => priorityDown(rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged)}
                                         whileHover={{ scale: rule.schedule.priority + 1 === rulesByGroupIdQuery.data.data.length ? 1 : 1.1 }}
                                         disabled={rule.schedule.priority + 1 === rulesByGroupIdQuery.data.data.length}
                                         className={`p-2 rounded-full shadow-md transition-all duration-200 
