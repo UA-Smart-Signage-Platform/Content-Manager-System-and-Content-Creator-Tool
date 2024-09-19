@@ -1,0 +1,27 @@
+<div id="currentTime"
+    th:style="'top:' + ${top} + 'px; left:' + ${left} + 'px; width:' + ${width} + 'px; height:' + ${height} + 'px; display: flex; justify-content: center; align-items: center; text-align: center; font-size: 2.5vw; color:' + ${textColor} + '; background-color:' + ${backgroundColor} + ';">
+</div>
+
+<script>
+    function updateHourAndMinute() {
+        var currentTimeElement = document.getElementById('currentTime');
+        var currentTime = new Date();
+        var hours = currentTime.getHours();
+        var minutes = currentTime.getMinutes();
+
+        // Format the hours and minutes to always be two digits
+        hours = (hours < 10) ? "0" + hours : hours;
+        minutes = (minutes < 10) ? "0" + minutes : minutes;
+
+        var formattedTime = hours + ":" + minutes;
+
+        // Set the text content of the currentTime div to the formatted time
+        currentTimeElement.textContent = formattedTime;
+    }
+
+    // Initial time update when the page loads
+    updateHourAndMinute();
+
+    // Update the time every 10 seconds
+    setInterval(updateHourAndMinute, 10000);
+</script>

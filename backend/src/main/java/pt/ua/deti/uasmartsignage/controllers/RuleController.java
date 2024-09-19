@@ -94,4 +94,18 @@ public class RuleController {
         }
         return new ResponseEntity<>(updatedRule, HttpStatus.OK);
     }
+
+    @Operation(summary = "Get rules associated to group id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved rules"),
+            @ApiResponse(responseCode = "404", description = "Group not found")
+    })
+    @GetMapping("/group/{id}")
+    public ResponseEntity<List<Rule>> getRulesByGroupId(@PathVariable("id") String id) {
+        List<Rule> rules = ruleService.getAllRulesForGroup(Long.parseLong(id));
+        if (rules == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(rules, HttpStatus.OK);
+    }
 }

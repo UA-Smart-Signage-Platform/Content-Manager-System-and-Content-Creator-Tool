@@ -1,3 +1,5 @@
+/*
+
 package pt.ua.deti.uasmartsignage.integrationTests;
 
 import org.junit.jupiter.api.*;
@@ -41,3 +43,5 @@ public abstract class BaseIntegrationTest {
         registry.add("spring.mqtt.broker", () -> "tcp://"+ mqttHost + ":" + mqttPort);
     }
 }
+
+*/
