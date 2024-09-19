@@ -78,7 +78,7 @@ public class TemplateController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteTemplate(@PathVariable("id") String id) {
-        Boolean deleted = templateService.deleteTemplateById(id);
+        boolean deleted = templateService.deleteTemplateById(id);
         if (!deleted) {
             return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }

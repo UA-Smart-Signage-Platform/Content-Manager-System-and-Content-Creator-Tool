@@ -213,9 +213,6 @@ public class LogsService {
     public void addLogEntry(Severity severity, String source, String operation, String description, Logger loggerFromClass) {
         if (!addBackendLog(severity, source, operation, description)) {
             loggerFromClass.error(Log.ERROR.toString());
-        } 
-        else {
-            loggerFromClass.info(Log.SUCCESS.format(description));
         }
     }
 }
