@@ -1,9 +1,4 @@
 export const optionWidget = (templateWidget, setShowContentsPortal, setSelectedWidgetId, selectedContent) => {
-    /*
-            <div className="text-sm min-w-[90%] max-w-[90%]">
-
-        </div>
-    */
     return (
         <>
             <span className='z-10'>{templateWidget.widget.name}</span>
