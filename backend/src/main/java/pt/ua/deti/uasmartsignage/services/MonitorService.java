@@ -74,7 +74,7 @@ public class MonitorService {
 
         MonitorGroup group = null;
         if(monitor.getGroup().getId() != null){
-            group = monitorGroupService.getGroupById(monitor.getGroup().getId());
+            group = monitorGroupService.getGroupById(monitor.getGroup().getId()).get();
         }
 
         if(group == null){

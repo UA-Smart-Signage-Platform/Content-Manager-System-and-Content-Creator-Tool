@@ -1,20 +1,18 @@
 package pt.ua.deti.uasmartsignage.services;
 
-
-import pt.ua.deti.uasmartsignage.enums.Description;
 import pt.ua.deti.uasmartsignage.enums.Log;
-import pt.ua.deti.uasmartsignage.enums.Operation;
 import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,25 +25,17 @@ import java.io.File;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@RequiredArgsConstructor
 @Service
 public class FileService {
-
-    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
     
     private final FileRepository fileRepository;
-
     private final LogsService logsService;
 
+    private static final Logger logger = LoggerFactory.getLogger(FileService.class);
     private final String source = this.getClass().getSimpleName();
-
-
-    @Autowired
-    public FileService(FileRepository fileRepository, LogsService logsService) {
-        this.fileRepository = fileRepository;
-        this.logsService = logsService;
-    }
-
    
+
     /**
      * Retrieves and returns a list of all CustomFile stored at root level.
      * 
@@ -76,7 +66,7 @@ public class FileService {
         String description = "Retrieved file with ID: " + id;
 
         if (file.isEmpty()) {
-            description = Log.FILENOTFOUND.format(id);
+            description = Log.OBJECTNOTFOUND.format(id);
             logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return Optional.empty();
         }
@@ -117,7 +107,7 @@ public class FileService {
         }
         else {
             description = "Failed to create directory: " + directory.getAbsolutePath();
-            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return null;
         }
     }
@@ -168,7 +158,7 @@ public class FileService {
         } 
         catch (IOException e) {
             description = "Failed to save file with name: " + fileName + "; Error message: " + e.getMessage();
-            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return null;
         }
     }
@@ -206,7 +196,7 @@ public class FileService {
         String description = "";
 
         if (fileOptional.isEmpty()) {
-            description = Log.FILENOTFOUND.format(id);
+            description = Log.OBJECTNOTFOUND.format(id);
             logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return false;
         }
@@ -226,7 +216,7 @@ public class FileService {
             } 
             catch (IOException e) {
                 description = "Failed to delete file: " + filePath + " , error: " + e.getMessage();
-                logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+                logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
                 return false;
             }
         }
@@ -276,12 +266,12 @@ public class FileService {
             
             try {
                 Files.deleteIfExists(Paths.get(filePath));
-                description = "Deleted child: " + filePath;
+                description = "Deleted file/child: " + filePath;
                 logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
             } 
             catch (IOException e) {
-                description = "Failed to delete child: " + filePath + "; error: " + e.getMessage();
-                logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+                description = "Failed to delete file/child: " + filePath + "; error: " + e.getMessage();
+                logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
                 return false;
             }
         }
@@ -302,7 +292,7 @@ public class FileService {
 
         Optional<CustomFile> file = fileRepository.findById(id);
         if (file.isEmpty()) {
-            description = Log.FILENOTFOUND.format(id);
+            description = Log.OBJECTNOTFOUND.format(id);
             logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
@@ -325,7 +315,7 @@ public class FileService {
 
         Optional<CustomFile> customFile = fileRepository.findById(fileId);
         if (customFile.isEmpty()) {
-            description = Log.FILENOTFOUND.format(fileId);
+            description = Log.OBJECTNOTFOUND.format(fileId);
             logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
@@ -341,7 +331,7 @@ public class FileService {
         } 
         else {
             description = "File does not exist OR is not readable! ID: " + fileId;
-            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return null;
         }
     }

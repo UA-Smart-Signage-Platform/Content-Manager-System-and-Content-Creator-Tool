@@ -1,6 +1,7 @@
 package pt.ua.deti.uasmartsignage.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import pt.ua.deti.uasmartsignage.dto.MonitorGroupDTO;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
@@ -53,9 +54,9 @@ public class MonitorGroupController {
             @ApiResponse(responseCode = "404", description = "Monitor group not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<MonitorGroup> getGroupById(@PathVariable("id") Long id) {
-        MonitorGroup group = monitorGroupService.getGroupById(id);
-        if (group == null) {
+    public ResponseEntity<Optional<MonitorGroup>> getGroupById(@PathVariable("id") Long id) {
+        Optional<MonitorGroup> group = monitorGroupService.getGroupById(id);
+        if (group.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(group, HttpStatus.OK);
