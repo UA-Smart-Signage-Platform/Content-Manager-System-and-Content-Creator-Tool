@@ -67,9 +67,9 @@ public class MonitorGroupService {
      * 
      * @param id The ID of the MonitorGroup to retrieve.
      * @return The MonitorGroup with the specified ID, or null if no such group is found.
-     */
+    */
     public Optional<MonitorGroup> getGroupById(Long id) {
-        logger.info("Retrieving file with ID: {}", id);
+        logger.info("Retrieving group with ID: {}", id);
         Optional<MonitorGroup> group = monitorGroupRepository.findById(id);
 
         String operation = "getGroupById";
@@ -92,62 +92,161 @@ public class MonitorGroupService {
      * 
      * @param name The name of the MonitorGroup to retrieve.
      * @return The MonitorGroup with the specified name, or null if no such group is found.
-     */
-    public MonitorGroup getGroupByName(String name){
-        return monitorGroupRepository.findByName(name);
+    */
+    public Optional<MonitorGroup> getGroupByName(String name){
+        logger.info("Retrieving group with name: {}", name);
+        Optional<MonitorGroup> group = monitorGroupRepository.findByName(name);
+
+        String operation = "getGroupByName";
+        String description = "Retrieved group with name: " + name;
+
+        if (group.isEmpty()){
+            description = Log.OBJECTNOTFOUND.format(name);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+            return Optional.empty();
+        }
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return group;
     }
 
+
+    /**
+     * Saves group based on Data Transfer Object (DTO).
+     * 
+     * @param groupDTO The DTO with information necessary to create a group.
+     * @return The newly created MonitorGroup, or null if no group was created.
+    */
     public MonitorGroup saveGroup(MonitorGroupDTO groupDTO) {
         MonitorGroup group = convertDTOToMonitorGroup(groupDTO);
+
+        String operation = "saveGroup(DTO)";
+        String description = "Created group with name: " + groupDTO.getName();
+
         if (group == null){
+            description = "Failed to create group with name: " + groupDTO.getName();
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return null;
         }
+
         group.setId(null);
-        return monitorGroupRepository.save(group);
+        MonitorGroup savedGroup = monitorGroupRepository.save(group);
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return savedGroup;
     }
 
+    /**
+     * Saves group based on group object.
+     * 
+     * @param group The MonitorGroup object with information necessary to create a group.
+     * @return The newly created MonitorGroup.
+    */
     public MonitorGroup saveGroup(MonitorGroup group) {
+        String operation = "saveGroup";
+        String description = "Created group with name: " + group.getName();
+
         group.setId(null);
-        return monitorGroupRepository.save(group);
+        MonitorGroup savedGroup = monitorGroupRepository.save(group);
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return savedGroup;
     }
 
+
+    /**
+     * Updates group based on ID and DTO.
+     * 
+     * @param id The ID of the desired group to update.
+     * @param groupDTO The DTO with information necessary to update the group.
+     * @return The updated MonitorGroup.
+    */
     public MonitorGroup updateGroup(Long id, MonitorGroupDTO groupDTO) {
         MonitorGroup group = convertDTOToMonitorGroup(groupDTO);
+
+        String operation = "updateGroup(DTO)";
+        String description = "Updated group with ID: " + id + "; And name: " + groupDTO.getName();
+
         if (group == null){
+            description = Log.OBJECTNOTFOUND.format(id);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return null;
         }
+
         group.setId(id);
-        return monitorGroupRepository.save(group);
+        MonitorGroup updatedGroup = monitorGroupRepository.save(group);
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return updatedGroup;
     }
 
+
+    /**
+     * Updates group based on ID and group object.
+     * 
+     * @param id The ID of the desired group to update.
+     * @param group The MonitorGroup object with information necessary to update the desired group.
+     * @return The updated MonitorGroup.
+    */
     public MonitorGroup updateGroup(Long id, MonitorGroup group) {
+        String operation = "updateGroup";
+        String description = "Updated group with ID: " + id + "; And name: " + group.getName();
+
         group.setId(id);
-        return monitorGroupRepository.save(group);
+        MonitorGroup updatedGroup = monitorGroupRepository.save(group);
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return updatedGroup;
     }
 
-    public void deleteGroupById(Long id) {
 
-        MonitorGroup group = getGroupById(id).get();
-        if (group != null) {
-            if (group.getMonitors().isEmpty() || group.isDefaultGroup()) {
-                monitorGroupRepository.deleteById(id);
-                return;
-            }
-            // separate all the monitors that were part of the group
-            // into different individual groups
-            for (Monitor monitor : group.getMonitors()) {
+    /**
+     * Deletes group based on ID and separates monitors that were part of the group into different individual groups
+     * 
+     * @param id The ID of the desired group to delete.
+     * @return Boolean with true if group was deleted or false if it failed.
+    */
+    public boolean deleteGroupById(Long id) {
+        Optional<MonitorGroup> group = getGroupById(id);
 
-                MonitorGroup newGroup = MonitorGroup.builder()
-                                                    .name(monitor.getName())
-                                                    .isDefaultGroup(true)
-                                                    .build();
+        String operation = "deleteGroupById";
+        String description = "Deleted group with ID: " + id;
 
-                newGroup = saveGroup(newGroup);
-                monitor.setGroup(newGroup);
-                monitorRepository.save(monitor);
-                monitorGroupRepository.deleteById(id);
-            }
+        if (group.isEmpty()){
+            description = Log.OBJECTNOTFOUND.format(id);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
+            return false;
         }
+
+        MonitorGroup groupToDelete = group.get();
+        if (groupToDelete.getMonitors().isEmpty() || groupToDelete.isDefaultGroup()) {
+            monitorGroupRepository.deleteById(id);
+            logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+            return true;
+        }
+
+        // separate all the monitors that were part of the group
+        // into different individual groups
+        for (Monitor monitor : groupToDelete.getMonitors()) {
+
+            MonitorGroup newGroup = MonitorGroup.builder()
+                                                .name(monitor.getName())
+                                                .isDefaultGroup(true)
+                                                .build();
+
+            newGroup = saveGroup(newGroup);
+            monitor.setGroup(newGroup);
+            monitorRepository.save(monitor);
+            monitorGroupRepository.deleteById(id);
+        }
+
+        logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
+        return true;
     }
 
     public MonitorGroup convertDTOToMonitorGroup(MonitorGroupDTO groupDTO){

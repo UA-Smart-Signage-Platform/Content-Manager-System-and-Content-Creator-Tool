@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 
 
 import java.util.List;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*") //NOSONAR
 @RestController
@@ -76,9 +77,9 @@ public class MonitorController {
             @ApiResponse(responseCode = "404", description = "Monitor not found", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Monitor> getMonitorById(@PathVariable("id") Long id) {
-        Monitor monitor = monitorService.getMonitorById(id);
-        if (monitor == null) {
+    public ResponseEntity<Optional<Monitor>> getMonitorById(@PathVariable("id") Long id) {
+        Optional<Monitor> monitor = monitorService.getMonitorById(id);
+        if (monitor.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(monitor, HttpStatus.OK);
@@ -134,9 +135,12 @@ public class MonitorController {
             @ApiResponse(responseCode = "404", description = "Monitor not found", content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteMonitor(@PathVariable("id") Long id) {
-        monitorService.deleteMonitor(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<Boolean> deleteMonitor(@PathVariable("id") Long id) {
+        Boolean deleted = monitorService.deleteMonitor(id);
+        if (!deleted) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
     
 }

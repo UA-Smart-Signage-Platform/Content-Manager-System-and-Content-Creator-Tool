@@ -49,7 +49,7 @@ class MonitorServiceTest {
         monitor.setPending(false);
         when(repository.findById(1L)).thenReturn(Optional.of(monitor));
 
-        Monitor retu = service.getMonitorById(1L);
+        Monitor retu = service.getMonitorById(1L).get();
 
         assertThat(retu.getName()).isEqualTo("monitor");
     }
@@ -90,7 +90,7 @@ class MonitorServiceTest {
         monitorUpdated.setPending(false);
 
         when(repository.findById(1L)).thenReturn(Optional.of(monitor));
-        when(groupService.getGroupById(2L).get()).thenReturn(group2);
+        when(groupService.getGroupById(2L)).thenReturn(Optional.of(group2));
         when(repository.save(any())).thenReturn(monitorUpdated);
 
         Monitor retu = service.updateMonitor(1L, monitorUpdated);

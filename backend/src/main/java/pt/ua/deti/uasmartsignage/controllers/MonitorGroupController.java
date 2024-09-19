@@ -70,8 +70,8 @@ public class MonitorGroupController {
     })
     @PostMapping
     public ResponseEntity<MonitorGroup> saveGroup(@RequestBody @Valid MonitorGroupDTO groupDTO) {
-        MonitorGroup existingGroup = monitorGroupService.getGroupByName(groupDTO.getName());
-        if (existingGroup != null){
+        Optional<MonitorGroup> existingGroup = monitorGroupService.getGroupByName(groupDTO.getName());
+        if (existingGroup.isPresent()){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         MonitorGroup savedGroup = monitorGroupService.saveGroup(groupDTO);
@@ -87,12 +87,12 @@ public class MonitorGroupController {
             @ApiResponse(responseCode = "404", description = "Monitor group not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGroup(@PathVariable("id") Long id) {
-        if (monitorGroupService.getGroupById(id) == null) {
+    public ResponseEntity<Boolean> deleteGroup(@PathVariable("id") Long id) {
+        Boolean deleted = monitorGroupService.deleteGroupById(id);
+        if (!deleted) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        monitorGroupService.deleteGroupById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Update monitor group")
