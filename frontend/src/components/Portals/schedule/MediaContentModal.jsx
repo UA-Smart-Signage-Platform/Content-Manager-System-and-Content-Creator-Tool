@@ -1,79 +1,12 @@
 import { createPortal } from 'react-dom';
-import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
-import mediaService from '../../services/mediaService';
-import DataTable, { createTheme } from 'react-data-table-component';
-import { MdOutlineFolder, MdOutlineInsertPhoto, MdLocalMovies, MdArrowBack } from "react-icons/md";
-import { AnimatePresence, motion } from 'framer-motion';
+import mediaService from '../../../services/mediaService';
+import DataTable from 'react-data-table-component';
+import { MdArrowBack } from "react-icons/md";
+import { motion } from 'framer-motion';
+import { columns, conditionalRowStyles, customStyles } from './mediaContentModalUtils';
 
-const conditionalRowStyles = [
-    {
-      when: row => row.selected,
-      style: {
-        backgroundColor: '#a7a8a9'
-      }
-    }
-];
-
-const columns = [
-    {
-        selector: row => headNameStyle(row),
-    },
-    {
-        id: 'isFolder',
-        selector: row => row.type,
-        omit: true,
-    },
-];
-
-const customStyles = {
-    head: {
-        style: {
-            fontSize: '20px',
-        },
-    },
-    rows: {
-        style: {
-            fontSize: '16px',
-        },
-    }
-};
-
-createTheme('solarized', {
-    text: {
-      primary: '#101604',
-    },
-    background: {
-      default: '#fafdf7',
-    },
-    divider: {
-      default: '#073642',
-    },
-  });
-
-const headNameStyle = (row) => {
-    return(
-        <div data-tag="allowRowEvents" className="flex flex-row items-center">
-            {getFileIcon(row.type)}
-            <span data-tag="allowRowEvents" className="ml-2">{row.name}</span>
-        </div>
-    )
-};
-
-const getFileIcon = (type) => {
-    switch (type) {
-        case "directory":
-            return <MdOutlineFolder data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-        case "image/png":
-            return <MdOutlineInsertPhoto data-tag="allowRowEvents" className="h-7 w-7 mr-2"/>;
-        case "video/mp4":
-            return <MdLocalMovies data-tag="allowRowEvents" className="h-6 w-6 mr-2"/>;
-        default:
-            break;
-    }
-};
-
-function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setContents } ) {
+function MediaContentModal( { setShowMediaContentPortal, localContent, setLocalContent, templateWidget, variableName } ) {
     const [filesAndDirectories, setFilesAndDirectories] = useState([]);
 
     const [currentFolder, setCurrentFolder] = useState(null);
@@ -108,8 +41,8 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
             setSelectedRow(null);
         }
         else{
-            setContents({...contents, [widgetId]: row});
-            setShowContentsPortal(false);
+            handleLocalContent(row);
+            setShowMediaContentPortal(false);
         }
     };
 
@@ -135,6 +68,16 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
         }
     };
 
+    const handleLocalContent = (row) => {
+        setLocalContent({
+            ...localContent, 
+            [templateWidget.id]: {
+                ...localContent[templateWidget.id],
+                [variableName]: row.id
+            }
+        });
+    }
+
     return createPortal (
             <motion.div key="backgroundContents"
                 initial={{ opacity: 0 }}
@@ -148,18 +91,18 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
                         exit={{ scale: 0.8 }}
                         transition={{ duration: 0.3, ease: "easeOut" }}
                         className="absolute text-gray-50 h-screen w-screen flex items-center">
-                        <div className="bg-[#fafdf7] text-[#101604] h-[75%] w-[55%] mx-auto rounded-xl p-[2%]">
-                            <div className="h-[10%] flex">
-                                <button onClick={() => setShowContentsPortal(false)} className="flex flex-row">
-                                    <MdArrowBack className="w-7 h-7 mr-2"/> 
-                                    <span className="text-xl">Go back</span>
+                        <div className="bg-[#fafdf7] text-[#101604] h-[65%] w-[50%] mx-auto rounded-xl p-[2%]">
+                            <div className="h-[10%] flex text-3xl">
+                                <button onClick={() => setShowMediaContentPortal(false)} className="flex flex-row">
+                                    <MdArrowBack className="w-9 h-9 mr-2"/> 
+                                    <span>Go back</span>
                                 </button>
                             </div>
                             <div className="h-[90%] p-[4%]">
-                                <div className="h-[20%] font-bold text-3xl">
+                                <div className="h-[5%] font-bold text-3xl">
                                     Choose file
                                 </div>
-                                <div className="h-[80%] p-[2%] text-lg flex flex-col">
+                                <div className="h-[95%] p-[2%] text-lg flex flex-col">
                                     <div className="h-[80%] w-full">
                                         <DataTable className="p-3" 
                                             defaultSortFieldId="isFolder"
@@ -173,14 +116,16 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
                                             onRowDoubleClicked={handleRowDoubleClick}
                                             customStyles={customStyles}
                                             conditionalRowStyles={conditionalRowStyles}
-                                            theme="solarized"/>
+                                            theme="solarized"
+                                            paginationPerPage={6}
+                                            paginationRowsPerPageOptions={[2, 3, 6]}/>
                                     </div>
                                     <div className="h-[20%] flex w-full items-center place-content-end">
                                         <div className="pr-6">
                                             {(selectedRow !== null && selectedRow.name !== "..."
                                                 ?
                                                 <button 
-                                                    onClick={() => {setContents({...contents, [widgetId]: selectedRow}); setShowContentsPortal(false)}} 
+                                                    onClick={() => {handleLocalContent(selectedRow); setShowMediaContentPortal(false)}} 
                                                     className="bg-[#96d600] rounded-md p-2 pl-4 pr-4">
                                                         Submit
                                                 </button>
@@ -215,4 +160,4 @@ function ScheduleContentModal( { setShowContentsPortal, widgetId, contents, setC
 }
 
 
-export default ScheduleContentModal;
+export default MediaContentModal;
