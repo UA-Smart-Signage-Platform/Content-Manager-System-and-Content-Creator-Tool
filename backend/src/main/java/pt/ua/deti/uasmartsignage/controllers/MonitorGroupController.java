@@ -7,10 +7,6 @@ import pt.ua.deti.uasmartsignage.dto.MonitorGroupDTO;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import pt.ua.deti.uasmartsignage.services.MonitorGroupService;
 import org.springframework.web.bind.annotation.*;
@@ -88,7 +84,7 @@ public class MonitorGroupController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteGroup(@PathVariable("id") Long id) {
-        Boolean deleted = monitorGroupService.deleteGroupById(id);
+        boolean deleted = monitorGroupService.deleteGroupById(id);
         if (!deleted) {
             return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }

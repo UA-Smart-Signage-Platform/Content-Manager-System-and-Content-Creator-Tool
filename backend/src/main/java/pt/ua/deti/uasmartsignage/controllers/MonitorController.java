@@ -136,7 +136,7 @@ public class MonitorController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteMonitor(@PathVariable("id") Long id) {
-        Boolean deleted = monitorService.deleteMonitor(id);
+        boolean deleted = monitorService.deleteMonitor(id);
         if (!deleted) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

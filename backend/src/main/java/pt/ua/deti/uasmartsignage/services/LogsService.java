@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -216,7 +215,7 @@ public class LogsService {
             loggerFromClass.error(Log.ERROR.toString());
         } 
         else {
-            loggerFromClass.info(Log.SUCCESS.toString(), description);
+            loggerFromClass.info(Log.SUCCESS.format(description));
         }
     }
 }

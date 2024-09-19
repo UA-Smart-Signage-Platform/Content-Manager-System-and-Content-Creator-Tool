@@ -212,6 +212,7 @@ public class RuleService {
             }
         }
         
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
         return rule;
     }
 

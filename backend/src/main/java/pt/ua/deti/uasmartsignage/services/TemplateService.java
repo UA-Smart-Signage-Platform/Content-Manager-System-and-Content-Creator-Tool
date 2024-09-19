@@ -24,7 +24,7 @@ public class TemplateService {
     private final WidgetService widgetService;
     private final LogsService logsService;
 
-    private static final Logger logger = LoggerFactory.getLogger(RuleService.class);
+    private static final Logger logger = LoggerFactory.getLogger(TemplateService.class);
     private final String source = this.getClass().getSimpleName();
 
     /**
