@@ -1,6 +1,8 @@
 package pt.ua.deti.uasmartsignage.controllers;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,9 +45,9 @@ public class RuleController {
             @ApiResponse(responseCode = "404", description = "Rule not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Rule> getRuleById(@PathVariable("id") String id) {
-        Rule rule = ruleService.getRuleById(id);
-        if (rule == null) {
+    public ResponseEntity<Optional<Rule>> getRuleById(@PathVariable("id") String id) {
+        Optional<Rule> rule = ruleService.getRuleById(id);
+        if (rule.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(rule, HttpStatus.OK);
@@ -71,12 +73,12 @@ public class RuleController {
             @ApiResponse(responseCode = "404", description = "Rule not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRule(@PathVariable("id") String id) {
-        if (ruleService.getRuleById(id) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Boolean> deleteRule(@PathVariable("id") String id) {
+        Boolean deleted = ruleService.deleteRuleById(id);
+        if (!deleted) {
+            return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }
-        ruleService.deleteRuleById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Update rule")

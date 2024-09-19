@@ -23,14 +23,14 @@ public class MonitorService {
     private final MonitorGroupService monitorGroupService;
     private final LogsService logsService;
 
-    private static final Logger logger = LoggerFactory.getLogger(MonitorGroupService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MonitorService.class);
     private final String source = this.getClass().getSimpleName();
 
     /**
      * Retrieves and returns a Monitor by its ID.
      *
      * @param id The ID of the Monitor to retrieve.
-     * @return The Monitor with the specified ID.
+     * @return The Monitor with the specified ID or empty if not found.
      */
     public Optional<Monitor> getMonitorById(Long id) {
         logger.info("Retrieving monitor with ID: {}", id);

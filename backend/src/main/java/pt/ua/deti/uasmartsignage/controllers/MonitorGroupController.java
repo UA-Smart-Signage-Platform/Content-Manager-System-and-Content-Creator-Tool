@@ -90,7 +90,7 @@ public class MonitorGroupController {
     public ResponseEntity<Boolean> deleteGroup(@PathVariable("id") Long id) {
         Boolean deleted = monitorGroupService.deleteGroupById(id);
         if (!deleted) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }

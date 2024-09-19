@@ -158,7 +158,7 @@ public class MonitorGroupService {
 
 
     /**
-     * Updates group based on ID and DTO.
+     * Updates group based on ID and Data Transfer Object (DTO).
      * 
      * @param id The ID of the desired group to update.
      * @param groupDTO The DTO with information necessary to update the group.
