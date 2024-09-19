@@ -50,7 +50,7 @@ public class TemplateController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<Optional<Template>> getTemplateById(@PathVariable("id") String id) {
-        Optional<Template> template = templateService.getTemplateById(id);
+        Optional<Template> template = templateService.getTemplateById(id.replaceAll("[\n\r]", "_"));
         if (template.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -78,7 +78,7 @@ public class TemplateController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteTemplate(@PathVariable("id") String id) {
-        boolean deleted = templateService.deleteTemplateById(id);
+        boolean deleted = templateService.deleteTemplateById(id.replaceAll("[\n\r]", "_"));
         if (!deleted) {
             return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }

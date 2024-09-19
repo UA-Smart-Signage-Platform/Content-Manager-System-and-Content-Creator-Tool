@@ -100,10 +100,10 @@ public class TemplateService {
         Optional<Template> template = getTemplateById(id);
 
         String operation = "deleteTemplateById";
-        String description = "Deleted template with ID: " + id.replaceAll("[\n\r]", "_");
+        String description = "Deleted template with ID: " + id;
 
         if (template.isEmpty()){
-            description = Log.OBJECTNOTFOUND.format(id.replaceAll("[\n\r]", "_"));
+            description = Log.OBJECTNOTFOUND.format(id);
             logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return false;
         }
@@ -125,10 +125,10 @@ public class TemplateService {
         Template template = convertDTOToTemplate(templateDTO);
 
         String operation = "updateTemplate(DTO)";
-        String description = "Updated template with ID: " + id.replaceAll("[\n\r]", "_") + "; with name: " + templateDTO.getName();
+        String description = "Updated template with ID: " + id + "; with name: " + templateDTO.getName();
 
         if (template == null){
-            description = Log.OBJECTNOTFOUND.format(id.replaceAll("[\n\r]", "_"));
+            description = Log.OBJECTNOTFOUND.format(id);
             logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
             return null;
         } 
