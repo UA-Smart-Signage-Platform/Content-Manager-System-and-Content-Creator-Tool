@@ -76,6 +76,25 @@ class MonitorControllerTest {
     }
 
     @Test void
+    testGetAllMonitorsEndpointWhereOnlineStatusDifferentNull() throws Exception{
+        Monitor monitor = new Monitor();
+        monitor.setName("hall");
+        monitor.setPending(false);
+
+        Monitor monitor2 = new Monitor();
+        monitor2.setName("deti");
+        monitor2.setPending(false);
+        monitor2.setOnline(true);
+
+        when(service.getAllMonitorsByPendingAndOnline(false, true)).thenReturn(Arrays.asList(monitor2));
+
+        mvc.perform(get("/api/monitors?onlineStatus=true").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].name", is("deti")));
+    }
+
+    @Test void
     testGetAllPendingMonitors() throws Exception{
         Monitor monitor = new Monitor();
         monitor.setName("hall");

@@ -1,6 +1,5 @@
 package pt.ua.deti.uasmartsignage.services;
 
-
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.QueryApi;
@@ -11,7 +10,6 @@ import com.influxdb.exceptions.InfluxException;
 import com.influxdb.query.FluxRecord;
 import com.influxdb.query.FluxTable;
 import pt.ua.deti.uasmartsignage.configuration.InfluxDBProperties;
-import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.embedded.BackendLog;
@@ -23,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class LogsService {
@@ -88,8 +88,6 @@ public class LogsService {
     }
 
     public List<BackendLog> getBackendLogs(int hours) {
-        List<BackendLog> logs = new ArrayList<>();
-
         String query = String.format(
             "from(bucket: \"%s\") |> range(start: -%dh) |> filter(fn: (r) => r._measurement == \"BackendLogs\")",
             backendBucket, hours
@@ -97,53 +95,39 @@ public class LogsService {
 
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(query, org);
+        Map<String, BackendLog> logs = new HashMap<>();
 
-        if (tables.isEmpty()) {
-            return logs;
-        }
-
-        // Initialize list of BackendLog objects
-        int size = tables.get(0).getRecords().size();
-        for (int i = 0; i < size; i++) {
-            BackendLog backendLog = new BackendLog();
-            logs.add(backendLog);
-        }
-
-        // Process query results
         for (FluxTable table : tables) {
             List<FluxRecord> records = table.getRecords();
-            int index = 0;
-            // Iterate over records and populate BackendLog objects (this is needed because the query returns multiple fields for each record)
+            
             for (FluxRecord fluxRecord : records) {
-                int finalIndex = index;
-                fluxRecord.getValues().forEach((k, v) -> {
-                    if (k.equals(OPERATION_SOURCE)) {
-                        logs.get(finalIndex).setModule(v.toString());
-                    }
-                });
+                String timestamp = Objects.requireNonNull(fluxRecord.getTime()).toString();
+                BackendLog backendLog = logs.getOrDefault(timestamp, new BackendLog());
+                backendLog.setTimestamp(timestamp);
+    
+                fluxRecord.getValues().entrySet().stream()
+                            .filter(entry -> OPERATION_SOURCE.equals(entry.getKey()))
+                            .findFirst()
+                            .ifPresent(entry -> backendLog.setModule(entry.getValue() != null ? entry.getValue().toString() : null));
 
-                switch (fluxRecord.getField()) {
+                switch (Objects.requireNonNull(fluxRecord.getField())) {
                     case DESCRIPTION:
-                        logs.get(index).setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                        backendLog.setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
                         break;
                     case OPERATION:
-                        logs.get(index).setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                        backendLog.setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
                         break;
                     case SEVERITY:
-                        logs.get(index).setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
+                        backendLog.setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
                         break;
                     case USER:
-                        logs.get(index).setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
-                        break;
-                    default:
+                        backendLog.setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
                         break;
                 }
-
-                logs.get(index).setTimestamp(Objects.requireNonNull(fluxRecord.getTime()).toString());
-                index++;
+                logs.put(timestamp, backendLog);
             }
         }
-        return logs;
+        return new ArrayList<>(logs.values());
     }
 
     public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {

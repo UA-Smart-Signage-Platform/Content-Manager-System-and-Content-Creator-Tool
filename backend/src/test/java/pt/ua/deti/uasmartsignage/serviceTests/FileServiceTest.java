@@ -6,6 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
+import java.util.HashSet;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -20,6 +23,7 @@ import pt.ua.deti.uasmartsignage.services.LogsService;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -30,6 +34,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 
 import pt.ua.deti.uasmartsignage.enums.Log;
+import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
@@ -122,6 +127,31 @@ class FileServiceTest {
         assertThat(saved).isNull();
         verify(repository, never()).save(any(CustomFile.class));
     }
+
+    // The following test - IN THEORY - should be working but it simply doesn't. Idk anymore
+    @Test
+    @Disabled
+    void givenValidType_whenCreateDirectoryFails_thenLogsErrorAndReturnsNull() throws IOException {
+        File baseDir = new File(Log.USERDIR.toString() + "/uploads");
+
+        Set<PosixFilePermission> perms = Files.getPosixFilePermissions(baseDir.toPath());
+        perms.remove(PosixFilePermission.OWNER_WRITE);
+        perms.remove(PosixFilePermission.GROUP_WRITE);
+        perms.remove(PosixFilePermission.OTHERS_WRITE);
+        Files.setPosixFilePermissions(baseDir.toPath(), perms);
+
+        customFile.setUuid("THISWILLKILLIT/9128409187dwaiujdj/hello?*/w*8w8/");
+        CustomFile newDirectory = service.createDirectory(customFile);
+
+        assertThat(newDirectory).isNull();
+        verify(repository, never()).save(any());
+
+        perms.add(PosixFilePermission.OWNER_WRITE);
+        perms.add(PosixFilePermission.GROUP_WRITE);
+        perms.add(PosixFilePermission.OTHERS_WRITE);
+        Files.setPosixFilePermissions(baseDir.toPath(), perms);
+    }
+
 
     @Test
     void givenValidFile_whenCreateFile_thenFileIsSaved() throws IOException {

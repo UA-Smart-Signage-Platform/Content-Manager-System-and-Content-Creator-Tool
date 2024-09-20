@@ -69,7 +69,7 @@ public class RuleController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Boolean> deleteRule(@PathVariable("id") String id) {
-        boolean deleted = ruleService.deleteRuleById(id);
+        boolean deleted = ruleService.deleteRuleById(id.replaceAll("[\n\r]", "_"));
         if (!deleted) {
             return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }
@@ -83,7 +83,7 @@ public class RuleController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<Rule> updateRule(@PathVariable("id") String id, @RequestBody @Valid RuleDTO ruleDTO) {
-        Rule updatedRule = ruleService.updateRule(id, ruleDTO);
+        Rule updatedRule = ruleService.updateRule(id.replaceAll("[\n\r]", "_"), ruleDTO);
         if (updatedRule == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
