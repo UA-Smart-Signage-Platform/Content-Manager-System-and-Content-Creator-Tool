@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -195,7 +193,7 @@ class MonitorServiceTest {
     }
 
     @Test
-    public void whenServiceDeleteMonitorThenReturnTrue() {
+    void whenServiceDeleteMonitorThenReturnTrue() {
         Long monitorId = 1L;
         Monitor monitor = new Monitor();
         when(repository.findById(monitorId)).thenReturn(Optional.of(monitor));
@@ -207,7 +205,7 @@ class MonitorServiceTest {
     }
 
     @Test
-    public void whenServiceDeleteMonitorThenReturnFalse() {
+    void whenServiceDeleteMonitorThenReturnFalse() {
         Long monitorId = 1L;
         when(repository.findById(monitorId)).thenReturn(Optional.empty());
 
@@ -219,7 +217,7 @@ class MonitorServiceTest {
     }
 
     @Test
-    public void whenServicetestGetMonitorByUUIDThenReturnMonitor() {
+    void whenServicetestGetMonitorByUUIDThenReturnMonitor() {
         String uuid = "test-uuid";
         Monitor expectedMonitor = new Monitor();
         when(repository.findByUuid(uuid)).thenReturn(expectedMonitor);
@@ -230,7 +228,7 @@ class MonitorServiceTest {
     }
 
     @Test
-    public void testGetAllMonitorsByPendingAndOnline() {
+    void testGetAllMonitorsByPendingAndOnline() {
         boolean pending = true;
         boolean onlineStatus = false;
         Monitor monitor1 = new Monitor();
@@ -254,7 +252,7 @@ class MonitorServiceTest {
     }
 
     @Test
-    public void whenGetMonitorsByGroupAndOnlineThenReturnList() {
+    void whenGetMonitorsByGroupAndOnlineThenReturnList() {
         long groupId = 1L;
         boolean onlineStatus = true;
         Monitor monitor1 = new Monitor();
