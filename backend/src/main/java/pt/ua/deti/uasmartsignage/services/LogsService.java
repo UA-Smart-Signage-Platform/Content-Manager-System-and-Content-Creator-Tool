@@ -123,6 +123,8 @@ public class LogsService {
                     case USER:
                         backendLog.setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
                         break;
+                    default:
+                        break;
                 }
                 logs.put(timestamp, backendLog);
             }

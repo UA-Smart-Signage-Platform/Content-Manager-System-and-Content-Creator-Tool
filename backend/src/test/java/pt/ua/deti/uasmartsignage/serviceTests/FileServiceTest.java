@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
-import java.util.HashSet;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -34,7 +33,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 
 import pt.ua.deti.uasmartsignage.enums.Log;
-import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
@@ -128,9 +126,8 @@ class FileServiceTest {
         verify(repository, never()).save(any(CustomFile.class));
     }
 
-    // The following test - IN THEORY - should be working but it simply doesn't. Idk anymore
     @Test
-    @Disabled
+    @Disabled("The following test - IN THEORY - should be working but it simply doesn't. Idk anymore")
     void givenValidType_whenCreateDirectoryFails_thenLogsErrorAndReturnsNull() throws IOException {
         File baseDir = new File(Log.USERDIR.toString() + "/uploads");
 
