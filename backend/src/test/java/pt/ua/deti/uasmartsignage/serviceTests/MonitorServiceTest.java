@@ -1,13 +1,22 @@
 package pt.ua.deti.uasmartsignage.serviceTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +24,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
@@ -52,6 +62,15 @@ class MonitorServiceTest {
         Monitor retu = service.getMonitorById(1L).get();
 
         assertThat(retu.getName()).isEqualTo("monitor");
+    }
+
+    @Test void
+    getMonitorByIdTestReturnsNull(){
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        Optional<Monitor> retu = service.getMonitorById(1L);
+
+        assertThat(retu).isEmpty();
     }
 
     @Test void
@@ -175,5 +194,86 @@ class MonitorServiceTest {
         assertThat(monitors).hasSize(2).extracting(Monitor::getName).contains("monitor","Name");
     }
 
+    @Test
+    public void whenServiceDeleteMonitorThenReturnTrue() {
+        Long monitorId = 1L;
+        Monitor monitor = new Monitor();
+        when(repository.findById(monitorId)).thenReturn(Optional.of(monitor));
 
+        Boolean result = service.deleteMonitor(monitorId);
+
+        assertTrue(result);
+        verify(repository, times(1)).deleteById(monitorId);
+    }
+
+    @Test
+    public void whenServiceDeleteMonitorThenReturnFalse() {
+        Long monitorId = 1L;
+        when(repository.findById(monitorId)).thenReturn(Optional.empty());
+
+        Boolean result = service.deleteMonitor(monitorId);
+
+        assertFalse(result);
+        verify(repository, never()).deleteById(monitorId);
+        verify(logsService, times(1)).addLogEntry(eq(Severity.ERROR), any(), any(), any(), any());
+    }
+
+    @Test
+    public void whenServicetestGetMonitorByUUIDThenReturnMonitor() {
+        String uuid = "test-uuid";
+        Monitor expectedMonitor = new Monitor();
+        when(repository.findByUuid(uuid)).thenReturn(expectedMonitor);
+
+        Monitor result = service.getMonitorByUUID(uuid);
+
+        assertEquals(expectedMonitor, result);
+    }
+
+    @Test
+    public void testGetAllMonitorsByPendingAndOnline() {
+        boolean pending = true;
+        boolean onlineStatus = false;
+        Monitor monitor1 = new Monitor();
+        Monitor monitor2 = new Monitor();
+        List<Monitor> monitors = new ArrayList<>();
+        monitors.add(monitor1);
+        monitors.add(monitor2);
+
+        when(repository.findByPendingAndOnline(pending, onlineStatus)).thenReturn(monitors);
+        when(logsService.keepAliveIn10min(monitor1)).thenReturn(true);
+        when(logsService.keepAliveIn10min(monitor2)).thenReturn(false);
+
+        List<Monitor> result = service.getAllMonitorsByPendingAndOnline(pending, onlineStatus);
+
+        assertEquals(2, result.size());
+        assertTrue(monitor1.isOnline());
+        assertFalse(monitor2.isOnline());
+        verify(repository, times(1)).findByPendingAndOnline(pending, onlineStatus);
+        verify(logsService, times(1)).keepAliveIn10min(monitor1);
+        verify(logsService, times(1)).keepAliveIn10min(monitor2);
+    }
+
+    @Test
+    public void whenGetMonitorsByGroupAndOnlineThenReturnList() {
+        long groupId = 1L;
+        boolean onlineStatus = true;
+        Monitor monitor1 = new Monitor();
+        Monitor monitor2 = new Monitor();
+        List<Monitor> monitors = new ArrayList<>();
+        monitors.add(monitor1);
+        monitors.add(monitor2);
+        
+        when(repository.findByPendingAndGroup_IdAndOnline(false, groupId, onlineStatus)).thenReturn(monitors);
+        when(logsService.keepAliveIn10min(monitor1)).thenReturn(true);
+        when(logsService.keepAliveIn10min(monitor2)).thenReturn(false);
+
+        List<Monitor> result = service.getMonitorsByGroupAndOnline(groupId, onlineStatus);
+
+        assertEquals(2, result.size());
+        assertTrue(monitor1.isOnline());
+        assertFalse(monitor2.isOnline());
+        verify(repository, times(1)).findByPendingAndGroup_IdAndOnline(false, groupId, onlineStatus);
+        verify(logsService, times(1)).keepAliveIn10min(monitor1);
+        verify(logsService, times(1)).keepAliveIn10min(monitor2);
+    }
 }

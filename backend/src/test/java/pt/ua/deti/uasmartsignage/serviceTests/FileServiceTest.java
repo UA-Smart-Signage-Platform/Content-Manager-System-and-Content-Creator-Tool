@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import java.nio.file.attribute.PosixFilePermission;
@@ -27,12 +28,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 
 import pt.ua.deti.uasmartsignage.enums.Log;
+import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.embedded.FilesClass;
 import pt.ua.deti.uasmartsignage.repositories.FileRepository;
@@ -137,7 +138,6 @@ class FileServiceTest {
         perms.remove(PosixFilePermission.OTHERS_WRITE);
         Files.setPosixFilePermissions(baseDir.toPath(), perms);
 
-        customFile.setUuid("THISWILLKILLIT/9128409187dwaiujdj/hello?*/w*8w8/");
         CustomFile newDirectory = service.createDirectory(customFile);
 
         assertThat(newDirectory).isNull();
@@ -192,7 +192,6 @@ class FileServiceTest {
 
         assertThat(created).isNull();
     }
-
 
     @Test
     void givenValidId_whenDeleteFile_thenFileIsDeleted() throws IOException {
@@ -273,6 +272,15 @@ class FileServiceTest {
         Resource file = service.downloadFileById(1L);
 
         assertThat(file).isNull();
+    }
+
+    @Test
+    void givenValidIdButDoesNotExist_whenDownloadFileById_ThenReturnNull() throws IOException {        
+        when(repository.findById(1L)).thenReturn(Optional.of(customFile));
+        Resource response = service.downloadFileById(1L);
+
+        assertThat(response).isNull();
+        verify(logsService, times(1)).addLogEntry(eq(Severity.ERROR), any(), any(), any(), any());
     }
 
     @Test
