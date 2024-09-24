@@ -1,6 +1,5 @@
 package pt.ua.deti.uasmartsignage.services;
 
-
 import com.influxdb.client.InfluxDBClient;
 import com.influxdb.client.InfluxDBClientFactory;
 import com.influxdb.client.QueryApi;
@@ -22,6 +21,8 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class LogsService {
@@ -63,11 +64,9 @@ public class LogsService {
      * @return True if the log was successfully added, false otherwise.
      */
     public boolean addBackendLog(Severity severity, String operationSource, String operation, String description) {
-        String measurement = "BackendLogs";
         String user = "admin"; // Placeholder for user (will be implemented in future should be retrived from the JWT token)
         try {
-            // Prepare the InfluxDB point
-            Point point = Point.measurement(measurement)
+            Point point = Point.measurement("BackendLogs")
                     .addTag(OPERATION_SOURCE, operationSource)
                     .addField(SEVERITY, severity.toString())
                     .addField(USER, user)
@@ -75,70 +74,62 @@ public class LogsService {
                     .addField(DESCRIPTION, description)
                     .time(System.currentTimeMillis(), WritePrecision.MS);
 
-            // Write the point to InfluxDB
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
             writeApi.writePoint(backendBucket, org, point);
             return true;
-        } catch (InfluxException e) {
+        } 
+        catch (InfluxException e) {
             logger.error(ADDLOGERROR, e.getMessage());
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
     }
 
-    public List<BackendLog> getBackendLogs() {
-        List<BackendLog> logs = new ArrayList<>();
-        // Construct Flux query to retrieve logs
-        String fluxQuery = "from(bucket: \""+ backendBucket +"\")" +
-                " |> range(start: -48h)" +  // Adjust time range as needed
-                " |> filter(fn: (r) => r._measurement == \"BackendLogs\")";  // Measurement name
+    public List<BackendLog> getBackendLogs(int hours) {
+        String query = String.format(
+            "from(bucket: \"%s\") |> range(start: -%dh) |> filter(fn: (r) => r._measurement == \"BackendLogs\")",
+            backendBucket, hours
+        );
 
-        // Execute the query
         QueryApi queryApi = influxDBClient.getQueryApi();
-        List<FluxTable> tables = queryApi.query(fluxQuery, org);
+        List<FluxTable> tables = queryApi.query(query, org);
+        Map<String, BackendLog> logs = new HashMap<>();
 
-        // Return empty list if no logs are found
-        if (tables.isEmpty()) {
-            return logs;
-        }
-
-        // Initialize list of BackendLog objects
-        int size = tables.get(0).getRecords().size();
-        for (int i = 0; i < size; i++) {
-            BackendLog backendLog = new BackendLog();
-            logs.add(backendLog);
-        }
-
-        // Process query results
         for (FluxTable table : tables) {
             List<FluxRecord> records = table.getRecords();
-            int index = 0;
-            // Iterate over records and populate BackendLog objects (this is needed because the query returns multiple fields for each record)
+            
             for (FluxRecord fluxRecord : records) {
-                int finalIndex = index;
-                fluxRecord.getValues().forEach((k, v) -> {
-                    if (k.equals(OPERATION_SOURCE)) {
-                        logs.get(finalIndex).setModule(v.toString());
-                    }
-                });
-                if (Objects.equals(fluxRecord.getField(), DESCRIPTION)) {
-                    logs.get(index).setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                String timestamp = Objects.requireNonNull(fluxRecord.getTime()).toString();
+                BackendLog backendLog = logs.getOrDefault(timestamp, new BackendLog());
+                backendLog.setTimestamp(timestamp);
+    
+                fluxRecord.getValues().entrySet().stream()
+                            .filter(entry -> OPERATION_SOURCE.equals(entry.getKey()))
+                            .findFirst()
+                            .ifPresent(entry -> backendLog.setModule(entry.getValue() != null ? entry.getValue().toString() : null));
+
+                switch (Objects.requireNonNull(fluxRecord.getField())) {
+                    case DESCRIPTION:
+                        backendLog.setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                        break;
+                    case OPERATION:
+                        backendLog.setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                        break;
+                    case SEVERITY:
+                        backendLog.setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
+                        break;
+                    case USER:
+                        backendLog.setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                        break;
+                    default:
+                        break;
                 }
-                if (Objects.equals(fluxRecord.getField(), OPERATION)) {
-                    logs.get(index).setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
-                }
-                if (Objects.equals(fluxRecord.getField(), SEVERITY)) {
-                    logs.get(index).setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
-                }
-                if (Objects.equals(fluxRecord.getField(), USER)) {
-                    logs.get(index).setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
-                }
-                logs.get(index).setTimestamp(Objects.requireNonNull(fluxRecord.getTime()).toString());
-                index++;
+                logs.put(timestamp, backendLog);
             }
         }
-        return logs;
+        return new ArrayList<>(logs.values());
     }
 
     public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {
@@ -153,9 +144,11 @@ public class LogsService {
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
             writeApi.writePoint(monitorBucket, org, point);
             return true;
-        } catch (InfluxException e) {
+        } 
+        catch (InfluxException e) {
             logger.error(ADDLOGERROR, e.getMessage());
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
@@ -166,7 +159,7 @@ public class LogsService {
         String monitorUUID = monitor.getUuid();
 
         String fluxQuery = "from(bucket: \""+ monitorBucket +"\")" +
-                " |> range(start: -10m)" +  // Adjust time range as needed
+                " |> range(start: -10m)" + 
                 " |> filter(fn: (r) => r._measurement == \"KeepAliveLogs\")" +  
                 " |> filter(fn: (r) => r.SourceMonitor == \"" + monitorUUID + "\")";
     
@@ -179,10 +172,9 @@ public class LogsService {
 
     // Not implemented neither in MP or Frontend
     public boolean addMonitorLog(Severity severity, String uuid, String operation, String description, Long time) {
-        String measurement = "MonitorLogs";
         try {
             // Prepare the InfluxDB point
-            Point point = Point.measurement(measurement)
+            Point point = Point.measurement("MonitorLogs")
                     .addTag(MONITOR, uuid)
                     .addField(SEVERITY, severity.toString())
                     .addField(OPERATION, operation)
@@ -193,11 +185,20 @@ public class LogsService {
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
             writeApi.writePoint(monitorBucket, org, point);
             return true;
-        } catch (InfluxException e) {
+        } 
+        catch (InfluxException e) {
             logger.error(ADDLOGERROR, e.getMessage());
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             logger.error(UNEXPECTEDERROR, e.getMessage());
         }
         return false;
+    }
+
+
+    public void addLogEntry(Severity severity, String source, String operation, String description, Logger loggerFromClass) {
+        if (!addBackendLog(severity, source, operation, description)) {
+            loggerFromClass.error("Failed to add log to influxDB");
+        }
     }
 }

@@ -1,13 +1,10 @@
 package pt.ua.deti.uasmartsignage.controllers;
 
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import pt.ua.deti.uasmartsignage.dto.RuleDTO;
 import pt.ua.deti.uasmartsignage.models.Rule;
@@ -43,9 +40,9 @@ public class RuleController {
             @ApiResponse(responseCode = "404", description = "Rule not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Rule> getRuleById(@PathVariable("id") String id) {
-        Rule rule = ruleService.getRuleById(id);
-        if (rule == null) {
+    public ResponseEntity<Optional<Rule>> getRuleById(@PathVariable("id") String id) {
+        Optional<Rule> rule = ruleService.getRuleById(id);
+        if (rule.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(rule, HttpStatus.OK);
@@ -71,12 +68,12 @@ public class RuleController {
             @ApiResponse(responseCode = "404", description = "Rule not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRule(@PathVariable("id") String id) {
-        if (ruleService.getRuleById(id) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Boolean> deleteRule(@PathVariable("id") String id) {
+        boolean deleted = ruleService.deleteRuleById(id.replaceAll("[\n\r]", "_"));
+        if (!deleted) {
+            return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }
-        ruleService.deleteRuleById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Update rule")
@@ -86,7 +83,7 @@ public class RuleController {
     })
     @PutMapping("/{id}")
     public ResponseEntity<Rule> updateRule(@PathVariable("id") String id, @RequestBody @Valid RuleDTO ruleDTO) {
-        Rule updatedRule = ruleService.updateRule(id, ruleDTO);
+        Rule updatedRule = ruleService.updateRule(id.replaceAll("[\n\r]", "_"), ruleDTO);
         if (updatedRule == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { DashboardGraph, GroupBar, PageTitle } from '../../components'
 import { MdArrowBack, MdBugReport, MdWarning } from 'react-icons/md';
@@ -7,6 +7,7 @@ import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router';
 import { tableStyle } from "./tableStyleConfig";
 import { paginationComponentOptions, columns } from './tableDataConfig';
+import logService from '../../services/logService';
 
 
 
@@ -185,6 +186,12 @@ function Dashboard() {
             }
             );
     }
+
+    useEffect(() => {
+        logService.getLogs("6").then((response) => {
+            console.log(response.data);
+        })
+    }, []);
 
     return (
             <div className="flex flex-col h-full">

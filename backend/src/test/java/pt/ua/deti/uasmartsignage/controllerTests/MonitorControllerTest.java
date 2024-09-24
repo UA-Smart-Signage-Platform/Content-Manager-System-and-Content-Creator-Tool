@@ -3,6 +3,7 @@ package pt.ua.deti.uasmartsignage.controllerTests;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -75,6 +76,25 @@ class MonitorControllerTest {
     }
 
     @Test void
+    testGetAllMonitorsEndpointWhereOnlineStatusDifferentNull() throws Exception{
+        Monitor monitor = new Monitor();
+        monitor.setName("hall");
+        monitor.setPending(false);
+
+        Monitor monitor2 = new Monitor();
+        monitor2.setName("deti");
+        monitor2.setPending(false);
+        monitor2.setOnline(true);
+
+        when(service.getAllMonitorsByPendingAndOnline(false, true)).thenReturn(Arrays.asList(monitor2));
+
+        mvc.perform(get("/api/monitors?onlineStatus=true").contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].name", is("deti")));
+    }
+
+    @Test void
     testGetAllPendingMonitors() throws Exception{
         Monitor monitor = new Monitor();
         monitor.setName("hall");
@@ -123,7 +143,7 @@ class MonitorControllerTest {
         monitor.setName("hall");
         monitor.setPending(false);
 
-        when(service.getMonitorById(1L)).thenReturn(monitor);
+        when(service.getMonitorById(1L)).thenReturn(Optional.of(monitor));
 
         mvc.perform(get("/api/monitors/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -133,7 +153,7 @@ class MonitorControllerTest {
     @Test void
     testGetMonitorById404() throws Exception{
 
-        when(service.getMonitorById(1L)).thenReturn(null);
+        when(service.getMonitorById(1L)).thenReturn(Optional.empty());
 
         mvc.perform(get("/api/monitors/1").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
@@ -205,6 +225,8 @@ class MonitorControllerTest {
 
     @Test void
     testDeleteMonitor() throws Exception{
+        when(service.deleteMonitor(1L)).thenReturn(true);
+
         mvc.perform(delete("/api/monitors/1").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNoContent());
     }

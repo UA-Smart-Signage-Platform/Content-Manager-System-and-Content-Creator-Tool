@@ -1,15 +1,12 @@
 package pt.ua.deti.uasmartsignage.controllers;
 
 import java.util.List;
+import java.util.Optional;
 
 import pt.ua.deti.uasmartsignage.dto.MonitorGroupDTO;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import pt.ua.deti.uasmartsignage.services.MonitorGroupService;
 import org.springframework.web.bind.annotation.*;
@@ -53,9 +50,9 @@ public class MonitorGroupController {
             @ApiResponse(responseCode = "404", description = "Monitor group not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<MonitorGroup> getGroupById(@PathVariable("id") Long id) {
-        MonitorGroup group = monitorGroupService.getGroupById(id);
-        if (group == null) {
+    public ResponseEntity<Optional<MonitorGroup>> getGroupById(@PathVariable("id") Long id) {
+        Optional<MonitorGroup> group = monitorGroupService.getGroupById(id);
+        if (group.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(group, HttpStatus.OK);
@@ -69,8 +66,8 @@ public class MonitorGroupController {
     })
     @PostMapping
     public ResponseEntity<MonitorGroup> saveGroup(@RequestBody @Valid MonitorGroupDTO groupDTO) {
-        MonitorGroup existingGroup = monitorGroupService.getGroupByName(groupDTO.getName());
-        if (existingGroup != null){
+        Optional<MonitorGroup> existingGroup = monitorGroupService.getGroupByName(groupDTO.getName());
+        if (existingGroup.isPresent()){
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
         MonitorGroup savedGroup = monitorGroupService.saveGroup(groupDTO);
@@ -86,12 +83,12 @@ public class MonitorGroupController {
             @ApiResponse(responseCode = "404", description = "Monitor group not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGroup(@PathVariable("id") Long id) {
-        if (monitorGroupService.getGroupById(id) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Boolean> deleteGroup(@PathVariable("id") Long id) {
+        boolean deleted = monitorGroupService.deleteGroupById(id);
+        if (!deleted) {
+            return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }
-        monitorGroupService.deleteGroupById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Update monitor group")
