@@ -18,7 +18,7 @@ function Dashboard() {
     const [showMonitorList, setShowMonitorList] = useState(false);
     const [selectedOnline, setSelectedOnline] = useState(false);
 
-    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery] = useQueries({
+    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsQuery] = useQueries({
         queries : [
             {
                 queryKey: ['onlineMonitors', { onlineStatus: true }],
@@ -39,6 +39,10 @@ function Dashboard() {
                 queryKey: ['offlineMonitorsByGroup', { groupId, onlineStatus: false }],
                 queryFn: () => monitorService.getMonitorsByGroup(groupId, false),
                 enabled: groupId != null
+            },
+            {
+                queryKey: ['logs'],
+                queryFn: () => logService.getLogsCountLast30Days()
             }
         ]
     })
@@ -157,39 +161,47 @@ function Dashboard() {
             return (
                 <div className="w-[50%] h-full flex flex-col place-content-center">
                     <DashboardGraph 
-                    data={data1} 
-                    xLabel={"hour"} 
-                    yLabel={"monitors"}
-                    height={"75%"}
-                    title={<><MdWarning className="w-6 h-6 mx-1"/> Downtime (today)</>}
-                    linkTo={"/"} />
+                        data={hourData} 
+                        xLabel={"hour"} 
+                        xDataKey={"hour"}
+                        height={"75%"}
+                        title={<><MdWarning className="w-6 h-6 mx-1"/> Downtime (today)</>}
+                        linkTo={"/"} 
+                        lineDataKey={"numberMonitors"} />
                 </div>
             )
         }
     }
 
-    const data1 = [];
-    const data2 = [];
-    for (let index = 0; index <= 24; index++) {
-        data1.push( 
-            {
-                "hour": index,
-                "monitor": index,
-            }
-            );
-    };
-    for (let index = 1; index <= 30; index++) {
-        data2.push( 
-            {
-                "day": index + "/4",
-                "monitor": index,
-            }
-            );
+    const hourData = [];
+    const dayLogsData = [];
+    const HOURS_IN_DAY = 24;
+    const DAYS_IN_MONTH = 30;
+    
+    const currentHour = new Date().getTime();
+    const oneHourMillis = 60 * 60 * 1000;
+    const today = new Date();
+    const priorDate = new Date(today.getTime() - (DAYS_IN_MONTH * 24 * oneHourMillis));
+    
+    for (let index = 0; index <= HOURS_IN_DAY; index++) {
+        const hourDate = new Date(currentHour - (index * oneHourMillis));
+        hourData.push({
+            hour: hourDate.getHours(),
+            numberMonitors: index,
+        });
+    }
+    
+    for (let index = 1; index <= DAYS_IN_MONTH; index++) {
+        const dayDate = new Date(priorDate.getTime() + (index * 24 * oneHourMillis));
+        dayLogsData.push({
+            day: `${dayDate.getDate()}/${dayDate.getMonth() + 1}`,
+            numberLogs: logsQuery.data?.data[index],
+        });
     }
 
     useEffect(() => {
         logService.getLogs("6").then((response) => {
-            console.log(response.data);
+            //console.log(response.data);
         })
     }, []);
 
@@ -214,12 +226,13 @@ function Dashboard() {
                         <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
                         <div className="h-[50%] p-4">
                             <DashboardGraph 
-                                    data={data2} 
-                                    xLabel={"day"} 
-                                    yLabel={"monitors"}
+                                    data={dayLogsData} 
+                                    xLabel={"day / month"} 
+                                    xDataKey={"day"}
                                     height={"90%"}
                                     title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (past 30 days)</>}
-                                    linkTo={"/dashboard/logs"} />
+                                    linkTo={"/dashboard/logs"}
+                                    lineDataKey={"numberLogs"} />
                         </div>
                     </div>
                 </div>

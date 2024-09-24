@@ -34,6 +34,16 @@ public class LogController {
         List<BackendLog> logs = logsService.getBackendLogs(hours);
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
+
+    @Operation(summary = "Get all backend logs in the last 30 days and group them together to count their total per day")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logs list retrieved", content = @Content(mediaType = "application/json"))
+    })
+    @GetMapping("/logs/backend/count")
+    public ResponseEntity<List<Integer>> getNumberOfBackendLogsLast30Days() {
+        List<Integer> logs = logsService.getBackendLogsCountPerDayLast30Days();
+        return new ResponseEntity<>(logs, HttpStatus.OK);
+    }
 }
 
 

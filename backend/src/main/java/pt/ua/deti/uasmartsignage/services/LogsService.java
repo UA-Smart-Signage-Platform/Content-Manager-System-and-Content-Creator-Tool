@@ -67,8 +67,8 @@ public class LogsService {
         String user = "admin"; // Placeholder for user (will be implemented in future should be retrived from the JWT token)
         try {
             Point point = Point.measurement("BackendLogs")
-                    .addTag(OPERATION_SOURCE, operationSource)
-                    .addField(SEVERITY, severity.toString())
+                    .addTag(SEVERITY, severity.toString())
+                    .addField(OPERATION_SOURCE, operationSource)
                     .addField(USER, user)
                     .addField(OPERATION, operation)
                     .addField(DESCRIPTION, description)
@@ -98,9 +98,7 @@ public class LogsService {
         Map<String, BackendLog> logs = new HashMap<>();
 
         for (FluxTable table : tables) {
-            List<FluxRecord> records = table.getRecords();
-            
-            for (FluxRecord fluxRecord : records) {
+            for (FluxRecord fluxRecord : table.getRecords()) {
                 String timestamp = Objects.requireNonNull(fluxRecord.getTime()).toString();
                 BackendLog backendLog = logs.getOrDefault(timestamp, new BackendLog());
                 backendLog.setTimestamp(timestamp);
@@ -130,6 +128,25 @@ public class LogsService {
             }
         }
         return new ArrayList<>(logs.values());
+    }
+
+    public List<Integer> getBackendLogsCountPerDayLast30Days(){
+        String query = String.format(
+            "from(bucket: \"%s\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"BackendLogs\") |> group() |> aggregateWindow(every: 1d, fn: count) |> yield(name: \"logs_per_day\")",
+            backendBucket
+        );
+
+        QueryApi queryApi = influxDBClient.getQueryApi();
+        List<FluxTable> tables = queryApi.query(query, org);
+        List<Integer> logsPerDay = new ArrayList<>();
+
+        for (FluxTable table : tables) {
+            for (FluxRecord record : table.getRecords()) {
+                Long countValue = (Long) record.getValueByKey("_value");
+                logsPerDay.add(countValue.intValue());
+            }
+        }
+        return logsPerDay;
     }
 
     public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {

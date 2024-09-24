@@ -4,22 +4,19 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 
 const CustomTooltip = ({ active, payload, label }) => {
     if (active && payload) {
-      return (
-        <div className="custom-tooltip">
-            <p className="label text-textcolor bg-backgroundcolor text-center rounded-md p-2">
-                {payload[0].value !== 0 
-                ? (
-                <>
-                    {payload[0].value} monitors offline <br /> during {payload[0].payload.hasOwnProperty("day") ? "day" : "hour"} {label}
-                </>
-                ) : ( 
-                <>
-                    No monitors offline <br /> during {payload[0].payload.hasOwnProperty("day") ? "day" : "hour"} {label}
-                </>
-                )}
-            </p>
-        </div>
-      );
+        const value = payload[0].value;
+        const isLog = payload[0].name.includes("numberLogs");
+        const timePeriod = payload[0].payload.hasOwnProperty("day") ? "day" : "hour";
+
+        return (
+            <div className="custom-tooltip">
+                <p className="label text-textcolor bg-backgroundcolor text-center rounded-md p-2">
+                    <>
+                    {value !== 0 ? `${value}` : "No"} {isLog ? "logs" : "monitors offline"} <br /> during {timePeriod} {label}
+                    </>
+                </p>
+            </div>
+        );
     }
 };
 
@@ -29,7 +26,7 @@ CustomTooltip.propTypes = {
     label: PropTypes.string
 }
 
-function DashboardGraph( { data, xLabel, yLabel, height, title, linkTo } ) {
+function DashboardGraph( { data, xLabel, xDataKey, height, title, linkTo, lineDataKey } ) {
     return(
         <>
             <div className="h-[10%] flex items-center">
@@ -42,15 +39,15 @@ function DashboardGraph( { data, xLabel, yLabel, height, title, linkTo } ) {
                     <LineChart margin={{ top: 15, left: 0, right: 15, bottom: 15 }} data={data}>
                         <CartesianGrid strokeDasharray="4 4" />
                         <XAxis label={{ value: xLabel, dy: 18 }} 
-                            dataKey={xLabel}
+                            dataKey={xDataKey}
                             fontSize={14} 
                             fontFamily='Lexend' />
-                        <YAxis label={{ value: yLabel, angle: -90, dx: -15 }} 
+                        <YAxis 
                             width={50} 
                             fontSize={16} 
                             fontFamily='Lexend' />
                         <Tooltip content={<CustomTooltip/>}/>
-                        <Line type="linear" dataKey="monitor" stroke={"#D12E2E"} strokeWidth={2}/>
+                        <Line type="linear" dataKey={lineDataKey} stroke={"#D12E2E"} strokeWidth={2}/>
                     </LineChart>
                 </ResponsiveContainer>
             </div>
@@ -64,7 +61,6 @@ function DashboardGraph( { data, xLabel, yLabel, height, title, linkTo } ) {
 DashboardGraph.propTypes = {
     data: PropTypes.array.isRequired,
     xLabel: PropTypes.string.isRequired,
-    yLabel: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     title: PropTypes.node.isRequired,
     linkTo: PropTypes.string.isRequired
