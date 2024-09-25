@@ -201,7 +201,7 @@ function Dashboard() {
 
     useEffect(() => {
         logService.getLogs("6").then((response) => {
-            //console.log(response.data);
+            console.log(response.data);
         })
     }, []);
 

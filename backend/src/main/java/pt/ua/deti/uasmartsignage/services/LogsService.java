@@ -55,16 +55,19 @@ public class LogsService {
     }
 
     /**
-     * Adds a log to the InfluxDB database.
+     * Adds a backend log entry to the InfluxDB database.
      *
-     * @param severity The severity of the log (INFO, WARNING, ERROR).
-     * @param operationSource The source of the operation that generated the log.
-     * @param operation The operation that generated the log.
-     * @param description The description of the log.
-     * @return True if the log was successfully added, false otherwise.
-     */
+     * This method creates a log with the specified severity, operation source, 
+     * operation name, and description, then writes it under the "BackendLogs" measurement.
+     *
+     * @param severity The severity level of the log (e.g., INFO, WARNING, ERROR).
+     * @param operationSource The source of the operation generating the log.
+     * @param operation The operation that triggered the log.
+     * @param description A description of the log entry.
+     * @return {@code true} if the log was added successfully; {@code false} otherwise.
+    */
     public boolean addBackendLog(Severity severity, String operationSource, String operation, String description) {
-        String user = "admin"; // Placeholder for user (will be implemented in future should be retrived from the JWT token)
+        String user = "admin"; 
         try {
             Point point = Point.measurement("BackendLogs")
                     .addTag(SEVERITY, severity.toString())
@@ -87,36 +90,56 @@ public class LogsService {
         return false;
     }
 
+    /**
+     * Retrieves a list of backend logs from InfluxDB for the specified time range.
+     * 
+     * This method fetches all backend logs recorded within the last specified number 
+     * of hours, filtering by the measurement name "BackendLogs". The logs are 
+     * aggregated by timestamp and populated into {@link BackendLog} objects, with 
+     * special handling for the "Severity" field.
+     *
+     * @param hours The number of hours to look back for logs (must be positive).
+     * @return A list of {@link BackendLog} objects; returns an empty list if no logs 
+     *         are found.
+     *
+     * @throws IllegalArgumentException if hours is negative.
+    */
     public List<BackendLog> getBackendLogs(int hours) {
         String query = String.format(
-            "from(bucket: \"%s\") |> range(start: -%dh) |> filter(fn: (r) => r._measurement == \"BackendLogs\")",
+            "from(bucket: \"%s\") " +
+            "|> range(start: -%dh) " +
+            "|> filter(fn: (r) => r._measurement == \"BackendLogs\")",
             backendBucket, hours
-        );
+        );        
 
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(query, org);
         Map<String, BackendLog> logs = new HashMap<>();
-
+        
+        // The following code is using influxDB queryAPI (v2 OSS).
+        // In short, the following code, after having processed the query, will go through each record,
+        // aggregate them based on timestamp and populate objects as needed.
+        // Due to Severity being a tag (index) it requires special treatment
         for (FluxTable table : tables) {
             for (FluxRecord fluxRecord : table.getRecords()) {
                 String timestamp = Objects.requireNonNull(fluxRecord.getTime()).toString();
                 BackendLog backendLog = logs.getOrDefault(timestamp, new BackendLog());
                 backendLog.setTimestamp(timestamp);
-    
+
                 fluxRecord.getValues().entrySet().stream()
-                            .filter(entry -> OPERATION_SOURCE.equals(entry.getKey()))
-                            .findFirst()
-                            .ifPresent(entry -> backendLog.setModule(entry.getValue() != null ? entry.getValue().toString() : null));
+                           .filter(entry -> SEVERITY.equals(entry.getKey()))
+                           .findFirst()
+                           .ifPresent(entry -> backendLog.setSeverity(entry.getValue() != null ? Severity.valueOf(entry.getValue().toString()) : null));
 
                 switch (Objects.requireNonNull(fluxRecord.getField())) {
+                    case OPERATION_SOURCE:
+                        backendLog.setModule(Objects.requireNonNull(fluxRecord.getValue()).toString());
+                        break;
                     case DESCRIPTION:
                         backendLog.setDescription(Objects.requireNonNull(fluxRecord.getValue()).toString());
                         break;
                     case OPERATION:
                         backendLog.setOperation(Objects.requireNonNull(fluxRecord.getValue()).toString());
-                        break;
-                    case SEVERITY:
-                        backendLog.setSeverity(Severity.valueOf(Objects.requireNonNull(fluxRecord.getValue()).toString()));
                         break;
                     case USER:
                         backendLog.setUser(Objects.requireNonNull(fluxRecord.getValue()).toString());
@@ -130,9 +153,22 @@ public class LogsService {
         return new ArrayList<>(logs.values());
     }
 
+    /**
+     * Retrieves the daily count of backend logs for the last 30 days.
+     *
+     * This method queries the InfluxDB database to count the number of backend logs 
+     * recorded each day over the past 30 days. The results are aggregated by day.
+     *
+     * @return A list of integers representing the count of logs per day for the last 30 days.
+     *         If no logs are found, the list will be empty.
+    */
     public List<Integer> getBackendLogsCountPerDayLast30Days(){
         String query = String.format(
-            "from(bucket: \"%s\") |> range(start: -30d) |> filter(fn: (r) => r._measurement == \"BackendLogs\") |> group() |> aggregateWindow(every: 1d, fn: count) |> yield(name: \"logs_per_day\")",
+            "from(bucket: \"%s\") " +
+            "|> range(start: -30d) " +
+            "|> filter(fn: (r) => r._measurement == \"BackendLogs\") " +
+            "|> aggregateWindow(every: 1d, fn: count) " +
+            "|> yield(name: \"logs_per_day\")",
             backendBucket
         );
 
@@ -142,10 +178,10 @@ public class LogsService {
 
         for (FluxTable table : tables) {
             for (FluxRecord record : table.getRecords()) {
-                Long countValue = (Long) record.getValueByKey("_value");
-                logsPerDay.add(countValue.intValue());
+                logsPerDay.add(((Number) Objects.requireNonNull(record.getValueByKey("_value"))).intValue());
             }
         }
+
         return logsPerDay;
     }
 
@@ -175,10 +211,15 @@ public class LogsService {
     public boolean keepAliveIn10min(Monitor monitor) {
         String monitorUUID = monitor.getUuid();
 
-        String fluxQuery = "from(bucket: \""+ monitorBucket +"\")" +
-                " |> range(start: -10m)" + 
-                " |> filter(fn: (r) => r._measurement == \"KeepAliveLogs\")" +  
-                " |> filter(fn: (r) => r.SourceMonitor == \"" + monitorUUID + "\")";
+        String fluxQuery = String.format(
+            "from(bucket: \"%s\") " +
+            "|> range(start: -10m) " +
+            "|> filter(fn: (r) => r._measurement == \"KeepAliveLogs\") " +
+            "|> filter(fn: (r) => r.SourceMonitor == \"%s\")",
+            monitorBucket, monitorUUID
+        );
+        
+    
     
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(fluxQuery, org);
@@ -212,7 +253,15 @@ public class LogsService {
         return false;
     }
 
-
+    /**
+     * Attempts to add a log entry to InfluxDB and logs an error if it fails.
+     *
+     * @param severity The log severity (INFO, WARNING, ERROR).
+     * @param source The source of the log (class that called it).
+     * @param operation The operation associated with the log (method called on).
+     * @param description A description of the log entry.
+     * @param loggerFromClass Logger for error reporting on failure.
+    */
     public void addLogEntry(Severity severity, String source, String operation, String description, Logger loggerFromClass) {
         if (!addBackendLog(severity, source, operation, description)) {
             loggerFromClass.error("Failed to add log to influxDB");
