@@ -1,14 +1,28 @@
 import { useQueries, useQueryClient } from '@tanstack/react-query';
 import { GroupBar, PageTitle } from '../../components';
 import { useState } from 'react';
-import { MdArrowBack } from 'react-icons/md';
+import { MdArrowBack, MdKeyboardArrowDown } from 'react-icons/md';
 import DataTable from 'react-data-table-component';
+import { useNavigate } from 'react-router-dom';
+import { MdAccessTime } from 'react-icons/md';
+import logService from '../../services/logService';
 
 function Logs() {
     const queryClient = useQueryClient();
     const [groupId, setGroupId] = useState(null);
     const [groupName, setGroupName] = useState(null);
+    const [selectedTime, setSelectedTime] = useState(1);
     const [selectedOnline, setSelectedOnline] = useState(false);
+    const navigate = useNavigate();
+
+    const [backendLogsQuery] = useQueries({
+        queries : [
+            {
+                queryKey: ['backendLogs', selectedTime],
+                queryFn: () => logService.getLogs(selectedTime)
+            }
+        ]
+    })
 
     return(
         <div className="flex flex-col h-full">
@@ -24,16 +38,30 @@ function Logs() {
                 <div id="content" className="flex flex-col w-full p-3">
                     <div className="h-[5%] w-full flex">
                         <div className="w-[50%] h-full pt-2 ">
-                            <button onClick={() => {}} className="flex flex-row text-3xl font-normal items-center pl-2">
+                            <button onClick={() => navigate("/dashboard")} className="flex flex-row text-3xl font-normal items-center pl-2">
                                 <MdArrowBack className="w-7 h-7 mr-2"/> 
                                 <span className="text-xl">Go back</span>
                             </button>
                         </div>
                         <div className="w-full h-full pt-2 flex">
-                            <div className="ml-auto flex items-center">
-                                <button onClick={() => {}} className="flex flex-row text-3xl font-normal items-center">
-                                    <span className="text-xl">BUTTON WILL BE HERE</span>
-                                </button>
+                            <div className="ml-auto flex items-center bg-secondaryMedium rounded-lg pl-2">
+                                <MdAccessTime size={32} />
+                                <div className="relative">
+                                    <select onChange={(e) => setSelectedTime(e.target.value)} defaultValue={selectedTime}
+                                        className="h-full w-full bg-secondaryMedium pl-3 pr-11 appearance-none rounded-lg flex flex-row text-xl font-medium items-center">
+                                        <option value="1">Last hour</option>
+                                        <option value="3">Last 3 hours</option>
+                                        <option value="6">Last 6 hours</option>
+                                        <option value="12">Last 12 hours</option>
+                                        <option value="24">Last 24 hours</option>
+                                        <option value="48">Last 2 days</option>
+                                        <option value="168">Last 7 days</option>
+                                        <option value="720">Last 30 days</option>
+                                    </select>
+                                    <div className="absolute top-0 right-0 h-full flex items-center pointer-events-none pr-3">
+                                        <MdKeyboardArrowDown className="ml-2 mt-1" size={32}/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

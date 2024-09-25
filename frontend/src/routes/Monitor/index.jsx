@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Errors, PageTitle } from "../../components";
 import { MdArrowBack, MdMonitor } from "react-icons/md";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import monitorService from "../../services/monitorService";
 import monitorsGroupService from "../../services/monitorsGroupService";
 import { Link } from "react-router-dom";
@@ -21,6 +21,7 @@ import { showUpdatingMonitor } from "./updatingMonitorConfig";
 
 function Monitor(){
     const queryClient = useQueryClient()
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const [name,setName] = useState("");
@@ -78,9 +79,9 @@ function Monitor(){
                         </div>
                         <div id="monitor" className="h-[92%]">
                             <div className="h-[8%] w-full flex flex-row">
-                                <Link to="/monitors" className="w-[50%]">
+                                <button onClick={() => navigate("/monitors")} className="w-[50%]">
                                     <div className="w-[100%] flex text-2xl gap-2 pb-2 items-end"><MdArrowBack className=" size-8"/> Go Back</div>
-                                </Link>
+                                </button>
                                 <div className="w-[50%] flex text-2xl gap-2 pb-2 pl-4 items-end"><MdMonitor className=" size-8"/>Preview</div>
                             </div>
                             <div className="h-[92%] w-full flex flex-row gap-5">

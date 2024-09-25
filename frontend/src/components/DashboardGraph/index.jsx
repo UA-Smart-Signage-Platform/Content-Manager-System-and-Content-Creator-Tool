@@ -1,30 +1,8 @@
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { CustomTooltip } from './customToolTip';
 
-const CustomTooltip = ({ active, payload, label }) => {
-    if (active && payload) {
-        const value = payload[0].value;
-        const isLog = payload[0].name.includes("numberLogs");
-        const timePeriod = payload[0].payload.hasOwnProperty("day") ? "day" : "hour";
-
-        return (
-            <div className="custom-tooltip">
-                <p className="label text-textcolor bg-backgroundcolor text-center rounded-md p-2">
-                    <>
-                    {value !== 0 ? `${value}` : "No"} {isLog ? "logs" : "monitors offline"} <br /> during {timePeriod} {label}
-                    </>
-                </p>
-            </div>
-        );
-    }
-};
-
-CustomTooltip.propTypes = {
-    active: PropTypes.bool,
-    payload: PropTypes.array,
-    label: PropTypes.string
-}
 
 function DashboardGraph( { data, xLabel, xDataKey, height, title, linkTo, lineDataKey } ) {
     return(
@@ -46,7 +24,7 @@ function DashboardGraph( { data, xLabel, xDataKey, height, title, linkTo, lineDa
                             width={50} 
                             fontSize={16} 
                             fontFamily='Lexend' />
-                        <Tooltip content={<CustomTooltip/>}/>
+                        <Tooltip content={CustomTooltip}/>
                         <Line type="linear" dataKey={lineDataKey} stroke={"#D12E2E"} strokeWidth={2}/>
                     </LineChart>
                 </ResponsiveContainer>

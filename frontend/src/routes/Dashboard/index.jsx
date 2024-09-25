@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router';
 import { tableStyle } from "./tableStyleConfig";
 import { paginationComponentOptions, columns } from './tableDataConfig';
 import logService from '../../services/logService';
-
+import { logsPerDayData, monitorPerHourData } from './graphsDataConfig';
 
 
 function Dashboard() {
@@ -18,7 +18,7 @@ function Dashboard() {
     const [showMonitorList, setShowMonitorList] = useState(false);
     const [selectedOnline, setSelectedOnline] = useState(false);
 
-    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsQuery] = useQueries({
+    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsLast30DaysQuery] = useQueries({
         queries : [
             {
                 queryKey: ['onlineMonitors', { onlineStatus: true }],
@@ -41,7 +41,7 @@ function Dashboard() {
                 enabled: groupId != null
             },
             {
-                queryKey: ['logs'],
+                queryKey: ['logsLast30Days'],
                 queryFn: () => logService.getLogsCountLast30Days()
             }
         ]
@@ -93,7 +93,6 @@ function Dashboard() {
 
         return <DataDisplay numberMonitors={query.data.data.length} message={"Offline"} />;
     }
-
 
     const showAllStatusOrSelectedStatus = () => {
         if (showMonitorList) {
@@ -161,7 +160,7 @@ function Dashboard() {
             return (
                 <div className="w-[50%] h-full flex flex-col place-content-center">
                     <DashboardGraph 
-                        data={hourData} 
+                        data={monitorPerHourData()} 
                         xLabel={"hour"} 
                         xDataKey={"hour"}
                         height={"75%"}
@@ -173,37 +172,6 @@ function Dashboard() {
         }
     }
 
-    const hourData = [];
-    const dayLogsData = [];
-    const HOURS_IN_DAY = 24;
-    const DAYS_IN_MONTH = 30;
-    
-    const currentHour = new Date().getTime();
-    const oneHourMillis = 60 * 60 * 1000;
-    const today = new Date();
-    const priorDate = new Date(today.getTime() - (DAYS_IN_MONTH * 24 * oneHourMillis));
-    
-    for (let index = 0; index <= HOURS_IN_DAY; index++) {
-        const hourDate = new Date(currentHour - (index * oneHourMillis));
-        hourData.push({
-            hour: hourDate.getHours(),
-            numberMonitors: index,
-        });
-    }
-    
-    for (let index = 1; index <= DAYS_IN_MONTH; index++) {
-        const dayDate = new Date(priorDate.getTime() + (index * 24 * oneHourMillis));
-        dayLogsData.push({
-            day: `${dayDate.getDate()}/${dayDate.getMonth() + 1}`,
-            numberLogs: logsQuery.data?.data[index],
-        });
-    }
-
-    useEffect(() => {
-        logService.getLogs("6").then((response) => {
-            console.log(response.data);
-        })
-    }, []);
 
     return (
             <div className="flex flex-col h-full">
@@ -226,7 +194,7 @@ function Dashboard() {
                         <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
                         <div className="h-[50%] p-4">
                             <DashboardGraph 
-                                    data={dayLogsData} 
+                                    data={logsPerDayData(logsLast30DaysQuery)} 
                                     xLabel={"day / month"} 
                                     xDataKey={"day"}
                                     height={"90%"}
