@@ -1,6 +1,7 @@
-import { Link } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 export const pageNotFound = () => {
+    const navigate = useNavigate();
     return (
     <div className="flex items-center justify-center min-h-screen">
         <div className="relative text-center">
@@ -16,12 +17,11 @@ export const pageNotFound = () => {
             <p className="text-gray-500 text-lg mt-2">
                 It might have been moved or deleted.
             </p>
-            <Link 
-            to="/monitors" 
+            <button onClick={() => navigate("/monitors")} 
             className="mt-10 inline-block px-10 py-3 bg-primary text-textcolor rounded-md shadow-md hover:opacity-80 hover:bg-primary-dark hover:shadow-lg transition duration-300"
             >
                 Return to Monitors
-            </Link>
+            </button>
         </div>
     </div>
     )

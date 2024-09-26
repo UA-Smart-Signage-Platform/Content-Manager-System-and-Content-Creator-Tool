@@ -6,23 +6,46 @@ import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
 import { MdAccessTime } from 'react-icons/md';
 import logService from '../../services/logService';
+import { columns, ExpandedComponent } from './tableDataConfig';
+import { conditionalRowStyles, tableStyle } from './tableStyleConfig';
 
 function Logs() {
     const queryClient = useQueryClient();
     const [groupId, setGroupId] = useState(null);
+    const [severityFilter, setSeverityFilter] = useState("");
     const [groupName, setGroupName] = useState(null);
     const [selectedTime, setSelectedTime] = useState(1);
     const [selectedOnline, setSelectedOnline] = useState(false);
+    const [logPerSeverity, setlogPerSeverity] = useState({info: 0, warning: 0, error: 0});
     const navigate = useNavigate();
 
     const [backendLogsQuery] = useQueries({
         queries : [
             {
                 queryKey: ['backendLogs', selectedTime],
-                queryFn: () => logService.getLogs(selectedTime)
+                queryFn: () => logService.getLogs(selectedTime).then((response) => {
+                    setlogPerSeverity(countSeverities(response.data));
+                    return response;
+                })
             }
         ]
-    })
+    });
+
+    const countSeverities = (logs) => {
+        return logs.reduce(
+          (counts, log) => {
+            if (log.severity === "INFO") counts.info++;
+            if (log.severity === "WARNING") counts.warning++;
+            if (log.severity === "ERROR") counts.error++;
+            return counts;
+          },
+          { info: 0, warning: 0, error: 0 }
+        );
+    };
+
+    const filteredLogs = backendLogsQuery.data?.data.filter(
+		log => log.severity && log.severity.toLowerCase().includes(severityFilter.toLowerCase()),
+	);
 
     return(
         <div className="flex flex-col h-full">
@@ -69,29 +92,43 @@ function Logs() {
                         <div className="h-full w-full rounded-md bg-secondaryLight">
                             <div className="h-[26%] w-full pt-3 pb-3 pr-4 pl-4">
                                 <div className="h-full w-full flex justify-between items-center">
-                                    <button onClick={() => {}} className="h-full w-[32.5%] bg-red rounded-md hover:opacity-90">
+                                    <button onClick={() => {setSeverityFilter(severityFilter === "ERROR" ? "" : "ERROR")}} 
+                                            className={`h-full w-[32.5%] bg-[#D12E2E] rounded-md hover:opacity-90 ${severityFilter === "ERROR" || severityFilter === "" ? "" : "opacity-70"}`}>
                                         <span className="flex flex-col h-full w-full text-white items-center justify-end pb-2">
-                                            <span className="text-8xl font-medium">12</span>
+                                            <span className="text-8xl font-medium">{logPerSeverity.error}</span>
                                             <span className="text-xl">errors</span>
                                         </span>
                                     </button>
-                                    <button className="h-full w-[32.5%] bg-orange rounded-md hover:opacity-90">
+                                    <button onClick={() => {setSeverityFilter(severityFilter === "WARNING" ? "" : "WARNING")}} 
+                                            className={`h-full w-[32.5%] bg-[#DC8331] rounded-md hover:opacity-90 ${severityFilter === "WARNING" || severityFilter === "" ? "" : "opacity-70"}`}>
                                         <span className="flex flex-col h-full w-full text-white items-center justify-end pb-2">
-                                            <span className="text-8xl font-medium">13</span>
+                                            <span className="text-8xl font-medium">{logPerSeverity.warning}</span>
                                             <span className="text-xl">warnings</span>
                                         </span>
                                     </button>
-                                    <button className="h-full w-[32.5%] bg-grey rounded-md hover:opacity-90">
+                                    <button onClick={() => {setSeverityFilter(severityFilter === "INFO" ? "" : "INFO")}} 
+                                            className={`h-full w-[32.5%] bg-[#A1A1A1] rounded-md hover:opacity-90 ${severityFilter === "INFO" || severityFilter === "" ? "" : "opacity-70"}`}>
                                         <span className="flex flex-col h-full w-full text-white items-center justify-end pb-2">
-                                            <span className="text-8xl font-medium">1930</span>
+                                            <span className="text-8xl font-medium">{logPerSeverity.info}</span>
                                             <span className="text-xl">informative</span>
                                         </span>
                                     </button>
                                 </div>
                             </div>
-                            <div className="w-full h-[74%] pr-5 pl-5 pt-2 pb-3 rounded">
-                                <div className="bg-white w-full h-full">
-                                    DATA TABLE WILL BE HERE
+                            <div className="w-full h-[74%] pr-6 pl-6 pt-2 pb-3 rounded">
+                                <div className="bg-white rounded-lg w-full h-full">
+                                    <DataTable
+                                        expandableRows
+                                        expandableRowsComponent={ExpandedComponent}
+                                        fixedHeader
+                                        fixedHeaderScrollHeight={"100%"}
+                                        defaultSortFieldId={"timestamp"}
+                                        defaultSortAsc={false}
+                                        columns={columns}
+                                        data={filteredLogs || []}
+                                        theme="solarized"
+                                        customStyles={tableStyle}
+                                        conditionalRowStyles={conditionalRowStyles}/>
                                 </div>
                             </div>
                         </div>

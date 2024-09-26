@@ -162,28 +162,34 @@ public class LogsService {
      * @return A list of integers representing the count of logs per day for the last 30 days.
      *         If no logs are found, the list will be empty.
     */
-    public List<Integer> getBackendLogsCountPerDayLast30Days(){
+    public List<Integer> getBackendLogsCountPerDayLast30Days() {
         String query = String.format(
             "from(bucket: \"%s\") " +
             "|> range(start: -30d) " +
             "|> filter(fn: (r) => r._measurement == \"BackendLogs\") " +
             "|> aggregateWindow(every: 1d, fn: count) " +
-            "|> yield(name: \"logs_per_day\")",
+            "|> yield(name: \"logs_per_day\")", 
             backendBucket
         );
-
+    
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(query, org);
         List<Integer> logsPerDay = new ArrayList<>();
-
+    
+        // Use a for loop to iterate through the tables and records
         for (FluxTable table : tables) {
             for (FluxRecord record : table.getRecords()) {
-                logsPerDay.add(((Number) Objects.requireNonNull(record.getValueByKey("_value"))).intValue());
+                // Extract the _value and cast it to Integer, then add to the list
+                Number value = (Number) record.getValueByKey("_value");
+                if (value != null) {
+                    logsPerDay.add(value.intValue());
+                }
             }
         }
-
+    
         return logsPerDay;
     }
+    
 
     public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {
         String measurement = "KeepAliveLogs";

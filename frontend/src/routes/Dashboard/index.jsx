@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
 import { DashboardGraph, GroupBar, PageTitle } from '../../components'
 import { MdArrowBack, MdBugReport, MdWarning } from 'react-icons/md';
@@ -9,6 +9,7 @@ import { tableStyle } from "./tableStyleConfig";
 import { paginationComponentOptions, columns } from './tableDataConfig';
 import logService from '../../services/logService';
 import { logsPerDayData, monitorPerHourData } from './graphsDataConfig';
+import mediaService from '../../services/mediaService';
 
 
 function Dashboard() {
