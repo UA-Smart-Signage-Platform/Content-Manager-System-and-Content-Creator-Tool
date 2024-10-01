@@ -162,21 +162,23 @@ public class LogsService {
      * @return A list of integers representing the count of logs per day for the last 30 days.
      *         If no logs are found, the list will be empty.
     */
-    public List<Integer> getBackendLogsCountPerDayLast30Days() {
+    public List<Integer> getBackendLogsByNumberDaysAndSeverity(Integer days, Severity severity) {
         String query = String.format(
             "from(bucket: \"%s\") " +
-            "|> range(start: -30d) " +
+            "|> range(start: -%dd) " +
             "|> filter(fn: (r) => r._measurement == \"BackendLogs\") " +
-            "|> aggregateWindow(every: 1d, fn: count) " +
-            "|> yield(name: \"logs_per_day\")", 
-            backendBucket
+            "|> filter(fn: (r) => r.severity == \"%s\") " + 
+            "|> group(columns: [\"_time\"])" +
+            "|> aggregateWindow(every: 1d, fn: count, createEmpty: true) " +
+            "|> yield(name: \"logs_per_day\")",
+            backendBucket, days, severity.toString()
         );
     
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(query, org);
         List<Integer> logsPerDay = new ArrayList<>();
-    
-        // Use a for loop to iterate through the tables and records
+
+
         for (FluxTable table : tables) {
             for (FluxRecord record : table.getRecords()) {
                 // Extract the _value and cast it to Integer, then add to the list
@@ -184,11 +186,19 @@ public class LogsService {
                 if (value != null) {
                     logsPerDay.add(value.intValue());
                 }
+                break;
             }
         }
     
+        if (logsPerDay.size() == 0){
+            for (int i = 0; i < days + 1; i++) {
+                logsPerDay.add(0);
+            }
+        }
+
         return logsPerDay;
     }
+    
     
 
     public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {

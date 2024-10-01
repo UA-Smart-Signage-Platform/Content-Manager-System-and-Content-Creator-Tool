@@ -5,8 +5,8 @@ const logService = {
         return await client.get(`/logs/backend?hours=${hours}`);
     },
 
-    async getLogsCountLast30Days(){
-        return await client.get(`/logs/backend/count`);
+    async getLogsCountByNumberDaysAndSeverity(days, severity){
+        return await client.get(`/logs/backend/count?days=${days}&severity=${severity}`);
     }
 }
 

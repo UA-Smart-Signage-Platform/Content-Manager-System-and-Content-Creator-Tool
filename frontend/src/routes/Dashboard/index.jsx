@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQueries } from '@tanstack/react-query';
-import { DashboardGraph, GroupBar, PageTitle } from '../../components'
-import { MdArrowBack, MdBugReport, MdWarning } from 'react-icons/md';
+import { LineDashboardChart, PieDashboardChart, GroupBar, PageTitle } from '../../components'
+import { MdArrowBack, MdBugReport, MdOutlineDangerous, MdWarning } from 'react-icons/md';
 import monitorService from '../../services/monitorService';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router';
@@ -9,17 +9,21 @@ import { tableStyle } from "./tableStyleConfig";
 import { paginationComponentOptions, columns } from './tableDataConfig';
 import logService from '../../services/logService';
 import { logsPerDayData, monitorPerHourData } from './graphsDataConfig';
-import mediaService from '../../services/mediaService';
 
 
 function Dashboard() {
     const navigate = useNavigate();
+
     const [groupId, setGroupId] = useState(null);
     const [groupName, setGroupName] = useState(null);
     const [showMonitorList, setShowMonitorList] = useState(false);
     const [selectedOnline, setSelectedOnline] = useState(false);
+    const [showServer, setShowServer] = useState(false)
+    const [logsInfoDays, setLogsInfoDays] = useState(30);
+    const [logsWarningDays, setLogsWarningDays] = useState(7);
+    const [logsErrorDays, setLogsErrorDays] = useState(7);
 
-    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsLast30DaysQuery] = useQueries({
+    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsInfoCountQuery, logsWarningCountQuery, logsErrorCountQuery] = useQueries({
         queries : [
             {
                 queryKey: ['onlineMonitors', { onlineStatus: true }],
@@ -42,8 +46,16 @@ function Dashboard() {
                 enabled: groupId != null
             },
             {
-                queryKey: ['logsLast30Days'],
-                queryFn: () => logService.getLogsCountLast30Days()
+                queryKey: ['logsInfoCount', {logsInfoDays}],
+                queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsInfoDays, "INFO")
+            },
+            {
+                queryKey: ['logsWarningCount'],
+                queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsWarningDays, "WARNING")
+            },
+            {
+                queryKey: ['logsErrorCount'],
+                queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
             }
         ]
     })
@@ -114,10 +126,7 @@ function Dashboard() {
         else {
             return (
                 <div className="w-[50%] h-full">
-                    <div className="h-[10%] text-3xl font-medium items-center flex pt-2 pl-2">
-                        Monitors
-                    </div>
-                    <div className="h-[90%] flex flex-row items-center place-content-center">
+                    <div className="h-full flex flex-row items-center place-content-center">
                         <button onClick={()=>{setShowMonitorList(true); setSelectedOnline(true)}} className="hover:opacity-90 cursor-pointer h-[55%] w-[22%] rounded-md bg-gradient-to-b from-[#96D600] from-25% to-[#76A701] flex flex-col items-center place-content-center mr-[10%]">
                             {showOnlineMonitors()}
                         </button>
@@ -160,15 +169,91 @@ function Dashboard() {
         else {
             return (
                 <div className="w-[50%] h-full flex flex-col place-content-center">
-                    <DashboardGraph 
+                    <LineDashboardChart 
                         data={monitorPerHourData()} 
                         xLabel={"hour"} 
                         xDataKey={"hour"}
                         height={"75%"}
-                        title={<><MdWarning className="w-6 h-6 mx-1"/> Downtime (today)</>}
+                        title={<><MdWarning className="w-6 h-6 mx-1"/> Downtime (last 24 hours)</>}
                         linkTo={"/"} 
                         lineDataKey={"numberMonitors"} />
                 </div>
+            )
+        }
+    }
+
+    const showMonitorsOrServer = () => {
+        if (showServer) {
+            return (
+                <>
+                    <div className="h-[30%] w-full flex">
+                        <div className="h-full w-[50%] p-6">
+                            <LineDashboardChart 
+                                data={logsPerDayData(logsErrorCountQuery, logsErrorDays)} 
+                                xLabel={"day / month"} 
+                                xDataKey={"day"}
+                                height={"90%"}
+                                title={<><MdOutlineDangerous className="w-6 h-6 mx-1"/> Error logs (last 7 days)</>}
+                                linkTo={"/dashboard/logs"}
+                                lineDataKey={"numberLogs"} />
+                        </div>
+                        <div className="h-full w-[50%] p-6">
+                            <PieDashboardChart 
+                                data={logsPerDayData(logsErrorCountQuery, logsErrorDays)} 
+                                height={"90%"}
+                                title={<>Errors by operation</>}/>
+                        </div>
+                    </div>
+                    <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
+                    <div className="h-[30%] w-full">
+                        <div className="h-full w-[50%] p-6">
+                            <LineDashboardChart 
+                                data={logsPerDayData(logsWarningCountQuery, logsWarningDays)} 
+                                xLabel={"day / month"} 
+                                xDataKey={"day"}
+                                height={"90%"}
+                                title={<><MdWarning className="w-6 h-6 mx-1"/> Warning logs (last 7 days)</>}
+                                linkTo={"/dashboard/logs"}
+                                lineDataKey={"numberLogs"} />
+                        </div>
+                    </div>
+                    <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
+                    <div className="h-[30%] w-full">
+                        <div className="h-full w-[50%] p-6">
+                        <LineDashboardChart 
+                                data={logsPerDayData(logsInfoCountQuery, logsInfoDays)} 
+                                xLabel={"day / month"} 
+                                xDataKey={"day"}
+                                height={"90%"}
+                                title={<><MdBugReport className="w-6 h-6 mx-1"/> Information logs (last 7 days)</>}
+                                linkTo={"/dashboard/logs"}
+                                lineDataKey={"numberLogs"} />
+                        </div>
+                    </div>
+                </>
+            )
+        }
+        else{
+            return (
+                <>
+                    <div className="h-[45%]">
+                        <div className="h-full pt-3 pr-2 pl-2 pb-3 flex flex-row">
+                            {showAllStatusOrSelectedStatus()}
+                            {showGraphOrMonitorsList()}
+                        </div>
+                    </div>
+                    <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
+                    <div className="h-[50%] p-4">
+                        <LineDashboardChart 
+                                data={logsPerDayData(logsInfoCountQuery, logsInfoDays)} 
+                                xLabel={"day / month"} 
+                                xDataKey={"day"}
+                                height={"90%"}
+                                title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (last 30 days)</>}
+                                linkTo={"/dashboard/logs"}
+                                lineDataKey={"numberLogs"} />
+                    </div>
+                </>
             )
         }
     }
@@ -186,23 +271,12 @@ function Dashboard() {
                         <GroupBar id={groupId} changeId={setGroupId} changeName={setGroupName}/>
                     </div>
                     <div id="content" className="flex flex-col w-full p-3">
-                        <div className="h-[49%]">
-                            <div className="h-full pt-3 pr-2 pl-2 pb-3 flex flex-row">
-                                {showAllStatusOrSelectedStatus()}
-                                {showGraphOrMonitorsList()}
-                            </div>
+                        <div className="h-[4%] w-full text-3xl place-content-center pl-4">
+                            <button className="ml-3" onClick={() => {setShowServer(false); setLogsInfoDays(30)}}>Monitors</button>
+                            <button className="ml-10" onClick={() => {setShowServer(true); setLogsInfoDays(7)}}>Server</button>
+                            <div className="bg-black h-1 w-72"><div className={`h-1 bg-primary ${showServer ? "w-36 ml-36" : "w-36"}`}></div></div>
                         </div>
-                        <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
-                        <div className="h-[50%] p-4">
-                            <DashboardGraph 
-                                    data={logsPerDayData(logsLast30DaysQuery)} 
-                                    xLabel={"day / month"} 
-                                    xDataKey={"day"}
-                                    height={"90%"}
-                                    title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (past 30 days)</>}
-                                    linkTo={"/dashboard/logs"}
-                                    lineDataKey={"numberLogs"} />
-                        </div>
+                        {showMonitorsOrServer()}
                     </div>
                 </div>
             </div>

@@ -124,6 +124,7 @@ function Logs() {
                                         fixedHeaderScrollHeight={"100%"}
                                         defaultSortFieldId={"timestamp"}
                                         defaultSortAsc={false}
+                                        progressPending={backendLogsQuery.isPending}
                                         columns={columns}
                                         data={filteredLogs || []}
                                         theme="solarized"

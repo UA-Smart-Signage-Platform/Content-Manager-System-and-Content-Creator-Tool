@@ -4,7 +4,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { CustomTooltip } from './customToolTip';
 
 
-function DashboardGraph( { data, xLabel, xDataKey, height, title, linkTo, lineDataKey } ) {
+function LineDashboardChart( { data, xLabel, xDataKey, height, title, linkTo, lineDataKey } ) {
     return(
         <>
             <div className="h-[10%] flex items-center">
@@ -36,7 +36,7 @@ function DashboardGraph( { data, xLabel, xDataKey, height, title, linkTo, lineDa
     )
 }
 
-DashboardGraph.propTypes = {
+LineDashboardChart.propTypes = {
     data: PropTypes.array.isRequired,
     xLabel: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
@@ -44,4 +44,4 @@ DashboardGraph.propTypes = {
     linkTo: PropTypes.string.isRequired
 }
 
-export default DashboardGraph
+export default LineDashboardChart
