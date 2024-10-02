@@ -23,7 +23,7 @@ function Dashboard() {
     const [logsWarningDays, setLogsWarningDays] = useState(7);
     const [logsErrorDays, setLogsErrorDays] = useState(7);
 
-    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsInfoCountQuery, logsWarningCountQuery, logsErrorCountQuery] = useQueries({
+    const [onlineMonitorsQuery, offlineMonitorsQuery, onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, logsInfoCountQuery, logsWarningCountQuery, logsErrorCountQuery, operationLogsErrorCountQuery, operationLogsWarningCountQuery, operationLogsInfoCountQuery] = useQueries({
         queries : [
             {
                 queryKey: ['onlineMonitors', { onlineStatus: true }],
@@ -56,6 +56,18 @@ function Dashboard() {
             {
                 queryKey: ['logsErrorCount'],
                 queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
+            },
+            {
+                queryKey: ['operationLogsErrorCount'],
+                queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
+            },
+            {
+                queryKey: ['operationLogsWarningCount'],
+                queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsWarningDays, "WARNING")
+            },
+            {
+                queryKey: ['operationLogsInformationCount'],
+                queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsInfoDays, "INFO")
             }
         ]
     })
@@ -186,7 +198,7 @@ function Dashboard() {
         if (showServer) {
             return (
                 <>
-                    <div className="h-[30%] w-full flex">
+                    <div className="h-[32%] w-full flex">
                         <div className="h-full w-[50%] p-6">
                             <LineDashboardChart 
                                 data={logsPerDayData(logsErrorCountQuery, logsErrorDays)} 
@@ -194,18 +206,19 @@ function Dashboard() {
                                 xDataKey={"day"}
                                 height={"90%"}
                                 title={<><MdOutlineDangerous className="w-6 h-6 mx-1"/> Error logs (last 7 days)</>}
-                                linkTo={"/dashboard/logs"}
+                                linkTo={"/dashboard/logs/backend"}
+                                severity={"ERROR"}
                                 lineDataKey={"numberLogs"} />
                         </div>
                         <div className="h-full w-[50%] p-6">
                             <PieDashboardChart 
-                                data={logsPerDayData(logsErrorCountQuery, logsErrorDays)} 
+                                data={operationLogsErrorCountQuery.data?.data} 
                                 height={"90%"}
                                 title={<>Errors by operation</>}/>
                         </div>
                     </div>
                     <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
-                    <div className="h-[30%] w-full">
+                    <div className="h-[32%] w-full flex">
                         <div className="h-full w-[50%] p-6">
                             <LineDashboardChart 
                                 data={logsPerDayData(logsWarningCountQuery, logsWarningDays)} 
@@ -213,21 +226,35 @@ function Dashboard() {
                                 xDataKey={"day"}
                                 height={"90%"}
                                 title={<><MdWarning className="w-6 h-6 mx-1"/> Warning logs (last 7 days)</>}
-                                linkTo={"/dashboard/logs"}
+                                linkTo={"/dashboard/logs/backend"}
+                                severity={"WARNING"}
                                 lineDataKey={"numberLogs"} />
+                        </div>
+                        <div className="h-full w-[50%] p-6">
+                            <PieDashboardChart 
+                                data={operationLogsWarningCountQuery.data?.data} 
+                                height={"90%"}
+                                title={<>Warnings by operation</>}/>
                         </div>
                     </div>
                     <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
-                    <div className="h-[30%] w-full">
+                    <div className="h-[32%] w-full flex">
                         <div className="h-full w-[50%] p-6">
-                        <LineDashboardChart 
-                                data={logsPerDayData(logsInfoCountQuery, logsInfoDays)} 
-                                xLabel={"day / month"} 
-                                xDataKey={"day"}
+                            <LineDashboardChart 
+                                    data={logsPerDayData(logsInfoCountQuery, logsInfoDays)} 
+                                    xLabel={"day / month"} 
+                                    xDataKey={"day"}
+                                    height={"90%"}
+                                    title={<><MdBugReport className="w-6 h-6 mx-1"/> Information logs (last 7 days)</>}
+                                    linkTo={"/dashboard/logs/backend"}
+                                    severity={"INFO"}
+                                    lineDataKey={"numberLogs"} />
+                        </div>
+                        <div className="h-full w-[50%] p-6">
+                            <PieDashboardChart 
+                                data={operationLogsInfoCountQuery.data?.data} 
                                 height={"90%"}
-                                title={<><MdBugReport className="w-6 h-6 mx-1"/> Information logs (last 7 days)</>}
-                                linkTo={"/dashboard/logs"}
-                                lineDataKey={"numberLogs"} />
+                                title={<>Information by operation</>}/>
                         </div>
                     </div>
                 </>
@@ -250,7 +277,7 @@ function Dashboard() {
                                 xDataKey={"day"}
                                 height={"90%"}
                                 title={<><MdBugReport className="w-6 h-6 mx-1"/> Logs (last 30 days)</>}
-                                linkTo={"/dashboard/logs"}
+                                linkTo={"/dashboard/logs/monitors"}
                                 lineDataKey={"numberLogs"} />
                     </div>
                 </>

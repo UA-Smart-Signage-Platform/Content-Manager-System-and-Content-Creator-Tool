@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.List;
+import java.util.Map;
 
 
 @RestController
@@ -43,6 +44,16 @@ public class LogController {
     @GetMapping("/logs/backend/count")
     public ResponseEntity<List<Integer>> getBackendLogsByNumberDaysAndSeverity(@RequestParam Integer days, @RequestParam Severity severity) {
         List<Integer> logs = logsService.getBackendLogsByNumberDaysAndSeverity(days, severity);
+        return new ResponseEntity<>(logs, HttpStatus.OK);
+    }
+
+    @Operation(summary = "WIP")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "WIP", content = @Content(mediaType = "application/json"))
+    })
+    @GetMapping("/logs/backend/operation")
+    public ResponseEntity<Map<String, Integer>> getBackendLogsNumberPerOperationByNumberDaysAndSeverity(@RequestParam Integer days, @RequestParam Severity severity) {
+        Map<String, Integer> logs = logsService.getBackendLogsNumberPerOperationByNumberDaysAndSeverity(days, severity);
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 }

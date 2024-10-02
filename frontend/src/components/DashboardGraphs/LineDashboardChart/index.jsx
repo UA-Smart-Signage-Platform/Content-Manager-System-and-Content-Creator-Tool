@@ -4,7 +4,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import { CustomTooltip } from './customToolTip';
 
 
-function LineDashboardChart( { data, xLabel, xDataKey, height, title, linkTo, lineDataKey } ) {
+function LineDashboardChart( { data, xLabel, xDataKey, height, title, linkTo, lineDataKey, severity } ) {
     return(
         <>
             <div className="h-[10%] flex items-center">
@@ -30,7 +30,7 @@ function LineDashboardChart( { data, xLabel, xDataKey, height, title, linkTo, li
                 </ResponsiveContainer>
             </div>
             <div className="h-[5%] pl-3 pt-1 text-sm text-textcolor">
-                <Link to={linkTo}>(Click here for more details)</Link>
+                <Link to={linkTo} state={{ severity: severity }}>(Click here for more details)</Link>
             </div>
         </>
     )

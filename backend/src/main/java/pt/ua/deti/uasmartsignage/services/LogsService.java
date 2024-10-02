@@ -168,7 +168,6 @@ public class LogsService {
             "|> range(start: -%dd) " +
             "|> filter(fn: (r) => r._measurement == \"BackendLogs\") " +
             "|> filter(fn: (r) => r.severity == \"%s\") " + 
-            "|> group(columns: [\"_time\"])" +
             "|> aggregateWindow(every: 1d, fn: count, createEmpty: true) " +
             "|> yield(name: \"logs_per_day\")",
             backendBucket, days, severity.toString()
@@ -186,7 +185,6 @@ public class LogsService {
                 if (value != null) {
                     logsPerDay.add(value.intValue());
                 }
-                break;
             }
         }
     
@@ -199,7 +197,33 @@ public class LogsService {
         return logsPerDay;
     }
     
-    
+    public Map<String, Integer> getBackendLogsNumberPerOperationByNumberDaysAndSeverity(Integer days, Severity severity){
+        String query = String.format(
+            "from(bucket: \"%s\") " +
+            "|> range(start: -%dd) " +
+            "|> filter(fn: (r) => r._measurement == \"BackendLogs\") " +
+            "|> filter(fn: (r) => r.severity == \"%s\", onEmpty: \"keep\") " + 
+            "|> group(columns: [\"_time\"]) ",
+            backendBucket, days, severity.toString()
+        );
+
+        QueryApi queryApi = influxDBClient.getQueryApi();
+        List<FluxTable> tables = queryApi.query(query, org);
+        
+        Map<String, Integer> logsPerOperationSource = new HashMap<>();
+
+        for (FluxTable table : tables) {
+            for (FluxRecord record : table.getRecords()) {
+                String field = (String) record.getField();
+                if (Objects.requireNonNull(field).equals(OPERATION_SOURCE)){
+                    String operationSource = Objects.requireNonNull(record.getValue()).toString();
+                    logsPerOperationSource.put(operationSource, logsPerOperationSource.get(operationSource) == null ? 1 : logsPerOperationSource.get(operationSource).intValue() + 1);
+                    break;
+                }
+            }
+        }
+        return logsPerOperationSource;
+    }
 
     public boolean addKeepAliveLog(Severity severity, String monitor, String operation) {
         String measurement = "KeepAliveLogs";
