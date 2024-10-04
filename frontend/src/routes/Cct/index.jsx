@@ -7,6 +7,7 @@ import widgetService from "../../services/widgetService";
 import { motion,AnimatePresence } from "framer-motion";
 import { IoWarningOutline } from "react-icons/io5";
 import { FiTrash2 } from "react-icons/fi";
+import { useQueries } from "@tanstack/react-query";
 
 const colors = [
     'bg-pink-200 border-pink-400',
@@ -23,43 +24,37 @@ const colors = [
 
 function Cct(){
     const { state } = useLocation();
-    const [templates,setTemplates] = useState([]);
     const [sameName,setSameName] = useState(false);
-    const [template,setTemplate] = useState(state !== null ? state:null);
+    const [template,setTemplate] = useState(state !== null ? state:{ id:null, name:"newTemplate" });
     const [widgetList,setWidgetList] = useState(state !== null ? state.widgets:[])
-    const [name,setName] = useState(state !== null ? state.name:"")
     const [ableSave,setAbleSave] = useState(false);
     const [ableSaveName,setAbleSaveName] = useState(true);
     const [widgetsToRemove,setWidgetsToRemove] = useState([]);
-    const [widgets,setWidgets] = useState([]);
     const [portal,setPortal] = useState(false);
     const constrainRef = useRef(null);
     const navigate = useNavigate();
     const { id } = useParams();
 
-    useEffect(()=>{
-        widgetService.getWidgets().then((response)=>{
-            setWidgets(response.data)
-        })
-        templateservice.getTemplates().then((response)=>{
-            setTemplates(response.data)
-        })
-        if (id.toString() !== "0"){
-            templateservice.getTemplate(id).then((response)=>{
-                setTemplate(response.data)
-                setWidgetList(response.data.widgets)
-                setName(response.data.name)
-            })
-        }else{
-            setTemplate({
-                id:null,
-                name:"newTemplate",
-            })
-            setName("newTemplate")
-            setWidgetList([])
-        }
-
-    },[id])
+    const [widgets,templates,template2] = useQueries({
+        queries:[
+            {
+                queryKey: ["widgets"],
+                queryFn: () => widgetService.getWidgets().then((response) => response.data)
+            },
+            {
+                queryKey: ["templates"],
+                queryFn: () => templateservice.getTemplates().then((response) => response.data)
+            },
+            {
+                queryKey: ["template",id],
+                queryFn: () => templateservice.getTemplate(id).then((response) => {
+                    setTemplate(response.data)
+                    setWidgetList(response.data.widgets)
+                }),
+                enabled: !!id && id !== "new",
+            }
+        ]
+    })
 
     const saveTemplate = ()=>{
         let savingTemplate = template;
@@ -69,7 +64,6 @@ function Cct(){
             }
             return element
         });
-        savingTemplate.name = name;
 
         templateservice.saveTemplate(savingTemplate).then((response)=>{
             let arr = widgetsToRemove.map((id)=>{
@@ -137,7 +131,9 @@ function Cct(){
 
     const handleNameChange = (e)=>{
         let name = e.target.value
-        setName(name);
+        setTemplate({...template,
+                    name:name,
+        })
         let unique = templates.every((element)=>{
             return (element.name !== name || element.id === template.id)
         })
@@ -173,10 +169,10 @@ function Cct(){
                     <PageTitle startTitle={"templates"} middleTitle={""} endTitle={""}/>
                 </div>
                 <div className="h-[92%] flex">
-                    {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets} WidgetsList={widgetList} setWidgetList={setWidgetList} setAbleSave={setAbleSave}/>}
+                    {portal && <WidgetsModal setShowPortal={setPortal} Widgets={widgets.data} WidgetsList={widgetList} setWidgetList={setWidgetList} setAbleSave={setAbleSave}/>}
                     <div className="h-full w-[20%]">
                         <div className="font-bold pt-3 px-2 flex justify-between">
-                            <input className="text-xl border-b-2 border-black" value={name} onChange={handleNameChange}/>
+                            <input className="text-xl border-b-2 border-black" value={template.name} onChange={handleNameChange}/>
                             <button disabled={!ableSave && ableSaveName}
                                     onClick={saveTemplate}
                                     className=" bg-secondaryMedium p-1 rounded-md font-normal disabled:text-secondary disabled:bg-secondaryMedium">
@@ -184,9 +180,9 @@ function Cct(){
                             </button>
                         </div>
                         <div className="flex font-bold px-2 pt-3 justify-between">
-                            Widgets{/* */}
+                            Widgets
                             <button className=" bg-secondaryMedium p-1 rounded-md font-normal" onClick={()=>setPortal(true)}>
-                                + Add Widget{/* */}
+                                + Add Widget
                             </button>
                         </div>
                         <div className="flex flex-col gap-1 p-3 relative">
