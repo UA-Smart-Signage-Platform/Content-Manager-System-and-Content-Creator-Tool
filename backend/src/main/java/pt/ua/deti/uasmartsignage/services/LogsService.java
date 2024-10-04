@@ -74,8 +74,7 @@ public class LogsService {
                     .addField(OPERATION_SOURCE, operationSource)
                     .addField(USER, user)
                     .addField(OPERATION, operation)
-                    .addField(DESCRIPTION, description)
-                    .time(System.currentTimeMillis(), WritePrecision.MS);
+                    .addField(DESCRIPTION, description);
 
             WriteApiBlocking writeApi = influxDBClient.getWriteApiBlocking();
             writeApi.writePoint(backendBucket, org, point);
@@ -110,8 +109,8 @@ public class LogsService {
             "|> range(start: -%dh) " +
             "|> filter(fn: (r) => r._measurement == \"BackendLogs\")",
             backendBucket, hours
-        );        
-
+        );
+        
         QueryApi queryApi = influxDBClient.getQueryApi();
         List<FluxTable> tables = queryApi.query(query, org);
         Map<String, BackendLog> logs = new HashMap<>();

@@ -4,18 +4,17 @@ import { MdArrowBack, MdMonitor } from "react-icons/md";
 import { useNavigate, useParams } from "react-router";
 import monitorService from "../../services/monitorService";
 import monitorsGroupService from "../../services/monitorsGroupService";
-import { Link } from "react-router-dom";
-import { templateBlock } from "./templateConfig";
-import { memoryBlock } from "./memoryConfig";
-import { statusBlock } from "./statusConfig";
-import { updatedBlock } from "./updatedConfig";
-import { errorBlock } from "./errorConfig";
-import { lastUpdateBlock } from "./lastUpdateConfig";
-import { groupBlock } from "./groupConfig";
-import { previewBlock } from "./previewConfig";
+import { templateBlock } from "./templateBlock";
+import { memoryBlock } from "./memoryBlock";
+import { statusBlock } from "./statusBlock";
+import { updatedBlock } from "./updatedBlock";
+import { errorBlock } from "./errorBlock";
+import { lastUpdateBlock } from "./lastUpdateBlock";
+import { groupBlock } from "./groupBlock";
+import { previewBlock } from "./previewBlock";
 import { ErrorCode } from "../../components/Errors/errorUtils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { loadingBlock } from "./loadingConfig";
+import { loadingBlock } from "./loadingBlock";
 import { showUpdatingMonitor } from "./updatingMonitorConfig";
 
 
