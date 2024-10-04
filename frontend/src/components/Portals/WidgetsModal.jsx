@@ -29,9 +29,9 @@ function WidgetsModal( { Widgets, WidgetsList, setWidgetList,setShowPortal,setAb
             height:10,
             width:10,
             top:0,
-            leftPosition:0,
+            left:0,
             zindex:WidgetsList.length +1,
-            id:"new" + (WidgetsList.length +1),
+            id:"new" + (WidgetsList.length + 1),
         }]))
         setShowPortal(false)
         setAbleSave(true)
