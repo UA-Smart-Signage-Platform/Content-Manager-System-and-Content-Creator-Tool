@@ -23,57 +23,72 @@ function Dashboard() {
     const [logsWarningDays, setLogsWarningDays] = useState(7);
     const [logsErrorDays, setLogsErrorDays] = useState(7);
 
-    const [onlineMonitorsQuery, offlineMonitorsQuery, 
-            onlineMonitorsByGroupQuery, offlineMonitorsByGroupQuery, 
-            logsInfoCountQuery, logsWarningCountQuery, logsErrorCountQuery, 
-            operationLogsErrorCountQuery, operationLogsWarningCountQuery, operationLogsInfoCountQuery] = useQueries({
-        queries : [
-            {
-                queryKey: ['onlineMonitors', { onlineStatus: true }],
-                queryFn: () => monitorService.getMonitors(true),
-                enabled: groupId === null
-            },
-            {
-                queryKey: ['offlineMonitors', { onlineStatus: false }],
-                queryFn: () => monitorService.getMonitors(false),
-                enabled: groupId === null
-            },
-            {
-                queryKey: ['onlineMonitorsByGroup', { groupId, onlineStatus: true }],
-                queryFn: () => monitorService.getMonitorsByGroup(groupId, true),
-                enabled: groupId != null
-            },
-            {
-                queryKey: ['offlineMonitorsByGroup', { groupId, onlineStatus: false }],
-                queryFn: () => monitorService.getMonitorsByGroup(groupId, false),
-                enabled: groupId != null
-            },
-            {
-                queryKey: ['logsInfoCount', {logsInfoDays}],
-                queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsInfoDays, "INFO")
-            },
-            {
-                queryKey: ['logsWarningCount'],
-                queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsWarningDays, "WARNING")
-            },
-            {
-                queryKey: ['logsErrorCount'],
-                queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
-            },
-            {
-                queryKey: ['operationLogsErrorCount'],
-                queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
-            },
-            {
-                queryKey: ['operationLogsWarningCount'],
-                queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsWarningDays, "WARNING")
-            },
-            {
-                queryKey: ['operationLogsInformationCount'],
-                queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsInfoDays, "INFO")
-            }
+    const [
+        onlineMonitorsQuery,
+        offlineMonitorsQuery,
+        onlineMonitorsByGroupQuery,
+        offlineMonitorsByGroupQuery,
+        logsInfoCountQuery,
+        logsWarningCountQuery,
+        logsErrorCountQuery,
+        operationLogsErrorCountQuery,
+        operationLogsWarningCountQuery,
+        operationLogsInfoCountQuery
+      ] = useQueries({
+        queries: [
+          // Queries for online/offline monitors when no group is selected
+          {
+            queryKey: ['onlineMonitors', { onlineStatus: true }],
+            queryFn: () => monitorService.getMonitors(true),
+            enabled: groupId === null
+          },
+          {
+            queryKey: ['offlineMonitors', { onlineStatus: false }],
+            queryFn: () => monitorService.getMonitors(false),
+            enabled: groupId === null
+          },
+      
+          // Queries for online/offline monitors by group
+          {
+            queryKey: ['onlineMonitorsByGroup', { groupId, onlineStatus: true }],
+            queryFn: () => monitorService.getMonitorsByGroup(groupId, true),
+            enabled: groupId !== null
+          },
+          {
+            queryKey: ['offlineMonitorsByGroup', { groupId, onlineStatus: false }],
+            queryFn: () => monitorService.getMonitorsByGroup(groupId, false),
+            enabled: groupId !== null
+          },
+      
+          // Log count queries by severity and number of days
+          {
+            queryKey: ['logsInfoCount', { logsInfoDays }],
+            queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsInfoDays, "INFO")
+          },
+          {
+            queryKey: ['logsWarningCount'],
+            queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsWarningDays, "WARNING")
+          },
+          {
+            queryKey: ['logsErrorCount'],
+            queryFn: () => logService.getLogsCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
+          },
+      
+          // Operation log count queries by severity and number of days
+          {
+            queryKey: ['operationLogsErrorCount'],
+            queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsErrorDays, "ERROR")
+          },
+          {
+            queryKey: ['operationLogsWarningCount'],
+            queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsWarningDays, "WARNING")
+          },
+          {
+            queryKey: ['operationLogsInfoCount'],
+            queryFn: () => logService.getOperationCountByNumberDaysAndSeverity(logsInfoDays, "INFO")
+          }
         ]
-    })
+      });
 
     const LoadingDisplay = () => (
         <div className="flex flex-col items-center place-content-center">
@@ -218,7 +233,7 @@ function Dashboard() {
                             <PieDashboardChart 
                                 data={operationLogsErrorCountQuery.data?.data} 
                                 height={"90%"}
-                                title={<>Errors by operation</>}/>
+                                title={<>Errors by operation source</>}/>
                         </div>
                     </div>
                     <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
@@ -238,7 +253,7 @@ function Dashboard() {
                             <PieDashboardChart 
                                 data={operationLogsWarningCountQuery.data?.data} 
                                 height={"90%"}
-                                title={<>Warnings by operation</>}/>
+                                title={<>Warnings by operation source</>}/>
                         </div>
                     </div>
                     <div id="dividerHr" className="border-[1px] border-secondary flex-col"/>
@@ -258,7 +273,7 @@ function Dashboard() {
                             <PieDashboardChart 
                                 data={operationLogsInfoCountQuery.data?.data} 
                                 height={"90%"}
-                                title={<>Information by operation</>}/>
+                                title={<>Information by operation source</>}/>
                         </div>
                     </div>
                 </>

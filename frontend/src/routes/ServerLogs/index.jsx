@@ -54,7 +54,7 @@ function ServerLogs() {
         <div className="flex flex-col h-full">
             <div id="title" className="pt-4 h-[8%]">
                 <PageTitle startTitle={"dashboard"} 
-                            middleTitle={{name: "logs" , groupName, selectedOnline}}
+                            middleTitle={{name: "default"}}
                             endTitle={"default"}/>
             </div>
             <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
