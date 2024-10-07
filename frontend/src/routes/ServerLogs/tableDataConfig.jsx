@@ -55,6 +55,6 @@ export const ExpandedComponent = ({ data }) => {
   };
 
 
-CustomLabel.propTypes = {
+ExpandedComponent.propTypes = {
   data: PropTypes.object.isRequired
 }

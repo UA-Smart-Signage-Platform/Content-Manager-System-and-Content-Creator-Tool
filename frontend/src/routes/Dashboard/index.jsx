@@ -15,13 +15,13 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const [groupId, setGroupId] = useState(null);
-    const [groupName, setGroupName] = useState(null);
     const [showMonitorList, setShowMonitorList] = useState(false);
     const [selectedOnline, setSelectedOnline] = useState(false);
     const [showServer, setShowServer] = useState(false)
     const [logsInfoDays, setLogsInfoDays] = useState(30);
-    const [logsWarningDays, setLogsWarningDays] = useState(7);
-    const [logsErrorDays, setLogsErrorDays] = useState(7);
+
+    const logsWarningDays = 7;
+    const logsErrorDays = 7;
 
     const [
         onlineMonitorsQuery,
@@ -309,12 +309,12 @@ function Dashboard() {
             <div className="flex flex-col h-full">
                 <div id="title" className="pt-4 h-[8%]">
                     <PageTitle startTitle={"dashboard"} 
-                                middleTitle={{name: showMonitorList ? "dashboard" : "default", groupName, selectedOnline}}
+                                middleTitle={{name: showMonitorList ? "dashboard" : "default", selectedOnline}}
                                 endTitle={"default"}/>
                 </div>
                 <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                     <div className="w-[30%] flex flex-col">
-                        <GroupBar id={groupId} changeId={setGroupId} changeName={setGroupName}/>
+                        <GroupBar id={groupId} changeId={setGroupId} />
                     </div>
                     <div id="content" className="flex flex-col w-full p-3">
                         <div className="h-[4%] w-full text-3xl place-content-center pl-4">

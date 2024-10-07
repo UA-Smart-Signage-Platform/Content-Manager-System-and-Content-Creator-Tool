@@ -14,9 +14,8 @@ function ServerLogs() {
 
     const [groupId, setGroupId] = useState(null);
     const [severityFilter, setSeverityFilter] = useState(state.severity ? state.severity : "");
-    const [groupName, setGroupName] = useState(null);
     const [selectedTime, setSelectedTime] = useState(1);
-    const [logPerSeverity, setlogPerSeverity] = useState({info: 0, warning: 0, error: 0});
+    const [logPerSeverity, setLogPerSeverity] = useState({info: 0, warning: 0, error: 0});
 
 
     const [backendLogsQuery] = useQueries({
@@ -24,7 +23,7 @@ function ServerLogs() {
             {
                 queryKey: ['backendLogs', selectedTime],
                 queryFn: () => logService.getLogs(selectedTime).then((response) => {
-                    setlogPerSeverity(countSeverities(response.data));
+                    setLogPerSeverity(countSeverities(response.data));
                     return response;
                 })
             }
@@ -44,7 +43,7 @@ function ServerLogs() {
     };
 
     const filteredLogs = backendLogsQuery.data?.data.filter(
-		log => log.severity && log.severity.toLowerCase().includes(severityFilter.toLowerCase()),
+		log => log.severity.toLowerCase().includes(severityFilter.toLowerCase()),
 	);
 
     return(
@@ -56,7 +55,7 @@ function ServerLogs() {
             </div>
             <div id="divider" className="flex flex-row overflow-hidden h-[92%]">
                 <div className="w-[30%] flex flex-col">
-                    <GroupBar id={groupId} changeId={setGroupId} changeName={setGroupName}/>
+                    <GroupBar id={groupId} changeId={setGroupId} />
                 </div>
                 <div id="content" className="flex flex-col w-full p-3">
                     <div className="h-[5%] w-full flex">
