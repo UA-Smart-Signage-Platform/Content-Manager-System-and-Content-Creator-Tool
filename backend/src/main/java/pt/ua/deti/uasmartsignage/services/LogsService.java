@@ -16,6 +16,7 @@ import pt.ua.deti.uasmartsignage.models.embedded.BackendLog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -67,7 +68,12 @@ public class LogsService {
      * @return {@code true} if the log was added successfully; {@code false} otherwise.
     */
     public boolean addBackendLog(Severity severity, String operationSource, String operation, String description) {
-        String user = "admin"; // Placeholder for user (will be implemented in future should be retrived from the JWT token)
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            return false;
+        }
+
+        String user = SecurityContextHolder.getContext().getAuthentication().getName();
+        
         try {
             Point point = Point.measurement("BackendLogs")
                     .addTag(SEVERITY, severity.toString())
