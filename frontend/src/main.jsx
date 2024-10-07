@@ -5,7 +5,7 @@ import {createBrowserRouter, RouterProvider } from 'react-router-dom';
 import {ProtectedRoute, Root, Dashboard, Admin, 
         ChangePassword, Wso2Login, Monitors, 
         Media, Monitor, Schedule, Templates, 
-        Cct, Logs } from './routes';
+        Cct, MonitorLogs, ServerLogs} from './routes';
 
 const router = createBrowserRouter([
   {
@@ -17,8 +17,12 @@ const router = createBrowserRouter([
         element:<Dashboard/>
       },
       {
-        path: "dashboard/logs",
-        element:<Logs/>
+        path: "dashboard/logs/backend",
+        element:<ServerLogs/>
+      },
+      {
+        path: "dashboard/logs/monitors",
+        element:<MonitorLogs/>
       },
       {
         path: "media/*",
