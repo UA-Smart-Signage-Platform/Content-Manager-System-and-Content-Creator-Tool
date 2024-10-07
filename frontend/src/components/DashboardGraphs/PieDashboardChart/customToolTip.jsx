@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { IoMdInformationCircle } from 'react-icons/io';
 
 export const CustomTooltip = ({ active, payload }) => {
@@ -14,4 +15,9 @@ export const CustomTooltip = ({ active, payload }) => {
             </div>
         );
     }
+}
+
+CustomTooltip.propTypes = {
+    active: PropTypes.bool.isRequired,
+    payload: PropTypes.array.isRequired
 }

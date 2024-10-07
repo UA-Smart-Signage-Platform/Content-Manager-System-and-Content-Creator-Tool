@@ -67,7 +67,7 @@ public class LogsService {
      * @return {@code true} if the log was added successfully; {@code false} otherwise.
     */
     public boolean addBackendLog(Severity severity, String operationSource, String operation, String description) {
-        String user = "admin"; 
+        String user = "admin"; // Placeholder for user (will be implemented in future should be retrived from the JWT token)
         try {
             Point point = Point.measurement("BackendLogs")
                     .addTag(SEVERITY, severity.toString())

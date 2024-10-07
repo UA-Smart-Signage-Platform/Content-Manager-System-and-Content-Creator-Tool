@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 const RADIAN = Math.PI / 180;
 
 export const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
@@ -11,3 +13,13 @@ export const CustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percen
     </text>
   );
 };
+
+CustomLabel.propTypes = {
+  cx: PropTypes.number.isRequired,
+  cy: PropTypes.number.isRequired,
+  midAngle: PropTypes.number.isRequired,
+  innerRadius: PropTypes.number.isRequired,
+  outerRadius: PropTypes.number.isRequired,
+  percent: PropTypes.number.isRequired,
+  index: PropTypes.number.isRequired
+}

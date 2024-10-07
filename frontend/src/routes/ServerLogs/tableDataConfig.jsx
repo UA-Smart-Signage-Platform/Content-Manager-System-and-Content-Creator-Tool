@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export const columns = [
     {
         id: "timestamp",
@@ -51,3 +53,8 @@ export const ExpandedComponent = ({ data }) => {
       </pre>
     );
   };
+
+
+CustomLabel.propTypes = {
+  data: PropTypes.object.isRequired
+}

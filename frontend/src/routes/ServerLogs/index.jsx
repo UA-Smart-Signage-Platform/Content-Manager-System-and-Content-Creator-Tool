@@ -1,24 +1,21 @@
-import { useQueries, useQueryClient } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { GroupBar, PageTitle } from '../../components';
 import { useState } from 'react';
-import { MdArrowBack, MdKeyboardArrowDown } from 'react-icons/md';
+import { MdArrowBack, MdKeyboardArrowDown, MdAccessTime } from 'react-icons/md';
 import DataTable from 'react-data-table-component';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { MdAccessTime } from 'react-icons/md';
 import logService from '../../services/logService';
 import { columns, ExpandedComponent } from './tableDataConfig';
 import { conditionalRowStyles, tableStyle } from './tableStyleConfig';
 
 function ServerLogs() {
     const { state } = useLocation();
-    const queryClient = useQueryClient();
     const navigate = useNavigate();
 
     const [groupId, setGroupId] = useState(null);
     const [severityFilter, setSeverityFilter] = useState(state.severity ? state.severity : "");
     const [groupName, setGroupName] = useState(null);
     const [selectedTime, setSelectedTime] = useState(1);
-    const [selectedOnline, setSelectedOnline] = useState(false);
     const [logPerSeverity, setlogPerSeverity] = useState({info: 0, warning: 0, error: 0});
 
 

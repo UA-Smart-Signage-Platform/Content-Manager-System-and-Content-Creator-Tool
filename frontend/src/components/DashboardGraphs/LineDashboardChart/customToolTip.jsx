@@ -9,9 +9,7 @@ export const CustomTooltip = ({ active, payload, label }) => {
         return (
             <div className="custom-tooltip">
                 <p className="label text-textcolor bg-backgroundcolor text-center rounded-md p-2">
-                    <>
                     {value !== 0 ? `${value}` : "No"} {isLog ? "logs" : "monitors offline"} <br /> during {timePeriod} {label}
-                    </>
                 </p>
             </div>
         );
@@ -19,7 +17,7 @@ export const CustomTooltip = ({ active, payload, label }) => {
 };
 
 CustomTooltip.propTypes = {
-    active: PropTypes.bool,
-    payload: PropTypes.array,
+    active: PropTypes.bool.isRequired,
+    payload: PropTypes.array.isRequired,
     label: PropTypes.string
 }

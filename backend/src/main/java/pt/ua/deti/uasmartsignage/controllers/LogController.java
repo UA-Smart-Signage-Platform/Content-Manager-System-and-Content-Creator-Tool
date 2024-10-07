@@ -47,9 +47,9 @@ public class LogController {
         return new ResponseEntity<>(logs, HttpStatus.OK);
     }
 
-    @Operation(summary = "WIP")
+    @Operation(summary = "Get all operation backend logs in the last X days, based on their severity")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "WIP", content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "200", description = "Operation logs list retrieved based on days and severity", content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/logs/backend/operation")
     public ResponseEntity<Map<String, Integer>> getBackendLogsNumberPerOperationByNumberDaysAndSeverity(@RequestParam Integer days, @RequestParam Severity severity) {

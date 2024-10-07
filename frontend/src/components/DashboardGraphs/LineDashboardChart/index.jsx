@@ -39,9 +39,12 @@ function LineDashboardChart( { data, xLabel, xDataKey, height, title, linkTo, li
 LineDashboardChart.propTypes = {
     data: PropTypes.array.isRequired,
     xLabel: PropTypes.string.isRequired,
+    xDataKey: PropTypes.string.isRequired,
     height: PropTypes.string.isRequired,
     title: PropTypes.node.isRequired,
-    linkTo: PropTypes.string.isRequired
+    linkTo: PropTypes.string.isRequired,
+    lineDataKey: PropTypes.string.isRequired,
+    severity: PropTypes.string
 }
 
 export default LineDashboardChart
