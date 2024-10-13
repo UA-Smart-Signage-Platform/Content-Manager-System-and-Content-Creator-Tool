@@ -4,12 +4,14 @@ import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
 import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.enums.Severity;
+import pt.ua.deti.uasmartsignage.events.RulesChangedEvent;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 
 import java.util.List;
@@ -22,6 +24,7 @@ public class MonitorService {
     private final MonitorRepository monitorRepository;
     private final MonitorGroupService monitorGroupService;
     private final LogsService logsService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger logger = LoggerFactory.getLogger(MonitorService.class);
     private final String source = this.getClass().getSimpleName();
@@ -127,6 +130,7 @@ public class MonitorService {
             monitorGroupService.deleteGroupById(oldGroup.getId());
         }
 
+        eventPublisher.publishEvent(new RulesChangedEvent(this, updatedMonitor.getGroup().getId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
         return updatedMonitor;
     }

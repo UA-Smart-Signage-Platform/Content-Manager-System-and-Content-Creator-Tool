@@ -26,7 +26,7 @@ import pt.ua.deti.uasmartsignage.dto.RuleDTO;
 import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
-import pt.ua.deti.uasmartsignage.events.RuleCreatedEvent;
+import pt.ua.deti.uasmartsignage.events.RulesChangedEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -118,7 +118,7 @@ public class RuleService {
        
         Rule savedRule = ruleRepository.save(rule);
 
-        eventPublisher.publishEvent(new RuleCreatedEvent(this, savedRule));
+        eventPublisher.publishEvent(new RulesChangedEvent(this, savedRule.getGroupId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
 
         return savedRule;
@@ -143,6 +143,7 @@ public class RuleService {
         }
 
         ruleRepository.deleteById(id);
+        eventPublisher.publishEvent(new RulesChangedEvent(this, rule.get().getGroupId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
 
         return true;
@@ -169,7 +170,7 @@ public class RuleService {
 
         rule.setId(id);
         Rule updatedRule = ruleRepository.save(rule);
-
+        eventPublisher.publishEvent(new RulesChangedEvent(this, updatedRule.getGroupId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
 
         return updatedRule;
@@ -274,6 +275,7 @@ public class RuleService {
 
     private Object processVariable(WidgetVariable variable, Object variableValue){
         // TODO: check if its a folder
+        // if it is a folder return a list
         if(variable.getType() == WidgetVariableType.MEDIA){
             Integer fileId = (Integer) variableValue;
             CustomFile file = fileService.getFileById(Long.valueOf(fileId)).get();

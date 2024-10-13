@@ -3,12 +3,10 @@ package pt.ua.deti.uasmartsignage.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.paho.client.mqttv3.IMqttMessageListener;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.MqttSecurityException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -25,17 +23,14 @@ import pt.ua.deti.uasmartsignage.dto.mqtt.MqttPayload;
 import pt.ua.deti.uasmartsignage.dto.mqtt.RegistrationMessage;
 import pt.ua.deti.uasmartsignage.dto.mqtt.RulesMessage;
 import pt.ua.deti.uasmartsignage.dto.mqtt.embedded.MqttRule;
-import pt.ua.deti.uasmartsignage.dto.mqtt.embedded.MqttSchedule;
 import pt.ua.deti.uasmartsignage.enums.MqttMethod;
 import pt.ua.deti.uasmartsignage.enums.Severity;
-import pt.ua.deti.uasmartsignage.events.RuleCreatedEvent;
+import pt.ua.deti.uasmartsignage.events.RulesChangedEvent;
 import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.Monitor;
 import pt.ua.deti.uasmartsignage.models.MonitorGroup;
 import pt.ua.deti.uasmartsignage.models.Rule;
 import pt.ua.deti.uasmartsignage.repositories.MonitorGroupRepository;
-import pt.ua.deti.uasmartsignage.repositories.MonitorRepository;
-import pt.ua.deti.uasmartsignage.repositories.RuleRepository;
 
 @Service
 @RequiredArgsConstructor
@@ -56,10 +51,9 @@ public class BrokerService {
     private final String KEEPALIVE_TOPIC = "keepalive";
 
     @EventListener
-    public void handleRuleCreatedEvent(RuleCreatedEvent event) {
-        Rule rule = event.getRule();
-        System.out.println("sending rule to " + rule.getGroupId());
-        sendRulesToMonitorGroup(rule.getGroupId());
+    public void handleRulesChangedEvent(RulesChangedEvent event) {
+        long groupId = event.getGroupId();
+        sendRulesToMonitorGroup(groupId);
     }
 
     public void sendRulesToMonitorGroup(Long groupId){
