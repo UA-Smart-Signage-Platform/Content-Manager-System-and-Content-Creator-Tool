@@ -104,15 +104,6 @@ public class FileController {
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
         Resource fileResource = fileService.downloadFileById(fileId);
 
-        // String operation = "downloadFileById";
-        // String description = "File downloaded: " + filePath;
-        // if (!logsService.addBackendLog(Severity.INFO, source, operation, description)) {
-        //     logger.error(Log.ERROR.toString());
-        // }
-        // else {
-        //     logger.info(Log.SUCCESS.toString(), description);
-        // }
-
         if (fileResource == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -1,4 +1,4 @@
-export const priorityDown = (rule, rulesByGroupIdQuery, setChangesMade) => {
+export const priorityDown = (rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged) => {
     const priority = rule.schedule.priority;
 
     if (priority === rulesByGroupIdQuery.data.data.length - 1){
@@ -15,10 +15,10 @@ export const priorityDown = (rule, rulesByGroupIdQuery, setChangesMade) => {
         return element;
     })
 
-    updateChanges(rulesByGroupIdQuery, setChangesMade, arr)
+    handlePriorityChange(rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged, arr)
 };
 
-export const priorityUp = (rule, rulesByGroupIdQuery, setChangesMade) => {
+export const priorityUp = (rule, rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged) => {
     const priority = rule.schedule.priority;
 
     if (priority === 0){
@@ -35,10 +35,11 @@ export const priorityUp = (rule, rulesByGroupIdQuery, setChangesMade) => {
         return element;
     })
 
-    updateChanges(rulesByGroupIdQuery, setChangesMade, arr)
+    handlePriorityChange(rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged, arr);
 };
 
-const updateChanges = (rulesByGroupIdQuery, setChangesMade, arr) => {
+const handlePriorityChange = (rulesByGroupIdQuery, setChangesMade, setPriorityChanged, priorityChanged, arr) => {
     rulesByGroupIdQuery.data.data = arr;
+    setPriorityChanged(!priorityChanged);
     setChangesMade(true);
 }

@@ -3,7 +3,6 @@ import { MdArrowBack, MdArrowDropUp } from "react-icons/md";
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import templateService from "../../../services/templateService";
-import activeTemplateService from '../../../services/activeTemplateService';
 import mediaService from '../../../services/mediaService';
 import ScheduleContentModal from './ScheduleContentModal';
 
@@ -11,14 +10,14 @@ import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { AnimatePresence, motion } from 'framer-motion';
-import { colors, weekDays, timeHour, timeMinute } from './scheduleModalUtils';
+import { colors, weekDays, timeHour, timeMinute, getWeekDaysValues } from './scheduleModalUtils';
 import Widgets from '../../Widgets';
 import { useUserStore } from '../../../stores/useUserStore';
 import ruleService from '../../../services/ruleService';
+import { useMutation, useQueries } from '@tanstack/react-query';
 
 
 function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, totalRules, titleMessage, ruleId, setRuleId, edit, setEdit } ) {
-    const [templates, setTemplates] = useState([]);
     const [selectedColors,setSelectedColors] = useState([]);
 
     const [selectedButtonTemplateIndex, setSelectedButtonTemplateIndex] = useState(null);
@@ -39,8 +38,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
 
 
     useEffect(()=>{
-        if (templates.length !== 0 && selectedTemplateId !== null){
-            let template = templates.at(selectedButtonTemplateIndex).widgets.length;
+        if (!templatesQuery.isLoading && templatesQuery.data.data.length !== 0 && selectedTemplateId !== null){
+            let template = templatesQuery.data.data.at(selectedButtonTemplateIndex).widgets.length;
             let arr = [];
             for (let i = 0; i < template; i++){
                 arr.push(colors[Math.floor(Math.random() * colors.length)]);
@@ -49,81 +48,86 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
     },[selectedTemplateId]);
 
-    useEffect(() => {
-        templateService.getTemplates().then((response) => {
-            setTemplates(response.data);
-
-            if (ruleId !== null){
-                getRuleInfo(response.data);
+    const [templatesQuery] = useQueries({
+        queries : [
+            {
+                queryKey: ['templates'],
+                queryFn: () => templateService.getTemplates().then((response) => {
+                    if (ruleId !== null) {
+                        getRuleInfo(response.data);
+                    }
+                    return response;
+                })
             }
-        })
-    }, []);
+        ]
+    });
 
-
-
-    const getRuleInfo = (localTemplates) => {
+    const getRuleInfo = (templates) => {
         ruleService.getRuleById(ruleId).then((response) => {
             const data = response.data;
             const schedule = data.schedule;
             const content = data.chosenValues;
-            const hourStart = schedule.startTime[0].toString();
-            const minuteStart = schedule.startTime[1].toString();
-            const hourEnd = schedule.endTime[0].toString();
-            const minuteEnd = schedule.endTime[1].toString();
             
             setPriority(schedule.priority)
             setSelectedTemplateId(data.template.id);
             setSelectedDays(schedule.weekdays);
-            setSelectedStartTime([hourStart.length === 1 ? "0".concat(hourStart) : hourStart,
-                                    minuteStart.length === 1 ? "0".concat(minuteStart) : minuteStart]);
-            setSelectedEndTime([hourEnd.length === 1 ? "0".concat(hourEnd) : hourEnd,
-                                    minuteEnd.length === 1 ? "0".concat(minuteEnd) : minuteEnd]);
+            setSelectedStartTime([schedule.startTime[0].toString().padStart(2, '0'), schedule.startTime[1].toString().padStart(2, '0')]);
+            setSelectedEndTime([schedule.endTime[0].toString().padStart(2, '0'), schedule.endTime[1].toString().padStart(2, '0')]);
 
 
             // load existing content to widgets
             const tmpSelectedContent = { ...selectedContent };
 
-            for (const widgetId of Object.keys(content)){
+            Object.keys(content).forEach((widgetId) => {
                 if (!tmpSelectedContent[widgetId]) {
                     tmpSelectedContent[widgetId] = {};
                 }
-            
-                for (const variable of Object.keys(content[widgetId])) {
-                    // if variable is media type
-                    if (data.template.widgets.find(x => x.id == widgetId).widget.variables.find(x => x.name == variable).type === "MEDIA"){
-                        mediaService.getFileOrDirectoryById(content[widgetId][variable]).then((response) => { 
+                Object.keys(content[widgetId]).forEach((variable) => {
+                    // If variable is media type
+                    if (data.template.widgets.find(x => x.id == widgetId).widget.variables.find(x => x.name == variable).type === 'MEDIA') {
+                        mediaService.getFileOrDirectoryById(content[widgetId][variable]).then((response) => {
                             tmpSelectedContent[widgetId][variable] = response.data;
-                        })
-                    }
-                    else {
+                        });
+                    } else {
                         tmpSelectedContent[widgetId][variable] = content[widgetId][variable];
                     }
-                }
-            }
+                });
+            });
 
             setSelectedContent(tmpSelectedContent);
 
-            if (schedule.startDate !== null){
-                setSelectedStartDate(new Date(schedule.startDate));
-            }
+            if (schedule.startDate) setSelectedStartDate(new Date(schedule.startDate));
+            if (schedule.endDate) setSelectedEndDate(new Date(schedule.endDate));
 
-
-            if (schedule.endDate !== null){
-                setSelectedEndDate(new Date(schedule.endDate));
-            }
-
-            setSelectedButtonTemplateIndex(localTemplates.map(x => x.id).indexOf(data.template.id));
+            setSelectedButtonTemplateIndex(templates?.findIndex((x) => x.id === data.template.id));
         })
     }
 
+    const addRuleMutation = useMutation({
+        mutationFn: (data) => ruleService.addRule(data),
+        onSuccess: () => {
+            setUpdater(!updater);
+        }
+    });
+
+    const updateRuleMutation = useMutation({
+        mutationFn: (data) => ruleService.updateRule(ruleId, data),
+        onSuccess: () => {
+            setUpdater(!updater);
+            setEdit(false);
+        }
+    });
+
+    const { mutate: addRuleMutate } = addRuleMutation;
+    const { mutate: updateRuleMutate } = updateRuleMutation;
 
     const handleSubmit = () => {
         const data = {
             "groupId": selectedGroup.id,
             "templateId": selectedTemplateId,
             "schedule": { 
-                "startTime": selectedStartTime[0] + ":" + selectedStartTime[1],
-                "endTime": selectedEndTime[0] + ":" + selectedEndTime[1],
+                "startTime": selectedStartTime.join(':'),
+                "endTime": selectedEndTime.join(':'),
                 "startDate": selectedStartDate,
                 "endDate": selectedEndDate,
                 "priority": edit ? priority : totalRules,
@@ -135,19 +139,14 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             "chosenValues": selectedContent
         }
 
-        if (edit){
-            ruleService.updateRule(ruleId, data).then(() => {
-                setUpdater(!updater);
-                setEdit(false);
-                setShowPortal(false);
-            });
+        if (edit) {
+            updateRuleMutate(data);
+        } else {
+            addRuleMutate(data);
         }
-        else {
-            ruleService.addRule(data).then(()=>{
-                setUpdater(!updater);
-                setShowPortal(false);
-            });
-        }
+
+        resetEverything();
+        setShowPortal(false);
     };
 
     const handleSelectedDays = (event) => {
@@ -165,14 +164,14 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
     const handleDisplayAllTime = () => {
         setSelectedStartTime(["00", "00"]);
         setSelectedEndTime(["23", "55"]);
-        setSelectedDays(weekDays);
+        setSelectedDays(getWeekDaysValues());
     };
 
 
     const handleDisplayWeeklyFrom8Till23 = () => {
         setSelectedStartTime(["08", "40"]);
         setSelectedEndTime(["23", "00"]);
-        setSelectedDays(weekDays);
+        setSelectedDays(getWeekDaysValues());
     };
 
     const contentElement = (templateWidget) => {
@@ -209,10 +208,12 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         return (
             <select id="templateSelect" 
                     value={selectedTemplateId || ""}
-                    onChange={(e) => {setSelectedContent({}); setSelectedButtonTemplateIndex(JSON.parse(e.target.value).values[0]); setSelectedTemplateId(JSON.parse(e.target.value).values[1])}} 
+                    onChange={(e) => {setSelectedContent({}); 
+                                        setSelectedButtonTemplateIndex(JSON.parse(e.target.value).values[0]); 
+                                        setSelectedTemplateId(JSON.parse(e.target.value).values[1])}} 
                     className="bg-[#E9E9E9] rounded-md p-2">
                 <option value="" disabled hidden>Template</option>
-                {templates.length !== 0 && templates.map((template, index) => 
+                {templatesQuery.data.data.length !== 0 && templatesQuery.data.data.map((template, index) => 
                     <option key={template.id} value={JSON.stringify({ values: [index, template.id] })}>{template.name}</option>
                 )}
             </select>
@@ -300,51 +301,21 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
             <div className="h-[50%] w-full p-3 pr-[10%] pl-[10%] place-content-center">
                 <span>Weekdays:</span>
                 <div className="flex justify-around pt-3 text-sm">
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[0])} 
-                                value={weekDays[0]} type="checkbox" className="h-5 w-5" />
-                        <span>MON</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[1])} 
-                                value={weekDays[1]} type="checkbox" className="h-5 w-5" />
-                        <span>TUE</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[2])} 
-                                value={weekDays[2]} type="checkbox" className="h-5 w-5" />
-                        <span>WED</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[3])} 
-                                value={weekDays[3]} type="checkbox" className="h-5 w-5" />
-                        <span>THU</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[4])} 
-                                value={weekDays[4]} type="checkbox" className="h-5 w-5" />
-                        <span>FRI</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[5])} 
-                                value={weekDays[5]} type="checkbox" className="h-5 w-5" />
-                        <span>SAT</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                        <input onChange={handleSelectedDays} 
-                                checked={selectedDays.includes(weekDays[6])} 
-                                value={weekDays[6]} type="checkbox" className="h-5 w-5" />
-                        <span>SUN</span>
-                    </div>
+                    {weekDays.map((day) => (
+                        <div key={day.value} className="flex flex-col items-center">
+                            <input
+                                onChange={handleSelectedDays}
+                                checked={selectedDays.includes(day.value)}
+                                value={day.value}
+                                type="checkbox"
+                                className="h-5 w-5"
+                            />
+                            <span>{day.label}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
-        )
+        );
     }
 
     const startDateDisplay = () => {
@@ -384,7 +355,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
         else{
             return (
-                <div
+                <button
                     onMouseEnter={() => setDisplayInfo(true)}
                     onMouseLeave={() => setDisplayInfo(false)}
                     className='relative'>
@@ -414,16 +385,16 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                             <MdArrowDropUp className="absolute top-[85%] left-[50%] translate-x-[-50%]"/>
                         </>
                     }
-                </div>
+                </button>
             )
         }
     }
 
     const templatePreview = () => {
-        if (selectedTemplateId !== null && templates.length !== 0){
+        if (selectedTemplateId !== null && templatesQuery.data.data.length !== 0){
             return (
                 <>
-                    {templates[selectedButtonTemplateIndex].widgets.map((templateWidget, index) => 
+                    {templatesQuery.data.data[selectedButtonTemplateIndex].widgets.map((templateWidget, index) => 
                         <div key={templateWidget.id} className={`absolute`}
                             style={{
                                 width: `${templateWidget.width}%`,
@@ -443,8 +414,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
         }
     }
 
-
-    return createPortal(
+    if (!templatesQuery.isLoading) {
+        return createPortal(
             <motion.div key="background"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -505,7 +476,7 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                                     <AnimatePresence>
                                         {showContentsPortal && <ScheduleContentModal
                                             setShowContentsPortal={setShowContentsPortal}
-                                            templateWidget={templates[selectedButtonTemplateIndex].widgets.find(x => x.id == selectedWidgetId)}
+                                            templateWidget={templatesQuery.data.data[selectedButtonTemplateIndex].widgets.find(x => x.id == selectedWidgetId)}
                                             selectedContent={selectedContent}
                                             setSelectedContent={setSelectedContent} />
                                         }
@@ -517,7 +488,8 @@ function ScheduleModal( { setShowPortal, selectedGroup, updater, setUpdater, tot
                 </motion.div>
             </motion.div>,
         document.body
-    );
+        );
+    }
 }
 
 

@@ -98,7 +98,7 @@ public class BrokerService {
 
     public void sendMessageToMonitor(Long monitorId, MqttPayload message) {
 
-        Monitor monitor = monitorService.getMonitorById(monitorId);
+        Monitor monitor = monitorService.getMonitorById(monitorId).get();
         if (monitor == null)
             return;
 

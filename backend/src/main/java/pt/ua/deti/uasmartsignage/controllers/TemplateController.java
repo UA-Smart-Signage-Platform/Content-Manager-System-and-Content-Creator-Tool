@@ -4,6 +4,7 @@ import pt.ua.deti.uasmartsignage.dto.TemplateDTO;
 import pt.ua.deti.uasmartsignage.models.Template;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +49,9 @@ public class TemplateController {
             @ApiResponse(responseCode = "404", description = "Template not found")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<Template> getTemplateById(@PathVariable("id") String id) {
-        Template template = templateService.getTemplateById(id);
-        if (template == null) {
+    public ResponseEntity<Optional<Template>> getTemplateById(@PathVariable("id") String id) {
+        Optional<Template> template = templateService.getTemplateById(id.replaceAll("[\n\r]", "_"));
+        if (template.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(template, HttpStatus.OK);
@@ -76,12 +77,12 @@ public class TemplateController {
             @ApiResponse(responseCode = "404", description = "Template not found")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTemplate(@PathVariable("id") String id) {
-        if (templateService.getTemplateById(id) == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<Boolean> deleteTemplate(@PathVariable("id") String id) {
+        boolean deleted = templateService.deleteTemplateById(id.replaceAll("[\n\r]", "_"));
+        if (!deleted) {
+            return new ResponseEntity<>(deleted, HttpStatus.NOT_FOUND);
         }
-        templateService.deleteTemplateById(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(deleted, HttpStatus.NO_CONTENT);
     }
 
     @Operation(summary = "Update template")

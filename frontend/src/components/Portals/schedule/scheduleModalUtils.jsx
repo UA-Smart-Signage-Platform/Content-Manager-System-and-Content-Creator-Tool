@@ -1,6 +1,17 @@
-export const weekDays = [0, 1, 2, 3, 4, 5, 6];
-export const timeHour = ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"];
-export const timeMinute = ["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"];
+export const weekDays = [
+    { value: 0, label: "MON" },
+    { value: 1, label: "TUE" },
+    { value: 2, label: "WED" },
+    { value: 3, label: "THU" },
+    { value: 4, label: "FRI" },
+    { value: 5, label: "SAT" },
+    { value: 6, label: "SUN" }
+];
+
+export const getWeekDaysValues = () => weekDays.map(day => day.value);
+
+export const timeHour = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, "0"));
+export const timeMinute = Array.from({ length: 12 }, (_, i) => (i * 5).toString().padStart(2, "0"));
 
 export const colors = [
     'bg-pink-200 border-pink-400',

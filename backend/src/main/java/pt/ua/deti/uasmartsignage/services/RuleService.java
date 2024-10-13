@@ -10,7 +10,10 @@ import pt.ua.deti.uasmartsignage.models.embedded.WidgetVariable;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
@@ -20,6 +23,7 @@ import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import pt.ua.deti.uasmartsignage.repositories.RuleRepository;
 import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.dto.RuleDTO;
+import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.enums.Severity;
 import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
 import pt.ua.deti.uasmartsignage.events.RuleCreatedEvent;
@@ -38,51 +42,156 @@ public class RuleService {
     private final FileService fileService;
     private final ApplicationEventPublisher eventPublisher;
 
+    private static final Logger logger = LoggerFactory.getLogger(RuleService.class);
+    private final String source = this.getClass().getSimpleName();
+
+    /**
+     * Retrieves all existent rules.
+     *
+     * @return All rules.
+    */
     public List<Rule> getAllRules() {
+        String operation = "getAllRules";
+        String description = "Retrieved all rules";
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
         return ruleRepository.findAll();
     }
 
+    /**
+     * Retrieves and returns all rules based on group ID.
+     *
+     * @param groupId The ID of the group to retrieve all rules from.
+     * @return The rules that belong to group with the specified ID.
+    */
     public List<Rule> getAllRulesForGroup(Long groupId) {
-        List<Rule> rules = ruleRepository.findByGroupId(groupId);
-        if (rules == null) return null;
-        return rules;
+        String operation = "getAllRulesForGroup";
+        String description = "Retrieved all rules based on group ID: " + groupId;
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+        return ruleRepository.findByGroupId(groupId);
     }
 
-    public Rule getRuleById(String id){
-        return ruleRepository.findById(id).orElse(null);
-    }
+    /**
+     * Retrieves rule based on given ID.
+     *
+     * @param id The ID of the rule.
+     * @return The rule based on the ID or empty if not found.
+    */
+    public Optional<Rule> getRuleById(String id){
+        logger.info("Retrieving rule with ID: {}", id);
+        Optional<Rule> rule = ruleRepository.findById(id);
 
-    public Rule saveRule(RuleDTO ruleDTO) {
-        Rule rule = convertDTOToRule(ruleDTO);
-        if (rule == null) return null;
-        rule.setId(null);
-        rule = ruleRepository.save(rule);
-        eventPublisher.publishEvent(new RuleCreatedEvent(this, rule));
+        String operation = "getRuleById";
+        String description = "Retrieved rule with ID: " + id;
+
+        if (rule.isEmpty()){
+            description = Log.OBJECTNOTFOUND.format(id);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
+            return Optional.empty();
+        }
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
         return rule;
     }
 
-    public void deleteRuleById(String id) {
-        ruleRepository.deleteById(id);
+    /**
+     * Saves rule based on Data Transfer Object (DTO).
+     * 
+     * @param ruleDTO The DTO with information necessary to create a rule.
+     * @return The newly created Rule, or null if no rule was created.
+    */
+    public Rule saveRule(RuleDTO ruleDTO) {
+        Rule rule = convertDTOToRule(ruleDTO);
+
+        String operation = "saveRule(DTO)";
+        String description = "Saved rule for groupId: " + ruleDTO.getGroupId();
+
+        if (rule == null){
+            description = "Failed to create rule for groupId: " + ruleDTO.getGroupId();
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
+            return null;
+        } 
+
+        rule.setId(null);
+       
+        Rule savedRule = ruleRepository.save(rule);
+
+        eventPublisher.publishEvent(new RuleCreatedEvent(this, savedRule));
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return savedRule;
     }
 
+    /**
+     * Deletes rule based on given ID.
+     * 
+     * @param id The ID of the desired rule to delete.
+     * @return Boolean with true if rule was deleted or false if it failed.
+    */
+    public boolean deleteRuleById(String id) {
+        Optional<Rule> rule = getRuleById(id);
+
+        String operation = "deleteRuleById";
+        String description = "Deleted rule with ID: " + id;
+
+        if (rule.isEmpty()){
+            description = Log.OBJECTNOTFOUND.format(id);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
+            return false;
+        }
+
+        ruleRepository.deleteById(id);
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return true;
+    }
+
+    /**
+     * Updates rule based on ID and Data Transfer Object (DTO).
+     * 
+     * @param id The ID of the desired rule to update.
+     * @param ruleDTO The DTO with information necessary to update the rule.
+     * @return The updated rule.
+    */
     public Rule updateRule(String id, RuleDTO ruleDTO) {
         Rule rule = convertDTOToRule(ruleDTO);
-        if (rule == null) return null;
+
+        String operation = "updateRule(DTO)";
+        String description = "Updated rule with ID: " + id + "; And assigned to groupId: " + ruleDTO.getGroupId();
+
+        if (rule == null){
+            description = Log.OBJECTNOTFOUND.format(id);
+            logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
+            return null;
+        } 
+
         rule.setId(id);
-        return ruleRepository.save(rule);
+        Rule updatedRule = ruleRepository.save(rule);
+
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
+
+        return updatedRule;
     }
 
     public Rule convertDTOToRule(RuleDTO ruleDTO) {
+        String operation = "convertDTOToRule";
+        String description = "Converted ruleDTO to Rule with groupId: " + ruleDTO.getGroupId();
 
         // check if group exists
         long groupId = ruleDTO.getGroupId();
         if (monitorGroupService.getGroupById(groupId) == null){
+            description = Log.OBJECTNOTFOUND.format(groupId);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
         
         // check if template exists
-        Template template = templateService.getTemplateById(ruleDTO.getTemplateId());
+        Template template = templateService.getTemplateById(ruleDTO.getTemplateId()).get();
         if (template == null){
+            description = Log.OBJECTNOTFOUND.format(groupId);
+            logsService.addLogEntry(Severity.WARNING, source, operation, description, logger);
             return null;
         }
 
@@ -106,14 +215,13 @@ public class RuleService {
                 }
             }
             catch(IllegalArgumentException exception){
-                logsService.addBackendLog(Severity.ERROR, 
-                                            this.getClass().getSimpleName(),
-                                            "convertDTOToRule", 
-                                            exception.getMessage());
+                description = "Something went wrong when adding chosenValues to Rule; exception: " + exception.getMessage();
+                logsService.addLogEntry(Severity.ERROR, source, operation, description, logger);
                 return null;
             }
         }
         
+        logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
         return rule;
     }
 

@@ -4,14 +4,17 @@ import PropTypes from 'prop-types';
 import { useMutation } from '@tanstack/react-query';
 import loginService from '../../services/loginService';
 import { useUserStore } from '../../stores/useUserStore';
+import { useNavigate } from 'react-router';
 
 function SignInDiv({setNyan}) {
     const login = useUserStore((state) => state.login)
+    const navigate = useNavigate();
     const mutation = useMutation({
       mutationFn: (password) => loginService.login("admin",password),
       onSuccess: (data, variable, context) =>{
         let user = data.data;
         login(user.username,user.role,user.jwt);
+        navigate("/monitors")
       },
       onError: (error, variables, context) => {
         console.log("error",error)
@@ -39,6 +42,7 @@ function SignInDiv({setNyan}) {
           <p className=' justify-start w-full text-2xl text-[#95A967]'>Sign in as Root</p>
           <input className=' border-secondary border-2 rounded-md font-bold p-1 text-xl bg-secondaryLight'
                 placeholder='password'
+                type='password'
                 onChange={(e) => setPassword(e.target.value)}
           />
         </div>

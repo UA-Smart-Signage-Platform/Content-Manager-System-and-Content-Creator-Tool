@@ -1,35 +1,77 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdSettings, MdCreate, MdAdd, MdCheck } from "react-icons/md";
 import { IoMdTrash } from "react-icons/io";
 import { IoWarningOutline } from "react-icons/io5";
 import monitorsGroupService from "../../services/monitorsGroupService"
 import {motion,AnimatePresence} from "framer-motion"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import PropTypes from 'prop-types';
 
-function GroupBar( {id, changeId, page, changeName} ) {
-    const [groups, setGroups] = useState([]);
-    const [editMode, setEditMode] = useState(false);
-    const [editGroup,setEditGroup] = useState({id:-1,name:"",description:""});
+function GroupBar( {id, changeId, page} ) {
+    const queryClient = useQueryClient();
+    
+    const [updatePage, setUpdatePage] = useState(false);
     const [warning,setWarning] = useState(false);
- 
-    useEffect(() => {
-        monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
-            setGroups(groupsData.data);
-        })
-    }, []);
+    const [editMode, setEditMode] = useState(false);
+    const [editGroup,setEditGroup] = useState({ id:-1,
+                                                name:"",
+                                                description:""});
+
+                                
+    const groupsQuery = useQuery({ 
+        queryKey: ['groupsQuery'], 
+        queryFn: () => monitorsGroupService.getNonDefaultGroups()
+    });
+
+    const deleteGroupMutate = useMutation({
+        mutationFn: (id) => monitorsGroupService.deleteGroup(id),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(
+                {
+                    queryKey: ['groupsQuery']
+                },
+            );
+        }
+    });
+
+    const createOrUpdateGroupMutate = useMutation({
+        mutationFn: () => {
+            if (editGroup.id < 0) {
+                return monitorsGroupService.createGroup(editGroup);
+            } 
+            else {
+                return monitorsGroupService.updateGroup(editGroup.id, editGroup);
+            }
+        },
+        onSuccess: async () => {
+            await queryClient.invalidateQueries(
+                {
+                    queryKey: ['groupsQuery']
+                }
+            );
+            setEditGroup({ id: -1, name: "", description: "" });
+        }
+    });
+
+    const { mutate: deleteGroup } = deleteGroupMutate;
+
+    const { mutate: createOrUpdateGroup } = createOrUpdateGroupMutate;
 
     const changeToEditMode = () => {
         if(editMode){
             setEditGroup({id:-1,name:"",description:""})
-            setGroups(groups.filter((element)=> element.id !== -1))
+            groupsQuery.data.data = groupsQuery.data.data.filter((element)=> element.id !== -1)
         }
         setEditMode(!editMode);
     }
 
     const setupCreateGroup = () =>{
-        if(!groups.some((element)=> element.id == -1))
-            setGroups([...groups,{id:-1,name:"",description:""}])
+        if(!groupsQuery.data?.data.some((element)=> element.id == -1)){
+            groupsQuery.data.data.push({ id: -1, name: "", description: "" });
+            setUpdatePage(!updatePage);
+        }
     }
-
+    
     const editGroupName = (name) =>{
         setEditGroup({
             id:editGroup.id,
@@ -37,40 +79,13 @@ function GroupBar( {id, changeId, page, changeName} ) {
             description: editGroup.description,
         })
     }
+
     const editGroupDescription = (description) =>{
         setEditGroup({
             id:editGroup.id,
             name: editGroup.name,
             description: description,
         })
-    }
-    
-    const handleUpdateCreate = () =>{
-        if (editGroup.id < 0){
-            monitorsGroupService.createGroup(editGroup).then((response) =>{
-                monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
-                    setGroups(groupsData.data);
-                })
-            })
-        }
-        else{
-            monitorsGroupService.updateGroup(editGroup.id,editGroup).then((response) =>{
-                monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
-                    setGroups(groupsData.data);
-                })
-            })
-
-        }
-        setEditGroup({id:-1,name:"",description:""})
-    }
-
-    const handleDelete = (id) =>{
-        monitorsGroupService.deleteGroup(id).then((response) =>{
-            monitorsGroupService.getGroupsNotMadeForMonitor().then((groupsData) => {
-                setGroups(groupsData.data);
-            })
-        })
-        setGroups(groups.filter((element) => element.id !== id))
     }
 
     const handleBlur = (e) => {
@@ -81,9 +96,9 @@ function GroupBar( {id, changeId, page, changeName} ) {
           // Check if the new focused element is a child of the original container
           if (!currentTarget.contains(document.activeElement)) {
             setEditGroup({id:-1,name:"",description:""})
-            setGroups(groups.filter((element)=> element.id !== -1))
+            groupsQuery.data.data = groupsQuery.data.data.filter((element)=> element.id !== -1)
           }})
-        }
+    }
 
     return (
         <div className="h-full flex flex-row">
@@ -93,7 +108,7 @@ function GroupBar( {id, changeId, page, changeName} ) {
                                         animate={{y:-70}}
                                         exit={{y:-200}}
                 >
-                    <IoWarningOutline className="size-6"/>Cant Delete Group In Use
+                    <IoWarningOutline className="size-6"/>Can't Delete Group In Use
                 </motion.div>}
             </AnimatePresence>
             <div className="mt-4 ml-3 flex-col w-full">
@@ -113,8 +128,8 @@ function GroupBar( {id, changeId, page, changeName} ) {
                             </button>
                         }
                     </div>
-                    <div id="selected" group-id="0" onClick={()=> {changeId(null), changeName(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
-                        <div className="flex flex-col mt-1 mb-1 ml-4">
+                    <button id="selected" onClick={()=> {changeId(null)}} className={"cursor-pointer rounded-[4px] mb-4 mr-4 " +( id === null ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}>
+                        <div className="flex flex-col mt-1 mb-1 ml-4 text-left">
                             <div className="flex flex-row">
                                 <div>
                                     <span className="text-2xl">All monitors</span>
@@ -122,7 +137,7 @@ function GroupBar( {id, changeId, page, changeName} ) {
                             </div>
                             <span className="text-sm">All monitors in a single place</span>
                         </div>
-                    </div>
+                    </button>
                 </div>
                 <div className="flex flex-col mt-5 overflow-scroll">
                     <div className="flex flex-row justify-between">
@@ -136,9 +151,9 @@ function GroupBar( {id, changeId, page, changeName} ) {
                             </button>
                         }
                     </div>
-                    {groups?.map((group, index) => (
-                    <div key={group.id}
-                        onClick={()=> {changeId(group.id), changeName(group.name)}}
+                    {groupsQuery.data?.data.map((group, index) => (
+                    <button key={group.id}
+                        onClick={()=> {changeId(group.id)}}
                         className={`cursor-pointer w-[95%] rounded-[4px] mb-4 mr-4 text-left `+ (group.id === id ? `bg-selectedGroup`:`bg-secondaryLight text-textcolorNotSelected `)}
                         onBlur={handleBlur}
                     >
@@ -154,16 +169,19 @@ function GroupBar( {id, changeId, page, changeName} ) {
                                     <div className="ml-auto">
                                         {editGroup.id !== group.id ? 
                                         <div className="flex gap-1">
-                                            <button onClick={()=>setEditGroup(group)}><MdCreate className="h-5 size-5 cursor-pointer"/></button>
-                                            <button disabled={group.templateGroups.length !== 0} onClick={() => handleDelete(group.id)}
-                                                    onMouseOver={()=>{if(group.templateGroups.length !== 0)setWarning(true)}}
-                                                    onFocus={()=>{if(group.templateGroups.length !== 0)setWarning(true)}}
+                                            <button onClick={()=>setEditGroup(group)}>
+                                                <MdCreate className="h-5 size-5 cursor-pointer"/>
+                                            </button>
+                                            <button disabled={group.monitors.length !== 0} onClick={() => deleteGroup(group.id)}
+                                                    onMouseOver={()=>{if(group.monitors.length !== 0)setWarning(true)}}
+                                                    onFocus={()=>{if(group.monitors.length !== 0)setWarning(true)}}
                                                     onBlur={()=>setWarning(false)}
-                                                    onMouseLeave={()=>setWarning(false)}
-                                            ><IoMdTrash className="h-5 size-5 cursor-pointer"/></button>
+                                                    onMouseLeave={()=>setWarning(false)}>
+                                                <IoMdTrash className="h-5 size-5 cursor-pointer"/>
+                                            </button>
                                         </div> 
                                         :
-                                        <button><MdCheck className="size-5" onClick={() => handleUpdateCreate()}/></button>
+                                        <button><MdCheck className="size-5" onClick={() => createOrUpdateGroup()}/></button>
                                     }
                                     </div>
                                 }
@@ -174,13 +192,19 @@ function GroupBar( {id, changeId, page, changeName} ) {
                                         <input className=" bg-white rounded-md w-full text-sm px-2" value={editGroup.description} onChange={(e)=>editGroupDescription(e.target.value)}/>
                                     }
                         </div>
-                    </div>
+                    </button>
                     ))}
                 </div>
             </div>
             <div id="divider" className="mt-1 mb-1 w-[1px] h-full border-[1px] border-secondary"/>
         </div>
     )
+}
+
+GroupBar.propTypes = {
+    id: PropTypes.number.isRequired,
+    changeId: PropTypes.func.isRequired,
+    page: PropTypes.string.isRequired,
 }
 
 export default GroupBar;
