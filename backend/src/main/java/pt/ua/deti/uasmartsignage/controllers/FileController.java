@@ -102,16 +102,19 @@ public class FileController {
     })
     @GetMapping("/files/download/{fileId}")
     public ResponseEntity<Resource> downloadFile(@PathVariable Long fileId) throws MalformedURLException {
-        Resource file = fileService.downloadFileById(fileId);
+        Resource fileResource = fileService.downloadFileById(fileId);
 
-        if (file == null){
+        if (fileResource == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"");
+        CustomFile file = fileService.getFileById(fileId).get();
+        String fileName = file.getNameWithExtention();
 
-        return ResponseEntity.ok().headers(headers).body(file);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"");
+
+        return ResponseEntity.ok().headers(headers).body(fileResource);
     }
 
     @Operation(summary = "Update a file")

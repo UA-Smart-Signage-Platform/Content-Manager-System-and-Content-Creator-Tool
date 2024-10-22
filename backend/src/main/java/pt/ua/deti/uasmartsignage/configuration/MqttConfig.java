@@ -1,52 +1,36 @@
 package pt.ua.deti.uasmartsignage.configuration;
 
-import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
 
-@Component
+import lombok.RequiredArgsConstructor;
+
+@Configuration
+@RequiredArgsConstructor
 public class MqttConfig {
 
-    private static IMqttClient instance;
+    private final Environment env;
 
-    private Environment env;
-
-    @Autowired
-    public MqttConfig(Environment env) {
-        this.env = env;
-    }
-
-    public IMqttClient getInstance() {
+    @Bean
+    public MqttClient mqttClient() throws MqttException {
         String serverURI = env.getProperty("mqtt.serverURI");
         String clientId = env.getProperty("mqtt.clientId");
         String username = env.getProperty("mqtt.username");
         String password = env.getProperty("mqtt.password");
 
-        try {
-            if (instance == null) {
-                instance = new MqttClient(serverURI, clientId); //NOSONAR
-            }
+        MqttClient client = new MqttClient(serverURI, clientId);
+        MqttConnectOptions options = new MqttConnectOptions();
 
-            MqttConnectOptions options = new MqttConnectOptions();
-            options.setAutomaticReconnect(true);
-            options.setCleanSession(false);
-            options.setConnectionTimeout(10);
-            options.setUserName(username);
-            if (password != null) {
-                options.setPassword(password.toCharArray());
-            }
+        options.setAutomaticReconnect(true);
+        options.setCleanSession(false);
+        options.setUserName(username);
+        if (password != null) options.setPassword(password.toCharArray());
 
-            if (!instance.isConnected()) {
-                instance.connect(options);
-            }
-        } catch (MqttException e) {
-            e.printStackTrace();
-        }
-
-        return instance;
+        client.connect(options);
+        return client;
     }
 }

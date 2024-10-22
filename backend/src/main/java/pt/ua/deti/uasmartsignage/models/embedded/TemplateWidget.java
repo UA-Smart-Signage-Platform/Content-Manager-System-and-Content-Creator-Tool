@@ -1,6 +1,8 @@
 package pt.ua.deti.uasmartsignage.models.embedded;
 
 import pt.ua.deti.uasmartsignage.models.Widget;
+
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Getter;
@@ -78,6 +80,13 @@ public class TemplateWidget {
     private void validatePercentage(float value) {
         if (value < 0 || value > 100) {
             throw new IllegalArgumentException("Position and size values must be a number between 0 and 100");
+        }
+    }
+
+    public static class ZIndexComparator implements Comparator<TemplateWidget> {
+        @Override
+        public int compare(TemplateWidget tw1, TemplateWidget tw2) {
+            return Integer.compare(tw1.zindex, tw2.zindex);
         }
     }
 }

@@ -1,17 +1,20 @@
 package pt.ua.deti.uasmartsignage.services;
 
+import pt.ua.deti.uasmartsignage.models.CustomFile;
 import pt.ua.deti.uasmartsignage.models.Rule;
 import pt.ua.deti.uasmartsignage.models.Template;
 import pt.ua.deti.uasmartsignage.models.Widget;
 import pt.ua.deti.uasmartsignage.models.embedded.TemplateWidget;
 import pt.ua.deti.uasmartsignage.models.embedded.WidgetVariable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -22,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import pt.ua.deti.uasmartsignage.dto.RuleDTO;
 import pt.ua.deti.uasmartsignage.enums.Log;
 import pt.ua.deti.uasmartsignage.enums.Severity;
+import pt.ua.deti.uasmartsignage.enums.WidgetVariableType;
+import pt.ua.deti.uasmartsignage.events.RulesChangedEvent;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +39,8 @@ public class RuleService {
     private final TemplateService templateService;
     private final MonitorGroupService monitorGroupService;
     private final LogsService logsService;
+    private final FileService fileService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final Logger logger = LoggerFactory.getLogger(RuleService.class);
     private final String source = this.getClass().getSimpleName();
@@ -108,8 +115,10 @@ public class RuleService {
         } 
 
         rule.setId(null);
+       
         Rule savedRule = ruleRepository.save(rule);
 
+        eventPublisher.publishEvent(new RulesChangedEvent(this, savedRule.getGroupId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
 
         return savedRule;
@@ -134,6 +143,7 @@ public class RuleService {
         }
 
         ruleRepository.deleteById(id);
+        eventPublisher.publishEvent(new RulesChangedEvent(this, rule.get().getGroupId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
 
         return true;
@@ -160,7 +170,7 @@ public class RuleService {
 
         rule.setId(id);
         Rule updatedRule = ruleRepository.save(rule);
-
+        eventPublisher.publishEvent(new RulesChangedEvent(this, updatedRule.getGroupId()));
         logsService.addLogEntry(Severity.INFO, source, operation, description, logger);
 
         return updatedRule;
@@ -228,7 +238,12 @@ public class RuleService {
 
         StringBuilder htmlBody = new StringBuilder();
 
-        // TODO: zindex
+        // sort the widgets by their zindex
+        // so that the ones with lower zindex
+        // get added first to the html
+        List<TemplateWidget> sortedWidgets = rule.getTemplate().getWidgets();
+        sortedWidgets.sort(new TemplateWidget.ZIndexComparator());
+
         for (TemplateWidget templateWidget : rule.getTemplate().getWidgets()){
             Widget widget = templateWidget.getWidget();
 
@@ -258,8 +273,25 @@ public class RuleService {
         return templateEngine.process("base", baseContext);
     }
 
-    // TODO: add logic for media variables
     private Object processVariable(WidgetVariable variable, Object variableValue){
+        if(variable.getType() == WidgetVariableType.MEDIA){
+            Integer fileId = (Integer) variableValue;
+            CustomFile file = fileService.getFileById(Long.valueOf(fileId)).get();
+            // If it is a directory return all children
+            // separated by commas
+            if ("directory".equals(file.getType())){
+                String result = "";
+                for(CustomFile child : file.getSubDirectories()){
+                    result += child.getNameWithExtention() + ",";
+                }
+                result = result.substring(0, result.length() - 1);
+                return result;
+            }
+            // If it is a file return it's name
+            else{
+                return file.getNameWithExtention();
+            }
+        }
         return variableValue;
     }
 

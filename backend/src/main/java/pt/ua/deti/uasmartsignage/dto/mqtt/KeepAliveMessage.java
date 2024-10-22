@@ -1,21 +1,18 @@
-package pt.ua.deti.uasmartsignage.mqtt;
+package pt.ua.deti.uasmartsignage.dto.mqtt;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TemplateMessage {
+public class KeepAliveMessage implements MqttPayload {
 
     private String method;
-    private String html;
-    private List<String> files;
-    private ScheduleMqtt schedule;
+    private String uuid;
+    
 }
-
