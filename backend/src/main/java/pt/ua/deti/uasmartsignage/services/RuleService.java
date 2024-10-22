@@ -274,12 +274,23 @@ public class RuleService {
     }
 
     private Object processVariable(WidgetVariable variable, Object variableValue){
-        // TODO: check if its a folder
-        // if it is a folder return a list
         if(variable.getType() == WidgetVariableType.MEDIA){
             Integer fileId = (Integer) variableValue;
             CustomFile file = fileService.getFileById(Long.valueOf(fileId)).get();
-            return file.getNameWithExtention();
+            // If it is a directory return all children
+            // separated by commas
+            if ("directory".equals(file.getType())){
+                String result = "";
+                for(CustomFile child : file.getSubDirectories()){
+                    result += child.getNameWithExtention() + ",";
+                }
+                result = result.substring(0, result.length() - 1);
+                return result;
+            }
+            // If it is a file return it's name
+            else{
+                return file.getNameWithExtention();
+            }
         }
         return variableValue;
     }

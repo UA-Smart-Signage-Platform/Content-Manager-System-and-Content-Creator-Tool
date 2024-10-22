@@ -77,7 +77,11 @@ public class BrokerService {
                     Optional<CustomFile> file = fileService.getFileById(value);
                     file.ifPresent(customFile -> {
                         if ("directory".equals(customFile.getType())) {
-                            ; // TODO: go through directory
+                            for(CustomFile child : customFile.getSubDirectories()){
+                                if(!"directory".equals(child.getType())){
+                                    message.addFile(serverAddress + "/api/files/download/" + child.getId());
+                                }
+                            }
                         } else {
                             // TODO: don't hardcode url
                             message.addFile(serverAddress + "/api/files/download/" + customFile.getId());
